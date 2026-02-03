@@ -95,7 +95,7 @@ jobs:
           if-no-files-found: ignore
 
   build-gallery:
-    needs: validate
+    needs: [validate, build-library]
     runs-on: windows-latest
     permissions:
       contents: read
@@ -113,12 +113,19 @@ jobs:
       - name: Install WebAssembly tools
         run: dotnet workload install wasm-tools --skip-manifest-update
 
+      - name: Restore (Windows only)
+        run: |
+          dotnet restore Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
+            -p:TargetFramework=net9.0-windows10.0.19041 `
+            -p:TargetFrameworks=net9.0-windows10.0.19041
+
       - name: Build Gallery App (Windows)
         run: |
           dotnet publish Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
             -c Release `
             -f net9.0-windows10.0.19041 `
             -r win-x64 `
+            --no-restore `
             --self-contained true `
             -o ./publish
 

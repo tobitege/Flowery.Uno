@@ -125,6 +125,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="..\Flowery.Uno.Gallery.Core\GalleryResources.xaml">
+      <Link>Flowery.Uno.Gallery.Core\GalleryResources.xaml</Link>
+      <TargetPath>Flowery.Uno.Gallery.Core\GalleryResources.xaml</TargetPath>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\Flowery.Uno\Themes\**\*.xaml">
+      <Link>Flowery.Uno\Themes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>Flowery.Uno\Themes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\Flowery.Uno.Kanban\Themes\**\*.xaml">
+      <Link>Flowery.Uno.Kanban\Themes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>Flowery.Uno.Kanban\Themes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <Target Name="ForceCopyWindowsAssets"

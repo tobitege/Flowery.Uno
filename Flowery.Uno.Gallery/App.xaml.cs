@@ -300,21 +300,19 @@ namespace Flowery.Uno.Gallery
             }
 #endif
 
-            if (TryAddDictionary("ms-appx:///Flowery.Uno.Gallery.Core/GalleryResources.xaml"))
-            {
-                return;
-            }
-
-            if (TryAddDictionary("ms-appx:///GalleryResources.xaml"))
-            {
-                return;
-            }
-
+            // ALWAYS load basic controls resources first, as everything depends on them (brushes, styles).
             TryAddXamlControlsResources();
+
+            // Load fundamental project resources first (brushes and shared styles)
             var floweryOk = TryAddDictionary("ms-appx:///Flowery.Uno/Themes/Generic.xaml");
             var kanbanOk = TryAddDictionary("ms-appx:///Flowery.Uno.Kanban/Themes/Generic.xaml");
 
-            if (!floweryOk || !kanbanOk)
+            // Then load gallery-specific resources which might depend on the above
+            var galleryOk =
+                TryAddDictionary("ms-appx:///Flowery.Uno.Gallery.Core/GalleryResources.xaml") ||
+                TryAddDictionary("ms-appx:///GalleryResources.xaml");
+
+            if (!floweryOk || !kanbanOk || !galleryOk)
             {
                 throw new InvalidOperationException("Failed to load one or more gallery resource dictionaries.");
             }
@@ -333,11 +331,7 @@ namespace Flowery.Uno.Gallery
             catch (Exception ex)
             {
                 LogFatal($"EnsureGalleryResources failed for {source}", ex);
-#if WINDOWS
-                return TryAddDictionaryFromDisk(source);
-#else
                 return false;
-#endif
             }
         }
 
@@ -352,174 +346,6 @@ namespace Flowery.Uno.Gallery
                 LogFatal("EnsureGalleryResources failed for XamlControlsResources", ex);
             }
         }
-
-#if WINDOWS
-        private bool TryAddDictionaryFromDisk(string source)
-        {
-            try
-            {
-                const string prefix = "ms-appx:///";
-                if (!source.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                var relativePath = source.Substring(prefix.Length);
-                if (string.Equals(relativePath, "Flowery.Uno.Gallery.Core/GalleryResources.xaml", StringComparison.OrdinalIgnoreCase))
-                {
-                    var galleryPath = ResolveDiskPath(relativePath);
-                    return File.Exists(galleryPath) && TryAddGalleryResourcesFromDisk(galleryPath);
-                }
-
-                if (string.Equals(relativePath, "GalleryResources.xaml", StringComparison.OrdinalIgnoreCase))
-                {
-                    var galleryPath = ResolveDiskPath(relativePath);
-                    if (!File.Exists(galleryPath))
-                    {
-                        galleryPath = ResolveDiskPath("Flowery.Uno.Gallery.Core/GalleryResources.xaml");
-                    }
-
-                    return File.Exists(galleryPath) && TryAddGalleryResourcesFromDisk(galleryPath);
-                }
-
-                if (string.Equals(relativePath, "Flowery.Uno/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase))
-                {
-                    return TryAddFloweryThemesFromDisk();
-                }
-
-                if (string.Equals(relativePath, "Flowery.Uno.Kanban/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase))
-                {
-                    return TryAddKanbanThemesFromDisk();
-                }
-
-                var filePath = ResolveDiskPath(relativePath);
-                return File.Exists(filePath) && TryAddDictionaryFromFile(filePath);
-            }
-            catch (Exception ex)
-            {
-                LogFatal($"EnsureGalleryResources failed for disk fallback {source}", ex);
-                return false;
-            }
-        }
-
-        private bool TryAddGalleryResourcesFromDisk(string galleryResourcesPath)
-        {
-            var xaml = File.ReadAllText(galleryResourcesPath);
-            var stripped = StripMergedDictionaries(xaml);
-            if (!TryAddDictionaryFromXaml(stripped))
-            {
-                return false;
-            }
-
-            TryAddXamlControlsResources();
-            var floweryOk = TryAddFloweryThemesFromDisk();
-            var kanbanOk = TryAddKanbanThemesFromDisk();
-            return floweryOk && kanbanOk;
-        }
-
-        private bool TryAddFloweryThemesFromDisk()
-        {
-            var themesRoot = IOPath.Combine(AppContext.BaseDirectory, "Flowery.Uno", "Themes");
-            var themeFiles = new[]
-            {
-                "DaisyResources.xaml",
-                "DaisyIcons.xaml",
-                "DaisyShared.xaml",
-                "DaisyThemeControls.xaml",
-                "DaisyInputs.xaml",
-                "DaisyButtons.xaml",
-                "DaisyLists.xaml",
-                "DaisySurfaces.xaml",
-                "DaisyLayout.xaml",
-                "DaisyFeedback.xaml",
-                "DaisyWeather.xaml",
-                "DaisyControls.xaml"
-            };
-
-            foreach (var file in themeFiles)
-            {
-                var path = IOPath.Combine(themesRoot, file);
-                if (!TryAddDictionaryFromFile(path))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool TryAddKanbanThemesFromDisk()
-        {
-            var kanbanPath = IOPath.Combine(AppContext.BaseDirectory, "Flowery.Uno.Kanban", "Themes", "DaisyKanban.xaml");
-            return TryAddDictionaryFromFile(kanbanPath);
-        }
-
-        private bool TryAddDictionaryFromFile(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                return false;
-            }
-
-            var xaml = File.ReadAllText(filePath);
-            xaml = StripMergedDictionaries(xaml);
-
-            return TryAddDictionaryFromXaml(xaml);
-        }
-
-        private bool TryAddDictionaryFromXaml(string xaml)
-        {
-            if (XamlReader.Load(xaml) is ResourceDictionary dictionary)
-            {
-                Resources.MergedDictionaries.Add(dictionary);
-                return true;
-            }
-
-            return false;
-        }
-
-        private static string StripMergedDictionaries(string xaml)
-        {
-            using var reader = new StringReader(xaml);
-            var builder = new System.Text.StringBuilder();
-            var inMergedDictionaries = false;
-            string? line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (line.Contains("<ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal))
-                {
-                    inMergedDictionaries = true;
-                    continue;
-                }
-
-                if (line.Contains("</ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal))
-                {
-                    inMergedDictionaries = false;
-                    continue;
-                }
-
-                if (inMergedDictionaries)
-                {
-                    continue;
-                }
-
-                if (line.Contains("<ResourceDictionary Source=", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                builder.AppendLine(line);
-            }
-
-            return builder.ToString();
-        }
-
-        private static string ResolveDiskPath(string relativePath)
-        {
-            var normalized = relativePath.Replace('/', IOPath.DirectorySeparatorChar);
-            return IOPath.Combine(AppContext.BaseDirectory, normalized);
-        }
-#endif
 
 #if WINDOWS
         private void EnsureRuntimeTestThemeLayout()

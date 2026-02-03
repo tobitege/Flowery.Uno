@@ -167,6 +167,8 @@
       <_PublishGalleryResources Include="..\Flowery.Uno.Gallery.Core\GalleryResources.xaml" />
       <_PublishFloweryThemes Include="..\Flowery.Uno\Themes\**\*.xaml" />
       <_PublishKanbanThemes Include="..\Flowery.Uno.Kanban\Themes\**\*.xaml" />
+      <!-- Publish output is missing compiled XAML (.xbf) files; copy them from TargetDir -->
+      <_PublishXbf Include="$(TargetDir)**\*.xbf" />
     </ItemGroup>
     <Copy SourceFiles="@(_PublishGalleryResources)"
           DestinationFiles="@(_PublishGalleryResources->'$(PublishDir)Flowery.Uno.Gallery.Core\GalleryResources.xaml')"
@@ -176,6 +178,9 @@
           SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(_PublishKanbanThemes)"
           DestinationFiles="@(_PublishKanbanThemes->'$(PublishDir)Flowery.Uno.Kanban\Themes\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_PublishXbf)"
+          DestinationFiles="@(_PublishXbf->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
   </Target>
 

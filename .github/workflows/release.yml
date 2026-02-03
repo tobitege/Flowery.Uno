@@ -110,21 +110,14 @@ jobs:
       - name: Setup Uno Workloads
         run: dotnet workload install uno-check --skip-manifest-update || true
 
-      - name: Restore (Windows only)
+      - name: Publish Gallery App (Windows)
+        shell: pwsh
         run: |
-          dotnet restore Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
-            -p:TargetFramework=net9.0-windows10.0.19041 `
-            -p:TargetFrameworks=net9.0-windows10.0.19041
-
-      - name: Build Gallery App (Windows)
-        run: |
-          dotnet publish Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
-            -c Release `
-            -f net9.0-windows10.0.19041 `
-            -r win-x64 `
-            --no-restore `
-            --self-contained true `
-            -o ./publish
+          ./scripts/publish_windows.ps1 `
+            -Configuration Release `
+            -RuntimeIdentifier win-x64 `
+            -SelfContained:$true `
+            -OutputDir publish
 
       - name: Zip Windows artifact
         run: Compress-Archive -Path ./publish/* -DestinationPath ./Flowery.Gallery-Windows-x64.zip

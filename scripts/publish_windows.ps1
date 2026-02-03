@@ -58,12 +58,14 @@ if (-not (Test-Path $logsDir)) {
 }
 
 $logFile = Join-Path $logsDir "windows_publish.log"
-if (Test-Path $logFile) {
-    Remove-Item $logFile
-}
+"" | Out-File -FilePath $logFile -Encoding utf8
 
 if (-not [System.IO.Path]::IsPathRooted($OutputDir)) {
     $OutputDir = Join-Path $repoRoot $OutputDir
+}
+
+if (-not (Test-Path $OutputDir)) {
+    New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 }
 
 function Invoke-DotnetStep {
@@ -112,11 +114,25 @@ Write-Host ""
 $commonMsbuildArgs = @(
     "-m:1",
     "-p:BuildInParallel=false",
-    "-p:UseSharedCompilation=false"
+    "-p:UseSharedCompilation=false",
+    "-p:UnoDisableMonoRuntimeCheck=true",
+    "-p:UnoDisableValidateWinAppSDK3548=true",
+    "-p:UseMonoRuntime=false"
 )
 
-$galleryBuildOutput = Join-Path $repoRoot "bin\\$Configuration\\Flowery.Uno.Gallery\\$windowsTfm\\$RuntimeIdentifier"
-$floweryBuildOutput = Join-Path $repoRoot "bin\\$Configuration\\Flowery.Uno\\$windowsTfm\\$RuntimeIdentifier"
+$galleryBuildOutputBase = Join-Path $repoRoot "bin\\$Configuration\\Flowery.Uno.Gallery\\$windowsTfm"
+$galleryBuildOutput = Join-Path $galleryBuildOutputBase $RuntimeIdentifier
+if (-not (Test-Path $galleryBuildOutput)) {
+    # Try with Platform folder (common in WinUI 3)
+    $galleryBuildOutput = Join-Path $repoRoot "bin\\x64\\$Configuration\\Flowery.Uno.Gallery\\$windowsTfm\\$RuntimeIdentifier"
+}
+
+$floweryBuildOutputBase = Join-Path $repoRoot "bin\\$Configuration\\Flowery.Uno\\$windowsTfm"
+$floweryBuildOutput = Join-Path $floweryBuildOutputBase $RuntimeIdentifier
+if (-not (Test-Path $floweryBuildOutput)) {
+    # Try with Platform folder
+    $floweryBuildOutput = Join-Path $repoRoot "bin\\x64\\$Configuration\\Flowery.Uno\\$windowsTfm\\$RuntimeIdentifier"
+}
 
 Invoke-DotnetStep -Title "Build Flowery.Uno (windows only)" -Args (@(
     "build", $floweryProject,
@@ -154,32 +170,26 @@ Invoke-DotnetStep -Title "Publish Flowery.Uno.Gallery (Windows)" -Args (@(
     "-f", $windowsTfm,
     "-r", $RuntimeIdentifier,
     "--self-contained", $SelfContained.ToString().ToLowerInvariant(),
+    "-p:GenerateMergedPriFile=true",
+    "-p:AppxPackage=false",
+    "-p:AppxBundle=Never",
     "--no-restore",
-    "--no-build",
     "-o", $OutputDir
 ) + $commonMsbuildArgs)
 
-if (Test-Path $galleryBuildOutput) {
-    $resourcePri = Join-Path $galleryBuildOutput "resources.pri"
-    if (Test-Path $resourcePri) {
-        Copy-Item -Path $resourcePri -Destination $OutputDir -Force
-    }
-
-    $rootXamlFiles = Get-ChildItem -File $galleryBuildOutput | Where-Object {
-        $_.Extension -in @(".xaml", ".xbf")
-    }
-    foreach ($file in $rootXamlFiles) {
-        Copy-Item -Path $file.FullName -Destination (Join-Path $OutputDir $file.Name) -Force
-    }
-
-    $contentDirs = Get-ChildItem -Directory $galleryBuildOutput
-    foreach ($dir in $contentDirs) {
-        $destDir = Join-Path $OutputDir $dir.Name
-        Copy-Item -Path $dir.FullName -Destination $destDir -Recurse -Force
-    }
+# 1. Rename the freshly produced merged PRI file.
+# Unpackaged apps MUST have [ExecutableName].pri at the root to resolve resources correctly.
+$publishPri = Join-Path $OutputDir "resources.pri"
+if (Test-Path $publishPri) {
+    $destPri = Join-Path $OutputDir "Flowery.Uno.Gallery.pri"
+    Write-Host "Renaming fresh merged PRI file to: $destPri" -ForegroundColor Gray
+    Copy-Item -Path $publishPri -Destination $destPri -Force
 } else {
-    Write-Host "Warning: Build output not found at $galleryBuildOutput (skipping resource merge)." -ForegroundColor Yellow
+    Write-Host "Warning: resources.pri not found in $OutputDir! Resource resolution will likely fail." -ForegroundColor Yellow
 }
+
+# 2. Sync project library resources (Assets and Themes)
+# We ONLY copy from the FRESH build output of the projects to avoid ancient artifacts.
 
 function Copy-IfExists {
     param(
@@ -188,17 +198,45 @@ function Copy-IfExists {
     )
 
     if (Test-Path $Source) {
-        Copy-Item -Path $Source -Destination $Destination -Recurse -Force
+        $parent = Split-Path $Destination -Parent
+        if (-not (Test-Path $parent)) {
+            New-Item -ItemType Directory -Path $parent -Force | Out-Null
+        }
+        # Copy the directory itself to the parent, creating the destination folder correctly.
+        Copy-Item -Path $Source -Destination $parent -Recurse -Force
     }
 }
 
 if (Test-Path $floweryBuildOutput) {
     $floweryPackageDir = Join-Path $OutputDir "Flowery.Uno"
-    New-Item -ItemType Directory -Path $floweryPackageDir -Force | Out-Null
+    if (-not (Test-Path $floweryPackageDir)) {
+        New-Item -ItemType Directory -Path $floweryPackageDir -Force | Out-Null
+    }
+
     Copy-IfExists -Source (Join-Path $floweryBuildOutput "Assets") -Destination (Join-Path $floweryPackageDir "Assets")
     Copy-IfExists -Source (Join-Path $floweryBuildOutput "Themes") -Destination (Join-Path $floweryPackageDir "Themes")
-} else {
-    Write-Host "Warning: Flowery.Uno build output not found at $floweryBuildOutput (skipping library resources)." -ForegroundColor Yellow
+}
+
+# 3. Collect ANY remaining PRIs from the dependencies' FRESH build output.
+# Some libraries might need their own PRI if not fully merged.
+Write-Host "Syncing PRI files from dependencies..." -ForegroundColor Gray
+$projectDirs = "Flowery.Uno", "Flowery.Uno.Gallery.Core", "Flowery.Uno.Kanban", "Flowery.Uno.Win2D"
+foreach ($proj in $projectDirs) {
+    $projOutput = Join-Path $repoRoot "bin\\$Configuration\\$proj\\$windowsTfm\\$RuntimeIdentifier"
+    if (-not (Test-Path $projOutput)) {
+        $projOutput = Join-Path $repoRoot "bin\\x64\\$Configuration\\$proj\\$windowsTfm\\$RuntimeIdentifier"
+    }
+
+    if (Test-Path $projOutput) {
+        # Copy PRIs that are fresh (not from 2025!)
+        $pris = Get-ChildItem -Path $projOutput -Filter "*.pri" | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-1) }
+        foreach ($pri in $pris) {
+            if ($pri.Name -ne "resources.pri") {
+                Copy-Item -Path $pri.FullName -Destination $OutputDir -Force
+                Write-Host "  Sync'd $($pri.Name) from $proj" -ForegroundColor Gray
+            }
+        }
+    }
 }
 
 Write-Host "Publish succeeded." -ForegroundColor Green

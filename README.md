@@ -8,6 +8,8 @@
 
 **An [Uno Platform](https://platform.uno/) / WinUI port of [Flowery.NET](https://github.com/tobitege/Flowery.NET) — fully themed C# controls.**
 
+[![NuGet](https://img.shields.io/nuget/v/Flowery.Uno?style=flat-square)](https://www.nuget.org/packages/Flowery.Uno)
+[![Downloads](https://img.shields.io/nuget/dt/Flowery.Uno?style=flat-square)](https://www.nuget.org/packages/Flowery.Uno)
 [![License](https://img.shields.io/github/license/tobitege/Flowery.Uno?style=flat-square)](LICENSE)
 [![Uno Platform](https://img.shields.io/badge/Uno%20Platform-6.x-blue?style=flat-square)](https://platform.uno/)
 [![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?style=flat-square)](https://tobitege.github.io/Flowery.Uno/)

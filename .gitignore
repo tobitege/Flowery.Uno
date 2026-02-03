@@ -214,6 +214,8 @@ coc-settings.json
 /!uno
 /!uno-ext
 /!uno-themes
+/publish
+/publish-local
 
 #################
 ## Generated Documentation

@@ -131,12 +131,21 @@ Invoke-DotnetStep -Title "Build Flowery.Uno.Win2D (windows only)" -Args (@(
     "-p:BuildProjectReferences=false"
 ) + $commonMsbuildArgs)
 
+Invoke-DotnetStep -Title "Restore Flowery.Uno.Gallery (Windows only)" -Args (@(
+    "restore", $galleryProject,
+    "-p:TargetFramework=$windowsTfm",
+    "-p:TargetFrameworks=$windowsTfm",
+    "-p:RuntimeIdentifier=$RuntimeIdentifier",
+    "-p:SelfContained=$($SelfContained.ToString().ToLowerInvariant())"
+) + $commonMsbuildArgs)
+
 Invoke-DotnetStep -Title "Build Flowery.Uno.Gallery (Windows)" -Args (@(
     "build", $galleryProject,
     "-c", $Configuration,
     "-f", $windowsTfm,
     "-r", $RuntimeIdentifier,
-    "-p:SelfContained=$($SelfContained.ToString().ToLowerInvariant())"
+    "-p:SelfContained=$($SelfContained.ToString().ToLowerInvariant())",
+    "--no-restore"
 ) + $commonMsbuildArgs)
 
 Invoke-DotnetStep -Title "Publish Flowery.Uno.Gallery (Windows)" -Args (@(
@@ -145,6 +154,7 @@ Invoke-DotnetStep -Title "Publish Flowery.Uno.Gallery (Windows)" -Args (@(
     "-f", $windowsTfm,
     "-r", $RuntimeIdentifier,
     "--self-contained", $SelfContained.ToString().ToLowerInvariant(),
+    "--no-restore",
     "--no-build",
     "-o", $OutputDir
 ) + $commonMsbuildArgs)

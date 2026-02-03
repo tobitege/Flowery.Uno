@@ -10,6 +10,7 @@
 
 [![License](https://img.shields.io/github/license/tobitege/Flowery.Uno?style=flat-square)](LICENSE)
 [![Uno Platform](https://img.shields.io/badge/Uno%20Platform-6.x-blue?style=flat-square)](https://platform.uno/)
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?style=flat-square)](https://tobitege.github.io/Flowery.Uno/)
 [![X](https://img.shields.io/badge/X-@tobitege-000000?style=flat-square&logo=x)](https://x.com/tobitege)
 
 </div>

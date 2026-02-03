@@ -462,10 +462,7 @@ namespace Flowery.Uno.Gallery
             }
 
             var xaml = File.ReadAllText(filePath);
-            if (xaml.IndexOf("<ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal) >= 0)
-            {
-                xaml = StripMergedDictionaries(xaml);
-            }
+            xaml = StripMergedDictionaries(xaml);
 
             return TryAddDictionaryFromXaml(xaml);
         }
@@ -483,22 +480,38 @@ namespace Flowery.Uno.Gallery
 
         private static string StripMergedDictionaries(string xaml)
         {
-            const string startTag = "<ResourceDictionary.MergedDictionaries>";
-            const string endTag = "</ResourceDictionary.MergedDictionaries>";
-            var startIndex = xaml.IndexOf(startTag, StringComparison.Ordinal);
-            if (startIndex < 0)
+            using var reader = new StringReader(xaml);
+            var builder = new System.Text.StringBuilder();
+            var inMergedDictionaries = false;
+            string? line;
+            while ((line = reader.ReadLine()) != null)
             {
-                return xaml;
+                if (line.Contains("<ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal))
+                {
+                    inMergedDictionaries = true;
+                    continue;
+                }
+
+                if (line.Contains("</ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal))
+                {
+                    inMergedDictionaries = false;
+                    continue;
+                }
+
+                if (inMergedDictionaries)
+                {
+                    continue;
+                }
+
+                if (line.Contains("<ResourceDictionary Source=", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                builder.AppendLine(line);
             }
 
-            var endIndex = xaml.IndexOf(endTag, startIndex, StringComparison.Ordinal);
-            if (endIndex < 0)
-            {
-                return xaml;
-            }
-
-            endIndex += endTag.Length;
-            return xaml.Remove(startIndex, endIndex - startIndex);
+            return builder.ToString();
         }
 
         private static string ResolveDiskPath(string relativePath)

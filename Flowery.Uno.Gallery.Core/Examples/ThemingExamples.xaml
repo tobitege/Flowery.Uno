@@ -1,0 +1,95 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.ThemingExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,0,24,32">
+
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="theme-controller" Title="Theme Controller" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="6">
+                        <TextBlock Text="Toggle" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeController Mode="Toggle" UncheckedTheme="Light" CheckedTheme="Dark" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Spacing="6">
+                        <TextBlock Text="Checkbox" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeController Mode="Checkbox" UncheckedTheme="Light" CheckedTheme="Dark" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="6">
+                        <TextBlock Text="Swap" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeController Mode="Swap" UncheckedTheme="Light" CheckedTheme="Dark" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
+                        <TextBlock Text="Toggle with icons" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeController Mode="ToggleWithIcons" UncheckedTheme="Light" CheckedTheme="Dark" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6">
+                        <TextBlock Text="Toggle with text" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeController Mode="ToggleWithText"
+                                                    UncheckedTheme="Light"
+                                                    CheckedTheme="Synthwave"
+                                                    UncheckedLabel="Light"
+                                                    CheckedLabel="Synthwave" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="theme-radio" Title="Theme Radio" />
+
+                <StackPanel Orientation="Horizontal" Spacing="24">
+                    <StackPanel Spacing="10" Width="220">
+                        <TextBlock Text="Radio Input Mode" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Select a theme using radio buttons"
+                                   Opacity="0.7"
+                                   TextWrapping="Wrap"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <StackPanel Spacing="8">
+                            <daisy:DaisyThemeRadio Content="Light" ThemeName="Light" GroupName="ThemeRadios" Size="Small" />
+                            <daisy:DaisyThemeRadio Content="Dark" ThemeName="Dark" GroupName="ThemeRadios" Size="Small" />
+                            <daisy:DaisyThemeRadio Content="Retro" ThemeName="Retro" GroupName="ThemeRadios" Size="Small" />
+                            <daisy:DaisyThemeRadio Content="Cyberpunk" ThemeName="Cyberpunk" GroupName="ThemeRadios" Size="Small" />
+                            <daisy:DaisyThemeRadio Content="Smooth" ThemeName="Smooth" GroupName="ThemeRadios" Size="Small" />
+                            <daisy:DaisyThemeRadio Content="Aqua" ThemeName="Aqua" GroupName="ThemeRadios" Size="Small" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10" Width="220">
+                        <TextBlock Text="Button Mode" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Joined button style"
+                                   Opacity="0.7"
+                                   TextWrapping="Wrap"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyJoin Orientation="Vertical">
+                            <StackPanel>
+                                <daisy:DaisyThemeRadio Content="Light" ThemeName="Light" GroupName="ThemeButtons" Mode="Button" />
+                                <daisy:DaisyThemeRadio Content="Dark" ThemeName="Dark" GroupName="ThemeButtons" Mode="Button" />
+                                <daisy:DaisyThemeRadio Content="Retro" ThemeName="Retro" GroupName="ThemeButtons" Mode="Button" />
+                                <daisy:DaisyThemeRadio Content="Cyberpunk" ThemeName="Cyberpunk" GroupName="ThemeButtons" Mode="Button" />
+                                <daisy:DaisyThemeRadio Content="Smooth" ThemeName="Smooth" GroupName="ThemeButtons" Mode="Button" />
+                                <daisy:DaisyThemeRadio Content="Aqua" ThemeName="Aqua" GroupName="ThemeButtons" Mode="Button" />
+                            </StackPanel>
+                        </daisy:DaisyJoin>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

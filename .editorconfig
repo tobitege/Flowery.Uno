@@ -1,0 +1,76 @@
+# EditorConfig for Flowery.Uno
+# https://editorconfig.org/
+
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C# files
+[*.cs]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# IDE0130: Namespace does not match folder structure
+# Suppressed because our library uses "Flowery.*" namespaces but the project folder is "Flowery.Uno"
+dotnet_diagnostic.IDE0130.severity = none
+resharper_check_namespace_highlighting = none
+
+# UNO0001: Uno Platform unimplemented property
+# Suppressed: We intentionally catch NotImplementedException at runtime for cross-platform compatibility
+dotnet_diagnostic.UNO0001.severity = none
+
+# IDE0028: Use collection initializers
+# Suppressed: The pattern of creating a Grid/Panel and then adding children via .Add() is intentional
+# when child references need to be stored in fields for later manipulation (e.g., _prevText, _currentText).
+# Using collection initializers is not possible in these cases.
+dotnet_diagnostic.IDE0028.severity = none
+
+# XAML files
+[*.xaml]
+indent_style = space
+indent_size = 4
+tab_width = 4
+# Suppress ReSharper XAML false positives for resource resolution in VS Code extension
+resharper_xaml_resource_not_found_highlighting = none
+resharper_xaml_unknown_resource_highlighting = none
+
+# XML/Project files
+[*.{xml,csproj,props,targets}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+
+# Python scripts
+[*.py]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# PowerShell scripts
+[*.ps1]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = lf

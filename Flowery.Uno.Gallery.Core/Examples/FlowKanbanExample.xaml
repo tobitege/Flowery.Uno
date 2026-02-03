@@ -1,0 +1,59 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.FlowKanbanExample"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:kanban="using:Flowery.Uno.Kanban.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0">
+        <Grid Margin="24,0,24,0"
+              RowSpacing="16"
+              Height="{Binding ElementName=MainScrollViewer, Path=ViewportHeight}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <!-- <local:SectionHeader SectionId="flow-kanban" Title="Flow Kanban" /> -->
+                <TextBlock Text="A feature-rich and flexible Kanban board for task management with drag-and-drop support, column reordering, and JSON persistence. Each task card can be styled with palette colors."
+                           Opacity="0.8"
+                           TextWrapping="Wrap"
+                           daisy:FlowerySizeManager.ResponsiveFont="Primary"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Background="{ThemeResource DaisyBase200Brush}"
+                    CornerRadius="12"
+                    Padding="0"
+                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                    BorderThickness="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <kanban:FlowKanban x:Name="DemoKanban" />
+            </Border>
+
+            <daisy:DaisyCollapse Grid.Row="2"
+                                 Variant="Arrow"
+                                 IsExpanded="False">
+                <daisy:DaisyCollapse.Header>
+                    <TextBlock Text="Kanban Features"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </daisy:DaisyCollapse.Header>
+                <TextBlock TextWrapping="Wrap"
+                           daisy:FlowerySizeManager.ResponsiveFont="Primary"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}"
+                           Text="• Drag task cards between columns (with visual drop indicator)
+• Inline add: Click '+ Add Card' to type a new task directly
+• Double-click any card to edit title, description, and color
+• Color-coded task cards using DaisyColor palette
+• JSON persistence via Save/Load buttons in sidebar
+• Built on FlowKanbanData, FlowKanbanColumnData, and FlowTask models" />
+            </daisy:DaisyCollapse>
+        </Grid>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

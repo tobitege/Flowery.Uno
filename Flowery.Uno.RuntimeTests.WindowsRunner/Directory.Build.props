@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <TestingPlatformDotNetTestSupport>true</TestingPlatformDotNetTestSupport>
+    <TestingPlatformCaptureOutput>false</TestingPlatformCaptureOutput>
+    <TestingPlatformCommandLineArguments>--results-directory "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\TestResults\$(MSBuildProjectName)\$([System.DateTime]::UtcNow.ToString('yyyyMMddHHmmssfff'))"</TestingPlatformCommandLineArguments>
+  </PropertyGroup>
+</Project>

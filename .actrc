@@ -1,0 +1,2 @@
+-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest
+--container-architecture linux/amd64

@@ -1,0 +1,125 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Flowery.Controls">
+
+    <!-- ===================== DaisyBreadcrumbs (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyBreadcrumbs">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyBreadcrumbBar (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyBreadcrumbBar">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyBreadcrumbItem (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyBreadcrumbItem">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyMenu (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyMenu">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyMenuItem (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyMenuItem">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyPagination (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyPagination">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyPaginationItem (extends Button) ===================== -->
+    <Style TargetType="controls:DaisyPaginationItem">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="MinWidth" Value="40" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyTimeline (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyTimeline">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyTimelineItem (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyTimelineItem">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+    </Style>
+
+    <!-- ===================== DaisyDateTimeline (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyDateTimeline">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyDateTimelineItem (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyDateTimelineItem">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- ===================== DaisyList (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyList">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyListRow (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyListRow">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ===================== DaisyListColumn (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyListColumn">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyTable (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyTable">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyTableRow (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyTableRow">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ===================== DaisyTableCell (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyTableCell">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,798 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.ActionsExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <local:ScrollableExamplePage.Resources>
+        <!-- Remove WinUI ToggleButton chrome/focus visuals for the Figma Comment recipe. -->
+        <Style x:Key="FigmaCommentToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </local:ScrollableExamplePage.Resources>
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True"
+                  Background="Transparent" Padding="0,0,0,32" DataContext="{x:Bind Localization, Mode=OneWay}">
+        <StackPanel Spacing="24" Margin="24,0,20,32">
+
+            <!-- Neumorphic Tuning -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="neumorphic-tuning"
+                                     Title="{Binding [Actions_Neumorphic_Tuning_Title]}"
+                                     x:Uid="ActionsExamples.SectionHeader.NeumorphicTuning" />
+                <TextBlock Text="{Binding [Actions_Neumorphic_Tuning_Description]}"
+                           Opacity="0.7"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}"
+                           x:Uid="ActionsExamples.Text.NeumorphicTuningDescription" />
+
+                <daisy:WrapPanel Orientation="Horizontal" Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding [Actions_Neumorphic_Intensity_Label]}"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                   x:Uid="ActionsExamples.Label.NeumorphicIntensity" />
+                        <daisy:DaisyNumericUpDown x:Name="NeumorphicIntensityBox" Width="120"
+                                                  x:Uid="ActionsExamples.Input.NeumorphicIntensity" />
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding [Actions_Neumorphic_Offset_Label]}"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                   x:Uid="ActionsExamples.Label.NeumorphicOffset" />
+                        <daisy:DaisyNumericUpDown x:Name="NeumorphicOffsetBox" Width="120"
+                                                  x:Uid="ActionsExamples.Input.NeumorphicOffset" />
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding [Actions_Neumorphic_Blur_Label]}"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                   x:Uid="ActionsExamples.Label.NeumorphicBlur" />
+                        <daisy:DaisyNumericUpDown x:Name="NeumorphicBlurBox" Width="120"
+                                                  x:Uid="ActionsExamples.Input.NeumorphicBlur" />
+                    </StackPanel>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <!-- Button -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="button" Title="Button" />
+
+                <TextBlock Text="Colors" FontWeight="SemiBold" Opacity="0.8"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,20">
+                    <daisy:DaisyButton Content="Default" />
+                    <daisy:DaisyButton Content="Neutral" Variant="Neutral" />
+                    <daisy:DaisyButton Content="Primary" Variant="Primary" />
+                    <daisy:DaisyButton Content="Secondary" Variant="Secondary" />
+                    <daisy:DaisyButton Content="Accent" Variant="Accent" />
+                    <daisy:DaisyButton Content="Info" Variant="Info" />
+                    <daisy:DaisyButton Content="Success" Variant="Success" />
+                    <daisy:DaisyButton Content="Warning" Variant="Warning" />
+                    <daisy:DaisyButton Content="Error" Variant="Error" />
+                </StackPanel>
+
+                <TextBlock Text="Styles" FontWeight="SemiBold" Opacity="0.8"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:DaisyButton Content="Ghost" Variant="Ghost" />
+                    <daisy:DaisyButton Content="Link" Variant="Link" />
+                    <daisy:DaisyButton Content="Outline" Variant="Primary" ButtonStyle="Outline" />
+                    <daisy:DaisyButton Content="Soft" Variant="Primary" ButtonStyle="Soft" />
+                    <daisy:DaisyButton Content="Dash" Variant="Primary" ButtonStyle="Dash" />
+                </StackPanel>
+
+                <TextBlock Text="Sizes" FontWeight="SemiBold" Opacity="0.8"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}"
+                           daisy:FlowerySizeManager.IgnoreGlobalSize="True" />
+                <StackPanel Orientation="Horizontal" Spacing="8"
+                            daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                    <daisy:DaisyButton Content="XS" Size="ExtraSmall" />
+                    <daisy:DaisyButton Content="S" Size="Small" />
+                    <daisy:DaisyButton Content="M" Size="Medium" />
+                    <daisy:DaisyButton Content="L" Size="Large" />
+                    <daisy:DaisyButton Content="XL" Size="ExtraLarge" />
+                </StackPanel>
+
+                <TextBlock Text="Shapes" FontWeight="SemiBold" Opacity="0.8"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:DaisyButton Content="Wide" Shape="Wide" />
+                    <daisy:DaisyButton Content="Block" Shape="Block" Variant="Primary" />
+                    <daisy:DaisyButton Shape="Square" Variant="Secondary"
+                                       IconData="M6 18L18 6M6 6l12 12" />
+                    <daisy:DaisyButton Shape="Circle" Variant="Accent"
+                                       IconData="M12 4.5v15m7.5-7.5h-15" />
+                </StackPanel>
+
+                <Grid Margin="0,20,0,0"
+                      ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      Opacity="0.8">
+                    <Path Data="{StaticResource DaisyIconBolt}"
+                          Width="12"
+                          Height="12"
+                          Stretch="Uniform"
+                          Fill="{ThemeResource DaisyBaseContentBrush}"
+                          VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1"
+                               Text="Unified Icon API (RECOMMENDED)"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      Opacity="0.5">
+                    <Path Data="{StaticResource DaisyIconCheck}"
+                          Width="12"
+                          Height="12"
+                          Stretch="Uniform"
+                          Fill="{ThemeResource DaisyBaseContentBrush}"
+                          VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1"
+                               Text="Preferred approach: Use IconSymbol or IconData directly on DaisyButton. Auto-scaled, auto-colored, no nesting required."
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </Grid>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <!-- IconSymbol - uses Windows Symbol enum -->
+                    <daisy:DaisyButton IconSymbol="Add" Content="Add" Variant="Primary" />
+                    <daisy:DaisyButton IconSymbol="Edit" Content="Edit" Variant="Info" />
+                    <daisy:DaisyButton IconSymbol="Delete" Content="Delete" Variant="Error" />
+                    <daisy:DaisyButton IconSymbol="Accept" Content="Save" Variant="Success" ButtonStyle="Outline" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <!-- Icon-only with IconSymbol -->
+                    <daisy:DaisyButton IconSymbol="Add" Shape="Circle" Variant="Primary" ToolTipService.ToolTip="Add" />
+                    <daisy:DaisyButton IconSymbol="Favorite" Shape="Circle" Variant="Error" ToolTipService.ToolTip="Favorite" />
+                    <daisy:DaisyButton IconSymbol="Setting" Shape="Square" Variant="Ghost" ToolTipService.ToolTip="Settings" />
+                </StackPanel>
+                <TextBlock Text="With custom path data (IconData):"
+                           Opacity="0.5" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <!-- IconData - uses centralized path data resources -->
+                    <daisy:DaisyButton IconData="{StaticResource DaisyIconHeart}"
+                            Content="Heart" Variant="Error" />
+                    <daisy:DaisyButton IconData="{StaticResource DaisyIconStar}"
+                            Content="Star" Variant="Warning" />
+                    <daisy:DaisyButton IconData="{StaticResource DaisyIconHome}"
+                            Content="Home" Variant="Ghost" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8"
+                            daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                    <!-- Size scaling demonstration -->
+                    <daisy:DaisyButton IconSymbol="Home" Content="XS" Size="ExtraSmall" Variant="Neutral" />
+                    <daisy:DaisyButton IconSymbol="Home" Content="S" Size="Small" Variant="Neutral" />
+                    <daisy:DaisyButton IconSymbol="Home" Content="M" Size="Medium" Variant="Neutral" />
+                    <daisy:DaisyButton IconSymbol="Home" Content="L" Size="Large" Variant="Neutral" />
+                    <daisy:DaisyButton IconSymbol="Home" Content="XL" Size="ExtraLarge" Variant="Neutral" />
+                </StackPanel>
+
+                <TextBlock Text="Icon Buttons (SymbolIcon)" FontWeight="SemiBold" Opacity="0.8"
+                           Margin="0,20,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Built-in Windows symbols, wrapped in DaisyIconText for consistent scaling."
+                           Opacity="0.5" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:DaisyButton x:Name="SymbolIconAddButton" Shape="Circle" Variant="Primary" ToolTipService.ToolTip="Add">
+                        <daisy:DaisyIconText IconSymbol="Add"
+                                             Size="{Binding Size, ElementName=SymbolIconAddButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconEditButton" Shape="Circle" Variant="Secondary" ToolTipService.ToolTip="Edit">
+                        <daisy:DaisyIconText IconSymbol="Edit"
+                                             Size="{Binding Size, ElementName=SymbolIconEditButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconDeleteButton" Shape="Circle" Variant="Error" ToolTipService.ToolTip="Delete">
+                        <daisy:DaisyIconText IconSymbol="Delete"
+                                             Size="{Binding Size, ElementName=SymbolIconDeleteButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconAcceptButton" Shape="Circle" Variant="Success" ToolTipService.ToolTip="Accept">
+                        <daisy:DaisyIconText IconSymbol="Accept"
+                                             Size="{Binding Size, ElementName=SymbolIconAcceptButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconFavoriteButton" Shape="Circle" Variant="Warning" ToolTipService.ToolTip="Favorite">
+                        <daisy:DaisyIconText IconSymbol="Favorite"
+                                             Size="{Binding Size, ElementName=SymbolIconFavoriteButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconSettingButton" Shape="Square" Variant="Ghost" ToolTipService.ToolTip="Settings">
+                        <daisy:DaisyIconText IconSymbol="Setting"
+                                             Size="{Binding Size, ElementName=SymbolIconSettingButton}" />
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SymbolIconFindButton" Shape="Square" Variant="Ghost" ToolTipService.ToolTip="Search">
+                        <daisy:DaisyIconText IconSymbol="Find"
+                                             Size="{Binding Size, ElementName=SymbolIconFindButton}" />
+                    </daisy:DaisyButton>
+                </StackPanel>
+
+                <TextBlock Text="Icon + Text (StackPanel layout)" FontWeight="SemiBold" Opacity="0.8"
+                           Margin="0,20,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Classic approach: Wrap icon and text in a StackPanel for combined layouts."
+                           Opacity="0.5" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:DaisyButton Variant="Primary">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <daisy:DaisyIconText IconSymbol="Add" />
+                            <TextBlock Text="New Item" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton Variant="Success" ButtonStyle="Outline">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <daisy:DaisyIconText IconSymbol="Accept" />
+                            <TextBlock Text="Confirm" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton Variant="Error" ButtonStyle="Soft">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <daisy:DaisyIconText IconSymbol="Delete" />
+                            <TextBlock Text="Remove" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton Variant="Ghost">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <daisy:DaisyIconText IconSymbol="Setting" />
+                            <TextBlock Text="Settings" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </daisy:DaisyButton>
+                </StackPanel>
+
+                <TextBlock Text="Login Buttons (Brands)" FontWeight="SemiBold" Opacity="0.8"
+                           Margin="0,20,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Brand login buttons with SVG path icons from the DaisyUI demo."
+                           Opacity="0.5" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <daisy:WrapPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                    <daisy:DaisyLoginButton Brand="Email" />
+                    <daisy:DaisyLoginButton Brand="GitHub" />
+                    <daisy:DaisyLoginButton Brand="Google" />
+                    <daisy:DaisyLoginButton Brand="Facebook" />
+                    <daisy:DaisyLoginButton Brand="X" />
+                    <daisy:DaisyLoginButton Brand="Kakao" />
+                    <daisy:DaisyLoginButton Brand="Apple" />
+                    <daisy:DaisyLoginButton Brand="Amazon" />
+                    <daisy:DaisyLoginButton Brand="Microsoft" />
+                    <daisy:DaisyLoginButton Brand="Line" />
+                    <daisy:DaisyLoginButton Brand="Slack" />
+                    <daisy:DaisyLoginButton Brand="LinkedIn" />
+                    <daisy:DaisyLoginButton Brand="VK" />
+                    <daisy:DaisyLoginButton Brand="WeChat" />
+                    <daisy:DaisyLoginButton Brand="MetaMask" />
+                </daisy:WrapPanel>
+
+                <TextBlock Text="Standalone Icon Labels (DaisyIconText)" FontWeight="SemiBold" Opacity="0.8"
+                           Margin="0,24,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="DaisyIconText works outside buttons too - for stats, labels, or inline indicators."
+                           Opacity="0.5" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="24">
+                    <!-- Like count label -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconHeart}"
+                                             Variant="Error" />
+                        <TextBlock Text="1,234" VerticalAlignment="Center"
+                                   daisy:FlowerySizeManager.ResponsiveFont="Secondary"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    </StackPanel>
+                    <!-- Comment count label -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconComment}"
+                                             Variant="Info" />
+                        <TextBlock Text="56" VerticalAlignment="Center"
+                                   daisy:FlowerySizeManager.ResponsiveFont="Secondary"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    </StackPanel>
+                    <!-- Share count label -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconShare}"
+                                             Variant="Accent" />
+                        <TextBlock Text="89" VerticalAlignment="Center"
+                                   daisy:FlowerySizeManager.ResponsiveFont="Secondary"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    </StackPanel>
+                    <!-- Bookmark label -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconBookmark}"
+                                             Variant="Warning" />
+                        <TextBlock Text="Saved" VerticalAlignment="Center"
+                                   daisy:FlowerySizeManager.ResponsiveFont="Secondary"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock Text="With combined icon + text in a single control:"
+                           Opacity="0.5" FontSize="11" Margin="0,8,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <daisy:DaisyIconText IconSymbol="Home" Text="Home" Variant="Primary" />
+                    <daisy:DaisyIconText IconSymbol="Setting" Text="Settings" Variant="Default" />
+                    <daisy:DaisyIconText IconSymbol="Account" Text="Profile" Variant="Accent" />
+                    <daisy:DaisyIconText IconData="{StaticResource DaisyIconStar}" Text="Favorites" Variant="Warning" />
+                </StackPanel>
+
+                <TextBlock Text="📚 All Available Symbols (A-Z)" FontWeight="SemiBold" Opacity="0.8"
+                           Margin="0,24,0,0"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Complete list of all Symbol icons with cross-platform path data support."
+                           Opacity="0.5" FontSize="11"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <!-- All symbols in a wrapping layout -->
+                <daisy:WrapPanel Orientation="Horizontal" Spacing="4"
+                                       Margin="0,8,0,0" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                    <daisy:DaisyButton IconSymbol="Accept" Content="Accept" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Account" Content="Account" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Add" Content="Add" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="AlignCenter" Content="AlignCenter" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="AlignLeft" Content="AlignLeft" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="AlignRight" Content="AlignRight" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Attach" Content="Attach" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Audio" Content="Audio" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Back" Content="Back" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Bold" Content="Bold" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Calendar" Content="Calendar" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Camera" Content="Camera" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Cancel" Content="Cancel" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Clear" Content="Clear" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Clock" Content="Clock" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Copy" Content="Copy" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Cut" Content="Cut" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Delete" Content="Delete" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Document" Content="Document" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Download" Content="Download" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Edit" Content="Edit" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Emoji" Content="Emoji" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Favorite" Content="Favorite" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Filter" Content="Filter" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Find" Content="Find" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Flag" Content="Flag" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Folder" Content="Folder" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Font" Content="Font" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Forward" Content="Forward" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Help" Content="Help" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Home" Content="Home" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Important" Content="Important" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Italic" Content="Italic" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Link" Content="Link" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="List" Content="List" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Mail" Content="Mail" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Message" Content="Message" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="More" Content="More" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Mute" Content="Mute" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Next" Content="Next" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="OpenWith" Content="OpenWith" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Paste" Content="Paste" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Pause" Content="Pause" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="People" Content="People" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Phone" Content="Phone" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Pin" Content="Pin" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Play" Content="Play" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Previous" Content="Previous" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Print" Content="Print" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Redo" Content="Redo" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Refresh" Content="Refresh" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Save" Content="Save" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Setting" Content="Setting" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Share" Content="Share" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Sort" Content="Sort" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Stop" Content="Stop" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Sync" Content="Sync" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Tag" Content="Tag" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Target" Content="Target" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Underline" Content="Underline" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Undo" Content="Undo" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Up" Content="Up" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Upload" Content="Upload" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Video" Content="Video" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Volume" Content="Volume" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="World" Content="World" Size="Small" Variant="Ghost" MinWidth="100" />
+                    <daisy:DaisyButton IconSymbol="Zoom" Content="Zoom" Size="Small" Variant="Ghost" MinWidth="100" />
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Button Group -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="button-group" Title="Button Group" />
+                <TextBlock
+                    Text="Segmented group container for joined buttons."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal" Spacing="24">
+                    <!-- Column 1: Text buttons -->
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Basic" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectedIndex="0" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton Content="Left" />
+                                <daisy:DaisyButton Content="Middle" />
+                                <daisy:DaisyButton Content="Right" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+
+                        <TextBlock Text="Vertical" FontWeight="SemiBold" Opacity="0.8" Margin="0,6,0,0"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectedIndex="1" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Vertical">
+                                <daisy:DaisyButton Content="Top" />
+                                <daisy:DaisyButton Content="Middle" />
+                                <daisy:DaisyButton Content="Bottom" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+                    </StackPanel>
+
+                    <!-- Column 2: Icon buttons -->
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="With Icons" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectedIndex="0" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton IconSymbol="AlignLeft" ToolTipService.ToolTip="Align Left" />
+                                <daisy:DaisyButton IconSymbol="AlignCenter" ToolTipService.ToolTip="Align Center" />
+                                <daisy:DaisyButton IconSymbol="AlignRight" ToolTipService.ToolTip="Align Right" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+
+                        <TextBlock Text="Actions" FontWeight="SemiBold" Opacity="0.8" Margin="0,6,0,0"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectedIndex="0" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton IconSymbol="Cut" ToolTipService.ToolTip="Cut" />
+                                <daisy:DaisyButton IconSymbol="Copy" ToolTipService.ToolTip="Copy" />
+                                <daisy:DaisyButton IconSymbol="Paste" ToolTipService.ToolTip="Paste" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+
+                        <TextBlock Text="Playback" FontWeight="SemiBold" Opacity="0.8" Margin="0,6,0,0"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectedIndex="1" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton IconSymbol="Previous" ToolTipService.ToolTip="Previous" />
+                                <daisy:DaisyButton IconSymbol="Play" ToolTipService.ToolTip="Play" />
+                                <daisy:DaisyButton IconSymbol="Next" ToolTipService.ToolTip="Next" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+                    </StackPanel>
+
+                    <!-- Column 3: Multi-select formatting -->
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Multi-Select" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Click to toggle multiple selections"
+                                   Opacity="0.5" FontSize="11"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectionMode="Multiple" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton IconSymbol="Bold" ToolTipService.ToolTip="Bold" />
+                                <daisy:DaisyButton IconSymbol="Italic" ToolTipService.ToolTip="Italic" />
+                                <daisy:DaisyButton IconSymbol="Underline" ToolTipService.ToolTip="Underline" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+
+                        <TextBlock Text="With Variant" FontWeight="SemiBold" Opacity="0.8" Margin="0,6,0,0"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyButtonGroup AutoSelect="True" SelectionMode="Multiple" Variant="Primary" NeumorphicEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <daisy:DaisyButton Content="A" ToolTipService.ToolTip="Option A" />
+                                <daisy:DaisyButton Content="B" ToolTipService.ToolTip="Option B" />
+                                <daisy:DaisyButton Content="C" ToolTipService.ToolTip="Option C" />
+                            </StackPanel>
+                        </daisy:DaisyButtonGroup>
+                    </StackPanel>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Figma Comment -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="figma-comment" Title="Figma Comment (Recipe)" />
+                <TextBlock
+                    Text="Interactive comment bubble that expands on click."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <Border Height="170"
+                        Background="{ThemeResource DaisyBase200Brush}"
+                        CornerRadius="12"
+                        Padding="12">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ToggleButton x:Name="CommentToggle"
+                                      Style="{StaticResource FigmaCommentToggleStyle}"
+                                      Checked="CommentToggle_Checked"
+                                      Unchecked="CommentToggle_Unchecked">
+                            <Border x:Name="CommentBubbleBorder"
+                                    Background="{ThemeResource DaisyBase100Brush}"
+                                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                                    BorderThickness="1"
+                                    CornerRadius="16"
+                                    Padding="8"
+                                    Width="68">
+                                <Grid x:Name="CommentContentGrid" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <daisy:DaisyAvatar x:Name="CommentAvatar"
+                                                       Size="Small"
+                                                       IsPlaceholder="True"
+                                                       Initials="FK"
+                                                       HasRing="True"
+                                                       RingColor="Primary"
+                                                       daisy:FlowerySizeManager.IgnoreGlobalSize="True" />
+
+                                    <StackPanel x:Name="CommentDetailsPanel"
+                                                Grid.Column="1"
+                                                Spacing="4"
+                                                Visibility="Collapsed"
+                                                Width="220">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock x:Name="CommentAuthorText" Text="Freddy Krueger" FontWeight="SemiBold"
+                                                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            <TextBlock x:Name="CommentTimeText" Text="Just now" Opacity="0.6"
+                                                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                        </StackPanel>
+                                        <TextBlock x:Name="CommentBodyText" Text="What happens if someone on Elm Street has nightmares?"
+                                                   TextWrapping="Wrap"
+                                                   Opacity="0.8"
+                                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </ToggleButton>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Copy Button -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="copybutton" Title="Copy Button" />
+                <TextBlock
+                    Text="Copies text to clipboard and briefly shows a success state."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <daisy:DaisyCopyButton CopyText="Hello from Flowery.Uno" MinWidth="84" />
+                    <daisy:DaisyCopyButton Variant="Primary"
+                                           Content="Copy invite"
+                                           CopyText="https://example.com/invite/abc"
+                                           SuccessContent="Copied!"
+                                           MinWidth="120" />
+                    <daisy:DaisyCopyButton Variant="Ghost"
+                                           x:Name="CopyButtonIconOnly"
+                                           Shape="Square"
+                                           Size="Small"
+                                           CopyText="icon-only" />
+                </StackPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Dropdown -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="dropdown" Title="Dropdown" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <StackPanel Spacing="6" Width="220">
+                        <TextBlock Text="Select" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisySelect PlaceholderText="Choose...">
+                            <x:String>Action 1</x:String>
+                            <x:String>Action 2</x:String>
+                            <x:String>Action 3</x:String>
+                        </daisy:DaisySelect>
+                    </StackPanel>
+                    <StackPanel Spacing="6" Width="220">
+                        <TextBlock Text="Theme Dropdown" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyThemeDropdown />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Dropdown Menu -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="dropdownmenu" Title="Dropdown Menu" />
+                <TextBlock
+                    Text="Menu-style dropdown for actions (select → handle → reset)."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <StackPanel Spacing="8" Width="260">
+                    <daisy:DaisyDropdown x:Name="MenuDropdown"
+                                         PlaceholderText="Pick action"
+                                         ItemsSource="{x:Bind DropdownMenuItems}"
+                                         CloseOnSelection="True"
+                                         SelectedItemChanged="MenuDropdown_SelectedItemChanged" />
+                    <TextBlock x:Name="DropdownMenuResultText"
+                               Text="(no action selected yet)"
+                               Opacity="0.7"
+                               TextWrapping="Wrap"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- FAB -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="fab" Title="FAB / Speed Dial" />
+                <TextBlock
+                    Text="Floating action button that expands a set of action items."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal" Spacing="16">
+                    <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="8" Padding="10" Width="110" Height="240">
+                        <Grid>
+                            <TextBlock Text="Vertical" Opacity="0.6"
+                                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyFab TriggerContent="+" TriggerVariant="Primary" Size="Medium">
+                                <StackPanel>
+                                    <daisy:DaisyButton Shape="Circle" Content="A" Click="FabItem_Click" Tag="Vertical A" />
+                                    <daisy:DaisyButton Shape="Circle" Content="B" Click="FabItem_Click" Tag="Vertical B" />
+                                    <daisy:DaisyButton Shape="Circle" Content="C" Click="FabItem_Click" Tag="Vertical C" />
+                                </StackPanel>
+                            </daisy:DaisyFab>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="8" Padding="10" Width="240" Height="110">
+                        <Grid>
+                            <TextBlock Text="Horizontal" Opacity="0.6"
+                                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyFab Layout="Horizontal" TriggerContent="+" TriggerVariant="Accent" Size="Medium"
+                                HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                <StackPanel>
+                                    <daisy:DaisyButton Shape="Circle" Content="1" Click="FabItem_Click" Tag="Horizontal 1" />
+                                    <daisy:DaisyButton Shape="Circle" Content="2" Click="FabItem_Click" Tag="Horizontal 2" />
+                                    <daisy:DaisyButton Shape="Circle" Content="3" Click="FabItem_Click" Tag="Horizontal 3" />
+                                </StackPanel>
+                            </daisy:DaisyFab>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="8" Padding="10" Width="110" Height="240">
+                        <Grid>
+                            <TextBlock Text="Icons" Opacity="0.6"
+                                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyFab TriggerVariant="Secondary" Size="Medium"
+                                TriggerIconData="M13,0L6,14H11V24L18,10H13V0Z"
+                                TriggerIconSize="16">
+                                <StackPanel>
+                                    <daisy:DaisyButton Shape="Circle" Click="FabItem_Click" Tag="Home"
+                                        IconData="M3 9.5l9-7 9 7V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" />
+                                    <daisy:DaisyButton Shape="Circle" Click="FabItem_Click" Tag="Settings"
+                                        IconData="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm7.4-3.5a7.6 7.6 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7.5 7.5 0 0 0-1.7-1l-.4-2.6H9.2l-.4 2.6a7.5 7.5 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.6 7.6 0 0 0-.1 1 7.6 7.6 0 0 0 .1 1l-2 1.5 2 3.5 2.4-1a7.5 7.5 0 0 0 1.7 1l.4 2.6h4.6l.4-2.6a7.5 7.5 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5c.1-.3.1-.7.1-1z" />
+                                </StackPanel>
+                            </daisy:DaisyFab>
+                        </Grid>
+                    </Border>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Popover -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="popover" Title="Popover" />
+                <StackPanel Spacing="10" Width="320">
+                    <TextBlock Text="Rich Popover" FontWeight="SemiBold" Opacity="0.8"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    <daisy:DaisyPopover Placement="Bottom" VerticalOffset="8">
+                        <daisy:DaisyPopover.TriggerContent>
+                            <daisy:DaisyButton Content="Open Popover" Variant="Primary" />
+                        </daisy:DaisyPopover.TriggerContent>
+                        <daisy:DaisyPopover.PopoverContent>
+                            <StackPanel Spacing="8" Width="260">
+                                <TextBlock Text="Video Tutorial" FontWeight="SemiBold"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <TextBlock Text="A popover can host any content, including action buttons."
+                                           Opacity="0.8"
+                                           TextWrapping="Wrap"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <daisy:DaisyButton Content="Play" Size="Small" Variant="Secondary" />
+                                    <daisy:DaisyButton Content="Copy link" Size="Small" Variant="Ghost" />
+                                </StackPanel>
+                            </StackPanel>
+                        </daisy:DaisyPopover.PopoverContent>
+                    </daisy:DaisyPopover>
+                </StackPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Modal -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="modal" Title="Modal" />
+                <daisy:DaisyButton Content="Open Modal" Variant="Primary" Click="OpenModalBtn_Click" />
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Modal Radii -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="modal-radii" Title="Modal Corner Radii" />
+
+                <TextBlock
+                    Text="Open the shared demo modal with different corner radii."
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:DaisyButton Content="Default Corners" Variant="Primary" Click="OpenDefaultModal_Click" />
+                    <daisy:DaisyButton Content="Pill Top" Variant="Primary" Click="OpenPillTopModal_Click" />
+                    <daisy:DaisyButton Content="Sharp Corners" Variant="Primary" Click="OpenSharpModal_Click" />
+                </StackPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Swap -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="swap" Title="Swap" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Text swap" Opacity="0.7"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisySwap>
+                            <daisy:DaisySwap.OffContent>
+                                <TextBlock Text="OFF"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </daisy:DaisySwap.OffContent>
+                            <daisy:DaisySwap.OnContent>
+                                <TextBlock Text="ON"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </daisy:DaisySwap.OnContent>
+                        </daisy:DaisySwap>
+                    </StackPanel>
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Rotate effect" Opacity="0.7"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisySwap TransitionEffect="Rotate">
+                            <daisy:DaisySwap.OffContent>
+                                <daisy:DaisyIconText IconSize="22"
+                                                     Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                                     IconData="M12 2a1 1 0 0 1 1 1v1.06a7 7 0 0 1 3.02 1.25l.75-.75a1 1 0 1 1 1.41 1.41l-.75.75A7 7 0 0 1 19.94 11H21a1 1 0 1 1 0 2h-1.06a7 7 0 0 1-1.25 3.02l.75.75a1 1 0 1 1-1.41 1.41l-.75-.75A7 7 0 0 1 13 19.94V21a1 1 0 1 1-2 0v-1.06a7 7 0 0 1-3.02-1.25l-.75.75a1 1 0 1 1-1.41-1.41l.75-.75A7 7 0 0 1 4.06 13H3a1 1 0 1 1 0-2h1.06a7 7 0 0 1 1.25-3.02l-.75-.75a1 1 0 1 1 1.41-1.41l.75.75A7 7 0 0 1 11 4.06V3a1 1 0 0 1 1-1Zm0 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+                            </daisy:DaisySwap.OffContent>
+                            <daisy:DaisySwap.OnContent>
+                                <daisy:DaisyIconText IconSize="22"
+                                                     Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                                     IconData="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Z" />
+                            </daisy:DaisySwap.OnContent>
+                        </daisy:DaisySwap>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

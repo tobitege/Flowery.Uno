@@ -1,0 +1,265 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.DividerExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,0,24,32">
+            <StackPanel Spacing="24">
+                <StackPanel local:SectionProps.Id="divider" Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+                        <TextBlock Text="Divider Styles" FontWeight="SemiBold" FontSize="16" Opacity="0.9"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Modern divider variants with unique visual effects"
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <!-- Solid (Default) -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Solid (Default)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Solid" Color="Primary" />
+                        </StackPanel>
+
+                        <!-- Inset (3D Embossed) -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Inset (3D Embossed)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Inset" />
+                        </StackPanel>
+
+                        <!-- Gradient (Center Fade) -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Gradient (Center Fade)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Gradient" Color="Primary" />
+                        </StackPanel>
+
+                        <!-- Double Lines -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Double Lines" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Double" Color="Secondary" />
+                        </StackPanel>
+
+                        <!-- Tapered -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Tapered (Thick Center)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Tapered" Color="Primary" Thickness="1.5" />
+                        </StackPanel>
+
+                        <!-- Dashed -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Dashed" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Dashed" Color="Info" />
+                        </StackPanel>
+
+                        <!-- Dotted -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Dotted" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Dotted" Color="Success" />
+                        </StackPanel>
+
+                        <!-- Wave -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Wave (Curved)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Wave" Color="Warning" Height="24" />
+                        </StackPanel>
+
+                        <!-- Glow -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Glow (Neon Effect)" Opacity="0.6" FontSize="11" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <daisy:DaisyDivider DividerStyle="Glow" Color="Error" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Ornament Styles -->
+                    <StackPanel Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+                        <TextBlock Text="Ornament Dividers" FontWeight="SemiBold" FontSize="16" Opacity="0.9"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Decorative center shapes for elegant separators"
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <daisy:DaisyDivider DividerStyle="Ornament" Ornament="Diamond" Color="Primary" />
+                        <daisy:DaisyDivider DividerStyle="Ornament" Ornament="Circle" Color="Secondary" />
+                        <daisy:DaisyDivider DividerStyle="Ornament" Ornament="Star" Color="Accent" />
+                        <daisy:DaisyDivider DividerStyle="Ornament" Ornament="Square" Color="Secondary" />
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Gradient Styles with Colors -->
+                    <StackPanel Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+                        <TextBlock Text="Gradient with Colors" FontWeight="SemiBold" FontSize="16" Opacity="0.9"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Fading effect with different theme colors"
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Primary" />
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Secondary" />
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Accent" />
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Success" />
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Warning" />
+                        <daisy:DaisyDivider DividerStyle="Gradient" Color="Error" />
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Glow Effects -->
+                    <StackPanel Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+                        <TextBlock Text="Glow Effects" FontWeight="SemiBold" FontSize="16" Opacity="0.9"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Neon-style glowing dividers"
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <daisy:DaisyDivider DividerStyle="Glow" Color="Primary" />
+                        <daisy:DaisyDivider DividerStyle="Glow" Color="Accent" />
+                        <daisy:DaisyDivider DividerStyle="Glow" Color="Error" />
+                        <daisy:DaisyDivider DividerStyle="Glow" Color="Success" />
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Horizontal Dividers (Default) -->
+                    <StackPanel Spacing="16" MaxWidth="600" HorizontalAlignment="Left">
+                        <TextBlock Text="Horizontal Dividers" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <TextBlock Text="Default (Horizontal=False). Separates content vertically (top/bottom)."
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <daisy:DaisyDivider />
+
+                        <TextBlock Text="With text content" Opacity="0.7" FontSize="12" Margin="0,8,0,0" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyDivider DividerText="OR" />
+
+                        <TextBlock Text="With colors" Opacity="0.7" FontSize="12" Margin="0,8,0,0" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyDivider Color="Primary" DividerText="Primary" />
+                        <daisy:DaisyDivider Color="Secondary" DividerText="Secondary" />
+                        <daisy:DaisyDivider Color="Accent" DividerText="Accent" />
+                        <daisy:DaisyDivider Color="Success" DividerText="Success" />
+                        <daisy:DaisyDivider Color="Warning" DividerText="Warning" />
+                        <daisy:DaisyDivider Color="Error" DividerText="Error" />
+
+                        <TextBlock Text="With placement" Opacity="0.7" FontSize="12" Margin="0,8,0,0" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyDivider Placement="Start" DividerText="Start" />
+                        <daisy:DaisyDivider Placement="End" DividerText="End" />
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Vertical Dividers -->
+                    <StackPanel Spacing="16" HorizontalAlignment="Left" MaxWidth="600">
+                        <TextBlock Text="Vertical Dividers" FontWeight="SemiBold" Opacity="0.8"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <TextBlock Text="Set Horizontal=&quot;True&quot;. Separates content horizontally (left/right). Requires a container with explicit height or constraints."
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" TextWrapping="Wrap" />
+
+                        <!-- Vertical Styles Showcase -->
+                        <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="16" Padding="24" Height="180">
+                            <Grid ColumnDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*">
+                                <TextBlock Grid.Column="0" Text="Solid" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="10" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Column="1" Horizontal="True" DividerStyle="Solid" Color="Primary"
+                                                    TextBackground="{ThemeResource DaisyBase200Brush}" />
+
+                                <TextBlock Grid.Column="2" Text="Inset" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="10" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Column="3" Horizontal="True" DividerStyle="Inset"
+                                                    TextBackground="{ThemeResource DaisyBase200Brush}" />
+
+                                <TextBlock Grid.Column="4" Text="Double" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="10" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Column="5" Horizontal="True" DividerStyle="Double" Color="Secondary"
+                                                    TextBackground="{ThemeResource DaisyBase200Brush}" />
+
+                                <TextBlock Grid.Column="6" Text="Dashed" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="10" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Column="7" Horizontal="True" DividerStyle="Dashed" Color="Accent"
+                                                    TextBackground="{ThemeResource DaisyBase200Brush}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Example Login Container -->
+                        <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="16" Padding="24" Height="220" Width="480">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="8">
+                                    <TextBlock Text="Login" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                    <daisy:DaisyInput PlaceholderText="Username" />
+                                    <daisy:DaisyInput PlaceholderText="Password" />
+                                    <daisy:DaisyButton Content="Log In" Variant="Primary" Margin="0,4,0,0" />
+                                </StackPanel>
+
+                                <daisy:DaisyDivider Grid.Column="1" Horizontal="True" DividerText="OR" DividerStyle="Glow" Color="Primary" Margin="4,0"
+                                                    TextBackground="{ThemeResource DaisyBase200Brush}" />
+
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="8">
+                                    <daisy:DaisyLoginButton Brand="Google" LoginText="Sign up with Google" />
+                                    <daisy:DaisyLoginButton Brand="Apple" LoginText="Sign up with Apple" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <daisy:DaisyDivider />
+
+                    <!-- Styles Comparison Grid -->
+                    <StackPanel Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+                        <TextBlock Text="All Styles Comparison" FontWeight="SemiBold" FontSize="16" Opacity="0.9"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock Text="Side-by-side comparison of all divider styles"
+                                   Opacity="0.7" FontSize="12" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                        <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="16">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="100,*">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Solid" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="0" Grid.Column="1" DividerStyle="Solid" Color="Primary" Margin="8,4" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Inset" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="1" Grid.Column="1" DividerStyle="Inset" Margin="8,4" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Gradient" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="2" Grid.Column="1" DividerStyle="Gradient" Color="Secondary" Margin="8,4" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Double" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="3" Grid.Column="1" DividerStyle="Double" Color="Accent" Margin="8,4" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Tapered" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="4" Grid.Column="1" DividerStyle="Tapered" Color="Primary" Thickness="1.5" Margin="8,4" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Dashed" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="5" Grid.Column="1" DividerStyle="Dashed" Color="Success" Margin="8,4" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Dotted" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="6" Grid.Column="1" DividerStyle="Dotted" Color="Warning" Margin="8,4" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Wave" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="7" Grid.Column="1" DividerStyle="Wave" Color="Error" Height="20" Margin="8,4" />
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Glow" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="8" Grid.Column="1" DividerStyle="Glow" Color="Primary" Margin="8,4" />
+
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Ornament" FontSize="11" VerticalAlignment="Center" Opacity="0.7"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                <daisy:DaisyDivider Grid.Row="9" Grid.Column="1" DividerStyle="Ornament" Ornament="Diamond" Color="Secondary" Margin="8,4" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

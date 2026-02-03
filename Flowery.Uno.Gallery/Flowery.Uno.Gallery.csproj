@@ -1,0 +1,145 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0-android;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+    <UnoVersion>6.4.229</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-browserwasm'))">
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <BuildInParallel>false</BuildInParallel>
+
+    <!-- Enable globalization for multi-language support using browser's Intl APIs -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <HybridGlobalization>true</HybridGlobalization>
+
+    <!-- WASM hosting configuration -->
+    <RunCommand>dotnet</RunCommand>
+    <RunArguments>run --no-build --project="$(MSBuildProjectFullPath)"</RunArguments>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <ApplicationTitle>Flowery.Uno Gallery</ApplicationTitle>
+    <ApplicationId>com.companyname.flowery.uno.gallery</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
+
+    <AndroidManifest>Platforms\Android\AndroidManifest.xml</AndroidManifest>
+
+    <!-- HotDesign pulls AI/XamlGeneration assets that reference Graphics2DSK; disable for Android -->
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
+    <!-- MCP client pulls SkiaSharp.Views.Windows; disable for Android -->
+    <UnoDisableMCPSupport>true</UnoDisableMCPSupport>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <OutputType>WinExe</OutputType>
+    <ApplicationTitle>Flowery.Uno Gallery</ApplicationTitle>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- Deploy Windows App SDK with the app (no separate runtime install needed) -->
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+
+    <!-- Required for WindowsAppSDKSelfContained -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platform>x64</Platform>
+    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+
+    <!-- Suppress PRI257: set default language to en-US so it doesn't complain about missing "en" -->
+    <DefaultLanguage>en-US</DefaultLanguage>
+
+    <!-- Suppress PRI263 from MSTest adapter resources (harmless, no neutral resource for test framework satellite DLLs) -->
+    <NoWarn>$(NoWarn);PRI263</NoWarn>
+  </PropertyGroup>
+
+  <!-- <PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' Or '$(BuildingInsideVisualStudio)' == 'true'">
+    <TargetFramework>net9.0-windows10.0.19041</TargetFramework>
+    <TargetFrameworks>net9.0-windows10.0.19041</TargetFrameworks>
+  </PropertyGroup> -->
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'desktop'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Integrations.Uno\Flowery.Integrations.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Gallery.Core\Flowery.Uno.Gallery.Core.csproj" />
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Kanban\Flowery.Uno.Kanban.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="Uno.WinUI.DevServer" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Uno.Toolkit.Skia.WinUI" />
+
+    <ProjectReference Include="..\Flowery.Uno.Win2D\Flowery.Uno.Win2D.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.RuntimeTests\Flowery.Uno.RuntimeTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'desktop'">
+    <PackageReference Include="Uno.Toolkit.Skia.WinUI" />
+    <ProjectReference Include="..\Flowery.Uno.RuntimeTests\Flowery.Uno.RuntimeTests.csproj" />
+  </ItemGroup>
+
+  <!-- <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidResource Include="Platforms\Android\Resources\**\*" />
+  </ItemGroup> -->
+
+  <ItemGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-browserwasm'))">
+    <Content Include="Platforms\WebAssembly\manifest.webmanifest" Link="manifest.webmanifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Platforms\WebAssembly\WasmScripts\AppManifest.js" Link="WasmScripts\AppManifest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UnoIcon Include="..\Flowery.Uno.Gallery.Core\Assets\app_icon.svg" ForegroundBrush="#FFFFFF" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-browserwasm'))">
+    <UnoSplashScreen Include="..\Flowery.Uno.Gallery.Core\Assets\splash_screen.svg" />
+  </ItemGroup>
+
+  <!-- Import shared Gallery assets for Skia heads (Browser, Desktop, Android) -->
+  <Import Project="..\Flowery.Uno.GalleryAssets.props" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'" />
+
+  <!-- Windows (WinUI) needs Content items with different packaging behavior -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <Content Include="..\Flowery.Uno.Gallery.Core\Assets\**\*">
+      <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>Assets\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="ForceCopyWindowsAssets"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'"
+          AfterTargets="Build">
+    <ItemGroup>
+      <_ForcedWindowsAssets Include="..\Flowery.Uno.Gallery.Core\Assets\**\*" />
+    </ItemGroup>
+    <Message Importance="High" Text="Force copying assets to: $(TargetDir)Assets\" />
+    <Copy SourceFiles="@(_ForcedWindowsAssets)"
+          DestinationFiles="@(_ForcedWindowsAssets->'$(TargetDir)Assets\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Import pattern assets for fast PNG-based pattern loading -->
+  <Import Project="..\Flowery.Uno.PatternAssets.props" />
+
+</Project>

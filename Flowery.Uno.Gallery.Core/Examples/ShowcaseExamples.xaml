@@ -1,0 +1,218 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.ShowcaseExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples"
+    xmlns:utu="using:Uno.Toolkit.UI">
+
+    <local:ScrollableExamplePage.Resources>
+        <Style TargetType="local:DaisyButtonTechDemo" BasedOn="{StaticResource DaisyButtonStyle}" />
+        <Color x:Key="ShowcaseNeumorphicLightShadowColor">#FFFFFFFF</Color>
+        <Color x:Key="ShowcaseNeumorphicDarkShadowColor">#FF0D2750</Color>
+        <SolidColorBrush x:Key="ShowcaseButtonForegroundBrush" Color="#FFFFFFFF" />
+        <utu:ShadowCollection x:Key="ShowcaseRaisedShadows">
+            <utu:Shadow OffsetX="-8" OffsetY="-8" BlurRadius="16"
+                        Color="{StaticResource ShowcaseNeumorphicLightShadowColor}" />
+            <utu:Shadow OffsetX="8" OffsetY="8" BlurRadius="16"
+                        Color="{StaticResource ShowcaseNeumorphicDarkShadowColor}" />
+        </utu:ShadowCollection>
+    </local:ScrollableExamplePage.Resources>
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="16" Margin="24,0,24,32">
+            <TextBlock Text="Neumorphic Raised Tech Lab"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <TextBlock Text="Doc-compliant neumorphism first, then raw shadow tech demos for comparison."
+                       Opacity="0.7"
+                       TextWrapping="Wrap"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+            <TextBlock Text="DaisyButton tech demos"
+                       Opacity="0.7"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="16">
+                <local:DaisyButtonTechDemo Content="E"
+                                           MinWidth="50"
+                                           Margin="10"
+                                           CornerRadius="10"
+                                           TechMode="SetElevation"
+                                           Style="{StaticResource DaisyButtonStyle}" />
+
+                <local:DaisyButtonTechDemo Content="F"
+                                           MinWidth="50"
+                                           Margin="10"
+                                           CornerRadius="10"
+                                           TechMode="DropShadow"
+                                           Style="{StaticResource DaisyButtonStyle}" />
+
+                <local:DaisyButtonTechDemo Content="G"
+                                           MinWidth="50"
+                                           Margin="10"
+                                           CornerRadius="10"
+                                           TechMode="ThemeShadow"
+                                           Style="{StaticResource DaisyButtonStyle}" />
+            </daisy:WrapPanel>
+            <StackPanel Spacing="6">
+                <TextBlock Text="Platform expectations"
+                           Opacity="0.7"
+                           FontWeight="SemiBold"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="WASM/Browser: E/F/G -> SetElevation(6) on ButtonBorder"
+                           Opacity="0.6"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Windows: E -> SetElevation(6), F -> DropShadow, G -> ThemeShadow + Receiver"
+                           Opacity="0.6"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Desktop/Skia: E/F/G -> SetElevation(6) on ButtonBorder"
+                           Opacity="0.6"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="Android: E/F/G -> SetElevation(6) on ButtonBorder"
+                           Opacity="0.6"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            </StackPanel>
+
+            <TextBlock Text="Doc-compliant (DaisyNeumorphicHelper)"
+                       Opacity="0.7"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="16">
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Helper (Global)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <utu:ShadowContainer Shadows="{StaticResource ShowcaseRaisedShadows}"
+                                             Background="{ThemeResource DaisyBase200Brush}">
+                            <Border CornerRadius="10" Padding="12,8" Background="{ThemeResource DaisyBase200Brush}">
+                                <TextBlock Text="A"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                            </Border>
+                        </utu:ShadowContainer>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Helper (Forced Raised)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <utu:ShadowContainer Shadows="{StaticResource ShowcaseRaisedShadows}"
+                                             Background="{ThemeResource DaisyBase200Brush}">
+                            <Border CornerRadius="10" Padding="12,8" Background="{ThemeResource DaisyBase200Brush}">
+                                <TextBlock Text="B"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                            </Border>
+                        </utu:ShadowContainer>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Helper (Raised)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <Grid x:Name="DropShadowHost">
+                            <utu:ShadowContainer Shadows="{StaticResource ShowcaseRaisedShadows}"
+                                                 Background="{ThemeResource DaisyBase200Brush}">
+                                <Border CornerRadius="10" Padding="12,8" Background="{ThemeResource DaisyBase200Brush}">
+                                    <TextBlock Text="C"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                                </Border>
+                            </utu:ShadowContainer>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Helper (Raised)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <Grid x:Name="ThemeShadowHost">
+                            <utu:ShadowContainer Shadows="{StaticResource ShowcaseRaisedShadows}"
+                                                 Background="{ThemeResource DaisyBase200Brush}">
+                                <Border CornerRadius="10" Padding="12,8" Background="{ThemeResource DaisyBase200Brush}">
+                                    <TextBlock Text="D"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                                </Border>
+                            </utu:ShadowContainer>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </daisy:WrapPanel>
+
+            <TextBlock Text="Raw shadow tech demos (not doc-compliant)"
+                       Opacity="0.7"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="16">
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Skia Single (SetElevation)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <Border x:Name="RawElevationTarget"
+                                MinWidth="140"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                Background="{ThemeResource DaisyBase200Brush}">
+                            <TextBlock Text="S"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Skia Dual (ShadowContainer)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <utu:ShadowContainer Shadows="{StaticResource ShowcaseRaisedShadows}"
+                                             Background="{ThemeResource DaisyBase200Brush}"
+                                             CornerRadius="10"
+                                             MinWidth="140"
+                                             Padding="12,8">
+                            <TextBlock Text="D"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                        </utu:ShadowContainer>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="12" Padding="12" Width="220">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Windows DropShadow (SpriteVisual)" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <Grid x:Name="RawDropShadowHost">
+                            <Canvas x:Name="RawDropShadowLayer" IsHitTestVisible="False" />
+                            <Border x:Name="RawDropShadowTarget"
+                                    MinWidth="140"
+                                    CornerRadius="10"
+                                    Padding="12,8"
+                                    Background="{ThemeResource DaisyBase200Brush}">
+                                <TextBlock Text="W"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource ShowcaseButtonForegroundBrush}" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </daisy:WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

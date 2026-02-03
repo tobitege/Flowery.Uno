@@ -1,0 +1,351 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Flowery.Controls"
+    xmlns:utu="using:Uno.Toolkit.UI">
+
+    <!-- ===================== DaisyCard ===================== -->
+    <Style TargetType="controls:DaisyCard">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="BodyPadding" Value="32" />
+        <Setter Property="BodyFontSize" Value="14" />
+        <Setter Property="TitleFontSize" Value="20" />
+        <Setter Property="IconSize" Value="56" />
+        <Setter Property="IconBackground" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="IconBorderBrush" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="controls:DaisyNeumorphic.Offset" Value="6" />
+        <Setter Property="controls:DaisyNeumorphic.BlurRadius" Value="12" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="IsGlass" Value="False" />
+        <Setter Property="GlassBlur" Value="40" />
+        <Setter Property="GlassOpacity" Value="0.3" />
+        <Setter Property="GlassTint" Value="White" />
+        <Setter Property="GlassTintOpacity" Value="0.5" />
+        <Setter Property="GlassBorderOpacity" Value="0.2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyCard">
+                    <!-- Note: Glass mode and Styles are handled via code-behind -->
+                    <Grid x:Name="PART_Root">
+                        <!-- 3D Shadow lift for Beveled style -->
+                        <Border x:Name="PART_BeveledShadow"
+                                Background="Black"
+                                Opacity="0.15"
+                                Margin="2,2,-2,-2"
+                                CornerRadius="4"
+                                Visibility="Collapsed" />
+
+                        <!-- Blurred backdrop image for Skia blur modes (behind solid background) -->
+                        <Image x:Name="PART_BlurredBackdrop"
+                               Stretch="Fill"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               Visibility="Collapsed" />
+
+                        <Border x:Name="PART_SolidBackground"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
+                                <!-- High-fidelity 3D effect layers (controlled via code-behind) -->
+                                <Border x:Name="PART_InnerHighlight" CornerRadius="{TemplateBinding CornerRadius}" Visibility="Collapsed" IsHitTestVisible="False" />
+                                <Border x:Name="PART_InnerShadow" CornerRadius="{TemplateBinding CornerRadius}" Visibility="Collapsed" IsHitTestVisible="False" />
+
+                                    <!-- Pattern Layer (behind content, fills full area) -->
+                                    <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+
+                                    <Border x:Name="PART_BuiltInLayout"
+                                            Padding="{TemplateBinding BodyPadding}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                        <StackPanel Orientation="Vertical" Spacing="12">
+                                            <StackPanel x:Name="PART_CardHeader"
+                                                        Orientation="Horizontal"
+                                                        Spacing="12"
+                                                        Visibility="{Binding HasCardHeader, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Border x:Name="PART_IconContainer"
+                                                        Width="{TemplateBinding IconSize}"
+                                                        Height="{TemplateBinding IconSize}"
+                                                        CornerRadius="999"
+                                                        Background="{TemplateBinding IconBackground}"
+                                                        BorderBrush="{TemplateBinding IconBorderBrush}"
+                                                        BorderThickness="1"
+                                                        Visibility="{Binding HasCardIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                    <Image Source="{TemplateBinding IconImageSource}"
+                                                           Stretch="Uniform"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                                                </Border>
+                                                <TextBlock x:Name="PART_CardTitle"
+                                                           Text="{TemplateBinding Title}"
+                                                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                           TextWrapping="Wrap"
+                                                           Visibility="{Binding HasCardTitle, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </StackPanel>
+
+                                            <Border x:Name="PART_CardDivider"
+                                                    Height="1"
+                                                    Background="{ThemeResource DaisyBase300Brush}"
+                                                    Visibility="{Binding HasCardDescription, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                            <TextBlock x:Name="PART_CardDescription"
+                                                       Text="{TemplateBinding Description}"
+                                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                                       TextWrapping="Wrap"
+                                                       Visibility="{Binding HasCardDescription, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                            <ContentPresenter x:Name="PART_SolidContent"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Visibility="{Binding HasCardContent, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        </StackPanel>
+                                    </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Ornament Layer (on top of everything) -->
+                        <Canvas x:Name="PART_OrnamentLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyPatternedCard (extends DaisyCard with pattern/ornament) ===================== -->
+    <Style TargetType="controls:DaisyPatternedCard">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="BodyPadding" Value="32" />
+        <Setter Property="BodyFontSize" Value="14" />
+        <Setter Property="TitleFontSize" Value="20" />
+        <Setter Property="IconSize" Value="56" />
+        <Setter Property="IconBackground" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="IconBorderBrush" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="controls:DaisyNeumorphic.Offset" Value="6" />
+        <Setter Property="controls:DaisyNeumorphic.BlurRadius" Value="12" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="IsGlass" Value="False" />
+        <Setter Property="GlassBlur" Value="40" />
+        <Setter Property="GlassOpacity" Value="0.3" />
+        <Setter Property="GlassTint" Value="White" />
+        <Setter Property="GlassTintOpacity" Value="0.5" />
+        <Setter Property="GlassBorderOpacity" Value="0.2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyPatternedCard">
+                    <Grid x:Name="PART_Root">
+                        <Border x:Name="PART_BeveledShadow"
+                                Background="Black"
+                                Opacity="0.15"
+                                Margin="2,2,-2,-2"
+                                CornerRadius="4"
+                                Visibility="Collapsed" />
+
+                        <Border x:Name="PART_SolidBackground"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
+                                <!-- High-fidelity 3D effect layers (controlled via code-behind) -->
+                                <Border x:Name="PART_InnerHighlight" CornerRadius="{TemplateBinding CornerRadius}" Visibility="Collapsed" IsHitTestVisible="False" />
+                                <Border x:Name="PART_InnerShadow" CornerRadius="{TemplateBinding CornerRadius}" Visibility="Collapsed" IsHitTestVisible="False" />
+
+                                <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+
+                                <Border x:Name="PART_BuiltInLayout"
+                                        Padding="{TemplateBinding BodyPadding}"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    <StackPanel Orientation="Vertical" Spacing="12">
+                                        <StackPanel x:Name="PART_CardHeader"
+                                                    Orientation="Horizontal"
+                                                    Spacing="12"
+                                                    Visibility="{Binding HasCardHeader, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Border x:Name="PART_IconContainer"
+                                                    Width="{TemplateBinding IconSize}"
+                                                    Height="{TemplateBinding IconSize}"
+                                                    CornerRadius="999"
+                                                    Background="{TemplateBinding IconBackground}"
+                                                    BorderBrush="{TemplateBinding IconBorderBrush}"
+                                                    BorderThickness="1"
+                                                    Visibility="{Binding HasCardIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                                <Image Source="{TemplateBinding IconImageSource}"
+                                                       Stretch="Uniform"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                            </Border>
+                                            <TextBlock x:Name="PART_CardTitle"
+                                                       Text="{TemplateBinding Title}"
+                                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       TextWrapping="Wrap"
+                                                       Visibility="{Binding HasCardTitle, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        </StackPanel>
+
+                                        <Border x:Name="PART_CardDivider"
+                                                Height="1"
+                                                Background="{ThemeResource DaisyBase300Brush}"
+                                                Visibility="{Binding HasCardDescription, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                        <TextBlock x:Name="PART_CardDescription"
+                                                   Text="{TemplateBinding Description}"
+                                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Visibility="{Binding HasCardDescription, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                        <ContentPresenter x:Name="PART_SolidContent"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Visibility="{Binding HasCardContent, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Canvas x:Name="PART_OrnamentLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyAccordion (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyAccordion">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyAccordionItem (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyAccordionItem">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ===================== DaisyHero (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyHero">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="300" />
+    </Style>
+
+    <!-- ===================== DaisyMockup (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyMockup">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyChatBubble (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyChatBubble">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyDrawer (extends SplitView) ===================== -->
+    <Style TargetType="controls:DaisyDrawer" BasedOn="{StaticResource DefaultSplitViewStyle}">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ===================== DaisyExpandableCard ===================== -->
+    <!-- Has its own template with PART_*ExpandedWrapper for expand animation -->
+    <Style TargetType="controls:DaisyExpandableCard">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="BodyPadding" Value="32" />
+        <Setter Property="BodyFontSize" Value="14" />
+        <Setter Property="TitleFontSize" Value="20" />
+        <Setter Property="Margin" Value="0,12,0,12" />
+        <Setter Property="controls:DaisyNeumorphic.Offset" Value="6" />
+        <Setter Property="controls:DaisyNeumorphic.BlurRadius" Value="12" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="IsGlass" Value="False" />
+        <Setter Property="GlassBlur" Value="40" />
+        <Setter Property="GlassOpacity" Value="0.3" />
+        <Setter Property="GlassTint" Value="White" />
+        <Setter Property="GlassTintOpacity" Value="0.5" />
+        <Setter Property="GlassBorderOpacity" Value="0.2" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="MinWidth" Value="150" />
+        <Setter Property="MinHeight" Value="225" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyExpandableCard">
+                    <!-- Note: Glass mode and Styles are handled via code-behind -->
+                    <Grid x:Name="PART_Root">
+                        <!-- 3D Shadow lift for Beveled style -->
+                        <Border x:Name="PART_BeveledShadow"
+                                Background="Black"
+                                Opacity="0.15"
+                                Margin="2,2,-2,-2"
+                                CornerRadius="4"
+                                Visibility="Collapsed" />
+
+                        <Border x:Name="PART_SolidBackground"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
+                                <!-- Layer for patterns (behind everything, fills the card) -->
+                                <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+
+                                <Grid Margin="{TemplateBinding BodyPadding}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ContentPresenter x:Name="PART_SolidContent"
+                                                      Grid.Column="0"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                                    <!-- Expanded Content Wrapper -->
+                                    <Border x:Name="PART_SolidExpandedWrapper"
+                                            Grid.Column="1"
+                                            Width="0"
+                                            Opacity="0">
+                                        <ContentPresenter x:Name="PART_SolidExpandedContent"
+                                                          Content="{TemplateBinding ExpandedContent}" />
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Ornament Layer (on top of everything) -->
+                        <Canvas x:Name="PART_OrnamentLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyGlass (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyGlass">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Flowery.Uno.sln",
+    "projects": [
+      "Flowery.Uno\\Flowery.Uno.csproj",
+      "Flowery.Uno.UnitTests\\Flowery.Uno.UnitTests.csproj"
+    ]
+  }
+}

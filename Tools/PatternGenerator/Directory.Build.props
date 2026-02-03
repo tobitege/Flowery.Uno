@@ -1,0 +1,12 @@
+<Project>
+  <!-- Override parent solution settings for this standalone tool -->
+  <PropertyGroup>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+  
+  <!-- Exclude the solution-level GlobalUsings.cs -->
+  <ItemGroup>
+    <Compile Remove="$(SolutionDir)**\GlobalUsings.cs" />
+    <Compile Remove="..\..\GlobalUsings.cs" />
+  </ItemGroup>
+</Project>

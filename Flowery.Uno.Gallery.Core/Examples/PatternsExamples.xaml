@@ -1,0 +1,125 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.PatternsExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,0,24,32">
+
+            <!-- Background Patterns -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-patterns" Title="Background Patterns" />
+                <TextBlock Text="Optimized geometric patterns for visual depth without distraction."
+                           Opacity="0.7" TextWrapping="Wrap" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="16">
+
+                    <daisy:DaisyPatternedCard x:Name="Card1" Pattern="CarbonFiber" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Carbon Fiber" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card1}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card2" Pattern="Dots" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Subtle Dots" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card2}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card3" Pattern="Grid" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Blueprint Grid" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card3}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card4" Pattern="Stripes" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Dynamic Stripes" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card4}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card5" Pattern="Noise" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Analogue Noise" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card5}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card6" Pattern="Honeycomb" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Industrial Honeycomb" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card6}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card7" Pattern="Circuit" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Technical Circuit" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card7}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card8" Pattern="Twill" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Diagonal Twill" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card8}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card9" Pattern="DiamondPlate" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Diamond Plate" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card9}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card10" Pattern="Mesh" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Metal Mesh" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card10}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card11" Pattern="Perforated" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Perforated Metal" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card11}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card12" Pattern="Bumps" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Raised Bumps" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card12}" />
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="Card13" Pattern="Scales" PatternMode="Tiled"  Width="160" MinHeight="70">
+                        <TextBlock Text="Overlapping Scales" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{Binding Foreground, ElementName=Card13}" />
+                    </daisy:DaisyPatternedCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+            <daisy:DaisyDivider />
+
+            <!-- Decorative Ornaments -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-ornaments" Title="Decorative Ornaments" />
+                <TextBlock Text="Corner decals and markers for adding character to UI sections."
+                           Opacity="0.7" TextWrapping="Wrap" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="16">
+
+                    <daisy:DaisyPatternedCard x:Name="OrnamentCard1" Ornament="Corners"  Width="260" MinHeight="140">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Corner Triangles" FontWeight="Bold" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard1}" />
+                            <TextBlock Text="Accent markers" FontSize="11" Opacity="0.6" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard1}" />
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="OrnamentCard2" Ornament="Brackets"  Width="260" MinHeight="140">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Modern Brackets" FontWeight="Bold" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard2}" />
+                            <TextBlock Text="Technical decals" FontSize="11" Opacity="0.6" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard2}" />
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard x:Name="OrnamentCard3" Ornament="Industrial"  Width="260" MinHeight="140">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Industrial Bolts" FontWeight="Bold" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard3}" />
+                            <TextBlock Text="Hardened tech style" FontSize="11" Opacity="0.6" HorizontalAlignment="Center"
+                                       Foreground="{Binding Foreground, ElementName=OrnamentCard3}" />
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

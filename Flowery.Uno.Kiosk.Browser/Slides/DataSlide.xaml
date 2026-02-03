@@ -1,0 +1,141 @@
+<UserControl
+    x:Class="Flowery.Uno.Kiosk.Browser.Slides.DataSlide"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls">
+
+    <Grid Padding="30,30,30,120">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Summary Metrics (Top Aligned) -->
+        <StackPanel Grid.Column="0" Spacing="16" VerticalAlignment="Top" Margin="0,0,16,0">
+            <daisy:DaisyCard Padding="20">
+                <StackPanel Spacing="16" HorizontalAlignment="Center">
+                    <TextBlock Text="System Health" HorizontalAlignment="Center" FontSize="14" Opacity="0.7" FontWeight="Bold" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    <daisy:DaisyRadialProgress x:Name="HealthProgress" Value="92" Size="Large" Variant="Success" Shimmer="True" />
+                    
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="ACTIVE SESSIONS" HorizontalAlignment="Center" FontSize="11" Opacity="0.5" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <daisy:DaisyNumberFlow x:Name="SessionFlow" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                    </StackPanel>
+                </StackPanel>
+            </daisy:DaisyCard>
+
+            <!-- Stats Row -->
+            <Grid ColumnDefinitions="*,*">
+                <daisy:DaisyStat Title="Global Rank" Value="#12" Description="Top 1%" Margin="0,0,8,0" Size="Medium">
+                    <daisy:DaisyStat.Figure>
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconNavigation}" Size="Medium" Foreground="{ThemeResource DaisySecondaryBrush}" />
+                    </daisy:DaisyStat.Figure>
+                </daisy:DaisyStat>
+                <daisy:DaisyStat Grid.Column="1" Title="Uptime" Value="99.9%" Description="30 days" Size="Medium">
+                    <daisy:DaisyStat.Figure>
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconBolt}" Size="Medium" Foreground="{ThemeResource DaisyWarningBrush}" />
+                    </daisy:DaisyStat.Figure>
+                </daisy:DaisyStat>
+            </Grid>
+        </StackPanel>
+
+        <!-- Right: Resource Details + Live Status (Top Aligned) -->
+        <StackPanel Grid.Column="1" Spacing="16" VerticalAlignment="Top" Margin="16,0,0,0">
+            <daisy:DaisyCard x:Name="ResourceCard" Padding="24">
+                <StackPanel Spacing="18">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <daisy:DaisyIconText IconData="{StaticResource DaisyIconLayout}" Size="Large" Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                        <TextBlock Text="RESOURCE ALLOCATION" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    </StackPanel>
+
+                    <!-- CPU -->
+                    <StackPanel Spacing="6">
+                        <Grid>
+                            <TextBlock Text="CPU USAGE" FontSize="12" FontWeight="SemiBold" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="CpuText" Text="42%" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                        </Grid>
+                        <daisy:DaisyProgress x:Name="CpuProgress" Value="42" Variant="Primary" Height="6" />
+                    </StackPanel>
+
+                    <!-- Memory -->
+                    <StackPanel Spacing="6">
+                        <Grid>
+                            <TextBlock Text="MEMORY (SHARED)" FontSize="12" FontWeight="SemiBold" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="RamText" Text="68%" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{ThemeResource DaisySecondaryBrush}" />
+                        </Grid>
+                        <daisy:DaisyProgress x:Name="RamProgress" Value="68" Variant="Secondary" Height="6" />
+                    </StackPanel>
+
+                    <!-- IO -->
+                    <StackPanel Spacing="6">
+                        <Grid>
+                            <TextBlock Text="IO THROUGHPUT" FontSize="12" FontWeight="SemiBold" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="IoText" Text="15%" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{ThemeResource DaisyInfoBrush}" />
+                        </Grid>
+                        <daisy:DaisyProgress x:Name="IoProgress" Value="15" Variant="Info" Height="6" />
+                    </StackPanel>
+
+                    <!-- Status Badges -->
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <daisy:DaisyBadge Content="NODE ACTIVE" Variant="Success" Size="Small" />
+                        <daisy:DaisyBadge Content="SSL SECURE" Variant="Info" Size="Small" />
+                        <daisy:DaisyBadge Content="API ONLINE" Variant="Secondary" Size="Small" />
+                    </StackPanel>
+                </StackPanel>
+            </daisy:DaisyCard>
+            
+            <!-- Live Status Indicators (moved to right column) -->
+            <daisy:DaisyCard Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Live Status" FontSize="12" FontWeight="Bold" Opacity="0.7" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                    
+                    <!-- Status indicators with visual axis -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- API -->
+                        <StackPanel Grid.Column="0" Spacing="6" HorizontalAlignment="Center">
+                            <daisy:DaisyStatusIndicator Color="Success" Variant="Ping" Size="Small" HorizontalAlignment="Center" />
+                            <TextBlock Text="API" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisySuccessBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Divider 1 -->
+                        <Border Grid.Column="1" Width="1" Height="28" Background="{ThemeResource DaisyBase300Brush}" Opacity="0.4" VerticalAlignment="Center" />
+                        
+                        <!-- DB -->
+                        <StackPanel Grid.Column="2" Spacing="6" HorizontalAlignment="Center">
+                            <daisy:DaisyStatusIndicator Color="Success" Variant="Default" Size="Small" HorizontalAlignment="Center" />
+                            <TextBlock Text="DB" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisySuccessBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Divider 2 -->
+                        <Border Grid.Column="3" Width="1" Height="28" Background="{ThemeResource DaisyBase300Brush}" Opacity="0.4" VerticalAlignment="Center" />
+                        
+                        <!-- Cache -->
+                        <StackPanel Grid.Column="4" Spacing="6" HorizontalAlignment="Center">
+                            <daisy:DaisyStatusIndicator Color="Warning" Variant="Pulse" Size="Small" HorizontalAlignment="Center" />
+                            <TextBlock Text="Cache" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisyWarningBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Divider 3 -->
+                        <Border Grid.Column="5" Width="1" Height="28" Background="{ThemeResource DaisyBase300Brush}" Opacity="0.4" VerticalAlignment="Center" />
+                        
+                        <!-- Network -->
+                        <StackPanel Grid.Column="6" Spacing="6" HorizontalAlignment="Center">
+                            <daisy:DaisyStatusIndicator Variant="WifiSignal" Color="Primary" SignalStrength="3" Size="Small" HorizontalAlignment="Center" />
+                            <TextBlock Text="Network" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </daisy:DaisyCard>
+        </StackPanel>
+    </Grid>
+</UserControl>

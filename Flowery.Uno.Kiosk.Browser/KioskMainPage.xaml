@@ -1,0 +1,35 @@
+<Page
+    x:Class="Flowery.Uno.Kiosk.Browser.KioskMainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:services="using:Flowery.Services"
+    Background="{ThemeResource DaisyBase100Brush}">
+
+    <Grid x:Name="RootContainer">
+        <!-- Background Layer (for global effects) -->
+        <Grid x:Name="BackgroundLayer" />
+
+        <!-- Slides Layer -->
+        <Grid x:Name="SlidesContainer" services:FloweryScaleManager.EnableScaling="True">
+            <!-- We use two borders with content presenters to facilitate transitions -->
+            <Border x:Name="SlideContentA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ContentPresenter x:Name="SlidePresenterA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </Border>
+            <Border x:Name="SlideContentB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ContentPresenter x:Name="SlidePresenterB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </Border>
+        </Grid>
+
+        <!-- Overlay Layer (Text/Keywords) -->
+        <Grid x:Name="OverlayLayer" Margin="40" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <StackPanel Spacing="10">
+                <TextBlock x:Name="SlideTitle" FontSize="{StaticResource KioskSlideTitleFontSize}" FontWeight="Bold" Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                <TextBlock x:Name="KeywordsView" FontSize="{StaticResource KioskSlideKeywordsFontSize}" Foreground="{ThemeResource DaisySecondaryBrush}" Opacity="0.8" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Navigation Status (Progress Bar) -->
+        <daisy:DaisyProgress x:Name="SlideProgress" VerticalAlignment="Top" Height="4" />
+    </Grid>
+</Page>

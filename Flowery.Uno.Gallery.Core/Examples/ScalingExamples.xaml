@@ -1,0 +1,443 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.ScalingExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:services="using:Flowery.Services"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples"
+    x:Name="ScalingExamplesRoot"
+    services:FloweryScaleManager.EnableScaling="{x:Bind IsScalingEnabled, Mode=OneWay}">
+
+    <local:ScrollableExamplePage.Resources>
+        <services:ScaleConverter x:Key="ScaleConverter" />
+    </local:ScrollableExamplePage.Resources>
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,10,24,32">
+
+            <!-- Info Box with Toggle - Excluded from scaling as it's the control panel -->
+            <daisy:DaisyCard Variant="Compact" Padding="16" 
+                             Background="{ThemeResource DaisyBase200Brush}"
+                             BorderBrush="{ThemeResource DaisyInfoBrush}"
+                             BorderThickness="3,0,0,0"
+                             services:FloweryScaleManager.EnableScaling="False">
+                <StackPanel Spacing="12">
+                    <!-- Description text on top -->
+                    <TextBlock Text="This demo shows how Flowery's auto-scaling system adapts UI elements based on window size. Toggle scaling on/off, adjust the max scale, or use the manual zoom slider to see the effect."
+                               TextWrapping="Wrap"
+                               daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                    
+                    <!-- Controls in one horizontal row -->
+                    <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="16" VerticalSpacing="8">
+                        <daisy:DaisyToggle Header="Enable Scaling"
+                                           IsOn="{x:Bind IsScalingEnabled, Mode=TwoWay}"
+                                           Variant="Accent"
+                                           VerticalAlignment="Center" />
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="Max Scale:"
+                                       VerticalAlignment="Center"
+                                       Opacity="0.9"
+                                       daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+                            <daisy:DaisySelect Variant="Ghost"
+                                               Width="100"
+                                               SelectedIndex="{x:Bind MaxScalePresetIndex, Mode=TwoWay}">
+                                <x:String>100%</x:String>
+                                <x:String>125%</x:String>
+                                <x:String>150%</x:String>
+                                <x:String>200%</x:String>
+                                <x:String>300%</x:String>
+                            </daisy:DaisySelect>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <daisy:DaisyToggle Variant="Accent"
+                                               Header="Zoom"
+                                               IsOn="{x:Bind IsManualZoomEnabled, Mode=TwoWay}"
+                                               VerticalAlignment="Center"
+                                               IsEnabled="{x:Bind IsScalingEnabled, Mode=OneWay}" />
+                            <daisy:DaisyRange Variant="Accent"
+                                              Width="120"
+                                              Minimum="50"
+                                              Maximum="{x:Bind ManualZoomMaxPercent, Mode=OneWay}"
+                                              Value="{x:Bind ManualZoomPercent, Mode=TwoWay}"
+                                              StepFrequency="5"
+                                              SmallChange="5"
+                                              LargeChange="25"
+                                              VerticalAlignment="Center"
+                                              IsEnabled="{x:Bind IsManualZoomEnabled, Mode=OneWay}" />
+                            <TextBlock x:Name="ZoomPercentText"
+                                       VerticalAlignment="Center"
+                                       Opacity="0.9"
+                                       daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center"
+                                    Visibility="{x:Bind IsDesktopApp, Mode=OneWay}">
+                            <TextBlock Text="Resolution:"
+                                       VerticalAlignment="Center"
+                                       Opacity="0.9"
+                                       daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+                            <daisy:DaisySelect Variant="Ghost"
+                                               Width="180"
+                                               SelectedIndex="{x:Bind ResolutionPresetIndex, Mode=TwoWay}">
+                                <x:String>Half HD (960×540)</x:String>
+                                <x:String>HD (1280×720)</x:String>
+                                <x:String>Laptop (1366×768)</x:String>
+                                <x:String>HD+ (1600×900)</x:String>
+                                <x:String>Full HD (1920×1080)</x:String>
+                                <x:String>QHD (2560×1440)</x:String>
+                                <x:String>Ultrawide (3440×1440)</x:String>
+                                <x:String>4K (3840×2160)</x:String>
+                            </daisy:DaisySelect>
+                        </StackPanel>
+                    </daisy:WrapPanel>
+                </StackPanel>
+            </daisy:DaisyCard>
+
+            <!-- Customer Details Hero Card - IGNORED from global size for demo purposes -->
+            <StackPanel Spacing="4" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                <local:SectionHeader SectionId="customer-details" Title="Customer Details Form" />
+                <TextBlock x:Name="CustomerSubtitle"
+                           Text="A real-world customer management form demonstrating responsive scaling across all elements."
+                           Opacity="0.7"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <!-- Main Customer Card -->
+                <daisy:DaisyCard x:Name="MainCustomerCard" Margin="0,8,0,0">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <!-- Customer Header -->
+                        <Border Grid.Row="0" x:Name="CustomerHeaderBorder" CornerRadius="8" Margin="0,0,0,16"
+                            Background="{ThemeResource DaisyPrimaryBrush}">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <daisy:DaisyAvatar Grid.Column="0" Size="Medium"
+                                    IsPlaceholder="True" Initials="FK"
+                                    VerticalAlignment="Center" />
+
+                                <!-- Name & Status -->
+                                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Spacing="4">
+                                    <daisy:DaisyIconText x:Name="CompanyNameText"
+                                               Text="Krueger Nightmare Industries"
+                                               FontWeight="Bold" FontSize="18"
+                                               Variant="Primary" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <daisy:DaisyBadge Variant="Error" Content="Dream Specialist" Size="Small" />
+                                        <daisy:DaisyBadge Variant="Warning" Content="Nocturnal" Size="Small" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Customer ID -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                    <daisy:DaisyIconText x:Name="CustomerNumberLabel" Text="Customer #" Opacity="0.7" 
+                                               FontSize="11" Variant="Primary" />
+                                    <daisy:DaisyIconText x:Name="CustomerIdText" Text="FK-1984-NIGHTMARE" FontWeight="SemiBold"
+                                               FontSize="14" Variant="Primary" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Cards Grid -->
+                        <daisy:WrapPanel Grid.Row="2" Orientation="Horizontal">
+
+                            <!-- Address Card -->
+                            <daisy:DaisyCard x:Name="AddressCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="AddressCardContent">
+                                    <daisy:DaisyIconText x:Name="AddressHeader"
+                                        IconData="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                                        Text="Address" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <StackPanel x:Name="AddressFieldsPanel">
+                                        <daisy:DaisyInput Text="1428 Elm Street" IsReadOnly="True" Label="Street" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="Basement, Boiler Room" IsReadOnly="True" Label="Suite" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="Springwood" IsReadOnly="True" Label="City" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="OH 45066" IsReadOnly="True" Label="State/ZIP" LabelPosition="Inset" />
+                                        <StackPanel Spacing="2">
+                                            <TextBlock x:Name="CountryLabel" Text="Country" Opacity="0.7"
+                                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            <daisy:DaisySelect x:Name="CountrySelect" Width="200" Variant="Primary" Size="Small" SelectedIndex="12">
+                                                <x:String>China</x:String>
+                                                <x:String>France</x:String>
+                                                <x:String>Germany</x:String>
+                                                <x:String>Israel</x:String>
+                                                <x:String>Italy</x:String>
+                                                <x:String>Japan</x:String>
+                                                <x:String>Saudi Arabia</x:String>
+                                                <x:String>South Korea</x:String>
+                                                <x:String>Spain</x:String>
+                                                <x:String>Turkey</x:String>
+                                                <x:String>Ukraine</x:String>
+                                                <x:String>United Kingdom</x:String>
+                                                <x:String>United States</x:String>
+                                            </daisy:DaisySelect>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <!-- Contact Card -->
+                            <daisy:DaisyCard x:Name="ContactCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="ContactCardContent">
+                                    <daisy:DaisyIconText x:Name="ContactHeader"
+                                        IconData="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
+                                        Text="Contact" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisyInfoBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <StackPanel x:Name="ContactFieldsPanel">
+                                        <daisy:DaisyInput Text="freddy@sweetdreams.nightmare" IsReadOnly="True" Label="Email" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="1-800-NIGHTMARE" IsReadOnly="True" Label="Phone" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="www.elmstreet.nightmare" IsReadOnly="True" Label="Website" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="1-900-BAD-DREAMS" IsReadOnly="True" Label="Fax" LabelPosition="Inset" />
+                                    </StackPanel>
+
+                                    <!-- Social Links -->
+                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                                        <daisy:DaisyButton Shape="Circle" Variant="Ghost" Size="Small"
+                                            x:Name="SocialButton1"
+                                            IconData="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
+                                        <daisy:DaisyButton Shape="Circle" Variant="Ghost" Size="Small"
+                                            x:Name="SocialButton2"
+                                            IconData="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                                        <daisy:DaisyButton Shape="Circle" Variant="Ghost" Size="Small"
+                                            x:Name="SocialButton3"
+                                            IconData="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <!-- Payment & Billing Card -->
+                            <daisy:DaisyCard x:Name="PaymentCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="PaymentCardContent">
+                                    <daisy:DaisyIconText x:Name="PaymentHeader"
+                                        IconData="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+                                        Text="Payment Terms" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisySuccessBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <StackPanel x:Name="PaymentFieldsPanel">
+                                        <daisy:DaisyInput Text="Pay When Asleep" IsReadOnly="True" Label="Terms" LabelPosition="Inset" Variant="Error" />
+                                        <daisy:DaisyInput Text="∞ Dreams" IsReadOnly="True" Label="Credit Limit" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="Souls" IsReadOnly="True" Label="Currency" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="NIGHTMARE-1984" IsReadOnly="True" Label="Tax ID" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="One, Two, Freddy's Coming For You" IsReadOnly="True" Label="Discount" LabelPosition="Inset" Variant="Error" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <!-- Customer Group Card -->
+                            <daisy:DaisyCard x:Name="GroupCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="GroupCardContent">
+                                    <daisy:DaisyIconText x:Name="GroupHeader"
+                                        IconData="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+                                        Text="Customer Group" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisySecondaryBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <StackPanel x:Name="GroupFieldsPanel">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Grid.Column="0" x:Name="GroupLabelText" Text="Group:" Opacity="0.7"
+                                                VerticalAlignment="Center" Margin="0,0,12,0"
+                                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            <daisy:DaisyBadge Grid.Column="1" Content="Enterprise" Variant="Secondary" Size="Small" HorizontalAlignment="Left" />
+                                        </Grid>
+                                        <daisy:DaisyInput Text="Entertainment / Horror" IsReadOnly="True" Label="Industry" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="Dream World" IsReadOnly="True" Label="Region" LabelPosition="Inset" />
+                                        <daisy:DaisyInput Text="Nancy Thompson" IsReadOnly="True" Label="Account Manager" LabelPosition="Inset" Variant="Primary" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <!-- Recent Activity Card -->
+                            <daisy:DaisyCard x:Name="ActivityCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="ActivityCardContent">
+                                    <daisy:DaisyIconText x:Name="ActivityHeader"
+                                        IconData="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"
+                                        Text="Recent Activity" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisyAccentBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <StackPanel x:Name="ActivityItemsPanel">
+                                        <Border x:Name="ActivityItem1" Background="{ThemeResource DaisyBase200Brush}" CornerRadius="4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <daisy:DaisyStatusIndicator Grid.Column="0" Color="Success" Size="ExtraSmall" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" x:Name="Activity1Text" Text="Nightmare delivery #666 completed"
+                                                    Margin="8,0"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                                <TextBlock Grid.Column="2" x:Name="Activity1Time" Text="2h ago" Opacity="0.6"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            </Grid>
+                                        </Border>
+                                        <Border x:Name="ActivityItem2" Background="{ThemeResource DaisyBase200Brush}" CornerRadius="4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <daisy:DaisyStatusIndicator Grid.Column="0" Color="Warning" Size="ExtraSmall" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" x:Name="Activity2Text" Text="Soul collection #7 pending"
+                                                    Margin="8,0"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                                <TextBlock Grid.Column="2" x:Name="Activity2Time" Text="1d ago" Opacity="0.6"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            </Grid>
+                                        </Border>
+                                        <Border x:Name="ActivityItem3" Background="{ThemeResource DaisyBase200Brush}" CornerRadius="4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <daisy:DaisyStatusIndicator Grid.Column="0" Color="Info" Size="ExtraSmall" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" x:Name="Activity3Text" Text="Dream realm expansion approved"
+                                                    Margin="8,0"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                                <TextBlock Grid.Column="2" x:Name="Activity3Time" Text="3d ago" Opacity="0.6"
+                                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <!-- Notes Card -->
+                            <daisy:DaisyCard x:Name="NotesCard" Width="280" Margin="0,0,16,16">
+                                <StackPanel x:Name="NotesCardContent">
+                                    <daisy:DaisyIconText x:Name="NotesHeader"
+                                        IconData="M19 3H4.99c-1.11 0-1.98.89-1.98 2L3 19c0 1.1.88 2 1.99 2H19c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2zm0 12h-4c0 1.66-1.35 3-3 3s-3-1.34-3-3H4.99V5H19v10z"
+                                        Text="Notes &amp; Comments" IconSize="16" FontWeight="SemiBold"
+                                        Foreground="{ThemeResource DaisyWarningBrush}" />
+                                    <daisy:DaisyDivider />
+                                    <daisy:DaisyTextArea IsReadOnly="True" MinRows="3"
+                                        Text="WARNING: Do not fall asleep during meetings! Client has a history of creative negotiations. Prefers nocturnal communication. Annual fear quota review scheduled for Halloween. Primary contact is via dreams. Interested in expanding nightmare-as-a-service offerings." />
+                                    <daisy:DaisyTextArea PlaceholderText="Add a note..." MinRows="2" />
+                                    <daisy:DaisyButton Content="Save Note" Variant="Primary" Size="Small" HorizontalAlignment="Right" />
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                        </daisy:WrapPanel>
+
+                        <!-- Action Bar -->
+                        <Border Grid.Row="1" x:Name="ActionBar" Margin="0,0,0,16"
+                            Background="{ThemeResource DaisyBase200Brush}" CornerRadius="8">
+                            <StackPanel x:Name="ActionButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <daisy:DaisyButton Content="Edit Customer" Variant="Primary"
+                                    IconSymbol="Edit" />
+                                <daisy:DaisyButton Content="New Order" Variant="Success"
+                                    IconSymbol="Add" />
+                                <daisy:DaisyButton Content="Send Email" Variant="Info"
+                                    IconSymbol="Mail" />
+                                <daisy:DaisyButton Content="Print" ButtonStyle="Outline"
+                                    IconSymbol="Print" />
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </daisy:DaisyCard>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Scale Presets Reference - IGNORED from global size for demo purposes -->
+            <StackPanel Spacing="4" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                <local:SectionHeader SectionId="scale-presets" Title="Available Scale Presets" />
+                <TextBlock x:Name="PresetsSubtitle"
+                           Text="The ScaleExtension provides semantic presets for consistent sizing across your app."
+                           Opacity="0.7"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal">
+                    <!-- Font Presets -->
+                    <daisy:DaisyCard x:Name="FontPresetsCard" Margin="0,0,16,16" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock x:Name="FontPresetsTitleText" Text="Font Presets" FontWeight="SemiBold"
+                                Foreground="{ThemeResource DaisyPrimaryBrush}" />
+                            <daisy:DaisyDivider />
+                            <TextBlock x:Name="FontDisplayDemo" Text="FontDisplay (32→20)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontTitleDemo" Text="FontTitle (28→18)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontHeadingDemo" Text="FontHeading (20→14)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontSubheadingDemo" Text="FontSubheading (16→11)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontBodyDemo" Text="FontBody (14→10)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontCaptionDemo" Text="FontCaption (12→9)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            <TextBlock x:Name="FontSmallDemo" Text="FontSmall (11→8)"
+                                Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        </StackPanel>
+                    </daisy:DaisyCard>
+
+                    <!-- Spacing Presets -->
+                    <daisy:DaisyCard x:Name="SpacingPresetsCard" Margin="0,0,16,16" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock x:Name="SpacingPresetsTitleText" Text="Spacing Presets" FontWeight="SemiBold"
+                                Foreground="{ThemeResource DaisySecondaryBrush}" />
+                            <daisy:DaisyDivider />
+                            <Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="4"
+                                x:Name="SpacingXLDemo" Padding="16,0">
+                                <TextBlock x:Name="SpacingXLText" Text="SpacingXL (40px)" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </Border>
+                            <Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="4"
+                                x:Name="SpacingLargeDemo" Padding="16,0">
+                                <TextBlock x:Name="SpacingLargeText" Text="SpacingLarge (28px)" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </Border>
+                            <Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="4"
+                                x:Name="SpacingMediumDemo" Padding="16,0">
+                                <TextBlock x:Name="SpacingMediumText" Text="SpacingMedium (20px)" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </Border>
+                            <Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="4"
+                                x:Name="SpacingSmallDemo" Padding="16,0">
+                                <TextBlock x:Name="SpacingSmallText" Text="SpacingSmall (12px)" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </Border>
+                            <Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="4"
+                                x:Name="SpacingXSDemo" Padding="16,0">
+                                <TextBlock x:Name="SpacingXSText" Text="SpacingXS (8px)" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                            </Border>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+
+                    <!-- Usage Example -->
+                    <daisy:DaisyCard Width="400" Margin="0,0,16,16" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock x:Name="UsageTitleText" Text="Usage in XAML" FontWeight="SemiBold"
+                                Foreground="{ThemeResource DaisyAccentBrush}" />
+                            <daisy:DaisyDivider />
+                            <daisy:DaisyCard Variant="Compact" Background="{ThemeResource DaisyBase200Brush}">
+                                <TextBlock FontFamily="Consolas" FontSize="11" TextWrapping="Wrap"
+                                    Foreground="{ThemeResource DaisyBaseContentBrush}"><![CDATA[<!-- Add namespace -->
+xmlns:services="using:Flowery.Services"
+
+<!-- Enable scaling on container -->
+<UserControl 
+    services:FloweryScaleManager.EnableScaling="True">
+
+<!-- Use ScaleHelper in code-behind -->
+myTextBlock.FontSize = ScaleHelper.FontTitle(scaleFactor);
+myBorder.Padding = ScaleHelper.GetScaledThickness(
+    FloweryScalePreset.SpacingMedium, scaleFactor);]]></TextBlock>
+                            </daisy:DaisyCard>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- About This Demo - IGNORED from global size for demo purposes -->
+            <StackPanel Spacing="4" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                <local:SectionHeader SectionId="scaling-intro" Title="About This Demo" />
+                <daisy:DaisyCard Padding="16">
+                    <StackPanel Spacing="8">
+                        <TextBlock x:Name="AboutHeadingText" Text="Real-Time Window Scaling" FontWeight="SemiBold"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                        <TextBlock TextWrapping="Wrap"
+                            x:Name="AboutDescriptionText"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}"
+                            Text="This Customer Details form demonstrates Flowery's FloweryScaleManager in action. As you resize the window, all fonts, spacing, padding, and element widths scale proportionally to maintain visual consistency. The demo uses ScaleHelper with presets like FontTitle, SpacingMedium, and CardWidth for semantic, maintainable scaling." />
+                        <TextBlock TextWrapping="Wrap" Opacity="0.7"
+                            x:Name="AboutTipText"
+                            Foreground="{ThemeResource DaisyBaseContentBrush}"
+                            Text="Tip: Try the resolution dropdown to quickly test common screen sizes, or use the manual zoom slider for precise control." />
+                    </StackPanel>
+                </daisy:DaisyCard>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

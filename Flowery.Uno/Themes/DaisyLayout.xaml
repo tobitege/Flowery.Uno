@@ -1,0 +1,69 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Flowery.Controls">
+
+    <!-- ===================== DaisyAvatar (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyAvatar">
+        <Setter Property="Background" Value="{ThemeResource DaisyNeutralBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyNeutralContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyAvatarGroup (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyAvatarGroup">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyDock (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyDock">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+    </Style>
+
+    <!-- ===================== DaisyCarousel (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyCarousel">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ===================== DaisyStack (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyStack">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyMask (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyMask">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyResizableColumnsHost ===================== -->
+    <Style TargetType="controls:DaisyResizableColumnsHost">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyResizableColumnsHost">
+                    <Grid x:Name="PART_DropRoot" Background="{TemplateBinding Background}">
+                        <ItemsPresenter />
+                        <Canvas x:Name="PART_GripCanvas" IsHitTestVisible="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

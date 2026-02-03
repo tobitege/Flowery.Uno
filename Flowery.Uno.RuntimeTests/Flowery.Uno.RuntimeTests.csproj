@@ -1,0 +1,35 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0-desktop;net9.0-windows10.0.19041</TargetFrameworks>
+    <UnoSingleProject>true</UnoSingleProject>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableMSTestRunner>false</EnableMSTestRunner>
+    <TestingPlatformDotNetTestSupport>false</TestingPlatformDotNetTestSupport>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <EnableCoreMrtTooling>false</EnableCoreMrtTooling>
+    <!-- Match Gallery's x64 platform to avoid MSB3270 architecture mismatch -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platform>x64</Platform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="MSTest.Analyzers" />
+    <PackageReference Include="Combinatorial.MSTest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Kanban\Flowery.Uno.Kanban.csproj" />
+  </ItemGroup>
+</Project>

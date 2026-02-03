@@ -1,0 +1,16 @@
+<UserControl
+    x:Class="Flowery.Uno.Gallery.Examples.SectionHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls">
+
+    <StackPanel Spacing="6" Margin="0,18,0,8">
+        <TextBlock
+            x:Name="TitleTextBlock"
+            Text="{x:Bind Title, Mode=OneWay}"
+            FontWeight="SemiBold"
+            Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+        <daisy:DaisyDivider />
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,264 @@
+name: Release
+
+# MANUAL TRIGGER ONLY - Creates a new release with NuGet package and Gallery app
+# Go to Actions → Release → Run workflow → Enter version (e.g., 0.1.0)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0) - without "v" prefix'
+        required: true
+        type: string
+      skip_nuget:
+        description: 'Skip NuGet publish (useful for re-running failed releases)'
+        required: false
+        type: boolean
+        default: false
+      skip_tag:
+        description: 'Skip tag creation (assumes you already pushed the tag manually)'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+      tag: ${{ steps.validate.outputs.tag }}
+    steps:
+      - name: Validate version format
+        id: validate
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format. Use semantic versioning (e.g., 0.1.0)"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Version: $VERSION, Tag: v$VERSION"
+
+  build-library:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Setup Uno Workloads
+        run: dotnet workload install uno-check --skip-manifest-update || true
+
+      - name: Install WebAssembly tools
+        run: dotnet workload install wasm-tools --skip-manifest-update
+
+      - name: Install Android workload
+        run: dotnet workload install android --skip-manifest-update
+
+      - name: Verify version in csproj
+        run: |
+          CSPROJ_VERSION=$(grep -oP '(?<=<Version>)[^<]+' Flowery.Uno/Flowery.Uno.csproj)
+          if [ "$CSPROJ_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
+            echo "::error::Version mismatch! csproj has $CSPROJ_VERSION but you specified ${{ needs.validate.outputs.version }}"
+            echo "::error::Please update Flowery.Uno/Flowery.Uno.csproj first!"
+            exit 1
+          fi
+          echo "✅ Version matches: $CSPROJ_VERSION"
+
+      - name: Build library
+        run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -o ./build-output
+
+      - name: Create NuGet package
+        run: dotnet pack Flowery.Uno/Flowery.Uno.csproj -c Release -o ./artifacts
+
+      - name: Create library zip
+        run: |
+          mkdir -p ./artifacts/lib
+          cp ./build-output/Flowery.Uno.dll ./artifacts/lib/ || true
+          cp ./build-output/Flowery.Uno.pdb ./artifacts/lib/ || true
+          cd ./artifacts/lib
+          zip ../Flowery.Uno-lib.zip * || echo "No library files to zip"
+
+      - name: Upload library artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: library-artifacts
+          path: |
+            ./artifacts/*.nupkg
+            ./artifacts/Flowery.Uno-lib.zip
+          if-no-files-found: ignore
+
+  build-gallery:
+    needs: validate
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Setup Uno Workloads
+        run: dotnet workload install uno-check --skip-manifest-update || true
+
+      - name: Install WebAssembly tools
+        run: dotnet workload install wasm-tools --skip-manifest-update
+
+      - name: Build Gallery App (Windows)
+        run: |
+          dotnet publish Flowery.Uno.Gallery.Windows/Flowery.Uno.Gallery.Windows.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o ./publish
+
+      - name: Zip Windows artifact
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./Flowery.Gallery-Windows-x64.zip
+        shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flowery.Gallery-Windows-x64
+          path: ./Flowery.Gallery-Windows-x64.zip
+
+  publish:
+    needs: [validate, build-library, build-gallery]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./release-artifacts
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p ./final
+          find ./release-artifacts -name "*.nupkg" -exec cp {} ./final/ \; || true
+          find ./release-artifacts -name "*.zip" -exec cp {} ./final/ \;
+          echo "=== Release artifacts ==="
+          ls -la ./final/
+
+      - name: Extract changelog
+        id: changelog
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          # Extract the section for this version from CHANGELOG.md
+          CHANGELOG=$(awk -v ver="$VERSION" '
+            /^## \[/ {
+              if (found) exit
+              if ($0 ~ "\\[" ver "\\]") found=1
+            }
+            found && !/^## \[/ { print }
+          ' CHANGELOG.md)
+
+          if [ -z "$CHANGELOG" ]; then
+            echo "⚠️ No changelog entry found for version $VERSION"
+            CHANGELOG="No changelog entry for this version."
+          fi
+
+          echo "$CHANGELOG" > changelog_section.md
+          echo "✅ Extracted changelog for v$VERSION"
+
+      - name: Publish to NuGet
+        if: ${{ inputs.skip_nuget != true }}
+        run: |
+          dotnet nuget push ./final/*.nupkg \
+            -k ${{ secrets.NUGET_API_KEY }} \
+            -s https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+          echo "✅ Published to NuGet.org"
+
+      - name: Create and push tag
+        if: ${{ inputs.skip_tag != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ needs.validate.outputs.tag }}
+          git push origin ${{ needs.validate.outputs.tag }}
+          echo "✅ Created tag: ${{ needs.validate.outputs.tag }}"
+
+      - name: Skip tag creation
+        if: ${{ inputs.skip_tag == true }}
+        run: echo "⏭️ Skipping tag creation (tag already exists)"
+
+      - name: Build release notes
+        run: |
+          cat > release_notes.md << 'HEADER'
+          ## 📋 What's Changed
+          HEADER
+          cat changelog_section.md >> release_notes.md
+          cat >> release_notes.md << 'FOOTER'
+
+          ---
+
+          ## 📦 Library
+
+          | Asset | Description |
+          |-------|-------------|
+          FOOTER
+
+          echo "| \`Flowery.Uno.${{ needs.validate.outputs.version }}.nupkg\` | NuGet package (also on [nuget.org](https://www.nuget.org/packages/Flowery.Uno)) |" >> release_notes.md
+          echo "| \`Flowery.Uno-lib.zip\` | Compiled DLL and PDB |" >> release_notes.md
+
+          cat >> release_notes.md << 'GALLERY'
+
+          ## 🌸 Gallery Demo App
+
+          Self-contained executable for demoing Flowery.Uno controls (no .NET install required).
+
+          | Platform | Download |
+          |----------|----------|
+          | Windows x64 | `Flowery.Gallery-Windows-x64.zip` |
+          GALLERY
+
+          echo "=== Release Notes ==="
+          cat release_notes.md
+
+      - name: Load custom release notes
+        id: release_body
+        run: |
+          {
+            echo 'body<<EOF'
+            cat release_notes.md
+            echo ''
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.validate.outputs.tag }}
+          name: "v${{ needs.validate.outputs.version }}"
+          files: ./final/*
+          generate_release_notes: true
+          body: ${{ steps.release_body.outputs.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Release Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.validate.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** ${{ needs.validate.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **NuGet:** https://www.nuget.org/packages/Flowery.Uno/${{ needs.validate.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release:** ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ needs.validate.outputs.tag }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,83 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+    ============================================================================
+    Lightweight Styling Resources for Flowery.Uno Controls
+    ============================================================================
+
+    These resources can be overridden by users for lightweight per-control styling.
+    Default values alias to DaisyUI palette brushes via code fallback.
+
+    To customize a control's appearance, define any of these keys in your
+    Application.Resources or in the control's local Resources:
+
+    Example (Application-level):
+        <SolidColorBrush x:Key="DaisyModalBackdropBrush" Color="#C0000000" />
+
+    Example (Control-level, lightweight styling):
+        <controls:DaisyModal>
+            <controls:DaisyModal.Resources>
+                <SolidColorBrush x:Key="DaisyModalBackdropBrush" Color="#80FF0000" />
+            </controls:DaisyModal.Resources>
+        </controls:DaisyModal>
+
+    See llms-static/StylingResources.md for the full resource key reference.
+    ============================================================================
+    -->
+
+    <!--
+    =====================
+    DaisyModal Resources
+    =====================
+    -->
+    <!-- DaisyModalBackdropBrush: Semi-transparent overlay behind the dialog. Default: #A0000000 (62.5% black) -->
+    <SolidColorBrush x:Key="DaisyModalBackdropBrush" Color="#A0000000" />
+
+    <!-- DaisyModalBackground: Dialog panel background. Default: aliases to DaisyBase100Brush in code -->
+    <!-- Not defined here - falls back to DaisyBase100Brush lookup in ApplyTheme -->
+
+    <!-- DaisyModalCornerRadius: Dialog corner radius. Default: 16 -->
+    <CornerRadius x:Key="DaisyModalCornerRadius">16</CornerRadius>
+
+    <!--
+    =====================
+    DaisyAlert Resources
+    =====================
+    -->
+    <!-- Per-variant background, foreground, and icon colors -->
+    <!-- Not defined here - uses default computation from palette brushes with 40% opacity -->
+    <!-- Users can override these to customize alert appearance:
+         DaisyAlertInfoBackground, DaisyAlertInfoForeground, DaisyAlertInfoIconBrush
+         DaisyAlertSuccessBackground, DaisyAlertSuccessForeground, DaisyAlertSuccessIconBrush
+         DaisyAlertWarningBackground, DaisyAlertWarningForeground, DaisyAlertWarningIconBrush
+         DaisyAlertErrorBackground, DaisyAlertErrorForeground, DaisyAlertErrorIconBrush
+    -->
+
+    <!--
+    =====================
+    DaisyButton Resources
+    =====================
+    -->
+    <!-- Per-variant and per-state background, foreground, and border colors -->
+    <!-- Not defined here - uses palette-based computation in ComputeThemeBrushes -->
+    <!-- Users can override these to customize button appearance:
+         DaisyButtonBackground, DaisyButtonForeground, DaisyButtonBorderBrush
+         DaisyButtonBackgroundPointerOver, DaisyButtonBackgroundPressed, etc.
+         DaisyButtonPrimaryBackground, DaisyButtonPrimaryForeground, etc.
+    -->
+
+    <!--
+    =====================
+    DaisyInput Resources
+    =====================
+    -->
+    <!-- Per-variant background, border, and foreground colors -->
+    <!-- Not defined here - uses palette-based computation in ApplyTheme -->
+    <!-- Users can override these to customize input appearance:
+         DaisyInputBackground, DaisyInputBorderBrush, DaisyInputForeground
+         DaisyInputBorderBrushFocused, DaisyInputPlaceholderForeground
+         DaisyInputPrimaryBorderBrush, DaisyInputErrorBorderBrush, etc.
+    -->
+
+</ResourceDictionary>

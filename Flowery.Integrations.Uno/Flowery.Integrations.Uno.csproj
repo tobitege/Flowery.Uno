@@ -1,0 +1,54 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net9.0-android;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+    <UnoVersion>6.4.229</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+
+    <!-- NuGet Package Properties -->
+    <PackageId>Flowery.Integrations.Uno</PackageId>
+    <Authors>tobitege</Authors>
+    <Description>External user management integrations for FlowKanban (Teams, Slack, GitHub, OAuth)</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/tobitege/Flowery.Uno</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tobitege/Flowery.Uno</RepositoryUrl>
+    <PackageTags>uno;winui;theme;ui;xaml;kanban;integrations</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <OutputType>Library</OutputType>
+
+    <IsWindowsTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))</IsWindowsTarget>
+    <IsDesktopTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-desktop'))</IsDesktopTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindowsTarget)' == 'True'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platform>x64</Platform>
+    <UnoDisableValidateWinAppSDK3548>true</UnoDisableValidateWinAppSDK3548>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Kanban\Flowery.Uno.Kanban.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Octokit" />
+    <PackageReference Include="IdentityModel.OidcClient" />
+    <!--
+    <PackageReference Include="Microsoft.Graph" Version="5.*" />
+    -->
+  </ItemGroup>
+
+</Project>

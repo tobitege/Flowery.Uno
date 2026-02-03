@@ -1,0 +1,65 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net9.0-android;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+    <UnoVersion>6.4.229</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <OutputType>Library</OutputType>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-browserwasm'))">
+    <FloweryEnableGlTransitions Condition="'$(FloweryEnableGlTransitions)' == ''">true</FloweryEnableGlTransitions>
+    <DefineConstants Condition="'$(FloweryEnableGlTransitions)' == 'true'">$(DefineConstants);FLOWERY_GL_TRANSITIONS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platform>x64</Platform>
+
+    <UnoDisableValidateWinAppSDK3548>true</UnoDisableValidateWinAppSDK3548>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Integrations.Uno\Flowery.Integrations.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Kanban\Flowery.Uno.Kanban.csproj" />
+  </ItemGroup>
+
+  <!-- Exclude icon/splash from Resizetizer auto-discovery in this library;
+       they're processed by the Gallery app project instead -->
+  <ItemGroup>
+    <UnoIcon Remove="Assets\app_icon.svg" />
+    <UnoSplashScreen Remove="Assets\splash_screen.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\*.json" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-browserwasm')) and '$(FloweryEnableGlTransitions)' == 'true'">
+    <EmbeddedResource Include="WasmScripts\flowery-carousel-gl-transitions.js" />
+    <Content Include="WasmScripts\gl-transitions\**\*.glsl">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WasmScripts\gl-transitions\SimpleZoomOut">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="GalleryResources.xaml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

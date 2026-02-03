@@ -1,0 +1,60 @@
+---
+alwaysApply: true
+---
+
+# Must Read
+
+## ⛔ 3-Iteration Rule (No Silent Scope/Approach Changes)
+
+**During multi-tool execution**: If an approach isn't working after 3 attempts, **ASK** before trying something different. Do NOT:
+
+- Silently decide "this is too complex, let me rewrite/simplify it"
+- Expand scope from a targeted fix to a multi-hundred-line refactor
+- Switch fundamental approaches mid-execution without user awareness
+
+The rule prevents the AI from *unilaterally* changing direction. Interactive discussion with the user is always fine.
+
+**"Fix Root Cause" vs "Minimal Change"** — These are NOT contradictory:
+
+- ✅ Fix root causes across multiple files if needed — just mention what you're doing
+- ❌ Don't refactor unrelated code "while you're there"
+- ⚠️ Pause and ask only for *significant* scope changes (10-line fix → 200-line rewrite, architecture changes)
+
+## ⚠️ Git Bash CRLF Rule
+
+When using `sed`, `cat`, `head`, `tail` on Windows files, **ALWAYS** pipe through `| tr -d '\r'`:
+
+```bash
+sed -n '100,110p' file.cs | tr -d '\r'
+```
+
+Otherwise output will be garbled due to CRLF line endings.
+
+## "No Change" Is Valid
+
+When investigating issues without a specified fix, ASK before coding. Don't go on a "coding spree" - the behavior may be intentional.
+
+## Search Tool Quirks
+
+Some agents' search tools fail silently on single-file paths. If search returns 0 results unexpectedly:
+
+- Try searching a **directory** instead, with a filter for the specific file
+- Fall back to terminal `rg` if the native tool misbehaves
+
+## Terminal Search
+
+When native search tools fail or for complex regex searches, use terminal `rg` (ripgrep):
+
+```bash
+clear && rg "pattern" path/to/search
+```
+
+## Code Generation
+
+- **No Trailing Whitespace**: Never generate lines with trailing spaces or tabs
+
+## Refactoring Standards
+
+- **Property/Field Sync**: When renaming/deleting, search file-wide for ALL references
+- **Verify Infrastructure**: Check constructors/fields exist before using them
+- **Constructor Fallback**: Use property initializers `{ Prop = value }` if no matching constructor

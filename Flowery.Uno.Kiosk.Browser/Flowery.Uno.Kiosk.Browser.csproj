@@ -1,0 +1,52 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-browserwasm</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <UnoVersion>6.4.229</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+    <AssemblyName>Flowery.Uno.Kiosk.Browser</AssemblyName>
+    <IsWindowsTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))</IsWindowsTarget>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Enable globalization for multi-language support -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <HybridGlobalization>true</HybridGlobalization>
+
+    <!-- WASM hosting configuration -->
+    <RunCommand>dotnet</RunCommand>
+    <RunArguments>run --no-build --project="$(MSBuildProjectFullPath)"</RunArguments>
+
+    <!-- Workaround for Uno 6.4 AI Generation runtime exception -->
+    <UnoXamlOptimize>false</UnoXamlOptimize>
+    <UnoDisableAI>true</UnoDisableAI>
+  </PropertyGroup>
+
+  <!-- <PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' Or '$(BuildingInsideVisualStudio)' == 'true'">
+    <TargetFramework>net9.0-windows10.0.19041</TargetFramework>
+    <TargetFrameworks>net9.0-windows10.0.19041</TargetFrameworks>
+  </PropertyGroup> -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Gallery.Core\Flowery.Uno.Gallery.Core.csproj" />
+    <ProjectReference Include="..\Flowery.Uno.Win2D\Flowery.Uno.Win2D.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UnoIcon Include="Assets\app_icon.svg" ForegroundBrush="#FFFFFF" />
+    <Content Include="Assets\**\*">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Import pattern assets for fast PNG-based pattern loading -->
+  <Import Project="..\Flowery.Uno.PatternAssets.props" />
+
+</Project>

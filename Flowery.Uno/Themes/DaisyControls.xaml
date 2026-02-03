@@ -1,0 +1,21 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+    Daisy-styled templates for Flowery.Uno controls.
+    -->
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyIcons.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyShared.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyThemeControls.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyInputs.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyButtons.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyLists.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisySurfaces.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyLayout.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyFeedback.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyWeather.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

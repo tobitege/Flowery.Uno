@@ -1,0 +1,613 @@
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.CardsExamples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,0,24,32">
+
+            <!-- Card -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card" Title="Card" />
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="40" VerticalSpacing="20">
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Basic Card" FontWeight="SemiBold" FontSize="14" Opacity="0.8"/>
+                        <daisy:DaisyCard BorderBrush="{ThemeResource DaisyPrimaryBrush}"
+                                         BorderThickness="2"
+                                         Title="Card Title"
+                                         Description="This is a simple card component."
+                                         IconImageSource="{x:Bind local:GalleryAssetHelper.WallpaperYellow}">
+                            <daisy:DaisyButton Content="Action" Variant="Primary" HorizontalAlignment="Right"/>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Card with Image" FontWeight="SemiBold" FontSize="14" Opacity="0.8"/>
+                        <daisy:DaisyCard BorderBrush="{ThemeResource DaisyPrimaryBrush}" BorderThickness="2">
+                            <StackPanel Spacing="10">
+                                <Border Height="120" CornerRadius="8">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{x:Bind local:GalleryAssetHelper.TileBlue}"
+                                                    Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                                <TextBlock Text="Featured Card" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock Text="A card with a header and an image." TextWrapping="Wrap"/>
+                                <daisy:DaisyButton Content="Learn More" Variant="Secondary" HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Custom Body Padding/Font" FontWeight="SemiBold" FontSize="14" Opacity="0.8"/>
+                        <daisy:DaisyCard BodyPadding="16" BodyFontSize="12" TitleFontSize="16" BorderBrush="{ThemeResource DaisyPrimaryBrush}" BorderThickness="2">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Compact Card" FontWeight="Bold"/>
+                                <TextBlock Text="This card uses smaller padding and font sizes via BodyPadding, BodyFontSize properties." TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Card Styles -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-styles" Title="Card Styles" />
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="40" VerticalSpacing="20">
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Beveled (3D Raised)" FontWeight="SemiBold" FontSize="14"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                        <daisy:DaisyCard CardStyle="Beveled" BorderThickness="1">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Beveled Card" FontWeight="Bold" FontSize="18"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                <TextBlock Text="Classic 3D raised effect using inset shadows." TextWrapping="Wrap"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                            </StackPanel>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Inset (3D Sunken)" FontWeight="SemiBold" FontSize="14"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                        <daisy:DaisyCard CardStyle="Inset">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Inset Card" FontWeight="Bold" FontSize="18"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                <TextBlock Text="3D sunken panel effect with inner shadow." TextWrapping="Wrap"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                            </StackPanel>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10" Width="300">
+                        <TextBlock Text="Panel (Industrial)" FontWeight="SemiBold" FontSize="14"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                        <daisy:DaisyCard CardStyle="Panel">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Panel Style" FontWeight="Bold" FontSize="18"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                <TextBlock Text="Sharp edges and subtle borders for business UI." TextWrapping="Wrap"
+                                           Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                            </StackPanel>
+                        </daisy:DaisyCard>
+                    </StackPanel>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Color Variants -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-colors" Title="Color Variants" />
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="12" VerticalSpacing="12">
+                    <daisy:DaisyCard ColorVariant="Primary" Width="180">
+                        <TextBlock Text="Primary" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Secondary" Width="180">
+                        <TextBlock Text="Secondary" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Accent" Width="180">
+                        <TextBlock Text="Accent" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Neutral" Width="180">
+                        <TextBlock Text="Neutral" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Info" Width="180">
+                        <TextBlock Text="Info" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Success" Width="180">
+                        <TextBlock Text="Success" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Warning" Width="180">
+                        <TextBlock Text="Warning" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard ColorVariant="Error" Width="180">
+                        <TextBlock Text="Error" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    </daisy:DaisyCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Sizes -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-sizes" Title="Sizes" />
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="12" VerticalSpacing="12">
+                    <daisy:DaisyCard Size="ExtraSmall" CardStyle="Beveled" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                        <StackPanel MaxWidth="120">
+                            <TextBlock Text="Extra Small" FontWeight="Bold"/>
+                            <TextBlock Text="Compact padding for dense layouts." TextWrapping="Wrap" FontSize="10"/>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard Size="Small" CardStyle="Beveled" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                        <StackPanel MaxWidth="140">
+                            <TextBlock Text="Small" FontWeight="Bold"/>
+                            <TextBlock Text="More breathing room than extra small." TextWrapping="Wrap" FontSize="11"/>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard Size="Medium" CardStyle="Beveled" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                        <StackPanel MaxWidth="160">
+                            <TextBlock Text="Medium" FontWeight="Bold"/>
+                            <TextBlock Text="Default balanced sizing for general use." TextWrapping="Wrap" FontSize="12"/>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard Size="Large" CardStyle="Beveled" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                        <StackPanel MaxWidth="200">
+                            <TextBlock Text="Large" FontWeight="Bold"/>
+                            <TextBlock Text="Generous padding and larger fonts." TextWrapping="Wrap" FontSize="14"/>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                    <daisy:DaisyCard Size="ExtraLarge" CardStyle="Beveled" daisy:FlowerySizeManager.IgnoreGlobalSize="True">
+                        <StackPanel MaxWidth="240">
+                            <TextBlock Text="Extra Large" FontWeight="Bold"/>
+                            <TextBlock Text="Maximum visual impact with spacious layout." TextWrapping="Wrap" FontSize="16"/>
+                        </StackPanel>
+                    </daisy:DaisyCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Card Stack -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="card-stack" Title="Card Stack" />
+                <TextBlock Text="Stacked cards with navigation, showing depth effect."
+                    Opacity="0.7"
+                    FontSize="12"
+                    TextWrapping="Wrap"
+                    Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <Border Height="450" Background="{ThemeResource DaisyBase200Brush}"
+                    CornerRadius="16">
+                    <Grid>
+                        <Grid x:Name="CardStackContainer"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Width="300"
+                              Height="400" />
+
+                        <Grid ColumnDefinitions="*,*"
+                            ColumnSpacing="8"
+                            Width="120"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Margin="0,0,0,16">
+                            <daisy:DaisyButton x:Name="PrevCardBtn"
+                                Grid.Column="0"
+                                HorizontalAlignment="Right"
+                                IconData="{StaticResource DaisyIconChevronLeft}"
+                                Size="Small"
+                                Click="PrevCard_Click" />
+                            <daisy:DaisyButton x:Name="NextCardBtn"
+                                Grid.Column="1"
+                                HorizontalAlignment="Left"
+                                IconData="{StaticResource DaisyIconChevronRight}"
+                                Size="Small"
+                                Click="NextCard_Click" />
+                        </Grid>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Expandable Cards -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="expandable-cards" Title="Expandable Cards" />
+                <TextBlock Text="Tap the button to reveal a secondary panel. Uses convenience properties (Title, Gradient, Icon) for automatic UI generation."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="0,8,0,10">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <daisy:DaisyExpandableCard
+                            UseBatteriesIncludedMode="True"
+                            Padding="0"
+                            Title="Summer"
+                            Subtitle="Opening"
+                            GradientStart="#0f172a"
+                            GradientEnd="#334155"
+                            ExpandedText="Join us for the Summer Opening event featuring live music and networking."
+                            ExpandedSubtitle="Freddy K. - CEO"
+                            IconData="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zM1 11h3v2H1v-2zm10-10h2v3h-2V1zm8.07 3.22l1.79-1.8-1.41-1.41-1.8 1.79 1.42 1.42zM17 11h3v2h-3v-2zM4.93 19.78l1.8-1.79-1.42-1.42-1.79 1.8 1.41 1.41zM11 20h2v3h-2v-3zm6.66-2.64l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8zM12 6a6 6 0 100 12 6 6 0 000-12z" />
+
+                        <daisy:DaisyExpandableCard
+                            UseBatteriesIncludedMode="True"
+                            Padding="0"
+                            Title="Fashion"
+                            Subtitle="Week 2026"
+                            GradientStart="#7c3aed"
+                            GradientEnd="#c026d3"
+                            ExpandedText="The most awaited fashion event of the year. Experience the latest trends."
+                            ExpandedSubtitle="Runway A - 10:00 PM"
+                            ActionButtonText="View"
+                            IconData="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+
+                        <daisy:DaisyExpandableCard
+                            UseBatteriesIncludedMode="True"
+                            Padding="0"
+                            Title="Travel"
+                            Subtitle="Adventure"
+                            GradientStart="#10b981"
+                            GradientEnd="#059669"
+                            ExpandedText="Explore new horizons. Special discounts for early birds."
+                            ExpandedSubtitle="Destination: Alps"
+                            ActionButtonText="Book"
+                            IconData="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" />
+
+                        <daisy:DaisyExpandableCard
+                            UseBatteriesIncludedMode="True"
+                            Padding="0"
+                            Title="Dreams"
+                            GradientStart="#db2777"
+                            GradientEnd="#be185d"
+                            ExpandedText="Explore the surreal landscapes of our dreams."
+                            ActionButtonText="Start"
+                            IconData="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Patterned Cards -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="patterned-card" Title="Patterned Card" />
+                <TextBlock Text="DaisyPatternedCard adds decorative background patterns and ornaments."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="20" VerticalSpacing="20">
+                    <daisy:DaisyPatternedCard Pattern="CarbonFiber" ColorVariant="Neutral" Width="280" Height="180" Ornament="Industrial">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="CARBON FIBER" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Industrial Tech" Opacity="0.8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard Pattern="Honeycomb" Background="#000000" Foreground="#FFD700" Width="280" Height="180" Ornament="Corners">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="HONEYCOMB" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Science &amp; Tech" Opacity="0.8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard Pattern="Circuit" ColorVariant="Secondary" Width="280" Height="180" Ornament="Brackets">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="CIRCUIT" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Cyberpunk Style" Opacity="0.8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard Pattern="Stripes" ColorVariant="Accent" Width="280" Height="180">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="STRIPES" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Modern Dynamic" Opacity="0.8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard Pattern="Dots" Width="280" Height="180">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="DOTS" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Subtle Minimalist" Opacity="0.6" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+
+                    <daisy:DaisyPatternedCard Pattern="DiamondPlate" ColorVariant="Info" Width="280" Height="180" Ornament="Industrial">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="DIAMOND PLATE" FontWeight="ExtraBold" FontSize="20" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Heavy Duty" Opacity="0.8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </daisy:DaisyPatternedCard>
+                </daisy:WrapPanel>
+
+                <TextBlock Text="Additional Patterns" FontWeight="SemiBold" Margin="0,16,0,8" Opacity="0.8"/>
+                <daisy:WrapPanel Orientation="Horizontal" HorizontalSpacing="10" VerticalSpacing="10">
+                    <daisy:DaisyPatternedCard Pattern="Grid" Width="130" Height="80" Padding="8"><TextBlock Text="Grid" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Noise" Width="130" Height="80" Padding="8"><TextBlock Text="Noise" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Twill" Width="130" Height="80" Padding="8"><TextBlock Text="Twill" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Mesh" Width="130" Height="80" Padding="8"><TextBlock Text="Mesh" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Perforated" Width="130" Height="80" Padding="8"><TextBlock Text="Perforated" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Bumps" Width="130" Height="80" Padding="8"><TextBlock Text="Bumps" FontSize="10"/></daisy:DaisyPatternedCard>
+                    <daisy:DaisyPatternedCard Pattern="Scales" Width="130" Height="80" Padding="8"><TextBlock Text="Scales" FontSize="10"/></daisy:DaisyPatternedCard>
+                </daisy:WrapPanel>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Glass Card -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="glass-card" Title="Glass Card (IsGlass mode)" />
+                <TextBlock Text="Cards can use glass/frosted effect with IsGlass property. Enable real Skia blur with EnableBackdropBlur."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+
+                <Border CornerRadius="16" MinHeight="340">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#667eea" Offset="0"/>
+                            <GradientStop Color="#764ba2" Offset="0.5"/>
+                            <GradientStop Color="#f093fb" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Grid>
+                        <!-- Background content that will be blurred -->
+                        <StackPanel Margin="20">
+                            <TextBlock Text="BACKGROUND TEXT" FontSize="32" FontWeight="ExtraBold" Foreground="White" Opacity="0.9"/>
+                            <TextBlock Text="Compare: Simulated vs Real Blur" FontSize="16" Foreground="White" Opacity="0.8" Margin="0,8,0,0"/>
+                            <TextBlock Text="★ ★ ★ ★ ★" FontSize="28" Foreground="Yellow" Margin="0,12,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="SHARP" FontSize="72" FontWeight="ExtraBold" Foreground="#40FFFFFF"
+                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20"/>
+                        <TextBlock Text="●●●" FontSize="48" Foreground="White" Opacity="0.5"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20"/>
+
+                        <!-- Glass cards overlaid on background -->
+                        <daisy:WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         HorizontalSpacing="20" VerticalSpacing="20" Margin="0,40,0,60">
+                            <daisy:DaisyCard IsGlass="True" Width="250">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Simulated Glass" FontWeight="Bold" FontSize="18"/>
+                                    <TextBlock Text="No real blur - text behind stays sharp." TextWrapping="Wrap"/>
+                                    <daisy:DaisyButton Content="Action" Size="Small" HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <daisy:DaisyCard IsGlass="True" EnableBackdropBlur="True" BlurMode="SkiaSharp"
+                                             GlassBlur="30" GlassSaturation="0.8" Width="250">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Skia Blur Card" FontWeight="Bold" FontSize="18"/>
+                                    <TextBlock Text="Real blur - text behind is blurred!" TextWrapping="Wrap"/>
+                                    <daisy:DaisyButton Content="Action" Size="Small" HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+
+                            <daisy:DaisyCard IsGlass="True" GlassTint="#000000" GlassOpacity="0.4"
+                                             EnableBackdropBlur="True" BlurMode="BitmapCapture"
+                                             GlassBlur="40" Width="250">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Dark Blur Glass" FontWeight="Bold" FontSize="18" Foreground="White"/>
+                                    <TextBlock Text="Dark tint + blur = frosted dark glass." TextWrapping="Wrap" Foreground="White" Opacity="0.9"/>
+                                </StackPanel>
+                            </daisy:DaisyCard>
+                        </daisy:WrapPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- DaisyGlass (Simulated Glass) -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="daisyglass-simulated" Title="DaisyGlass (Simulated Glass)" />
+                <TextBlock Text="Default mode. Uses gradient overlays to simulate frosted glass. No real blur."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="✅ Fastest performance (no rendering overhead)"
+                           FontSize="12" Foreground="{ThemeResource DaisySuccessBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+                <TextBlock Text="❌ No actual blur of background content"
+                           FontSize="12" Foreground="{ThemeResource DaisyErrorBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+
+                <Border CornerRadius="16" Height="320" Margin="0,12,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#4facfe" Offset="0"/>
+                            <GradientStop Color="#00f2fe" Offset="0.5"/>
+                            <GradientStop Color="#43e97b" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Grid>
+                        <!-- Background text content -->
+                        <StackPanel Margin="20">
+                            <TextBlock Text="BACKGROUND TEXT" FontSize="32" FontWeight="ExtraBold" Foreground="White" Opacity="0.9"/>
+                            <TextBlock Text="This text is NOT blurred - simulated mode only uses overlays" FontSize="16" Foreground="White" Opacity="0.8" Margin="0,8,0,0"/>
+                            <TextBlock Text="★ ★ ★ ★ ★" FontSize="28" Foreground="Yellow" Margin="0,12,0,0"/>
+                            <TextBlock Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                       FontSize="14" Foreground="White" Opacity="0.7" Margin="0,8,0,0" TextWrapping="Wrap" MaxWidth="400"/>
+                        </StackPanel>
+                        <TextBlock Text="SHARP" FontSize="72" FontWeight="ExtraBold" Foreground="#40FFFFFF"
+                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20"/>
+                        <TextBlock Text="●●●" FontSize="48" Foreground="White" Opacity="0.5"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,60"/>
+
+                        <!-- Glass panels on top -->
+                        <daisy:WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalSpacing="20" VerticalSpacing="20">
+                            <daisy:DaisyGlass Padding="24" CornerRadius="16" Width="220">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Simulated" FontWeight="Bold" FontSize="18"
+                                               Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                    <TextBlock Text="No real blur effect."
+                                               TextWrapping="Wrap"
+                                               Foreground="{ThemeResource DaisyBaseContentBrush}"/>
+                                </StackPanel>
+                            </daisy:DaisyGlass>
+
+                            <daisy:DaisyGlass Padding="24" CornerRadius="16" Width="220"
+                                              GlassTint="#1a1a2e" GlassTintOpacity="0.7">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Dark Tint" FontWeight="Bold" FontSize="18" Foreground="White"/>
+                                    <TextBlock Text="Just tinted overlay." TextWrapping="Wrap" Foreground="White" Opacity="0.85"/>
+                                </StackPanel>
+                            </daisy:DaisyGlass>
+                        </daisy:WrapPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- DaisyGlass Control - Bitmap Capture Mode -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="daisyglass-bitmap-capture" Title="DaisyGlass (Bitmap Capture Mode)" />
+                <TextBlock Text="BlurMode=BitmapCapture. Captures background once and applies Skia blur."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="✅ One-time capture with efficient blur processing"
+                           FontSize="12" Foreground="{ThemeResource DaisySuccessBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+                <TextBlock Text="⚡ Good balance of quality and performance"
+                           FontSize="12" Foreground="{ThemeResource DaisyInfoBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+
+                <Border CornerRadius="16" Height="300" Margin="0,12,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#667eea" Offset="0"/>
+                            <GradientStop Color="#f093fb" Offset="0.5"/>
+                            <GradientStop Color="#f5576c" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <!-- Background content spread across entire area -->
+                        <TextBlock Text="BACKGROUND" FontSize="48" FontWeight="ExtraBold" Foreground="White" Opacity="0.9"
+                                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0"/>
+                        <TextBlock Text="★ ★ ★ ★ ★" FontSize="36" Foreground="Yellow"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="TEXT BEHIND GLASS" FontSize="28" FontWeight="Bold" Foreground="White" Opacity="0.8"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,60,0,0"/>
+                        <TextBlock Text="BLUR" FontSize="72" FontWeight="ExtraBold" Foreground="#40FFFFFF"
+                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20"/>
+                        <TextBlock Text="●●●●●" FontSize="48" Foreground="White" Opacity="0.6"
+                                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20"/>
+
+                        <!-- Glass panels centered, overlapping the background content -->
+                        <daisy:WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalSpacing="20">
+                            <daisy:DaisyGlass Padding="24" CornerRadius="16" Width="220" Height="140"
+                                              EnableBackdropBlur="True" BlurMode="BitmapCapture"
+                                              GlassBlur="25">
+                                <StackPanel Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="Bitmap Capture" FontWeight="Bold" FontSize="18"/>
+                                    <TextBlock Text="Blur=25" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </daisy:DaisyGlass>
+
+                            <daisy:DaisyGlass Padding="24" CornerRadius="16" Width="220" Height="140"
+                                              EnableBackdropBlur="True" BlurMode="BitmapCapture"
+                                              GlassBlur="50" GlassTint="#1a1a2e" GlassTintOpacity="0.5">
+                                <StackPanel Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="Heavy Blur" FontWeight="Bold" FontSize="18" Foreground="White"/>
+                                    <TextBlock Text="Blur=50, dark tint" TextWrapping="Wrap" Foreground="White" Opacity="0.85"/>
+                                </StackPanel>
+                            </daisy:DaisyGlass>
+                        </daisy:WrapPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider />
+
+            <!-- Full Width Example -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="daisyglass-full-width" Title="DaisyGlass (Full Width Example)" />
+                <TextBlock Text="Blur=30, Saturation=0.5 (Milky Desaturated Effect)"
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="✅ Real SkiaSharp blur with desaturation for a milky appearance"
+                           FontSize="12" Foreground="{ThemeResource DaisySuccessBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+
+                <Border CornerRadius="16" Height="280" Margin="0,12,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#11998e" Offset="0"/>
+                            <GradientStop Color="#38ef7d" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <StackPanel Margin="20">
+                            <TextBlock Text="FULL WIDTH TEST" FontSize="32" FontWeight="ExtraBold" Foreground="White" Opacity="0.9"/>
+                            <TextBlock Text="Background content blurred by the glass panel" FontSize="16" Foreground="White" Opacity="0.8" Margin="0,8,0,0"/>
+                            <TextBlock Text="* * * * * * * *" FontSize="28" Foreground="#FFD700" Margin="0,12,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="GPU" FontSize="72" FontWeight="ExtraBold" Foreground="#40FFFFFF"
+                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20"/>
+
+                        <daisy:DaisyGlass Margin="40" Height="120" VerticalAlignment="Center"
+                                          EnableBackdropBlur="True" BlurMode="SkiaSharp"
+                                          GlassBlur="30" GlassSaturation="0.5"
+                                          GlassTint="#FFFFFF" GlassTintOpacity="0.15"
+                                          GlassBorderOpacity="0.3">
+                            <StackPanel Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="Milky Glass Panel" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Blur=30, Saturation=50%" HorizontalAlignment="Center" Opacity="0.8"/>
+                            </StackPanel>
+                        </daisy:DaisyGlass>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <daisy:DaisyDivider Visibility="{x:Bind SkiaMatrixVisibility}" />
+
+            <!-- DaisyGlass Control - SkiaSharp Mode (Experimental) -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}"
+                        Visibility="{x:Bind SkiaMatrixVisibility}">
+                <local:SectionHeader SectionId="daisyglass-skia-matrix" Title="DaisyGlass (SkiaSharp Mode Matrix)" />
+                <TextBlock Text="BlurMode=SkiaSharp. GPU-accelerated blur with Saturation control. Matrix shows Blur (B0-B100) vs Saturation (S0%-S100%)."
+                           Opacity="0.7"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock Text="✅ Real backdrop blur using SkiaSharp image processing"
+                           FontSize="12" Foreground="{ThemeResource DaisySuccessBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+                <TextBlock Text="⚡ Saturation: 0% = grayscale, 100% = normal colors"
+                           FontSize="12" Foreground="{ThemeResource DaisyInfoBrush}" Opacity="0.9" Margin="0,-4,0,0"/>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <Border CornerRadius="16" MinHeight="280" Margin="0,12,0,0" Padding="20">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#11998e" Offset="0"/>
+                                <GradientStop Color="#38ef7d" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <!-- Matrix Container - populated in code-behind with DaisyGlass tiles -->
+                            <StackPanel x:Name="SkiaMatrixContainer"
+                                        Orientation="Vertical"
+                                        Spacing="8"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </ScrollViewer>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>

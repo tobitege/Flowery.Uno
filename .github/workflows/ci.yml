@@ -1,0 +1,61 @@
+name: CI Build
+
+# Builds on every commit to verify everything compiles
+# Does NOT publish anything - just verification
+
+on:
+  workflow_dispatch:
+  # Disabled automatic triggers to avoid running on first push.
+  # Uncomment to restore:
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
+
+jobs:
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Setup Uno Workloads
+        run: dotnet workload install uno-check --skip-manifest-update || true
+
+      - name: Install WebAssembly tools
+        run: dotnet workload install wasm-tools --skip-manifest-update
+
+      - name: Install Android workload
+        run: dotnet workload install android --skip-manifest-update
+
+      - name: Install Uno.Check
+        run: dotnet tool install -g Uno.Check || true
+
+      - name: Build Library
+        run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release
+
+  build-gallery:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Setup Uno Workloads
+        run: dotnet workload install uno-check --skip-manifest-update || true
+
+      - name: Install WebAssembly tools
+        run: dotnet workload install wasm-tools --skip-manifest-update
+
+      - name: Install Android workload
+        run: dotnet workload install android --skip-manifest-update
+
+      - name: Build Gallery Windows Desktop
+        run: dotnet build Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj -c Release

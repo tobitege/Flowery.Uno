@@ -1,0 +1,565 @@
+---
+alwaysApply: false
+---
+# Creating a New Flowery.Uno Control (Uno Platform / WinUI)
+
+This rule outlines the complete workflow for creating a new control in Flowery.Uno, whether it's a brand new control or a port from another library.
+
+> **Platform**: Uno Platform / WinUI (NOT Avalonia). Use `Microsoft.UI.Xaml.*` namespaces, `.xaml` files, and `DependencyProperty`.
+
+## Overview
+
+Creating a new control involves these major phases:
+
+1. **Control Implementation** - C# class with properties and logic
+2. **Theme/Styling** - XAML ResourceDictionary for visual appearance
+3. **Gallery Examples** - Demo page in the gallery application
+4. **Sidebar Integration** - Add to the sidebar data
+5. **Documentation** - Markdown file for supplementary docs
+
+---
+
+## Phase 1: Control Implementation
+
+### 1.1 Create the C# Control File
+
+**Location:** `Flowery.Uno/Controls/Daisy[ControlName].cs`
+
+> If the control is a **custom extension** (not a direct DaisyUI component), place it under:
+>
+> - `Flowery.Uno/Controls/Custom/Daisy[ControlName].cs`
+> - Namespace: `Flowery.Controls`
+
+**Required elements:**
+
+```csharp
+using System;
+using Flowery.Theming;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Windows.UI;
+// Add other required usings at the TOP
+
+namespace Flowery.Controls
+{
+    // Define enums at namespace level
+    public enum Daisy[ControlName]Variant
+    {
+        Default,
+        Primary,
+        // ... other values
+    }
+
+    /// <summary>
+    /// Brief description of what the control does (Uno/WinUI).
+    /// </summary>
+    public partial class Daisy[ControlName] : ContentControl // or appropriate base class
+    {
+        /// <summary>
+        /// Gets or sets the property description.
+        /// </summary>
+        public static readonly DependencyProperty VariantProperty =
+            DependencyProperty.Register(
+                nameof(Variant),
+                typeof(Daisy[ControlName]Variant),
+                typeof(Daisy[ControlName]),
+                new PropertyMetadata(Daisy[ControlName]Variant.Default, OnAppearanceChanged));
+
+        public Daisy[ControlName]Variant Variant
+        {
+            get => (Daisy[ControlName]Variant)GetValue(VariantProperty);
+            set => SetValue(VariantProperty, value);
+        }
+
+        private static void OnAppearanceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Daisy[ControlName] control)
+            {
+                control.ApplyAll();
+            }
+        }
+
+        public Daisy[ControlName]()
+        {
+            DefaultStyleKey = typeof(Daisy[ControlName]);
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            BuildVisualTree();
+            ApplyAll();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            // Cleanup (unsubscribe from events, etc.)
+        }
+
+        private void BuildVisualTree()
+        {
+            // Build control's visual tree programmatically
+        }
+
+        private void ApplyAll()
+        {
+            // Apply sizing, colors, states
+        }
+    }
+}
+```
+
+### 1.2 Key Requirements
+
+- **XML Documentation**: Every class and property MUST have `/// <summary>` comments
+- **DependencyProperty Pattern**: Use WinUI's `DependencyProperty.Register` with `PropertyMetadata`
+- **Enums at Namespace Level**: Define enums outside the class, with `public` access
+- **Using Directives**: Add ALL required usings at the file TOP (avoid inline fully-qualified names)
+- **Partial class**: Mark class as `partial` for Uno source generators
+- **DefaultStyleKey**: Set in constructor for templated controls
+
+### 1.3 Common Base Classes
+
+| Base Class | Use Case |
+|------------|----------|
+| `ContentControl` | Controls with single content slot |
+| `Button` | Button-like controls (inherits click handling) |
+| `Control` | Generic base for custom controls |
+| `ItemsControl` | Controls with item collections |
+| `UserControl` | Simple composite controls with XAML |
+
+---
+
+## Phase 2: Theme/Styling
+
+### 2.1 Programmatic Visual Tree (Recommended)
+
+Most Flowery.Uno controls build their visual tree in code-behind for runtime flexibility:
+
+```csharp
+private void BuildVisualTree()
+{
+    _rootGrid = new Grid();
+    // Build tree...
+    Content = _rootGrid;
+}
+```
+
+### 2.2 XAML Template (Alternative)
+
+If using XAML templates, add to `Flowery.Uno/Themes/DaisyControls.xaml`:
+
+```xml
+<!-- In DaisyControls.xaml -->
+<Style TargetType="controls:Daisy[ControlName]">
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="controls:Daisy[ControlName]">
+                <Grid>
+                    <!-- Control template here -->
+                </Grid>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+```
+
+### 2.3 Theme Registration
+
+Themes are merged in `Flowery.Uno/Themes/Generic.xaml`:
+
+```xml
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyResources.xaml" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/DaisyControls.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
+```
+
+### 2.4 Theme Resource Usage
+
+Access theme resources in code:
+
+```csharp
+var resources = Application.Current?.Resources;
+if (resources != null)
+{
+    var brush = DaisyResourceLookup.GetBrush(resources, "DaisyPrimaryBrush", fallbackBrush);
+}
+```
+
+---
+
+## Phase 3: Gallery Examples
+
+### 3.1 Create or Update Examples File
+
+**Location:** `Flowery.Uno.Gallery/Examples/[Category]Examples.xaml`
+
+```xml
+<local:ScrollableExamplePage
+    x:Class="Flowery.Uno.Gallery.Examples.[Category]Examples"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:local="using:Flowery.Uno.Gallery.Examples">
+
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto"
+                  VerticalScrollMode="Auto" Background="Transparent" Padding="0,0,0,32">
+        <StackPanel Spacing="24" Margin="24,0,20,32">
+
+            <!-- Control Name -->
+            <StackPanel Style="{StaticResource GallerySectionStyle}">
+                <local:SectionHeader SectionId="controlname" Title="Control Name" />
+
+                <TextBlock Text="Basic Usage" FontWeight="SemiBold" Opacity="0.8"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <daisy:Daisy[ControlName] />
+                    <daisy:Daisy[ControlName] Variant="Primary" />
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</local:ScrollableExamplePage>
+```
+
+### 3.2 Code-Behind
+
+Create the `.xaml.cs` file inheriting from `ScrollableExamplePage`:
+
+```csharp
+using Microsoft.UI.Xaml.Controls;
+
+namespace Flowery.Uno.Gallery.Examples
+{
+    public sealed partial class [Category]Examples : ScrollableExamplePage
+    {
+        public [Category]Examples()
+        {
+            InitializeComponent();
+        }
+
+        protected override ScrollViewer? ScrollViewer => MainScrollViewer;
+    }
+}
+```
+
+### 3.3 Register SectionId → Control mapping (required)
+
+If you add a new `<local:SectionHeader SectionId="..." />`, ensure the ID maps to the control name in:
+
+- `Utils/generate_docs.py` (`_section_to_control()` mapping)
+
+Notes:
+
+- SectionId normalization removes `-` and `_` (e.g. `mask-input` becomes `maskinput`)
+- Keep the mapping key lowercase and consistent with the sidebar `Id`
+
+---
+
+## Phase 4: Sidebar Integration
+
+### 4.1 Add to GallerySidebarData
+
+**Location:** `Flowery.Uno.Gallery/GallerySidebarData.cs`
+
+Add a new `SidebarItem` in the appropriate category:
+
+```csharp
+new()
+{
+    Name = "Sidebar_[Category]",
+    IconKey = "DaisyIcon[Category]",
+    Items = new()
+    {
+        // ... existing items ...
+        new() { Id = "controlname", Name = "Sidebar_ControlName", TabHeader = "Sidebar_[Category]" }
+    }
+}
+```
+
+### 4.2 Add Category Mapping (if new category)
+
+**Location:** `Flowery.Uno.Gallery/MainView.xaml.cs`
+
+```csharp
+_categoryControls = new Dictionary<string, Func<Control>>
+{
+    // ...existing entries...
+    ["New Category"] = () => new NewCategoryExamples()
+};
+```
+
+### 4.3 Add Icon (if new category)
+
+**Location:** `Flowery.Uno/Themes/DaisyIcons.xaml`
+
+```xml
+<x:String x:Key="DaisyIconNewCategory">M...</x:String>
+```
+
+### 4.4 Localization (if the control introduces user-facing default text)
+
+If the control sets default user-facing strings (placeholders/watermarks/accessible text):
+
+- Add resource keys to:
+  - `Flowery.Uno/Localization/FloweryStrings.resx`
+  - and ALL localized variants `FloweryStrings.*.resx`
+- Retrieve strings via `Flowery.Localization.FloweryLocalization.GetString("Key")`
+
+---
+
+## Phase 5: Documentation
+
+### 5.1 Create Supplementary Documentation
+
+**Location:** `llms-static/Daisy[ControlName].md`
+
+This is a REQUIRED step for all new controls:
+
+```markdown
+<!-- Supplementary documentation for Daisy[ControlName] -->
+<!-- This content is merged into auto-generated docs by generate_docs.py -->
+
+## Overview
+
+Brief description of the control, its key features, and when to use it.
+
+## Variant Options (if applicable)
+
+| Variant | Description |
+|---------|-------------|
+| **Default** | Standard appearance |
+| **Primary** | High emphasis style |
+
+## Size Options (if applicable)
+
+| Size | Use Case |
+|------|----------|
+| Small | Compact UIs |
+| Medium | General purpose |
+
+## Quick Examples
+
+\`\`\`xml
+<!-- Basic usage -->
+<daisy:Daisy[ControlName] />
+
+<!-- With variant -->
+<daisy:Daisy[ControlName] Variant="Primary" />
+\`\`\`
+
+## Tips & Best Practices
+
+- Tip 1
+- Tip 2
+
+---
+```
+
+### 5.2 Documentation Requirements
+
+The markdown file MUST:
+
+- Be named exactly `Daisy[ControlName].md` (matching the C# class name)
+- Be placed in the `llms-static/` folder
+- Have the HTML comment header
+- Have an `## Overview` section
+- End with `---`
+
+---
+
+## Phase 6: Verification
+
+### 6.1 Build Check
+
+**⚠️ ALWAYS use the build script, NOT `dotnet build` directly:**
+
+```bash
+# From Git Bash:
+./scripts/build_all.sh
+
+# Or from PowerShell:
+.\scripts\build_all.ps1
+```
+
+### 6.2 Run Gallery
+
+Test the control in the gallery application to verify:
+
+- Control renders correctly
+- All variants/sizes work
+- Sidebar navigation works
+- Section scrolling works
+
+### 6.3 Generate Documentation
+
+```bash
+python Utils/generate_docs.py
+```
+
+---
+
+## Checklist
+
+- [ ] C# control file created with proper XML documentation
+- [ ] Enums defined at namespace level (if any)
+- [ ] Visual tree built programmatically OR XAML style added to DaisyControls.xaml
+- [ ] Gallery examples added with SectionHeader
+- [ ] Examples class inherits from ScrollableExamplePage
+- [ ] Sidebar item added to GallerySidebarData.cs
+- [ ] Category mapping added to MainView.xaml.cs (if new category)
+- [ ] Icon added (if new category)
+- [ ] **Supplementary documentation created in `llms-static/Daisy[ControlName].md`**
+- [ ] Build succeeds without errors (using build script)
+- [ ] Gallery tested and working
+- [ ] Documentation generated
+
+---
+
+## Common Pitfalls (Uno Platform / WinUI)
+
+| Issue | Solution |
+|-------|----------|
+| Control not rendering | Check DependencyProperty registration, ensure `Loaded` event builds visual tree |
+| Sidebar item not navigating | Verify TabHeader matches dictionary key in MainView.xaml.cs |
+| ScrollToSection not working | Ensure SectionId matches the sidebar item Id |
+| Documentation not merging | Ensure filename matches class name exactly |
+| **UIElement can only have one parent** | Clear `Content = null` before re-parenting elements |
+| **PathIcon throws at runtime** | Use `FloweryPathHelpers` or `Path` with `PathGeometry` instead |
+| **ThemeResource not updating** | Subscribe to `DaisyThemeManager.ThemeChanged` and manually update |
+
+### UIElement Parentage Issues
+
+A `UIElement` can only have one parent. When capturing Content and re-parenting:
+
+```csharp
+// ✅ Correct pattern
+private void OnLoaded(object sender, RoutedEventArgs e)
+{
+    // Capture and DETACH before re-parenting
+    _userContent = Content;
+    Content = null;
+
+    BuildVisualTree();
+    _presenter!.Content = _userContent;
+}
+```
+
+### PathIcon Runtime Issues
+
+`PathIcon` throws `ArgumentException` when used dynamically. Use `FloweryPathHelpers`:
+
+```csharp
+// ❌ FAILS: PathIcon throws at runtime
+_button.Content = new PathIcon { Data = geometry };
+
+// ✅ WORKS: Use FloweryPathHelpers
+_button.Content = FloweryPathHelpers.CreateChevron(isLeft: true);
+```
+
+### ThemeResource Not Auto-Refreshing
+
+`{ThemeResource}` doesn't auto-refresh when MergedDictionaries change. Subscribe to theme changes:
+
+```csharp
+private void OnLoaded(object sender, RoutedEventArgs e)
+{
+    DaisyThemeManager.ThemeChanged += OnThemeChanged;
+    ApplyTheme();
+}
+
+private void OnUnloaded(object sender, RoutedEventArgs e)
+{
+    DaisyThemeManager.ThemeChanged -= OnThemeChanged;
+}
+
+private void OnThemeChanged(object? sender, string themeName) => ApplyTheme();
+```
+
+### Animation with Composition API
+
+Use `"RotationAngle"` (radians), NOT `"RotationAngleInDegrees"`:
+
+```csharp
+// ✅ WORKS
+animation.InsertKeyFrame(1f, PlatformCompatibility.DegreesToRadians(360f));
+visual.StartAnimation("RotationAngle", animation);
+
+// ❌ FAILS: "RotationAngleInDegrees" not supported in Uno
+visual.StartAnimation("RotationAngleInDegrees", animation);
+```
+
+### Delay Time in Animations
+
+`animation.DelayTime` doesn't work on Uno Skia/WASM. Use `PlatformCompatibility.StartAnimation`:
+
+```csharp
+// ✅ WORKS across platforms
+PlatformCompatibility.StartAnimation(visual, "Scale", animation, delay);
+```
+
+### WinUI vs WPF/Avalonia Differences
+
+| Feature | WPF/Avalonia | WinUI/Uno |
+|---------|--------------|-----------|
+| Dashed borders | `StrokeDashArray` on Border | Use `Rectangle` overlay |
+| `ClipToBounds` | Available on Grid/Border | NOT available - use `UIElement.Clip` |
+| `UIElement.Clip` | Any Geometry | Only `RectangleGeometry` |
+| `Cursor` on Border | Available | NOT available |
+| `ToolTip` property | Direct property | Use `ToolTipService.SetToolTip()` |
+
+### Namespace Differences from Avalonia
+
+| Avalonia | WinUI/Uno |
+|----------|-----------|
+| `Avalonia.Controls` | `Microsoft.UI.Xaml.Controls` |
+| `Avalonia.Media` | `Microsoft.UI.Xaml.Media` |
+| `Avalonia.Input` | `Microsoft.UI.Xaml.Input` |
+| `StyledProperty` | `DependencyProperty` |
+| `AvaloniaProperty.Register` | `DependencyProperty.Register` |
+| `.axaml` | `.xaml` |
+| `avares://` | `ms-appx:///` |
+
+---
+
+## Reference: DaisyControlLifecycle Helper
+
+For consistent lifecycle handling, use `DaisyControlLifecycle`:
+
+```csharp
+private readonly DaisyControlLifecycle _lifecycle;
+
+public Daisy[ControlName]()
+{
+    _lifecycle = new DaisyControlLifecycle(
+        this,
+        ApplyAll,
+        () => Size,
+        s => Size = s,
+        handleLifecycleEvents: false);
+
+    Loaded += OnLoaded;
+    Unloaded += OnUnloaded;
+}
+
+private void OnLoaded(object sender, RoutedEventArgs e)
+{
+    _lifecycle.HandleLoaded();
+    BuildVisualTree();
+}
+
+private void OnUnloaded(object sender, RoutedEventArgs e)
+{
+    _lifecycle.HandleUnloaded();
+}
+```

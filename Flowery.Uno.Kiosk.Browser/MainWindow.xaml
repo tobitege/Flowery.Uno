@@ -1,0 +1,10 @@
+<Window
+    x:Class="Flowery.Uno.Kiosk.Browser.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Flowery.Uno.Kiosk.Browser">
+
+    <Grid x:Name="RootGrid" Background="{ThemeResource DaisyBase100Brush}">
+        <local:KioskMainPage x:Name="MainPage" />
+    </Grid>
+</Window>

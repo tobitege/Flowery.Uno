@@ -1,0 +1,348 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Flowery.Controls">
+
+    <!-- Shared ListBoxItem template for DaisyComboBoxBase dropdowns -->
+    <ControlTemplate x:Key="DaisyComboBoxListBoxItemTemplate" TargetType="ListBoxItem">
+        <Border x:Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="1" />
+                            <Setter Target="PointerOverBackground.Background" Value="{ThemeResource DaisyBase300Brush}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Target="Root.Opacity" Value="0.5" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="SelectionStates">
+                    <VisualState x:Name="Unselected">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="SelectedInactive">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="FocusStates">
+                    <VisualState x:Name="Focused" />
+                    <VisualState x:Name="Unfocused" />
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid>
+                <Border x:Name="PointerOverBackground"
+                        Background="{TemplateBinding BorderBrush}"
+                        Opacity="0"
+                        IsHitTestVisible="False" />
+                <Border x:Name="SelectionBackground"
+                        Background="{TemplateBinding BorderBrush}"
+                        Opacity="0"
+                        IsHitTestVisible="False" />
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  Margin="{TemplateBinding Padding}" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+
+    <!-- Shared ListViewItem template for DaisyComboBoxBase dropdowns -->
+    <ControlTemplate x:Key="DaisyComboBoxListViewItemTemplate" TargetType="ListViewItem">
+        <Border x:Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Target="PointerOverBackground.Opacity" Value="1" />
+                            <Setter Target="PointerOverBackground.Background" Value="{ThemeResource DaisyBase300Brush}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Target="Root.Opacity" Value="0.5" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="SelectionStates">
+                    <VisualState x:Name="Unselected">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="SelectedInactive">
+                        <VisualState.Setters>
+                            <Setter Target="SelectionBackground.Opacity" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid>
+                <Border x:Name="PointerOverBackground"
+                        Background="{TemplateBinding BorderBrush}"
+                        Opacity="0"
+                        IsHitTestVisible="False" />
+                <Border x:Name="SelectionBackground"
+                        Background="{TemplateBinding BorderBrush}"
+                        Opacity="0"
+                        IsHitTestVisible="False" />
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  Margin="{TemplateBinding Padding}" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <ItemsPanelTemplate x:Key="DaisyComboBoxItemsPanelTemplate">
+        <ItemsStackPanel Orientation="Vertical" />
+    </ItemsPanelTemplate>
+    <ControlTemplate x:Key="DaisyComboBoxTriggerButtonTemplate" TargetType="Button">
+        <Border Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+            <ContentPresenter x:Name="ContentPresenter"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                              Foreground="{TemplateBinding Foreground}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Margin="{TemplateBinding Padding}" />
+        </Border>
+    </ControlTemplate>
+
+    <!-- ===================== DaisyCheckBox ===================== -->
+    <!-- Minimal style for DaisyCheckBox: the control builds its own visual tree in code,
+         so we just need a template that passes through the Content property. -->
+    <Style TargetType="controls:DaisyCheckBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyCheckBox">
+                    <ContentPresenter
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Padding="{TemplateBinding Padding}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyToggle template ===================== -->
+    <ControlTemplate x:Key="DaisyToggleTemplate" TargetType="controls:DaisyToggle">
+        <Grid ColumnDefinitions="Auto,*">
+            <Border x:Name="SwitchArea"
+                    Grid.Column="0"
+                    Width="{ThemeResource DaisyToggleMediumWidth}"
+                    Height="{ThemeResource DaisyToggleMediumHeight}"
+                    CornerRadius="12"
+                    Background="{ThemeResource DaisyBase300Brush}"
+                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                    BorderThickness="1">
+                <Grid>
+                    <Ellipse x:Name="Knob"
+                        Width="{ThemeResource DaisyToggleKnobMediumSize}"
+                        Height="{ThemeResource DaisyToggleKnobMediumSize}"
+                        Fill="White"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="0">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform x:Name="KnobTransform" X="0" />
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                </Grid>
+            </Border>
+
+            <ContentPresenter Grid.Column="1"
+                              Content="{TemplateBinding Header}"
+                              Foreground="{TemplateBinding Foreground}"
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center" />
+        </Grid>
+    </ControlTemplate>
+
+    <Style TargetType="controls:DaisyToggle">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="Template" Value="{StaticResource DaisyToggleTemplate}" />
+    </Style>
+
+    <!-- ===================== DaisyRadio (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyRadio">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisyRadio">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Background="{TemplateBinding Background}">
+                        <Border x:Name="PART_OuterBorder"
+                                BorderThickness="2"
+                                VerticalAlignment="Center">
+                            <Ellipse x:Name="PART_InnerDot"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Visibility="Collapsed" />
+                        </Border>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyRange (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyRange">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="100" />
+    </Style>
+
+    <!-- ===================== DaisyPasswordBox (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyPasswordBox">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <!-- ===================== DaisyRating (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyRating">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisyTextArea (inherits from DaisyInput) ===================== -->
+    <Style TargetType="controls:DaisyTextArea">
+        <Setter Property="MinHeight" Value="80" />
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- ===================== DaisyFileInput (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyFileInput">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===================== DaisySlideToConfirm ===================== -->
+    <Style TargetType="controls:DaisySlideToConfirm">
+        <Setter Property="Background" Value="{ThemeResource DaisyBase300Brush}" />
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:DaisySlideToConfirm">
+                    <Border x:Name="PART_Track"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="14"
+                            Padding="2">
+                        <Grid>
+                            <TextBlock x:Name="PART_Label"
+                                       Text="{TemplateBinding Text}"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="None"
+                                       TextWrapping="NoWrap"
+                                       FontWeight="Bold"
+                                       FontSize="11" />
+                            <!-- Handle positioned via TranslateTransform for smooth animation -->
+                            <Border x:Name="PART_Handle"
+                                    CornerRadius="20"
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="PART_HandleTransform" X="0" />
+                                </Border.RenderTransform>
+                                <Viewbox x:Name="PART_IconViewbox"
+                                         Width="20" Height="20"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Stretch="Uniform">
+                                    <Path x:Name="PART_Icon"
+                                          Data="{TemplateBinding IconData}"
+                                          Stretch="Uniform" />
+                                </Viewbox>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DaisyOtpInput (code-driven visual tree) ===================== -->
+    <Style TargetType="controls:DaisyOtpInput">
+        <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

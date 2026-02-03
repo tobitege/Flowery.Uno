@@ -1,0 +1,69 @@
+<UserControl
+    x:Class="Flowery.Uno.Gallery.Examples.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" IsTabStop="True" Background="Transparent">
+        <StackPanel x:Name="ContentPanel" Spacing="16" Margin="10" Background="Transparent">
+            <Image MaxHeight="200"
+                   HorizontalAlignment="Stretch"
+                   Stretch="Uniform"
+                   Source="ms-appx:///Assets/flowery-banner.png" />
+            <TextBlock x:Name="TitleText"
+                       Text="Flowery.Uno Gallery"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}"
+                       FontSize="28"
+                       FontWeight="Bold" />
+            <TextBlock x:Name="SubtitleText"
+                Text="Beautifully themed components for Uno Platform."
+                Foreground="{ThemeResource DaisyBaseContentBrush}"
+                Opacity="0.7"
+                TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <daisy:DaisyButton
+                    x:Name="BrowseButton"
+                    Content="Browse Components"
+                    Variant="Primary"
+                    Click="BrowseButton_Click" />
+                <daisy:DaisyButton
+                    x:Name="GitHubButton"
+                    Content="View on GitHub"
+                    Variant="Primary"
+                    Click="GitHubButton_Click" />
+            </StackPanel>
+
+            <daisy:DaisyDivider DividerStyle="Glow" />
+
+            <TextBlock x:Name="CreditsTitleText"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}"
+                       Text="Credits:"
+                       TextWrapping="Wrap" />
+            <TextBlock x:Name="CreditsBodyText"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}"
+                       Text="Thanks to the Uno Platform team for their work on the platform."
+                       TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <daisy:DaisyButton
+                    x:Name="UnoRepoButton"
+                    Content="Uno Platform Repo"
+                    Variant="Primary"
+                    Click="UnoRepoButton_Click" />
+            </StackPanel>
+            <TextBlock x:Name="DisclaimerText"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}"
+                       FontSize="10"
+                       Opacity="0.7"
+                       Text="Disclaimer: This project is not officially endorsed by the Uno Platform team."
+                       TextWrapping="Wrap" />
+            <TextBox x:Name="DiagnosticsTextBox" FontSize="10"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     IsReadOnly="True"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     HorizontalAlignment="Stretch"
+                     MinHeight="200" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

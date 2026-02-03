@@ -1,0 +1,22 @@
+<Project>
+  <!-- Android: remove resizetizer outputs with scale-125 to avoid unsupported DPI mapping -->
+  <Target Name="RemoveAndroidScale125ResizetizerOutputs"
+          AfterTargets="UnoResizetizeImages"
+          BeforeTargets="ProcessResizedImages"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <ItemGroup>
+      <_UnoResizetizerCollectedImages Remove="@(_UnoResizetizerCollectedImages)"
+                                      Condition="$([System.String]::Copy('%(_UnoResizetizerCollectedImages.Filename)').EndsWith('.scale-125'))" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ConvertTestLogsToUtf8"
+          AfterTargets="InvokeTestingPlatform"
+          Condition="'$(IsTestProject)' == 'true' and '$(TestingPlatformDotNetTestSupport)' == 'true' and '$(OS)' == 'Windows_NT'">
+    <PropertyGroup>
+      <_FloweryTestResultsRoot>$(MSBuildProjectDirectory)\bin\$(Configuration)\TestResults\$(MSBuildProjectName)</_FloweryTestResultsRoot>
+      <_FloweryConvertLogScript>$(MSBuildThisFileDirectory)scripts\Convert-TestLogsToUtf8.ps1</_FloweryConvertLogScript>
+    </PropertyGroup>
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(_FloweryConvertLogScript)&quot; -Root &quot;$(_FloweryTestResultsRoot)&quot;" />
+  </Target>
+</Project>

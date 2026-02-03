@@ -1,0 +1,14 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:weather="using:Flowery.Controls.Weather">
+
+    <weather:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <weather:WeatherConditionToIconConverter x:Key="WeatherConditionToIconConverter" />
+    <weather:DateToFullStringConverter x:Key="DateToFullStringConverter" />
+    <weather:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
+    <weather:StringNotNullOrEmptyToVisibilityConverter x:Key="StringNotNullOrEmptyToVisibilityConverter" />
+    <weather:DoubleToIntStringConverter x:Key="DoubleToIntStringConverter" />
+    <weather:TemperatureUnitToDegreeConverter x:Key="TemperatureUnitToDegreeConverter" />
+
+</ResourceDictionary>

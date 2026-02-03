@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    Flowery.Uno Pattern Assets
+    Include this in any app that uses DaisyPatternedCard with PatternMode=SvgAsset
+    These SVGs are auto-converted to PNGs by Uno.Resizetizer during build
+  -->
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Flowery.Uno\Assets\Patterns\**\*.svg"
+             Link="Flowery.Uno\Assets\Patterns\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "Flowery.Uno Gallery",
+  "display": "standalone",
+  "name": "Flowery.Uno Gallery",
+  "short_name": "Flowery.Uno",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

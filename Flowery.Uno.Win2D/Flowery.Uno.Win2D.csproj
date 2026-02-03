@@ -1,0 +1,54 @@
+<Project Sdk="Uno.Sdk/6.4.53">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net9.0-android;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+    <UnoVersion>6.4.229</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Required for WinRT ABI compatibility with generic collections (e.g., IReadOnlyList<string>) -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Include assets when referenced as ProjectReference / PackageReference (Uno control libraries) -->
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+
+    <!-- Library, not app -->
+    <OutputType>Library</OutputType>
+
+    <IsWindowsTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))</IsWindowsTarget>
+    <IsDesktopTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-desktop'))</IsDesktopTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindowsTarget)' == 'True'">
+    <!-- Required for WinUI on Windows -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platform>x64</Platform>
+
+    <!-- Workaround for UNOB0008: allows building WinUI class library with dotnet build when XAML is present -->
+    <UnoDisableValidateWinAppSDK3548>true</UnoDisableValidateWinAppSDK3548>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+  </ItemGroup>
+
+  <!-- 1. Windows: Native Microsoft Win2D -->
+  <ItemGroup Condition="'$(IsWindowsTarget)' == 'True'">
+    <PackageReference Include="Microsoft.Graphics.Win2D" />
+  </ItemGroup>
+
+  <!-- 2. Skia Desktop: Skia-specific backend.
+       ONLY included for -desktop target to prevent leakage into Android/iOS. -->
+  <ItemGroup Condition="'$(IsDesktopTarget)' == 'True'">
+    <PackageReference Include="Uno.WinUI.Graphics2DSK" />
+  </ItemGroup>
+
+</Project>
+

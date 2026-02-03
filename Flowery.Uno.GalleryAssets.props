@@ -1,0 +1,16 @@
+<Project>
+  <!--
+    Shared asset definitions for Gallery app consumers.
+    Import this file in each consuming project to include Gallery assets directly.
+    This avoids ms-appx path differences between Windows (library layout) and Skia heads.
+
+    With this approach, assets are at ms-appx:///Assets/... on ALL platforms.
+  -->
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Flowery.Uno.Gallery.Core\Assets\**\*">
+      <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

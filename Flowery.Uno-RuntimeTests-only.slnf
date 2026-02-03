@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Flowery.Uno.sln",
+    "projects": [
+      "Flowery.Uno.RuntimeTests.WindowsRunner\\Flowery.Uno.RuntimeTests.WindowsRunner.csproj",
+      "Flowery.Uno.RuntimeTests.SkiaRunner\\Flowery.Uno.RuntimeTests.SkiaRunner.csproj"
+    ]
+  }
+}

@@ -115,8 +115,9 @@ jobs:
 
       - name: Build Gallery App (Windows)
         run: |
-          dotnet publish Flowery.Uno.Gallery.Windows/Flowery.Uno.Gallery.Windows.csproj `
+          dotnet publish Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
             -c Release `
+            -f net9.0-windows10.0.19041 `
             -r win-x64 `
             --self-contained true `
             -o ./publish

@@ -27,9 +27,6 @@ jobs:
       - name: Setup Uno Workloads
         run: dotnet workload install uno-check --skip-manifest-update || true
 
-      - name: Install WebAssembly tools
-        run: dotnet workload install wasm-tools --skip-manifest-update
-
       - name: Install Android workload
         run: dotnet workload install android --skip-manifest-update
 

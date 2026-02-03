@@ -57,5 +57,15 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android --skip-manifest-update
 
+      - name: Restore (Windows only)
+        run: |
+          dotnet restore Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
+            -p:TargetFramework=net9.0-windows10.0.19041 `
+            -p:TargetFrameworks=net9.0-windows10.0.19041
+
       - name: Build Gallery Windows Desktop
-        run: dotnet build Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj -c Release
+        run: |
+          dotnet build Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj `
+            -c Release `
+            -f net9.0-windows10.0.19041 `
+            --no-restore

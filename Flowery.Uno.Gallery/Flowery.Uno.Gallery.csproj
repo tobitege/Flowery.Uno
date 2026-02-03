@@ -160,6 +160,25 @@
           SkipUnchangedFiles="true" />
   </Target>
 
+  <Target Name="ForceCopyWindowsXamlDictionaries"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'"
+          AfterTargets="Publish">
+    <ItemGroup>
+      <_PublishGalleryResources Include="..\Flowery.Uno.Gallery.Core\GalleryResources.xaml" />
+      <_PublishFloweryThemes Include="..\Flowery.Uno\Themes\**\*.xaml" />
+      <_PublishKanbanThemes Include="..\Flowery.Uno.Kanban\Themes\**\*.xaml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PublishGalleryResources)"
+          DestinationFiles="@(_PublishGalleryResources->'$(PublishDir)Flowery.Uno.Gallery.Core\GalleryResources.xaml')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_PublishFloweryThemes)"
+          DestinationFiles="@(_PublishFloweryThemes->'$(PublishDir)Flowery.Uno\Themes\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_PublishKanbanThemes)"
+          DestinationFiles="@(_PublishKanbanThemes->'$(PublishDir)Flowery.Uno.Kanban\Themes\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
   <!-- Import pattern assets for fast PNG-based pattern loading -->
   <Import Project="..\Flowery.Uno.PatternAssets.props" />
 

@@ -12,6 +12,7 @@ using Flowery.Uno.Gallery.Localization;
 using Flowery.Uno.Kanban.Controls;
 using Flowery.Uno.Kanban.Controls.Users;
 using Flowery.Services;
+using Microsoft.UI.Xaml.Markup;
 
 #if WINDOWS || __SKIA__
 using Flowery.Uno.RuntimeTests;
@@ -332,7 +333,11 @@ namespace Flowery.Uno.Gallery
             catch (Exception ex)
             {
                 LogFatal($"EnsureGalleryResources failed for {source}", ex);
+#if WINDOWS
+                return TryAddDictionaryFromDisk(source);
+#else
                 return false;
+#endif
             }
         }
 
@@ -347,6 +352,144 @@ namespace Flowery.Uno.Gallery
                 LogFatal("EnsureGalleryResources failed for XamlControlsResources", ex);
             }
         }
+
+#if WINDOWS
+        private bool TryAddDictionaryFromDisk(string source)
+        {
+            try
+            {
+                const string prefix = "ms-appx:///";
+                if (!source.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                var relativePath = source.Substring(prefix.Length);
+                if (string.Equals(relativePath, "Flowery.Uno.Gallery.Core/GalleryResources.xaml", StringComparison.OrdinalIgnoreCase))
+                {
+                    var galleryPath = ResolveDiskPath(relativePath);
+                    return File.Exists(galleryPath) && TryAddGalleryResourcesFromDisk(galleryPath);
+                }
+
+                if (string.Equals(relativePath, "Flowery.Uno/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase))
+                {
+                    return TryAddFloweryThemesFromDisk();
+                }
+
+                if (string.Equals(relativePath, "Flowery.Uno.Kanban/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase))
+                {
+                    return TryAddKanbanThemesFromDisk();
+                }
+
+                var filePath = ResolveDiskPath(relativePath);
+                return File.Exists(filePath) && TryAddDictionaryFromFile(filePath);
+            }
+            catch (Exception ex)
+            {
+                LogFatal($"EnsureGalleryResources failed for disk fallback {source}", ex);
+                return false;
+            }
+        }
+
+        private bool TryAddGalleryResourcesFromDisk(string galleryResourcesPath)
+        {
+            var xaml = File.ReadAllText(galleryResourcesPath);
+            var stripped = StripMergedDictionaries(xaml);
+            if (!TryAddDictionaryFromXaml(stripped))
+            {
+                return false;
+            }
+
+            TryAddXamlControlsResources();
+            var floweryOk = TryAddFloweryThemesFromDisk();
+            var kanbanOk = TryAddKanbanThemesFromDisk();
+            return floweryOk && kanbanOk;
+        }
+
+        private bool TryAddFloweryThemesFromDisk()
+        {
+            var themesRoot = IOPath.Combine(AppContext.BaseDirectory, "Flowery.Uno", "Themes");
+            var themeFiles = new[]
+            {
+                "DaisyResources.xaml",
+                "DaisyIcons.xaml",
+                "DaisyShared.xaml",
+                "DaisyThemeControls.xaml",
+                "DaisyInputs.xaml",
+                "DaisyButtons.xaml",
+                "DaisyLists.xaml",
+                "DaisySurfaces.xaml",
+                "DaisyLayout.xaml",
+                "DaisyFeedback.xaml",
+                "DaisyWeather.xaml"
+            };
+
+            foreach (var file in themeFiles)
+            {
+                var path = IOPath.Combine(themesRoot, file);
+                if (!TryAddDictionaryFromFile(path))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool TryAddKanbanThemesFromDisk()
+        {
+            var kanbanPath = IOPath.Combine(AppContext.BaseDirectory, "Flowery.Uno.Kanban", "Themes", "DaisyKanban.xaml");
+            return TryAddDictionaryFromFile(kanbanPath);
+        }
+
+        private bool TryAddDictionaryFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                return false;
+            }
+
+            var xaml = File.ReadAllText(filePath);
+            return TryAddDictionaryFromXaml(xaml);
+        }
+
+        private bool TryAddDictionaryFromXaml(string xaml)
+        {
+            if (XamlReader.Load(xaml) is ResourceDictionary dictionary)
+            {
+                Resources.MergedDictionaries.Add(dictionary);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static string StripMergedDictionaries(string xaml)
+        {
+            const string startTag = "<ResourceDictionary.MergedDictionaries>";
+            const string endTag = "</ResourceDictionary.MergedDictionaries>";
+            var startIndex = xaml.IndexOf(startTag, StringComparison.Ordinal);
+            if (startIndex < 0)
+            {
+                return xaml;
+            }
+
+            var endIndex = xaml.IndexOf(endTag, startIndex, StringComparison.Ordinal);
+            if (endIndex < 0)
+            {
+                return xaml;
+            }
+
+            endIndex += endTag.Length;
+            return xaml.Remove(startIndex, endIndex - startIndex);
+        }
+
+        private static string ResolveDiskPath(string relativePath)
+        {
+            var normalized = relativePath.Replace('/', IOPath.DirectorySeparatorChar);
+            return IOPath.Combine(AppContext.BaseDirectory, normalized);
+        }
+#endif
 
 #if WINDOWS
         private void EnsureRuntimeTestThemeLayout()

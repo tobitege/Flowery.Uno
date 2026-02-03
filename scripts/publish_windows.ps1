@@ -137,13 +137,17 @@ if (-not (Test-Path $floweryBuildOutput)) {
 Invoke-DotnetStep -Title "Build Flowery.Uno (windows only)" -Args (@(
     "build", $floweryProject,
     "-c", $Configuration,
-    "-f", $windowsTfm
+    "-f", $windowsTfm,
+    "-p:TargetFramework=$windowsTfm",
+    "-p:TargetFrameworks=$windowsTfm"
 ) + $commonMsbuildArgs)
 
 Invoke-DotnetStep -Title "Build Flowery.Uno.Win2D (windows only)" -Args (@(
     "build", $win2dProject,
     "-c", $Configuration,
     "-f", $windowsTfm,
+    "-p:TargetFramework=$windowsTfm",
+    "-p:TargetFrameworks=$windowsTfm",
     "-p:BuildProjectReferences=false"
 ) + $commonMsbuildArgs)
 

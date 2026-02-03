@@ -169,6 +169,10 @@
       <_PublishKanbanThemes Include="..\Flowery.Uno.Kanban\Themes\**\*.xaml" />
       <!-- Publish output is missing compiled XAML (.xbf) files; copy them from TargetDir -->
       <_PublishXbf Include="$(TargetDir)**\*.xbf" />
+      <!-- The app expects theme XBFs under the library layout paths (ms-appx:///Flowery.Uno/... etc). -->
+      <_PublishFloweryThemeXbf Include="$(TargetDir)Themes\Daisy*.xbf"
+                               Exclude="$(TargetDir)Themes\DaisyKanban.xbf" />
+      <_PublishKanbanThemeXbf Include="$(TargetDir)Themes\DaisyKanban.xbf;$(TargetDir)Themes\Generic.xbf" />
     </ItemGroup>
     <Copy SourceFiles="@(_PublishGalleryResources)"
           DestinationFiles="@(_PublishGalleryResources->'$(PublishDir)Flowery.Uno.Gallery.Core\GalleryResources.xaml')"
@@ -181,6 +185,13 @@
           SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(_PublishXbf)"
           DestinationFiles="@(_PublishXbf->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(PublishDir)Flowery.Uno\Themes;$(PublishDir)Flowery.Uno.Kanban\Themes" />
+    <Copy SourceFiles="@(_PublishFloweryThemeXbf)"
+          DestinationFiles="@(_PublishFloweryThemeXbf->'$(PublishDir)Flowery.Uno\Themes\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_PublishKanbanThemeXbf)"
+          DestinationFiles="@(_PublishKanbanThemeXbf->'$(PublishDir)Flowery.Uno.Kanban\Themes\%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
   </Target>
 

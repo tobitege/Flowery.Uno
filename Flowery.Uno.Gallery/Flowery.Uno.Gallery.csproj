@@ -118,6 +118,7 @@
 
   <!-- Windows (WinUI) needs Content items with different packaging behavior -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="MSTest.Analyzers" VersionOverride="4.0.2" />
     <Content Include="..\Flowery.Uno.Gallery.Core\Assets\**\*">
       <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <TargetPath>Assets\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>

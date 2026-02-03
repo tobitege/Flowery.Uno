@@ -40,18 +40,13 @@ namespace Flowery.Uno.Gallery.Examples
                 }
             }
 #endif
-            uri = new Uri($"ms-appx:///{GetAssemblyName()}/{trimmed}", UriKind.Absolute);
+            uri = new Uri($"ms-appx:///{trimmed}", UriKind.Absolute);
             return new BitmapImage(uri);
-        }
-
-        private static string GetAssemblyName()
-        {
-            return typeof(GalleryAssetHelper).Assembly.GetName().Name ?? "Flowery.Uno.Gallery";
         }
 
 #if (__WASM__ || HAS_UNO_WASM) && !(HAS_UNO_SKIA || __UNO_SKIA__ || __SKIA__)
         private static string? _browserOrigin;
-        
+
         private static string? GetBrowserOrigin()
         {
             if (!OperatingSystem.IsBrowser())

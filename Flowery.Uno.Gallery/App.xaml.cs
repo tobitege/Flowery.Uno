@@ -371,6 +371,17 @@ namespace Flowery.Uno.Gallery
                     return File.Exists(galleryPath) && TryAddGalleryResourcesFromDisk(galleryPath);
                 }
 
+                if (string.Equals(relativePath, "GalleryResources.xaml", StringComparison.OrdinalIgnoreCase))
+                {
+                    var galleryPath = ResolveDiskPath(relativePath);
+                    if (!File.Exists(galleryPath))
+                    {
+                        galleryPath = ResolveDiskPath("Flowery.Uno.Gallery.Core/GalleryResources.xaml");
+                    }
+
+                    return File.Exists(galleryPath) && TryAddGalleryResourcesFromDisk(galleryPath);
+                }
+
                 if (string.Equals(relativePath, "Flowery.Uno/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase))
                 {
                     return TryAddFloweryThemesFromDisk();
@@ -421,7 +432,8 @@ namespace Flowery.Uno.Gallery
                 "DaisySurfaces.xaml",
                 "DaisyLayout.xaml",
                 "DaisyFeedback.xaml",
-                "DaisyWeather.xaml"
+                "DaisyWeather.xaml",
+                "DaisyControls.xaml"
             };
 
             foreach (var file in themeFiles)
@@ -450,6 +462,11 @@ namespace Flowery.Uno.Gallery
             }
 
             var xaml = File.ReadAllText(filePath);
+            if (xaml.IndexOf("<ResourceDictionary.MergedDictionaries>", StringComparison.Ordinal) >= 0)
+            {
+                xaml = StripMergedDictionaries(xaml);
+            }
+
             return TryAddDictionaryFromXaml(xaml);
         }
 

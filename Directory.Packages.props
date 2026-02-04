@@ -13,7 +13,7 @@
     <PackageVersion Include="MSTest" Version="3.11.0" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.11.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.11.0" />
-    <PackageVersion Include="MSTest.Analyzers" Version="3.11.0" />
+    <PackageVersion Include="MSTest.Analyzers" Version="4.1.0" />
     <PackageVersion Include="Combinatorial.MSTest" Version="1.0.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.0.2" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.9.0" />

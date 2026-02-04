@@ -5,14 +5,8 @@ name: CI Build
 
 on:
   workflow_dispatch:
-  # Disabled automatic triggers to avoid running on first push.
-  # Uncomment to restore:
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
+  push:
+  pull_request:
 
 jobs:
   build-library:

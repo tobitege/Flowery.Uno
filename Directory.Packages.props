@@ -16,7 +16,7 @@
     <PackageVersion Include="MSTest.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Combinatorial.MSTest" Version="1.0.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.0.2" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.9.0" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.1.0" />
 
     <PackageVersion Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
     <PackageVersion Include="Uno.WinUI.Graphics2DSK" Version="$(UnoVersion)" />

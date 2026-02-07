@@ -178,11 +178,29 @@ jobs:
 
       - name: Publish to NuGet
         if: ${{ inputs.skip_nuget != true }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          dotnet nuget push ./final/*.nupkg \
-            -k ${{ secrets.NUGET_API_KEY }} \
-            -s https://api.nuget.org/v3/index.json \
-            --skip-duplicate
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::NUGET_API_KEY secret is missing or empty. Configure it in repository secrets."
+            exit 1
+          fi
+
+          shopt -s nullglob
+          packages=(./final/*.nupkg)
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "::error::No .nupkg files found in ./final. Check the pack/upload/download steps."
+            exit 1
+          fi
+
+          for pkg in "${packages[@]}"; do
+            echo "Publishing $pkg"
+            dotnet nuget push "$pkg" \
+              --api-key "$NUGET_API_KEY" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done
+
           echo "✅ Published to NuGet.org"
 
       - name: Create and push tag

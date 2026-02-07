@@ -1,4 +1,13 @@
 <Project>
+  <PropertyGroup>
+    <Version Condition="'$(Version)' == '' or '$(Version)' == '1.0.0'">0.1.1</Version>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.1.1.0</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">0.1.1.0</FileVersion>
+    <Authors Condition="'$(Authors)' == '' or '$(Authors)' == '$(MSBuildProjectName)'">tobitege</Authors>
+    <PackageProjectUrl Condition="'$(PackageProjectUrl)' == ''">https://github.com/tobitege/Flowery.Uno</PackageProjectUrl>
+    <RepositoryUrl Condition="'$(RepositoryUrl)' == ''">https://github.com/tobitege/Flowery.Uno</RepositoryUrl>
+  </PropertyGroup>
+
   <!-- Android: remove resizetizer outputs with scale-125 to avoid unsupported DPI mapping -->
   <Target Name="RemoveAndroidScale125ResizetizerOutputs"
           AfterTargets="UnoResizetizeImages"

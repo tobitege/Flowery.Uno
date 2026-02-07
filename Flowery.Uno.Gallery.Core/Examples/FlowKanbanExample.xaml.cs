@@ -10,6 +10,10 @@ namespace Flowery.Uno.Gallery.Examples
 {
     public sealed partial class FlowKanbanExample : ScrollableExamplePage
     {
+        private static readonly object UserProviderInitLock = new();
+        private static readonly object ResourceInitLock = new();
+        private static bool _kanbanResourcesLoaded;
+        private const string KanbanDictionaryUri = "ms-appx:///Flowery.Uno.Kanban/Themes/Generic.xaml";
         private FlowKanbanManager? _kanbanManager;
 
         public FlowKanbanExample()
@@ -32,40 +36,8 @@ namespace Flowery.Uno.Gallery.Examples
             if (DemoKanban == null)
                 return;
 
-            if (FlowKanban.DefaultUserProvider != null)
-            {
-                DemoKanban.UserProvider = FlowKanban.DefaultUserProvider;
-            }
-            else
-            {
-                var demoProvider = new CompositeUserProvider();
-                demoProvider.RegisterProvider(new LocalUserProvider(includeDemoUsers: true));
-                try
-                {
-                    demoProvider.RegisterProvider(new GitHubUserProvider(new PasswordVaultSecureStorage(), loadTokenFromStorage: true));
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"FlowKanbanExample GitHub provider init failed: {ex.GetType().Name} - {ex.Message}");
-                }
-                try
-                {
-                    demoProvider.RegisterProvider(new OAuthUserProvider(
-                        providerKey: "oidc-demo",
-                        displayName: "OIDC Demo",
-                        authority: "https://demo.duendesoftware.com/",
-                        clientId: "interactive.confidential",
-                        clientSecret: "secret",
-                        scope: "openid profile api offline_access",
-                        secureStorage: new PasswordVaultSecureStorage(),
-                        loadTokenFromStorage: true));
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"FlowKanbanExample OIDC provider init failed: {ex.GetType().Name} - {ex.Message}");
-                }
-                DemoKanban.UserProvider = demoProvider;
-            }
+            EnsureKanbanResourcesLoaded();
+            DemoKanban.UserProvider = EnsureDefaultUserProvider();
 
             DemoKanban.EditCardCommand = new RelayCommand<FlowTask>(async task =>
             {
@@ -94,6 +66,114 @@ namespace Flowery.Uno.Gallery.Examples
                 DemoKanban.Board = CreateSampleKanbanBoard();
             }
 #pragma warning restore CA1416
+        }
+
+        private static IUserProvider EnsureDefaultUserProvider()
+        {
+#pragma warning disable CA1416 // net*-desktop TFMs aren't OS-specific; Kanban providers are Uno-platform supported.
+            if (FlowKanban.DefaultUserProvider != null)
+            {
+                return FlowKanban.DefaultUserProvider;
+            }
+
+            lock (UserProviderInitLock)
+            {
+                if (FlowKanban.DefaultUserProvider != null)
+                {
+                    return FlowKanban.DefaultUserProvider;
+                }
+
+                var demoProvider = new CompositeUserProvider();
+                demoProvider.RegisterProvider(new LocalUserProvider(includeDemoUsers: true));
+                try
+                {
+                    demoProvider.RegisterProvider(new GitHubUserProvider(new PasswordVaultSecureStorage(), loadTokenFromStorage: true));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"FlowKanbanExample GitHub provider init failed: {ex.GetType().Name} - {ex.Message}");
+                }
+
+                try
+                {
+                    demoProvider.RegisterProvider(new OAuthUserProvider(
+                        providerKey: "oidc-demo",
+                        displayName: "OIDC Demo",
+                        authority: "https://demo.duendesoftware.com/",
+                        clientId: "interactive.confidential",
+                        clientSecret: "secret",
+                        scope: "openid profile api offline_access",
+                        secureStorage: new PasswordVaultSecureStorage(),
+                        loadTokenFromStorage: true));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"FlowKanbanExample OIDC provider init failed: {ex.GetType().Name} - {ex.Message}");
+                }
+
+                FlowKanban.DefaultUserProvider = demoProvider;
+                return demoProvider;
+            }
+#pragma warning restore CA1416
+        }
+
+        private static void EnsureKanbanResourcesLoaded()
+        {
+            if (_kanbanResourcesLoaded)
+            {
+                return;
+            }
+
+            lock (ResourceInitLock)
+            {
+                if (_kanbanResourcesLoaded)
+                {
+                    return;
+                }
+
+                var appResources = Application.Current?.Resources;
+                if (appResources == null)
+                {
+                    return;
+                }
+
+                if (ContainsDictionarySource(appResources, KanbanDictionaryUri))
+                {
+                    _kanbanResourcesLoaded = true;
+                    return;
+                }
+
+                try
+                {
+                    appResources.MergedDictionaries.Add(new ResourceDictionary
+                    {
+                        Source = new Uri(KanbanDictionaryUri)
+                    });
+                    _kanbanResourcesLoaded = true;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"FlowKanbanExample Kanban resources init failed: {ex.GetType().Name} - {ex.Message}");
+                }
+            }
+        }
+
+        private static bool ContainsDictionarySource(ResourceDictionary dictionary, string source)
+        {
+            if (dictionary.Source is Uri uri && string.Equals(uri.ToString(), source, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            foreach (var merged in dictionary.MergedDictionaries)
+            {
+                if (merged != null && ContainsDictionarySource(merged, source))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static FlowKanbanData CreateSampleKanbanBoard()

@@ -61,15 +61,15 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android --skip-manifest-update
 
-      - name: Verify version in csproj
+      - name: Verify version from evaluated MSBuild properties
         run: |
-          CSPROJ_VERSION=$(grep -oP '(?<=<Version>)[^<]+' Flowery.Uno/Flowery.Uno.csproj)
-          if [ "$CSPROJ_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
-            echo "::error::Version mismatch! csproj has $CSPROJ_VERSION but you specified ${{ needs.validate.outputs.version }}"
-            echo "::error::Please update Flowery.Uno/Flowery.Uno.csproj first!"
+          EVALUATED_VERSION=$(dotnet msbuild Flowery.Uno/Flowery.Uno.csproj -nologo -getProperty:Version | tail -n 1 | tr -d '[:space:]')
+          if [ "$EVALUATED_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
+            echo "::error::Version mismatch! evaluated project version is $EVALUATED_VERSION but you specified ${{ needs.validate.outputs.version }}"
+            echo "::error::Please update the centralized version metadata (Directory.Build.*) or project metadata."
             exit 1
           fi
-          echo "✅ Version matches: $CSPROJ_VERSION"
+          echo "✅ Version matches: $EVALUATED_VERSION"
 
       - name: Build library
         run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -o ./build-output

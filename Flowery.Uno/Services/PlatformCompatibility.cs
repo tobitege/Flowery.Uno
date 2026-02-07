@@ -18,6 +18,17 @@ namespace Flowery.Services
     /// </summary>
     internal static class PlatformCompatibility
     {
+        private enum ApiSupportState
+        {
+            Unknown = 0,
+            Supported = 1,
+            NotSupported = 2
+        }
+
+        private static ApiSupportState _strokeStartLineCapSupport = ApiSupportState.Unknown;
+        private static ApiSupportState _strokeEndLineCapSupport = ApiSupportState.Unknown;
+        private static ApiSupportState _strokeLineJoinSupport = ApiSupportState.Unknown;
+
         public static bool IsSkiaBackend { get; } = DetectSkiaDesktop();
         public static bool IsWasmBackend { get; } = DetectWasmBackend();
         public static bool IsWindows { get; } = DetectWindows();
@@ -41,38 +52,74 @@ namespace Flowery.Services
 
             if (setStartCap)
             {
-                try
-                {
-                    shape.StrokeStartLineCap = PenLineCap.Round;
-                }
-                catch (NotImplementedException)
-                {
-                    // StrokeStartLineCap not implemented on this platform; ignore.
-                }
+                TrySetStrokeStartLineCap(shape);
             }
 
             if (setEndCap)
             {
-                try
-                {
-                    shape.StrokeEndLineCap = PenLineCap.Round;
-                }
-                catch (NotImplementedException)
-                {
-                    // StrokeEndLineCap not implemented on this platform; ignore.
-                }
+                TrySetStrokeEndLineCap(shape);
             }
 
             if (setLineJoin)
             {
-                try
-                {
-                    shape.StrokeLineJoin = PenLineJoin.Round;
-                }
-                catch (NotImplementedException)
-                {
-                    // StrokeLineJoin not implemented on this platform; ignore.
-                }
+                TrySetStrokeLineJoin(shape);
+            }
+        }
+
+        private static void TrySetStrokeStartLineCap(Shape shape)
+        {
+            if (_strokeStartLineCapSupport == ApiSupportState.NotSupported)
+            {
+                return;
+            }
+
+            try
+            {
+                shape.StrokeStartLineCap = PenLineCap.Round;
+                _strokeStartLineCapSupport = ApiSupportState.Supported;
+            }
+            catch (NotImplementedException)
+            {
+                _strokeStartLineCapSupport = ApiSupportState.NotSupported;
+                // Unsupported on this runtime; skip future assignments to avoid repeated first-chance exceptions.
+            }
+        }
+
+        private static void TrySetStrokeEndLineCap(Shape shape)
+        {
+            if (_strokeEndLineCapSupport == ApiSupportState.NotSupported)
+            {
+                return;
+            }
+
+            try
+            {
+                shape.StrokeEndLineCap = PenLineCap.Round;
+                _strokeEndLineCapSupport = ApiSupportState.Supported;
+            }
+            catch (NotImplementedException)
+            {
+                _strokeEndLineCapSupport = ApiSupportState.NotSupported;
+                // Unsupported on this runtime; skip future assignments to avoid repeated first-chance exceptions.
+            }
+        }
+
+        private static void TrySetStrokeLineJoin(Shape shape)
+        {
+            if (_strokeLineJoinSupport == ApiSupportState.NotSupported)
+            {
+                return;
+            }
+
+            try
+            {
+                shape.StrokeLineJoin = PenLineJoin.Round;
+                _strokeLineJoinSupport = ApiSupportState.Supported;
+            }
+            catch (NotImplementedException)
+            {
+                _strokeLineJoinSupport = ApiSupportState.NotSupported;
+                // Unsupported on this runtime; skip future assignments to avoid repeated first-chance exceptions.
             }
         }
 

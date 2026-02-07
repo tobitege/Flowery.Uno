@@ -1,5 +1,3 @@
-using Flowery.Controls;
-using Flowery.Services;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
@@ -27,12 +25,6 @@ namespace Flowery.Uno.Gallery
             InitializeComponent();
 
             InitializeWindowPersistence();
-
-            // Trigger size propagation after visual tree is loaded
-            if (Content is FrameworkElement root)
-            {
-                root.Loaded += OnRootLoaded;
-            }
         }
 
         private void InitializeWindowPersistence()
@@ -61,17 +53,6 @@ namespace Flowery.Uno.Gallery
             Closed += OnWindowClosed;
 
             Title = "Flowery.Uno Gallery";
-        }
-
-        private void OnRootLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is FrameworkElement root)
-            {
-                root.Loaded -= OnRootLoaded;
-            }
-
-            // Propagate current size to all controls now that visual tree is ready
-            FlowerySizeManager.RefreshAllSizes();
         }
 
         private void ApplyWindowBounds()

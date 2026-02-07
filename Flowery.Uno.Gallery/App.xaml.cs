@@ -5,12 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using IOPath = System.IO.Path;
-using Flowery.Integrations.Uno.GitHub;
-using Flowery.Integrations.Uno.OAuth;
 using Flowery.Theming;
 using Flowery.Uno.Gallery.Localization;
 using Flowery.Uno.Kanban.Controls;
-using Flowery.Uno.Kanban.Controls.Users;
 using Flowery.Services;
 using Microsoft.UI.Xaml.Markup;
 
@@ -24,7 +21,6 @@ namespace Flowery.Uno.Gallery
     {
         private Window? _window;
         internal static string[]? RuntimeArguments { get; set; }
-        internal static ICompositeUserProvider? KanbanUserProvider { get; private set; }
 
         public App()
         {
@@ -101,7 +97,6 @@ namespace Flowery.Uno.Gallery
 #endif
 
             ConfigureStateStorage();
-            ConfigureKanbanUserProvider();
             // only for demo purposes we enable the user management button!
             // FlowKanban is SINGLE-USER only for time being!
             FlowKanban.IsUserManagementButtonEnabled = true;
@@ -137,33 +132,6 @@ namespace Flowery.Uno.Gallery
 #else
             StateStorageProvider.Configure(new FileStateStorage("Flowery.Uno.Gallery"));
 #endif
-        }
-
-        private static void ConfigureKanbanUserProvider()
-        {
-#pragma warning disable CA1416 // net*-desktop TFMs aren't OS-specific; Kanban providers are Uno-platform supported.
-            var provider = new CompositeUserProvider();
-            provider.RegisterProvider(new LocalUserProvider(includeDemoUsers: true));
-            provider.RegisterProvider(new GitHubUserProvider(new PasswordVaultSecureStorage(), loadTokenFromStorage: true));
-            try
-            {
-                provider.RegisterProvider(new OAuthUserProvider(
-                    providerKey: "oidc-demo",
-                    displayName: "OIDC Demo",
-                    authority: "https://demo.duendesoftware.com/",
-                    clientId: "interactive.confidential",
-                    clientSecret: "secret",
-                    scope: "openid profile api offline_access",
-                    secureStorage: new PasswordVaultSecureStorage(),
-                    loadTokenFromStorage: true));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[App] Demo OIDC provider init failed: {ex.GetType().Name} - {ex.Message}");
-            }
-            KanbanUserProvider = provider;
-            FlowKanban.DefaultUserProvider = provider;
-#pragma warning restore CA1416
         }
 
 #if WINDOWS || __SKIA__
@@ -300,19 +268,13 @@ namespace Flowery.Uno.Gallery
             }
 #endif
 
-            // ALWAYS load basic controls resources first, as everything depends on them (brushes, styles).
-            TryAddXamlControlsResources();
-
-            // Load fundamental project resources first (brushes and shared styles)
-            var floweryOk = TryAddDictionary("ms-appx:///Flowery.Uno/Themes/Generic.xaml");
-            var kanbanOk = TryAddDictionary("ms-appx:///Flowery.Uno.Kanban/Themes/Generic.xaml");
-
-            // Then load gallery-specific resources which might depend on the above
+            // GalleryResources already includes XamlControlsResources and Flowery.Uno Generic.xaml.
+            // Load it first so shared dependencies are available before Kanban resources.
             var galleryOk =
                 TryAddDictionary("ms-appx:///Flowery.Uno.Gallery.Core/GalleryResources.xaml") ||
                 TryAddDictionary("ms-appx:///GalleryResources.xaml");
 
-            if (!floweryOk || !kanbanOk || !galleryOk)
+            if (!galleryOk)
             {
                 throw new InvalidOperationException("Failed to load one or more gallery resource dictionaries.");
             }

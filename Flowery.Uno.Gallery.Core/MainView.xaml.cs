@@ -23,6 +23,7 @@ namespace Flowery.Uno.Gallery
 {
     public sealed partial class MainView : UserControl
     {
+        private const string HomeTabHeader = "Sidebar_Home";
         private const double SidebarWidth = 250;
         private const double MinContentWidth = 400;
         private const double MaxSidebarWidthPercent = 0.35;
@@ -43,6 +44,10 @@ namespace Flowery.Uno.Gallery
         private readonly RectangleGeometry _headerClip = new();
         private bool _suppressScrollEvents;
         private Microsoft.UI.Dispatching.DispatcherQueueTimer? _scrollSuppressTimer;
+        private bool _deferInitialSidebarSelection = true;
+        private bool _initialRestoreQueued;
+        private string? _deferredInitialTabHeader;
+        private string? _deferredInitialSectionId;
 
         public MainView()
         {
@@ -123,17 +128,8 @@ namespace Flowery.Uno.Gallery
 
             FlowerySizeManager.SizeChanged += OnGlobalSizeChanged;
 
-            if (ComponentSidebar != null)
-            {
-                // Sidebar state restoration now triggers IteSelected event
-                // which this view handles via ComponentSidebar_ItemSelected.
-                // We just need to check if no default was selected.
-                var (lastItemId, _) = ComponentSidebar.GetLastViewedItem();
-                if (lastItemId != null)
-                    return;
-            }
-
-            NavigateToCategory("Sidebar_Home");
+            // Always render Home first for fast first content, then restore last selection after first UI pass.
+            NavigateToCategory(HomeTabHeader);
         }
 
         private void OnCultureChanged(object? sender, string cultureName)
@@ -168,6 +164,7 @@ namespace Flowery.Uno.Gallery
             }
 
             ApplyGlobalSizeToControls(this, FlowerySizeManager.CurrentSize);
+            QueueDeferredInitialNavigation();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -608,6 +605,14 @@ namespace Flowery.Uno.Gallery
 
         public void ComponentSidebar_ItemSelected(object sender, SidebarItemSelectedEventArgs e)
         {
+            if (_deferInitialSidebarSelection &&
+                !string.Equals(e.Item.TabHeader, HomeTabHeader, StringComparison.OrdinalIgnoreCase))
+            {
+                _deferredInitialTabHeader = e.Item.TabHeader;
+                _deferredInitialSectionId = e.Item.Id;
+                return;
+            }
+
             NavigateToCategory(e.Item.TabHeader, e.Item.Id);
             if (MainSplitView != null && MainSplitView.DisplayMode == SplitViewDisplayMode.Overlay)
             {
@@ -814,6 +819,43 @@ namespace Flowery.Uno.Gallery
                     }
                 }
             }
+        }
+
+        private void QueueDeferredInitialNavigation()
+        {
+            if (_initialRestoreQueued)
+                return;
+
+            _initialRestoreQueued = true;
+
+            if (DispatcherQueue == null)
+            {
+                ApplyDeferredInitialNavigation();
+                return;
+            }
+
+            // Two low-priority hops to let the Home view render before navigating to a heavy restored page.
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, ApplyDeferredInitialNavigation);
+            });
+        }
+
+        private void ApplyDeferredInitialNavigation()
+        {
+            _deferInitialSidebarSelection = false;
+
+            if (string.IsNullOrWhiteSpace(_deferredInitialTabHeader) ||
+                string.Equals(_deferredInitialTabHeader, HomeTabHeader, StringComparison.OrdinalIgnoreCase))
+            {
+                _deferredInitialTabHeader = null;
+                _deferredInitialSectionId = null;
+                return;
+            }
+
+            NavigateToCategory(_deferredInitialTabHeader, _deferredInitialSectionId);
+            _deferredInitialTabHeader = null;
+            _deferredInitialSectionId = null;
         }
 
         private static ScrollViewer? FindFirstScrollViewer(DependencyObject root)

@@ -72,10 +72,10 @@ jobs:
           echo "✅ Version matches: $EVALUATED_VERSION"
 
       - name: Build library
-        run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -o ./build-output
+        run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -o ./build-output -p:CheckEolWorkloads=false
 
       - name: Create NuGet package
-        run: dotnet pack Flowery.Uno/Flowery.Uno.csproj -c Release -o ./artifacts
+        run: dotnet pack Flowery.Uno/Flowery.Uno.csproj -c Release -o ./artifacts -p:CheckEolWorkloads=false
 
       - name: Create library zip
         run: |

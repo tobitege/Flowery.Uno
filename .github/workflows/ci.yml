@@ -20,10 +20,10 @@ jobs:
           global-json-file: global.json
 
       - name: Setup Uno Workloads
-        run: dotnet workload install uno-check --skip-manifest-update || true
+        run: dotnet workload install uno-check || true
 
       - name: Install Android workload
-        run: dotnet workload install android --skip-manifest-update
+        run: dotnet workload install android
 
       - name: Install Uno.Check
         run: dotnet tool install -g Uno.Check || true
@@ -41,13 +41,13 @@ jobs:
           global-json-file: global.json
 
       - name: Setup Uno Workloads
-        run: dotnet workload install uno-check --skip-manifest-update || true
+        run: dotnet workload install uno-check || true
 
       - name: Install WebAssembly tools
-        run: dotnet workload install wasm-tools --skip-manifest-update
+        run: dotnet workload install wasm-tools
 
       - name: Install Android workload
-        run: dotnet workload install android --skip-manifest-update
+        run: dotnet workload install android
 
       - name: Restore (Windows only)
         run: |

@@ -74,38 +74,52 @@ Write-Host ""
 
 Push-Location $projectPath
 try {
+    $restoreArgs = @(
+        "-p:TargetFramework=$targetFramework",
+        "-p:TargetFrameworks=$targetFramework",
+        "-p:CheckEolWorkloads=false",
+        "-p:CheckEolTargetFramework=false"
+    )
+    $buildArgs = @(
+        "-c", $Configuration,
+        "-f", $targetFramework,
+        "-p:TargetFrameworks=$targetFramework",
+        "-p:CheckEolWorkloads=false",
+        "-p:CheckEolTargetFramework=false"
+    )
+
     if ($Rebuild) {
         Write-Host "Restoring packages..." -ForegroundColor Yellow
-        dotnet restore
+        dotnet restore @restoreArgs
         if ($LASTEXITCODE -ne 0) {
             Write-Host "Restore failed with exit code $LASTEXITCODE" -ForegroundColor Red
             exit $LASTEXITCODE
         }
-        
+
         Write-Host "Building with -t:Rebuild..." -ForegroundColor Yellow
-        dotnet build -c $Configuration -f $targetFramework -t:Rebuild
+        dotnet build @buildArgs -t:Rebuild
     } else {
         Write-Host "Building..." -ForegroundColor Yellow
-        dotnet build -c $Configuration -f $targetFramework
+        dotnet build @buildArgs
     }
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Build failed with exit code $LASTEXITCODE" -ForegroundColor Red
         exit $LASTEXITCODE
     }
-    
+
     # Find the wwwroot folder in the build output
     # The structure can be either:
     # - bin/Debug/Flowery.Uno.Gallery.Browser/net9.0-browserwasm/wwwroot (older)
     # - bin/Debug/Flowery.Uno.Gallery.Browser/net9.0-browserwasm/browser-wasm/wwwroot (newer)
     $baseBuildPath = Join-Path $repoRoot "bin\$Configuration\$Project\$targetFramework"
     $wwwrootPath = Join-Path $baseBuildPath "wwwroot"
-    
+
     if (-not (Test-Path $wwwrootPath)) {
         # Check browser-wasm subfolder
         $wwwrootPath = Join-Path $baseBuildPath "browser-wasm\wwwroot"
     }
-    
+
     if (-not (Test-Path $wwwrootPath)) {
         Write-Host "ERROR: wwwroot folder not found" -ForegroundColor Red
         Write-Host "Looking for wwwroot in build output..." -ForegroundColor Yellow
@@ -118,16 +132,16 @@ try {
             exit 1
         }
     }
-    
+
     Write-Host ""
     Write-Host "Build successful!" -ForegroundColor Green
-    
+
     # Create _framework symlink if it doesn't exist
     # uno-bootstrap.js expects runtime files at /_framework/dotnet.js
     # but they're in the parent folder (net9.0-browserwasm)
     $frameworkLink = Join-Path $wwwrootPath "_framework"
     $parentPath = Split-Path $wwwrootPath -Parent
-    
+
     if (-not (Test-Path $frameworkLink)) {
         Write-Host "Creating _framework symlink..." -ForegroundColor Yellow
         # Use junction on Windows (works without admin rights)
@@ -138,19 +152,19 @@ try {
             Copy-Item "$parentPath\dotnet.*" $frameworkLink -Force
         }
     }
-    
+
     # Generate blazor.boot.json if it doesn't exist
     # This file is required by uno-bootstrap.js but only generated during publish
     $bootJsonPath = Join-Path $frameworkLink "blazor.boot.json"
     if (-not (Test-Path $bootJsonPath)) {
         Write-Host "Generating blazor.boot.json..." -ForegroundColor Yellow
-        
+
         # Find all DLL files in the build output
         $assemblies = @{}
         Get-ChildItem -Path $parentPath -Filter "*.dll" | ForEach-Object {
             $assemblies[$_.Name] = ""
         }
-        
+
         $bootJson = @{
             mainAssemblyName = "$Project.dll"
             globalizationMode = "icu"
@@ -175,15 +189,15 @@ try {
             }
             config = @()
         }
-        
+
         $bootJson | ConvertTo-Json -Depth 10 | Set-Content -Path $bootJsonPath -Encoding UTF8
     }
-    
+
     Write-Host "Serving from: $wwwrootPath" -ForegroundColor Cyan
     $fullPath = (Resolve-Path $wwwrootPath).Path
     Write-Host "Full local path: $fullPath" -ForegroundColor Gray
     Write-Host ""
-    
+
     # Open browser once the server is listening
     if (-not $NoBrowser) {
         Start-Job -ScriptBlock {
@@ -205,7 +219,7 @@ try {
             Start-Process $url
         } -ArgumentList $url, $Port | Out-Null
     }
-    
+
     # Serve from wwwroot folder
     Push-Location $wwwrootPath
     try {
@@ -213,7 +227,7 @@ try {
     } finally {
         Pop-Location
     }
-    
+
 } finally {
     Pop-Location
 }

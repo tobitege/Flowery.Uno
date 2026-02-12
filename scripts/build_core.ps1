@@ -67,34 +67,34 @@ function Initialize-BuildEnvironment {
 
     # Locate MSBuild via vswhere
     $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-    if (-not (Test-Path $vswhere)) { 
+    if (-not (Test-Path $vswhere)) {
         Write-Error "vswhere.exe not found."
-        exit 1 
+        exit 1
     }
 
     $vsPath = & $vswhere -latest -property installationPath
-    if (-not $vsPath) { 
+    if (-not $vsPath) {
         Write-Error "No Visual Studio found."
-        exit 1 
+        exit 1
     }
 
     $script:MSBuildPath = Join-Path $vsPath "MSBuild\Current\Bin\MSBuild.exe"
-    if (-not (Test-Path $script:MSBuildPath)) { 
+    if (-not (Test-Path $script:MSBuildPath)) {
         Write-Error "MSBuild not found."
-        exit 1 
+        exit 1
     }
 
     # Setup logging
     $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
     $logsDir = Join-Path $repoRoot "logs"
-    if (-not (Test-Path $logsDir)) { 
-        New-Item -ItemType Directory -Path $logsDir | Out-Null 
+    if (-not (Test-Path $logsDir)) {
+        New-Item -ItemType Directory -Path $logsDir | Out-Null
     }
     $script:LogFile = Join-Path $logsDir $LogFileName
 
     # Clear previous log
-    if (Test-Path $script:LogFile) { 
-        Remove-Item $script:LogFile 
+    if (Test-Path $script:LogFile) {
+        Remove-Item $script:LogFile
     }
 
     $script:BuildCoreInitialized = $true
@@ -142,15 +142,16 @@ function Invoke-ProjectBuild {
 
     # Build arguments
     $target = if ($Rebuild) { "Rebuild" } else { "Build" }
-    $buildArgs = @("$Project", "-t:$target", "-verbosity:normal", "-nologo", "-restore", "-p:Configuration=$Configuration")
+    $buildArgs = @("$Project", "-t:$target", "-verbosity:normal", "-nologo", "-restore", "-p:Configuration=$Configuration", "-p:CheckEolWorkloads=false", "-p:CheckEolTargetFramework=false")
     if ($Framework) {
         $buildArgs += "-p:TargetFramework=$Framework"
+        $buildArgs += "-p:TargetFrameworks=$Framework"
     }
 
     # Run MSBuild
     $stdout = ""
     $stderr = ""
-    
+
     if ($script:VerboseOutput) {
         # In verbose mode, we still need to capture output to count warnings
         $pInfo = New-Object System.Diagnostics.ProcessStartInfo
@@ -169,7 +170,7 @@ function Invoke-ProjectBuild {
         $stderr = $p.StandardError.ReadToEnd()
         $p.WaitForExit()
         $exitCode = $p.ExitCode
-        
+
         # Print to console in verbose mode
         Write-Host $stdout
         if ($stderr) { Write-Host $stderr -ForegroundColor Yellow }
@@ -197,7 +198,7 @@ function Invoke-ProjectBuild {
     }
 
     $stepDuration = (Get-Date) - $stepStart
-    
+
     # Count warnings from output (pattern: "warning CS1234:" or "warning NU1234:" etc.)
     $warningCount = ($stdout | Select-String -Pattern "warning [A-Z]+\d+:" -AllMatches).Matches.Count
 
@@ -306,14 +307,14 @@ function Start-GalleryApp {
     )
 
     $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-    
+
     # With single-project structure, output is in bin/$Configuration/Flowery.Uno.Gallery/$Framework
     if ($Framework) {
         $outputDir = Join-Path $repoRoot "bin\$Configuration\Flowery.Uno.Gallery\$Framework"
     } else {
         $outputDir = Join-Path $repoRoot "bin\$Configuration"
     }
-    
+
     $exePath = Get-ChildItem -Path $outputDir -Recurse -Filter $ExePattern -ErrorAction SilentlyContinue |
                Sort-Object LastWriteTime -Descending |
                Select-Object -First 1

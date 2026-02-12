@@ -1,7 +1,7 @@
 <Project Sdk="Uno.Sdk/6.4.53">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0-android;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+    <TargetFrameworks>net10.0-android36.0;net9.0-windows10.0.19041;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
     <UnoVersion>6.4.229</UnoVersion>
     <UnoSingleProject>true</UnoSingleProject>
 

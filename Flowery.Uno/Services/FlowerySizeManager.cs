@@ -37,7 +37,7 @@ namespace Flowery.Controls
     /// </summary>
     public static class FlowerySizeManager
     {
-        private static DaisySize _currentSize = DaisySize.Small;
+        private static DaisySize _currentSize = DaisySize.Medium;
 
         // Cache for SizeProperty DependencyProperty by type
         private static readonly Dictionary<Type, DependencyProperty?> _sizeDPCache = [];

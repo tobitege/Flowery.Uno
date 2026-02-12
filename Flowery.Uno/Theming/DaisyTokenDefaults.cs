@@ -1,3 +1,4 @@
+using Flowery.Services;
 using Microsoft.UI.Xaml;
 
 namespace Flowery.Theming
@@ -14,21 +15,20 @@ namespace Flowery.Theming
             if (resources.ContainsKey(InitializationKey))
                 return;
 
-            // ---- Control heights ----
-            // Scaled down ~35% from original values for compact modern UI
-            // XS kept at 20d minimum to accommodate text descenders and icons
-            Ensure(resources, "DaisySizeExtraLargeHeight", 36d);
-            Ensure(resources, "DaisySizeLargeHeight", 32d);
-            Ensure(resources, "DaisySizeMediumHeight", 28d);
-            Ensure(resources, "DaisySizeSmallHeight", 24d);
-            Ensure(resources, "DaisySizeExtraSmallHeight", 22d);
+            // ---- Control heights (desktop baseline) ----
+            // Desktop-first compact profile on a 4px grid.
+            Ensure(resources, "DaisySizeExtraLargeHeight", 40d);
+            Ensure(resources, "DaisySizeLargeHeight", 36d);
+            Ensure(resources, "DaisySizeMediumHeight", 32d);
+            Ensure(resources, "DaisySizeSmallHeight", 28d);
+            Ensure(resources, "DaisySizeExtraSmallHeight", 24d);
 
             // ---- Floating input heights ----
-            Ensure(resources, "DaisyInputFloatingExtraLargeHeight", 46d);
-            Ensure(resources, "DaisyInputFloatingLargeHeight", 42d);
-            Ensure(resources, "DaisyInputFloatingMediumHeight", 38d);
-            Ensure(resources, "DaisyInputFloatingSmallHeight", 34d);
-            Ensure(resources, "DaisyInputFloatingExtraSmallHeight", 28d);
+            Ensure(resources, "DaisyInputFloatingExtraLargeHeight", 48d);
+            Ensure(resources, "DaisyInputFloatingLargeHeight", 44d);
+            Ensure(resources, "DaisyInputFloatingMediumHeight", 40d);
+            Ensure(resources, "DaisyInputFloatingSmallHeight", 36d);
+            Ensure(resources, "DaisyInputFloatingExtraSmallHeight", 32d);
 
             // ---- Font sizes (primary) ----
             // Reduced ~15-20% proportional to control heights; XS floors at 9px for readability
@@ -37,6 +37,13 @@ namespace Flowery.Theming
             Ensure(resources, "DaisySizeMediumFontSize", 12d);
             Ensure(resources, "DaisySizeSmallFontSize", 10d);
             Ensure(resources, "DaisySizeExtraSmallFontSize", 8d);
+
+            // ---- Line heights (primary) ----
+            Ensure(resources, "DaisySizeExtraLargeLineHeight", 24d);
+            Ensure(resources, "DaisySizeLargeLineHeight", 20d);
+            Ensure(resources, "DaisySizeMediumLineHeight", 16d);
+            Ensure(resources, "DaisySizeSmallLineHeight", 16d);
+            Ensure(resources, "DaisySizeExtraSmallLineHeight", 12d);
 
             // ---- Font sizes (secondary) ----
             Ensure(resources, "DaisySizeExtraLargeSecondaryFontSize", 14d);
@@ -68,31 +75,31 @@ namespace Flowery.Theming
 
             // ---- Corner radius ----
             Ensure(resources, "DaisySizeExtraLargeCornerRadius", new CornerRadius(12));
-            Ensure(resources, "DaisySizeLargeCornerRadius", new CornerRadius(10));
+            Ensure(resources, "DaisySizeLargeCornerRadius", new CornerRadius(8));
             Ensure(resources, "DaisySizeMediumCornerRadius", new CornerRadius(8));
-            Ensure(resources, "DaisySizeSmallCornerRadius", new CornerRadius(6));
+            Ensure(resources, "DaisySizeSmallCornerRadius", new CornerRadius(4));
             Ensure(resources, "DaisySizeExtraSmallCornerRadius", new CornerRadius(4));
 
             // ---- Button padding (horizontal only; height drives vertical) ----
             Ensure(resources, "DaisyButtonExtraLargePadding", new Thickness(16, 0, 16, 0));
             Ensure(resources, "DaisyButtonLargePadding", new Thickness(16, 0, 16, 0));
-            Ensure(resources, "DaisyButtonMediumPadding", new Thickness(14, 0, 14, 0));
+            Ensure(resources, "DaisyButtonMediumPadding", new Thickness(12, 0, 12, 0));
             Ensure(resources, "DaisyButtonSmallPadding", new Thickness(12, 0, 12, 0));
             Ensure(resources, "DaisyButtonExtraSmallPadding", new Thickness(8, 0, 8, 0));
 
             // ---- Input padding ----
-            Ensure(resources, "DaisyInputExtraLargePadding", new Thickness(14, 7, 14, 7));
-            Ensure(resources, "DaisyInputLargePadding", new Thickness(14, 6, 14, 6));
-            Ensure(resources, "DaisyInputMediumPadding", new Thickness(12, 6, 12, 6));
-            Ensure(resources, "DaisyInputSmallPadding", new Thickness(12, 5, 12, 5));
+            Ensure(resources, "DaisyInputExtraLargePadding", new Thickness(16, 8, 16, 8));
+            Ensure(resources, "DaisyInputLargePadding", new Thickness(16, 8, 16, 8));
+            Ensure(resources, "DaisyInputMediumPadding", new Thickness(12, 8, 12, 8));
+            Ensure(resources, "DaisyInputSmallPadding", new Thickness(12, 4, 12, 4));
             Ensure(resources, "DaisyInputExtraSmallPadding", new Thickness(8, 4, 8, 4));
 
             // ---- Tab padding ----
-            Ensure(resources, "DaisyTabExtraLargePadding", new Thickness(12, 5, 12, 5));
-            Ensure(resources, "DaisyTabLargePadding", new Thickness(12, 5, 12, 5));
-            Ensure(resources, "DaisyTabMediumPadding", new Thickness(12, 5, 12, 5));
+            Ensure(resources, "DaisyTabExtraLargePadding", new Thickness(12, 4, 12, 4));
+            Ensure(resources, "DaisyTabLargePadding", new Thickness(12, 4, 12, 4));
+            Ensure(resources, "DaisyTabMediumPadding", new Thickness(12, 4, 12, 4));
             Ensure(resources, "DaisyTabSmallPadding", new Thickness(12, 4, 12, 4));
-            Ensure(resources, "DaisyTabExtraSmallPadding", new Thickness(10, 2, 10, 2));
+            Ensure(resources, "DaisyTabExtraSmallPadding", new Thickness(8, 4, 8, 4));
 
             // ---- Badge padding ----
             Ensure(resources, "DaisyBadgeLargePadding", new Thickness(12, 0, 12, 0));
@@ -101,7 +108,7 @@ namespace Flowery.Theming
             Ensure(resources, "DaisyBadgeExtraSmallPadding", new Thickness(4, 0, 4, 0));
 
             // ---- Badge heights (sized for descenders like g, y, p) ----
-            Ensure(resources, "DaisyBadgeLargeHeight", 22d);
+            Ensure(resources, "DaisyBadgeLargeHeight", 24d);
             Ensure(resources, "DaisyBadgeMediumHeight", 20d);
             Ensure(resources, "DaisyBadgeSmallHeight", 16d);
             Ensure(resources, "DaisyBadgeExtraSmallHeight", 16d);
@@ -114,16 +121,16 @@ namespace Flowery.Theming
 
             // ---- Card padding ----
             Ensure(resources, "DaisyCardLargePadding", new Thickness(24));
-            Ensure(resources, "DaisyCardMediumPadding", new Thickness(18));
+            Ensure(resources, "DaisyCardMediumPadding", new Thickness(20));
             Ensure(resources, "DaisyCardSmallPadding", new Thickness(12));
             Ensure(resources, "DaisyCardCompactPadding", new Thickness(8));
 
             // ---- Spacing ----
             Ensure(resources, "DaisySpacingXL", 20d);
-            Ensure(resources, "DaisySpacingLarge", 14d);
-            Ensure(resources, "DaisySpacingMedium", 10d);
-            Ensure(resources, "DaisySpacingSmall", 6d);
-            Ensure(resources, "DaisySpacingXS", 3d);
+            Ensure(resources, "DaisySpacingLarge", 16d);
+            Ensure(resources, "DaisySpacingMedium", 12d);
+            Ensure(resources, "DaisySpacingSmall", 8d);
+            Ensure(resources, "DaisySpacingXS", 4d);
 
             // ---- Border thickness ----
             Ensure(resources, "DaisyBorderThicknessNone", new Thickness(0));
@@ -134,40 +141,40 @@ namespace Flowery.Theming
             // ---- Checkbox and radio indicator sizes ----
             Ensure(resources, "DaisyCheckboxExtraLargeSize", 28d);
             Ensure(resources, "DaisyCheckboxLargeSize", 24d);
-            Ensure(resources, "DaisyCheckboxMediumSize", 18d);
+            Ensure(resources, "DaisyCheckboxMediumSize", 20d);
             Ensure(resources, "DaisyCheckboxSmallSize", 16d);
             Ensure(resources, "DaisyCheckboxExtraSmallSize", 12d);
 
-            Ensure(resources, "DaisyCheckmarkExtraLargeSize", 18d);
+            Ensure(resources, "DaisyCheckmarkExtraLargeSize", 20d);
             Ensure(resources, "DaisyCheckmarkLargeSize", 16d);
             Ensure(resources, "DaisyCheckmarkMediumSize", 12d);
-            Ensure(resources, "DaisyCheckmarkSmallSize", 10d);
-            Ensure(resources, "DaisyCheckmarkExtraSmallSize", 7d);
+            Ensure(resources, "DaisyCheckmarkSmallSize", 8d);
+            Ensure(resources, "DaisyCheckmarkExtraSmallSize", 8d);
 
-            Ensure(resources, "DaisyRadioDotExtraLargeSize", 18d);
-            Ensure(resources, "DaisyRadioDotLargeSize", 14d);
-            Ensure(resources, "DaisyRadioDotMediumSize", 10d);
+            Ensure(resources, "DaisyRadioDotExtraLargeSize", 20d);
+            Ensure(resources, "DaisyRadioDotLargeSize", 16d);
+            Ensure(resources, "DaisyRadioDotMediumSize", 12d);
             Ensure(resources, "DaisyRadioDotSmallSize", 8d);
-            Ensure(resources, "DaisyRadioDotExtraSmallSize", 5d);
+            Ensure(resources, "DaisyRadioDotExtraSmallSize", 4d);
 
             // ---- Toggle switch sizes ----
             Ensure(resources, "DaisyToggleExtraLargeWidth", 48d);
             Ensure(resources, "DaisyToggleExtraLargeHeight", 28d);
-            Ensure(resources, "DaisyToggleLargeWidth", 42d);
+            Ensure(resources, "DaisyToggleLargeWidth", 40d);
             Ensure(resources, "DaisyToggleLargeHeight", 24d);
             Ensure(resources, "DaisyToggleMediumWidth", 36d);
             Ensure(resources, "DaisyToggleMediumHeight", 20d);
             Ensure(resources, "DaisyToggleSmallWidth", 28d);
             Ensure(resources, "DaisyToggleSmallHeight", 16d);
             Ensure(resources, "DaisyToggleExtraSmallWidth", 24d);
-            Ensure(resources, "DaisyToggleExtraSmallHeight", 14d);
+            Ensure(resources, "DaisyToggleExtraSmallHeight", 16d);
 
             // ---- Toggle knob sizes ----
-            Ensure(resources, "DaisyToggleKnobExtraLargeSize", 22d);
-            Ensure(resources, "DaisyToggleKnobLargeSize", 18d);
+            Ensure(resources, "DaisyToggleKnobExtraLargeSize", 24d);
+            Ensure(resources, "DaisyToggleKnobLargeSize", 20d);
             Ensure(resources, "DaisyToggleKnobMediumSize", 16d);
             Ensure(resources, "DaisyToggleKnobSmallSize", 12d);
-            Ensure(resources, "DaisyToggleKnobExtraSmallSize", 10d);
+            Ensure(resources, "DaisyToggleKnobExtraSmallSize", 12d);
 
             // ---- Progress bar sizes ----
             Ensure(resources, "DaisyProgressLargeHeight", 16d);
@@ -463,6 +470,22 @@ namespace Flowery.Theming
             Ensure(resources, "DaisySlideToConfirmMediumCornerRadius", 14d);
             Ensure(resources, "DaisySlideToConfirmSmallCornerRadius", 12d);
             Ensure(resources, "DaisySlideToConfirmExtraSmallCornerRadius", 10d);
+
+            if (PlatformCompatibility.IsMobile)
+            {
+                // Mobile profile: larger touch targets for finger-first interaction.
+                resources["DaisySizeExtraLargeHeight"] = 56d;
+                resources["DaisySizeLargeHeight"] = 48d;
+                resources["DaisySizeMediumHeight"] = 44d;
+                resources["DaisySizeSmallHeight"] = 40d;
+                resources["DaisySizeExtraSmallHeight"] = 36d;
+
+                resources["DaisyInputFloatingExtraLargeHeight"] = 64d;
+                resources["DaisyInputFloatingLargeHeight"] = 56d;
+                resources["DaisyInputFloatingMediumHeight"] = 52d;
+                resources["DaisyInputFloatingSmallHeight"] = 48d;
+                resources["DaisyInputFloatingExtraSmallHeight"] = 44d;
+            }
 
             resources[InitializationKey] = true;
         }

@@ -1015,6 +1015,21 @@ namespace Flowery.Controls
 
             ApplyShape();
             ApplyIconSizing();
+            ApplyContentLineHeight(resources);
+        }
+
+        private void ApplyContentLineHeight(ResourceDictionary? resources)
+        {
+            var label = FindChildByType<TextBlock>(this);
+            if (label == null)
+                return;
+
+            if (label.ReadLocalValue(TextBlock.LineHeightProperty) != DependencyProperty.UnsetValue)
+                return;
+
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(Size));
+            label.LineHeight = lineHeight;
         }
 
         /// <summary>

@@ -80,8 +80,8 @@ Initialize-BuildEnvironment -HeadName "Browser" -LogFileName "browser_build.log"
 
 # --- BUILD ---
 
-# 1. Build Library
-if (-not (Invoke-ProjectBuild -Title "Flowery.Uno" -Project $floweryProject -Configuration $Configuration -Rebuild:$Rebuild)) {
+# 1. Build Library (browser target only, avoids Android restore/evaluation)
+if (-not (Invoke-ProjectBuild -Title "Flowery.Uno" -Project $floweryProject -Configuration $Configuration -Rebuild:$Rebuild -Framework $targetFramework)) {
     Write-BuildFailure "Flowery.Uno"
     exit 1
 }

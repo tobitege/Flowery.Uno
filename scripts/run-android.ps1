@@ -10,7 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path $PSScriptRoot -Parent
 $projectPath = Join-Path $repoRoot "Flowery.Uno.Gallery"
-$targetFramework = "net9.0-android"
+$targetFramework = "net10.0-android36.0"
 
 Clear-Host
 Write-Host "Running Flowery.Uno Android ($Configuration)..." -ForegroundColor Cyan

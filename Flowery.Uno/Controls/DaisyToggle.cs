@@ -1,5 +1,6 @@
 using System;
 using Flowery.Theming;
+using Flowery.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
@@ -162,7 +163,7 @@ namespace Flowery.Controls
                 nameof(TogglePadding),
                 typeof(double),
                 typeof(DaisyToggle),
-                new PropertyMetadata(2.0, OnAppearanceChanged));
+                new PropertyMetadata(4.0, OnAppearanceChanged));
 
         /// <summary>
         /// The internal padding of the toggle knob area.
@@ -275,17 +276,27 @@ namespace Flowery.Controls
             if (_switchArea == null || _knob == null)
                 return;
 
-            _switchArea.Width = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggle", Size, "Width", fallback: 48d);
-            _switchArea.Height = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggle", Size, "Height", fallback: 24d);
+            _switchArea.Width = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggle", Size, "Width", fallback: 36d);
+            _switchArea.Height = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggle", Size, "Height", fallback: 20d);
             _switchArea.CornerRadius = new CornerRadius(_switchArea.Height / 2);
 
-            _knob.Width = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggleKnob", Size, "Size", fallback: 20d);
+            _knob.Width = DaisyResourceLookup.GetSizeDouble(resources, "DaisyToggleKnob", Size, "Size", fallback: 16d);
             _knob.Height = _knob.Width;
             // No margin needed - vertical centering via VerticalAlignment="Center" in XAML,
             // horizontal positioning via TranslateTransform.X
 
             // Apply font size to toggle (affects header via ContentPresenter)
             FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+
+            if (ReadLocalValue(MinHeightProperty) == DependencyProperty.UnsetValue)
+            {
+                MinHeight = PlatformCompatibility.IsMobile ? 44d : _switchArea.Height;
+            }
+
+            if (ReadLocalValue(MinWidthProperty) == DependencyProperty.UnsetValue)
+            {
+                MinWidth = PlatformCompatibility.IsMobile ? 44d : _switchArea.Width;
+            }
         }
 
         private void ApplyTheme(ResourceDictionary? resources)
@@ -392,10 +403,9 @@ namespace Flowery.Controls
 
         private double GetEffectivePadding()
         {
-            // Size-specific padding for Large while still allowing explicit overrides.
             if (ReadLocalValue(TogglePaddingProperty) == DependencyProperty.UnsetValue)
             {
-                return Size == DaisySize.Large ? 3.0 : 2.0;
+                return 4.0;
             }
 
             return TogglePadding;

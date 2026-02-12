@@ -115,7 +115,7 @@ function Invoke-DotnetBuild {
 # --- PROJECT PATHS ---
 
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj"
-$targetFramework = "net9.0-android"
+$targetFramework = "net10.0-android36.0"
 
 if (-not (Test-Path $galleryProject)) {
     Write-Error "Gallery project not found at $galleryProject"

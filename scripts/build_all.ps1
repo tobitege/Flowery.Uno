@@ -135,19 +135,20 @@ $floweryProject = Join-Path $repoRoot "Flowery.Uno/Flowery.Uno.csproj"
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj"
 
 $buildTarget = if ($Rebuild) { "-t:Rebuild" } else { "" }
+$eolSuppression = "-p:CheckEolWorkloads=false"
 
 # --- BUILD ALL ---
 
 # Build library first
-Invoke-DotnetBuild -Title "Flowery.Uno" -Command "dotnet build `"$floweryProject`" -c $Configuration $buildTarget"
+Invoke-DotnetBuild -Title "Flowery.Uno" -Command "dotnet build `"$floweryProject`" -c $Configuration $buildTarget $eolSuppression"
 
 # Build Gallery for each platform using single-project structure
-Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Windows)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-windows10.0.19041 $buildTarget"
-Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Desktop)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-desktop $buildTarget"
-Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Browser)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-browserwasm $buildTarget"
+Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Windows)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-windows10.0.19041 $buildTarget $eolSuppression"
+Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Desktop)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-desktop $buildTarget $eolSuppression"
+Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Browser)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-browserwasm $buildTarget $eolSuppression"
 
-Invoke-DotnetBuild -Title "Android Dependencies" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-android -t:InstallAndroidDependencies -p:AndroidSdkDirectory=`"$AndroidSdkDirectory`""
-Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Android)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net9.0-android -p:AndroidSdkDirectory=`"$AndroidSdkDirectory`" $buildTarget"
+Invoke-DotnetBuild -Title "Android Dependencies" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net10.0-android36.0 -t:InstallAndroidDependencies -p:AndroidSdkDirectory=`"$AndroidSdkDirectory`" $eolSuppression"
+Invoke-DotnetBuild -Title "Flowery.Uno.Gallery (Android)" -Command "dotnet build `"$galleryProject`" -c $Configuration -f net10.0-android36.0 -p:AndroidSdkDirectory=`"$AndroidSdkDirectory`" $buildTarget $eolSuppression"
 
 # --- SUMMARY ---
 

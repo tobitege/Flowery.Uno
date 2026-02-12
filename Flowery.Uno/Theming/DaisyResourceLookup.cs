@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Flowery.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Flowery.Controls;
@@ -363,11 +364,11 @@ namespace Flowery.Theming
         public static double GetDefaultIconSize(DaisySize size) => size switch
         {
             DaisySize.ExtraSmall => 8,
-            DaisySize.Small => 10,
-            DaisySize.Medium => 14,
-            DaisySize.Large => 16,
-            DaisySize.ExtraLarge => 18,
-            _ => 14
+            DaisySize.Small => 12,
+            DaisySize.Medium => 16,
+            DaisySize.Large => 20,
+            DaisySize.ExtraLarge => 24,
+            _ => 16
         };
 
         /// <summary>
@@ -375,12 +376,12 @@ namespace Flowery.Theming
         /// </summary>
         public static double GetDefaultIconSpacing(DaisySize size) => size switch
         {
-            DaisySize.ExtraSmall => 3,
+            DaisySize.ExtraSmall => 4,
             DaisySize.Small => 4,
-            DaisySize.Medium => 6,
-            DaisySize.Large => 6,
+            DaisySize.Medium => 8,
+            DaisySize.Large => 8,
             DaisySize.ExtraLarge => 8,
-            _ => 6
+            _ => 8
         };
 
         /// <summary>
@@ -388,12 +389,12 @@ namespace Flowery.Theming
         /// </summary>
         public static double GetSpacing(DaisySize size) => size switch
         {
-            DaisySize.ExtraSmall => GetDouble("DaisySpacingXS", 3),
-            DaisySize.Small => GetDouble("DaisySpacingSmall", 6),
-            DaisySize.Medium => GetDouble("DaisySpacingMedium", 10),
-            DaisySize.Large => GetDouble("DaisySpacingLarge", 14),
+            DaisySize.ExtraSmall => GetDouble("DaisySpacingXS", 4),
+            DaisySize.Small => GetDouble("DaisySpacingSmall", 8),
+            DaisySize.Medium => GetDouble("DaisySpacingMedium", 12),
+            DaisySize.Large => GetDouble("DaisySpacingLarge", 16),
             DaisySize.ExtraLarge => GetDouble("DaisySpacingXL", 20),
-            _ => GetDouble("DaisySpacingMedium", 10)
+            _ => GetDouble("DaisySpacingMedium", 12)
         };
 
         // ---- Default Control Sizing Helpers ----
@@ -401,15 +402,31 @@ namespace Flowery.Theming
         /// <summary>
         /// Gets the default control height for a given DaisySize.
         /// </summary>
-        public static double GetDefaultHeight(DaisySize size) => size switch
+        public static double GetDefaultHeight(DaisySize size)
         {
-            DaisySize.ExtraSmall => 22,
-            DaisySize.Small => 24,
-            DaisySize.Medium => 28,
-            DaisySize.Large => 32,
-            DaisySize.ExtraLarge => 36,
-            _ => 28
-        };
+            if (PlatformCompatibility.IsMobile)
+            {
+                return size switch
+                {
+                    DaisySize.ExtraSmall => 36,
+                    DaisySize.Small => 40,
+                    DaisySize.Medium => 44,
+                    DaisySize.Large => 48,
+                    DaisySize.ExtraLarge => 56,
+                    _ => 44
+                };
+            }
+
+            return size switch
+            {
+                DaisySize.ExtraSmall => 24,
+                DaisySize.Small => 28,
+                DaisySize.Medium => 32,
+                DaisySize.Large => 36,
+                DaisySize.ExtraLarge => 40,
+                _ => 32
+            };
+        }
 
         /// <summary>
         /// Gets the default elevation (shadow depth) for neumorphic effects based on DaisySize.
@@ -434,15 +451,31 @@ namespace Flowery.Theming
         /// <summary>
         /// Gets the default floating input height (taller inputs like NumericUpDown) for a given DaisySize.
         /// </summary>
-        public static double GetDefaultFloatingInputHeight(DaisySize size) => size switch
+        public static double GetDefaultFloatingInputHeight(DaisySize size)
         {
-            DaisySize.ExtraSmall => 28,
-            DaisySize.Small => 32,
-            DaisySize.Medium => 36,
-            DaisySize.Large => 40,
-            DaisySize.ExtraLarge => 44,
-            _ => 36
-        };
+            if (PlatformCompatibility.IsMobile)
+            {
+                return size switch
+                {
+                    DaisySize.ExtraSmall => 44,
+                    DaisySize.Small => 48,
+                    DaisySize.Medium => 52,
+                    DaisySize.Large => 56,
+                    DaisySize.ExtraLarge => 64,
+                    _ => 52
+                };
+            }
+
+            return size switch
+            {
+                DaisySize.ExtraSmall => 32,
+                DaisySize.Small => 36,
+                DaisySize.Medium => 40,
+                DaisySize.Large => 44,
+                DaisySize.ExtraLarge => 48,
+                _ => 40
+            };
+        }
 
         /// <summary>
         /// Gets the spinner button padding for NumericUpDown controls.
@@ -501,6 +534,19 @@ namespace Flowery.Theming
             DaisySize.Large => 14,
             DaisySize.ExtraLarge => 16,
             _ => 12
+        };
+
+        /// <summary>
+        /// Gets the default line height for a given DaisySize.
+        /// </summary>
+        public static double GetDefaultLineHeight(DaisySize size) => size switch
+        {
+            DaisySize.ExtraSmall => 12,
+            DaisySize.Small => 16,
+            DaisySize.Medium => 16,
+            DaisySize.Large => 20,
+            DaisySize.ExtraLarge => 24,
+            _ => 16
         };
 
         /// <summary>
@@ -677,12 +723,12 @@ namespace Flowery.Theming
         /// </summary>
         public static Thickness GetDefaultPadding(DaisySize size) => size switch
         {
-            DaisySize.ExtraSmall => new Thickness(6, 0, 6, 0),
+            DaisySize.ExtraSmall => new Thickness(8, 0, 8, 0),
             DaisySize.Small => new Thickness(8, 0, 8, 0),
-            DaisySize.Medium => new Thickness(10, 0, 10, 0),
+            DaisySize.Medium => new Thickness(12, 0, 12, 0),
             DaisySize.Large => new Thickness(12, 0, 12, 0),
-            DaisySize.ExtraLarge => new Thickness(14, 0, 14, 0),
-            _ => new Thickness(10, 0, 10, 0)
+            DaisySize.ExtraLarge => new Thickness(16, 0, 16, 0),
+            _ => new Thickness(12, 0, 12, 0)
         };
 
         /// <summary>
@@ -690,12 +736,12 @@ namespace Flowery.Theming
         /// </summary>
         public static CornerRadius GetDefaultCornerRadius(DaisySize size) => size switch
         {
-            DaisySize.ExtraSmall => new CornerRadius(2),
+            DaisySize.ExtraSmall => new CornerRadius(4),
             DaisySize.Small => new CornerRadius(4),
-            DaisySize.Medium => new CornerRadius(6),
+            DaisySize.Medium => new CornerRadius(8),
             DaisySize.Large => new CornerRadius(8),
-            DaisySize.ExtraLarge => new CornerRadius(10),
-            _ => new CornerRadius(6)
+            DaisySize.ExtraLarge => new CornerRadius(12),
+            _ => new CornerRadius(8)
         };
 
         /// <summary>

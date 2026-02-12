@@ -566,7 +566,10 @@ namespace Flowery.Controls
                 : inputHeight;
 
             // SYNC-CRITICAL: Must match ApplySizing logic precisely
-            var fontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(Size));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(Size));
             var labelFontSize = fontSize * 0.85;
             var labelHeight = labelFontSize * 1.5;
             var minFloatingTopSpace = labelHeight + 6;
@@ -603,9 +606,13 @@ namespace Flowery.Controls
                 // We replicate the padding calculation from ApplySizing to match the cursor position.
                 // Available height inside border:
                 var availableInputHeight = inputHeight - 2;
-                var fontLineHeight = Math.Ceiling(fontSize * 1.5);
+                var fontLineHeight = Math.Ceiling(lineHeight);
                 var verticalPadding = Math.Max(0, Math.Floor((availableInputHeight - fontLineHeight) / 2));
-                var topPadding = Math.Max(0, verticalPadding - 1);
+                var topPadding = verticalPadding;
+                if (!PlatformCompatibility.IsSkiaBackend && !PlatformCompatibility.IsWasmBackend && !PlatformCompatibility.IsAndroid)
+                {
+                    topPadding = verticalPadding + 1;
+                }
 
                 // Y = Top Margin + Border Top + Top Padding
                 // We add +1px fudge factor to ensure it visually clears the top border
@@ -1273,8 +1280,12 @@ namespace Flowery.Controls
         private void ApplySizing(ResourceDictionary? resources)
         {
             var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
-            var height = DaisyResourceLookup.GetDefaultHeight(Size);
-            var fontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            var height = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "Height",
+                DaisyResourceLookup.GetDefaultHeight(Size));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(Size));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(Size));
             var labelFontSize = fontSize * 0.85;
             var effectiveMinHeight = Math.Max(height, MinHeight);
             var hasFloatingLabel = LabelPosition == DaisyLabelPosition.Floating && !string.IsNullOrEmpty(Label);
@@ -1313,11 +1324,10 @@ namespace Flowery.Controls
                 // both MinHeight and MaxHeight are constrained. Instead, we calculate
                 // explicit padding to position the text in the vertical center.
                 //
-                // Line height for Segoe UI is approximately 1.5 × font size (matches DaisyNumericUpDown).
-                // This accounts for ascenders, descenders, and internal template spacing.
+                // Line height comes from size tokens for cross-platform consistency.
                 // We subtract 2px from control height to account for typical border.
                 var availableHeight = effectiveMinHeight - 2;
-                var fontLineHeight = Math.Ceiling(fontSize * 1.5);
+                var fontLineHeight = Math.Ceiling(lineHeight);
 
                 // Platform-specific vertical centering:
                 // Windows: Add extra top padding for smaller sizes to push text down.
@@ -1325,7 +1335,7 @@ namespace Flowery.Controls
                 // Skia Desktop: symmetric padding centers correctly without adjustment.
                 var verticalPadding = Math.Max(0, Math.Floor((availableHeight - fontLineHeight) / 2));
                 double topPadding;
-                if (PlatformCompatibility.IsSkiaBackend || PlatformCompatibility.IsWasmBackend)
+                if (PlatformCompatibility.IsSkiaBackend || PlatformCompatibility.IsWasmBackend || PlatformCompatibility.IsAndroid)
                 {
                     topPadding = verticalPadding;
                 }
@@ -1385,8 +1395,10 @@ namespace Flowery.Controls
                     _textBox.ClearValue(FrameworkElement.MaxHeightProperty);
                 }
 
-                // Use Top alignment since we're manually controlling vertical positioning via padding.
-                _textBox.VerticalContentAlignment = AcceptsReturn ? GetEffectiveInnerVerticalContentAlignment() : VerticalAlignment.Top;
+                // Android centers better with native center alignment; other platforms keep top + tokenized padding.
+                _textBox.VerticalContentAlignment = AcceptsReturn
+                    ? GetEffectiveInnerVerticalContentAlignment()
+                    : (PlatformCompatibility.IsAndroid ? VerticalAlignment.Center : VerticalAlignment.Top);
 
                 UpdateFloatingLabelMargin();
             }

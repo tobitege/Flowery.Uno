@@ -194,6 +194,7 @@
                     Grid.Column="0"
                     Width="{ThemeResource DaisyToggleMediumWidth}"
                     Height="{ThemeResource DaisyToggleMediumHeight}"
+                    VerticalAlignment="Center"
                     CornerRadius="12"
                     Background="{ThemeResource DaisyBase300Brush}"
                     BorderBrush="{ThemeResource DaisyBase300Brush}"

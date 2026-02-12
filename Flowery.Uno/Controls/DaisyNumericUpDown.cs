@@ -763,6 +763,8 @@ namespace Flowery.Controls
                 DaisyResourceLookup.GetDefaultHeight(Size));
             var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
                 DaisyResourceLookup.GetDefaultFontSize(Size));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(Size));
             var padding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyButton", Size, "Padding",
                 DaisyResourceLookup.GetDefaultPadding(Size));
 
@@ -777,17 +779,19 @@ namespace Flowery.Controls
             // WinUI TextBox internal layout doesn't reliably center text when constrained.
             // Instead, calculate explicit padding to position the text in the vertical center.
             //
-            // Line height for Segoe UI is approximately 1.5 × font size.
-            // This accounts for ascenders, descenders, and WinUI TextBox internal template spacing.
+            // Line height comes from size tokens for cross-platform consistency.
             // We subtract 2px from control height to account for the border.
             var availableHeight = controlHeight - 2;
-            var fontLineHeight = Math.Ceiling(fontSize * 1.5);
+            var fontLineHeight = Math.Ceiling(lineHeight);
 
             // Platform-specific vertical centering:
             // Windows: Text sits 1px too low, reduce top padding to push UP (opposite of DaisyInput).
             // Skia Desktop: symmetric padding centers correctly without adjustment.
             var verticalPadding = Math.Max(0, Math.Floor((availableHeight - fontLineHeight) / 2));
-            var needsAdjustment = !PlatformCompatibility.IsSkiaBackend && !PlatformCompatibility.IsWasmBackend && Size <= DaisySize.Medium;
+            var needsAdjustment = !PlatformCompatibility.IsSkiaBackend
+                && !PlatformCompatibility.IsWasmBackend
+                && !PlatformCompatibility.IsAndroid
+                && Size <= DaisySize.Medium;
             var topPadding = needsAdjustment ? Math.Max(0, verticalPadding - 1) : verticalPadding;
             var bottomPadding = verticalPadding;
 
@@ -808,8 +812,8 @@ namespace Flowery.Controls
             }
 
             _textBox.Padding = new Thickness(0, topPadding, 0, bottomPadding);
-            // Use Top alignment since we're manually controlling vertical positioning via padding
-            _textBox.VerticalContentAlignment = VerticalAlignment.Top;
+            // Android centers better with native center alignment; other platforms keep top + tokenized padding.
+            _textBox.VerticalContentAlignment = PlatformCompatibility.IsAndroid ? VerticalAlignment.Center : VerticalAlignment.Top;
 
             // Apply font size to prefix/suffix and size-aware margins
             if (_prefixTextBlock != null)

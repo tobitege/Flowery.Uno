@@ -37,7 +37,6 @@ import argparse
 import re
 import shutil
 from pathlib import Path
-from typing import Optional
 
 
 def strip_html_comments_outside_code(content: str) -> str:

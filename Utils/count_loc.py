@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -162,9 +163,10 @@ def _try_git_root(start: Path) -> Path | None:
             stderr=subprocess.DEVNULL,
             text=True,
             check=True,
+            timeout=10,
         )
         return Path(p.stdout.strip())
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return None
 
 
@@ -175,6 +177,7 @@ def _git_files(repo_root: Path) -> list[Path]:
         stderr=subprocess.DEVNULL,
         text=True,
         check=True,
+        timeout=10,
     )
     return [repo_root / line for line in p.stdout.splitlines() if line]
 
@@ -195,7 +198,7 @@ def _walk_files(repo_root: Path, debug: bool = False) -> list[Path]:
     files: list[Path] = []
     for root, dirs, filenames in os.walk(repo_root):
         root_path = Path(root)
-        
+
         if debug:
             for d in dirs:
                 skip_reason = None
@@ -207,11 +210,11 @@ def _walk_files(repo_root: Path, debug: bool = False) -> list[Path]:
                     skip_reason = "is symlink/junction"
                 if skip_reason:
                     print(f"SKIP: {root_path / d} ({skip_reason})", file=__import__('sys').stderr)
-        
+
         # Skip junctions/symlinks and folders starting with "!"
         dirs[:] = [
             d for d in dirs
-            if d not in skip_dirs 
+            if d not in skip_dirs
             and not d.startswith("!")
             and not (root_path / d).is_symlink()
         ]
@@ -242,7 +245,7 @@ def main() -> int:
     args = parser.parse_args()
 
     start = Path(args.path).resolve()
-    
+
     # Try to find repo root by .sln file first, then fall back to start path
     repo_root = None
     if args.use_git:
@@ -261,7 +264,7 @@ def main() -> int:
     cs_lines = 0
     xaml_files = 0
     xaml_lines = 0
-    
+
     for path in all_paths:
         suffix = path.suffix.lower()
         if suffix not in {".cs", ".xaml"}:
@@ -271,7 +274,7 @@ def main() -> int:
 
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
+        except OSError:
             continue
 
         file_count += 1
@@ -289,7 +292,6 @@ def main() -> int:
         total += lines
 
     if args.verbose:
-        import sys
         print(f"Files processed: {file_count} ({cs_files} .cs, {xaml_files} .xaml)", file=sys.stderr)
         print(f"Lines: {cs_lines:,} .cs + {xaml_lines:,} .xaml = {total:,} total", file=sys.stderr)
 

@@ -2,7 +2,7 @@ import json
 import sys
 import argparse
 from pathlib import Path
-from typing import Dict, Set
+from typing import Set
 
 
 def load_json_keys(file_path: Path) -> Set[str]:
@@ -15,7 +15,7 @@ def load_json_keys(file_path: Path) -> Set[str]:
     except json.JSONDecodeError as e:
         print(f"  ERROR: Invalid JSON in {file_path.name}: {e}")
         return set()
-    except Exception as e:
+    except OSError as e:
         print(f"  ERROR: Could not read {file_path.name}: {e}")
         return set()
 
@@ -34,7 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description="Check for missing translation keys.")
     parser.add_argument("lang_code", nargs='?', default='all', help="Language code (e.g. 'de') or 'all' (default) to check all files.")
     parser.add_argument("--localization-dir", help="Path to localization directory", default=None)
-    
+
     args = parser.parse_args()
 
     # Determine localization directory
@@ -90,7 +90,7 @@ def main():
         if missing_keys or extra_keys:
             files_with_issues += 1
             print(f"\n{json_file.name}:")
-            
+
             if missing_keys:
                 print(f"  Missing ({len(missing_keys)} keys):")
                 for key in sorted(missing_keys):

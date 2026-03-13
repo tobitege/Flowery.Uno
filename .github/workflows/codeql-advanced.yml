@@ -15,21 +15,28 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze C#
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         include:
+          - language: actions
+            build-mode: none
           - language: csharp
             build-mode: manual
+          - language: javascript-typescript
+            build-mode: none
+          - language: python
+            build-mode: none
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Setup .NET SDK
+        if: matrix.language == 'csharp'
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
@@ -42,9 +49,11 @@ jobs:
           dependency-caching: true
 
       - name: Install Android workload
+        if: matrix.language == 'csharp'
         run: dotnet workload install android
 
       - name: Build library for CodeQL extraction
+        if: matrix.language == 'csharp'
         run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -p:CheckEolWorkloads=false
 
       - name: Perform CodeQL analysis

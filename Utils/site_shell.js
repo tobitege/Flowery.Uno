@@ -132,8 +132,13 @@ links.forEach(link => {
 // --- Hash Navigation ---
 // Handle URL hash to load specific pages (e.g., #MigrationExample)
 function handleHashNavigation() {
-    const hash = window.location.hash.slice(1); // Remove '#'
+    const hash = window.location.hash.slice(1).trim(); // Remove '#'
     if (hash) {
+        // Only allow simple page identifiers before matching known sidebar targets.
+        if (!/^[A-Za-z0-9_-]+$/.test(hash)) {
+            return;
+        }
+
         // Try to find a matching page
         const possiblePaths = [
             `${hash}.html`,
@@ -150,9 +155,6 @@ function handleHashNavigation() {
                 return;
             }
         }
-
-        // Fallback: try to load directly
-        iframe.src = `${hash}.html`;
     }
 }
 

@@ -39,6 +39,32 @@ import shutil
 from pathlib import Path
 
 
+def strip_html_comments_from_line(line: str, in_comment: bool) -> tuple[str, bool]:
+    """Remove HTML comments from a line while tracking multiline comment state."""
+    cleaned = []
+    index = 0
+
+    while index < len(line):
+        if in_comment:
+            comment_end = line.find('-->', index)
+            if comment_end == -1:
+                return ''.join(cleaned), True
+            index = comment_end + 3
+            in_comment = False
+            continue
+
+        comment_start = line.find('<!--', index)
+        if comment_start == -1:
+            cleaned.append(line[index:])
+            break
+
+        cleaned.append(line[index:comment_start])
+        index = comment_start + 4
+        in_comment = True
+
+    return ''.join(cleaned), in_comment
+
+
 def strip_html_comments_outside_code(content: str) -> str:
     """
     Remove HTML comments (<!-- ... -->) but preserve them inside code blocks.
@@ -46,11 +72,12 @@ def strip_html_comments_outside_code(content: str) -> str:
     """
     result = []
     in_code_block = False
+    in_html_comment = False
     lines = content.split('\n')
 
     for line in lines:
         # Check for code block delimiter
-        if line.strip().startswith('```'):
+        if line.strip().startswith('```') and not in_html_comment:
             in_code_block = not in_code_block
             result.append(line)
             continue
@@ -60,7 +87,7 @@ def strip_html_comments_outside_code(content: str) -> str:
             result.append(line)
         else:
             # Outside code block - strip HTML comments
-            cleaned = re.sub(r'<!--.*?-->', '', line)
+            cleaned, in_html_comment = strip_html_comments_from_line(line, in_html_comment)
             # Only add non-empty lines (or preserve intentional blank lines)
             if cleaned.strip() or not line.strip():
                 result.append(cleaned)

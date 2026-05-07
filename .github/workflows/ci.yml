@@ -35,7 +35,7 @@ jobs:
         run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -p:CheckEolWorkloads=false
 
   build-gallery:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     steps:
       - uses: actions/checkout@v5
 

@@ -62,6 +62,19 @@
     <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <Target Name="NormalizeAndroidLibraryLayoutPackagePaths"
+          AfterTargets="_UnoIncludeLibraryAssets"
+          Condition="'$(TargetPlatformIdentifier)' == 'android'">
+    <ItemGroup>
+      <_FloweryAndroidLayoutPackageFile Include="@(TfmSpecificPackageFile)"
+                                        Condition="$([System.String]::Copy('%(TfmSpecificPackageFile.PackagePath)').StartsWith('lib\$(TargetFramework)$(TargetPlatformVersion)\'))" />
+      <TfmSpecificPackageFile Remove="@(_FloweryAndroidLayoutPackageFile)" />
+      <TfmSpecificPackageFile Include="@(_FloweryAndroidLayoutPackageFile)">
+        <PackagePath>$([System.String]::Copy('%(_FloweryAndroidLayoutPackageFile.PackagePath)').Replace('lib\$(TargetFramework)$(TargetPlatformVersion)\', 'lib\$(TargetFramework)\'))</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
   <!-- SkiaSharp for cross-platform image processing and effects -->
   <ItemGroup>
     <PackageReference Include="SkiaSharp" />

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated central package versions for SkiaSharp, Uno Toolkit, MSTest, Octokit, Win2D, WebAssembly crypto support, Tmds.DBus.Protocol, and Microsoft Testing extensions.
 - Kept `Microsoft.Graphics.Win2D` on `1.3.2` because `1.4.0` introduces a mixed Windows App SDK 1.7/1.8 build graph with the current Uno SDK.
 - Updated Gallery desktop/browser package references required by the refreshed package graph.
+- Updated release artifact actions for Node.js 24 and pinned Windows CI jobs to `windows-2025-vs2026`.
+- Normalized Android library-layout package paths so `dotnet pack` emits matching `net10.0-android36.0` lib and dependency groups.
 
 ## [0.1.2] - 2026-02-12
 

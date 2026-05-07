@@ -89,7 +89,7 @@ jobs:
           zip ../Flowery.Uno-lib.zip * || echo "No library files to zip"
 
       - name: Upload library artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: library-artifacts
           path: |
@@ -99,7 +99,7 @@ jobs:
 
   build-gallery:
     needs: [validate, build-library]
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     permissions:
       contents: read
 
@@ -127,7 +127,7 @@ jobs:
         shell: pwsh
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Flowery.Gallery-Windows-x64
           path: ./Flowery.Gallery-Windows-x64.zip
@@ -146,7 +146,7 @@ jobs:
           global-json-file: global.json
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./release-artifacts
 

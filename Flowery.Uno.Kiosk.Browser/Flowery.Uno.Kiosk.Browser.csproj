@@ -1,10 +1,10 @@
-<Project Sdk="Uno.Sdk/6.4.53">
+<Project Sdk="Uno.Sdk/6.5.33">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0-browserwasm</TargetFramework>
     <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-    <UnoVersion>6.4.229</UnoVersion>
+    <UnoVersion>6.5.229</UnoVersion>
     <UnoSingleProject>true</UnoSingleProject>
     <AssemblyName>Flowery.Uno.Kiosk.Browser</AssemblyName>
     <IsWindowsTarget>$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))</IsWindowsTarget>

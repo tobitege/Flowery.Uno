@@ -5,9 +5,9 @@
     <BaseOutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</BaseOutputPath>
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\</OutputPath>
-    <Version Condition="'$(Version)' == ''">0.1.2</Version>
-    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.1.2.0</AssemblyVersion>
-    <FileVersion Condition="'$(FileVersion)' == ''">0.1.2.0</FileVersion>
+    <Version Condition="'$(Version)' == ''">0.1.3</Version>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.1.3.0</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">0.1.3.0</FileVersion>
     <Authors Condition="'$(Authors)' == ''">tobitege</Authors>
     <PackageProjectUrl Condition="'$(PackageProjectUrl)' == ''">https://github.com/tobitege/Flowery.Uno</PackageProjectUrl>
     <RepositoryUrl Condition="'$(RepositoryUrl)' == ''">https://github.com/tobitege/Flowery.Uno</RepositoryUrl>
@@ -21,7 +21,7 @@
     <_UnoSdkExtrasRoot Condition="'$(NUGET_PACKAGES)' != ''">$(NUGET_PACKAGES)</_UnoSdkExtrasRoot>
     <_UnoSdkExtrasRoot Condition="'$(_UnoSdkExtrasRoot)' == '' and '$(UserProfile)' != ''">$(UserProfile)\.nuget\packages</_UnoSdkExtrasRoot>
     <_UnoSdkExtrasRoot Condition="'$(_UnoSdkExtrasRoot)' == '' and '$(HOME)' != ''">$(HOME)/.nuget/packages</_UnoSdkExtrasRoot>
-    <UnoSdkExtrasTasksAssembly Condition="'$(_UnoSdkExtrasRoot)' != ''">$([System.IO.Path]::Combine('$(_UnoSdkExtrasRoot)','uno.sdk.extras','6.1.1','buildTransitive','netstandard2.0','Uno.Sdk.Extras_v4d6304a604.dll'))</UnoSdkExtrasTasksAssembly>
+    <UnoSdkExtrasTasksAssembly Condition="'$(_UnoSdkExtrasRoot)' != ''">$([System.IO.Path]::Combine('$(_UnoSdkExtrasRoot)','uno.sdk.extras','6.3.1','buildTransitive','netstandard2.0','Uno.Sdk.Extras_v9d177673b7.dll'))</UnoSdkExtrasTasksAssembly>
   </PropertyGroup>
 
   <!-- Android: Skip scale-125 which is not supported (only WinUI supports it) -->

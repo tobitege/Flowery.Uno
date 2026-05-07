@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-05-07
+
+- Updated Flowery shared package version metadata to `0.1.3`.
+- Updated Uno SDK and Uno package pins to the 6.5 line across Flowery shared projects.
+- Updated central package versions for SkiaSharp, Uno Toolkit, MSTest, Octokit, Win2D, WebAssembly crypto support, Tmds.DBus.Protocol, and Microsoft Testing extensions.
+- Kept `Microsoft.Graphics.Win2D` on `1.3.2` because `1.4.0` introduces a mixed Windows App SDK 1.7/1.8 build graph with the current Uno SDK.
+- Updated Gallery desktop/browser package references required by the refreshed package graph.
+
 ## [0.1.2] - 2026-02-12
 
 - Refined size design tokens around a 4px grid and introduced mobile-specific sizing via `PlatformCompatibility.IsMobile`, keeping desktop/Windows ergonomics with the existing size presets.

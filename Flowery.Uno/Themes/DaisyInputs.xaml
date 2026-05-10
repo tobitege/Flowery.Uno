@@ -167,6 +167,7 @@
          so we just need a template that passes through the Content property. -->
     <Style TargetType="controls:DaisyCheckBox">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="MinWidth" Value="0" />
@@ -189,68 +190,93 @@
 
     <!-- ===================== DaisyToggle template ===================== -->
     <ControlTemplate x:Key="DaisyToggleTemplate" TargetType="controls:DaisyToggle">
-        <Grid ColumnDefinitions="Auto,*">
-            <Border x:Name="SwitchArea"
-                    Grid.Column="0"
-                    Width="{ThemeResource DaisyToggleMediumWidth}"
-                    Height="{ThemeResource DaisyToggleMediumHeight}"
-                    VerticalAlignment="Center"
-                    CornerRadius="12"
-                    Background="{ThemeResource DaisyBase300Brush}"
-                    BorderBrush="{ThemeResource DaisyBase300Brush}"
-                    BorderThickness="1">
-                <Grid>
-                    <Ellipse x:Name="Knob"
-                        Width="{ThemeResource DaisyToggleKnobMediumSize}"
-                        Height="{ThemeResource DaisyToggleKnobMediumSize}"
-                        Fill="White"
-                        HorizontalAlignment="Left"
+        <Border x:Name="PART_ControlBorder"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Padding="{TemplateBinding Padding}">
+            <Grid ColumnDefinitions="Auto,*">
+                <Border x:Name="SwitchArea"
+                        Grid.Column="0"
+                        Width="{ThemeResource DaisyToggleMediumWidth}"
+                        Height="{ThemeResource DaisyToggleMediumHeight}"
                         VerticalAlignment="Center"
-                        Margin="0">
-                        <Ellipse.RenderTransform>
-                            <TranslateTransform x:Name="KnobTransform" X="0" />
-                        </Ellipse.RenderTransform>
-                    </Ellipse>
-                </Grid>
-            </Border>
+                        CornerRadius="12"
+                        Background="{ThemeResource DaisyBase300Brush}"
+                        BorderBrush="{ThemeResource DaisyBase300Brush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Ellipse x:Name="Knob"
+                            Width="{ThemeResource DaisyToggleKnobMediumSize}"
+                            Height="{ThemeResource DaisyToggleKnobMediumSize}"
+                            Fill="White"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Margin="0">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="KnobTransform" X="0" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Grid>
+                </Border>
 
-            <ContentPresenter Grid.Column="1"
-                              Content="{TemplateBinding Header}"
-                              Foreground="{TemplateBinding Foreground}"
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center" />
-        </Grid>
+                <ContentPresenter Grid.Column="1"
+                                  Content="{TemplateBinding Header}"
+                                  FontFamily="{TemplateBinding FontFamily}"
+                                  FontSize="{TemplateBinding FontSize}"
+                                  FontStyle="{TemplateBinding FontStyle}"
+                                  FontWeight="{TemplateBinding FontWeight}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  Margin="8,0,0,0"
+                                  VerticalAlignment="Center" />
+            </Grid>
+        </Border>
     </ControlTemplate>
 
     <Style TargetType="controls:DaisyToggle">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Template" Value="{StaticResource DaisyToggleTemplate}" />
     </Style>
 
     <!-- ===================== DaisyRadio (code-driven visual tree) ===================== -->
     <Style TargetType="controls:DaisyRadio">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:DaisyRadio">
-                    <StackPanel Orientation="Horizontal" Spacing="8" Background="{TemplateBinding Background}">
-                        <Border x:Name="PART_OuterBorder"
-                                BorderThickness="2"
-                                VerticalAlignment="Center">
-                            <Ellipse x:Name="PART_InnerDot"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     Visibility="Collapsed" />
-                        </Border>
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          Foreground="{TemplateBinding Foreground}"
-                                          VerticalAlignment="Center"
-                                          HorizontalAlignment="Left"/>
-                    </StackPanel>
+                    <Border x:Name="PART_ControlBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border x:Name="PART_IndicatorBorder"
+                                    BorderThickness="2"
+                                    VerticalAlignment="Center">
+                                <Ellipse x:Name="PART_InnerDot"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Visibility="Collapsed" />
+                            </Border>
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              FontFamily="{TemplateBinding FontFamily}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              FontStyle="{TemplateBinding FontStyle}"
+                                              FontWeight="{TemplateBinding FontWeight}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

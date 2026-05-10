@@ -14,14 +14,21 @@ namespace Flowery.Controls
     /// </summary>
     public partial class DaisyCheckBox : CheckBox
     {
+        private Border? _controlBorder;
         private Border? _checkboxBorder;
         private Microsoft.UI.Xaml.Shapes.Path? _checkmark;
         private TextBlock? _labelTextBlock;
+        private ContentPresenter? _contentPresenter;
         private object? _userContent;
         private long _foregroundCallbackToken;
+        private long _fontSizeCallbackToken;
+        private readonly List<(DependencyProperty Property, long Token)> _appearanceCallbackTokens = [];
         private bool _hasForegroundOverride;
         private bool _foregroundOverrideInitialized;
         private bool _isApplyingForeground;
+        private bool _hasFontSizeOverride;
+        private bool _fontSizeOverrideInitialized;
+        private bool _isApplyingFontSize;
         private readonly DaisyControlLifecycle _lifecycle;
 
         public DaisyCheckBox()
@@ -90,10 +97,13 @@ namespace Flowery.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _foregroundCallbackToken = RegisterPropertyChangedCallback(ForegroundProperty, OnForegroundChanged);
+            _fontSizeCallbackToken = RegisterPropertyChangedCallback(FontSizeProperty, OnFontSizeChanged);
+            RegisterAppearanceCallbacks();
             EnsureForegroundOverrideInitialized();
+            EnsureFontSizeOverrideInitialized();
 
             // Capture user content before we replace Content with our visual tree.
-            if (Content != null && Content is not StackPanel) // Added check to avoid repeated capture if re-loaded
+            if (Content != null && !ReferenceEquals(Content, _controlBorder))
             {
                 _userContent = Content;
                 // Detach before re-parenting into our ContentPresenter (Uno throws if an element has 2 parents).
@@ -113,6 +123,14 @@ namespace Flowery.Controls
                 UnregisterPropertyChangedCallback(ForegroundProperty, _foregroundCallbackToken);
                 _foregroundCallbackToken = 0;
             }
+
+            if (_fontSizeCallbackToken != 0)
+            {
+                UnregisterPropertyChangedCallback(FontSizeProperty, _fontSizeCallbackToken);
+                _fontSizeCallbackToken = 0;
+            }
+
+            UnregisterAppearanceCallbacks();
         }
 
         #endregion
@@ -122,11 +140,12 @@ namespace Flowery.Controls
         private void BuildVisualTree()
         {
             // Build once; on subsequent loads just ensure the label reflects the captured content.
-            if (Content is StackPanel existingRoot)
+            if (_controlBorder?.Child is StackPanel existingRoot)
             {
                 if (existingRoot.Children.Count > 1 && existingRoot.Children[1] is ContentPresenter existingPresenter)
                 {
                     existingPresenter.Content = _userContent;
+                    _contentPresenter = existingPresenter;
                     _labelTextBlock = null;
                 }
                 else if (existingRoot.Children.Count > 1 && existingRoot.Children[1] is TextBlock existingText)
@@ -181,16 +200,21 @@ namespace Flowery.Controls
             else
             {
                 // Content presenter for the label
-                var contentPresenter = new ContentPresenter
+                _contentPresenter = new ContentPresenter
                 {
                     VerticalAlignment = VerticalAlignment.Center,
                     Content = _userContent
                 };
                 _labelTextBlock = null;
-                root.Children.Add(contentPresenter);
+                root.Children.Add(_contentPresenter);
             }
 
-            Content = root;
+            _controlBorder = new Border
+            {
+                Child = root
+            };
+
+            Content = _controlBorder;
         }
 
         private static PathGeometry CreateCheckmarkGeometry()
@@ -219,6 +243,8 @@ namespace Flowery.Controls
 
             ApplySizing();
             ApplyColors();
+            ApplyControlChrome();
+            ApplyLabelTypography();
         }
 
         private void ApplySizing()
@@ -238,7 +264,10 @@ namespace Flowery.Controls
             _checkmark.Width = checkmarkSize;
             _checkmark.Height = checkmarkSize;
 
-            FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            if (!_hasFontSizeOverride)
+            {
+                SetFontSize(DaisyResourceLookup.GetDefaultFontSize(Size));
+            }
         }
 
         private void ApplyColors()
@@ -335,6 +364,37 @@ namespace Flowery.Controls
             }
         }
 
+        private void ApplyControlChrome()
+        {
+            if (_controlBorder == null)
+                return;
+
+            _controlBorder.Background = Background;
+            _controlBorder.BorderBrush = BorderBrush;
+            _controlBorder.BorderThickness = BorderThickness;
+            _controlBorder.Padding = Padding;
+        }
+
+        private void ApplyLabelTypography()
+        {
+            if (_labelTextBlock != null)
+            {
+                _labelTextBlock.FontFamily = FontFamily;
+                _labelTextBlock.FontSize = FontSize;
+                _labelTextBlock.FontStyle = FontStyle;
+                _labelTextBlock.FontWeight = FontWeight;
+                return;
+            }
+
+            if (_contentPresenter != null)
+            {
+                _contentPresenter.FontFamily = FontFamily;
+                _contentPresenter.FontSize = FontSize;
+                _contentPresenter.FontStyle = FontStyle;
+                _contentPresenter.FontWeight = FontWeight;
+            }
+        }
+
         #endregion
 
         private void OnForegroundChanged(DependencyObject sender, DependencyProperty dp)
@@ -346,6 +406,20 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
+        private void OnFontSizeChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (_isApplyingFontSize)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+            ApplyAll();
+        }
+
+        private void OnAppearancePropertyChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            ApplyAll();
+        }
+
         private void EnsureForegroundOverrideInitialized()
         {
             if (_foregroundOverrideInitialized)
@@ -353,6 +427,15 @@ namespace Flowery.Controls
 
             _hasForegroundOverride = ReadLocalValue(ForegroundProperty) != DependencyProperty.UnsetValue;
             _foregroundOverrideInitialized = true;
+        }
+
+        private void EnsureFontSizeOverrideInitialized()
+        {
+            if (_fontSizeOverrideInitialized)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+            _fontSizeOverrideInitialized = true;
         }
 
         private void SetForeground(Brush brush)
@@ -369,6 +452,52 @@ namespace Flowery.Controls
             {
                 _isApplyingForeground = false;
             }
+        }
+
+        private void SetFontSize(double fontSize)
+        {
+            if (Math.Abs(FontSize - fontSize) < 0.001)
+                return;
+
+            _isApplyingFontSize = true;
+            try
+            {
+                FontSize = fontSize;
+            }
+            finally
+            {
+                _isApplyingFontSize = false;
+            }
+        }
+
+        private void RegisterAppearanceCallbacks()
+        {
+            if (_appearanceCallbackTokens.Count > 0)
+                return;
+
+            RegisterAppearanceCallback(BackgroundProperty);
+            RegisterAppearanceCallback(BorderBrushProperty);
+            RegisterAppearanceCallback(BorderThicknessProperty);
+            RegisterAppearanceCallback(PaddingProperty);
+            RegisterAppearanceCallback(FontFamilyProperty);
+            RegisterAppearanceCallback(FontStyleProperty);
+            RegisterAppearanceCallback(FontWeightProperty);
+        }
+
+        private void RegisterAppearanceCallback(DependencyProperty property)
+        {
+            var token = RegisterPropertyChangedCallback(property, OnAppearancePropertyChanged);
+            _appearanceCallbackTokens.Add((property, token));
+        }
+
+        private void UnregisterAppearanceCallbacks()
+        {
+            foreach (var (property, token) in _appearanceCallbackTokens)
+            {
+                UnregisterPropertyChangedCallback(property, token);
+            }
+
+            _appearanceCallbackTokens.Clear();
         }
 
         private static Brush GetAppBrush(string key)

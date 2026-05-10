@@ -23,7 +23,11 @@ namespace Flowery.Controls
         private bool _isApplyingForeground;
         private bool _hasForegroundOverride;
         private bool _foregroundOverrideInitialized;
+        private bool _hasFontSizeOverride;
+        private bool _fontSizeOverrideInitialized;
+        private bool _isApplyingFontSize;
         private long _foregroundCallbackToken;
+        private long _fontSizeCallbackToken;
         private readonly DaisyControlLifecycle _lifecycle;
 
         public DaisyToggle()
@@ -47,7 +51,9 @@ namespace Flowery.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _foregroundCallbackToken = RegisterPropertyChangedCallback(ForegroundProperty, OnForegroundChanged);
+            _fontSizeCallbackToken = RegisterPropertyChangedCallback(FontSizeProperty, OnFontSizeChanged);
             EnsureForegroundOverrideInitialized();
+            EnsureFontSizeOverrideInitialized();
 
             var resources = Application.Current?.Resources;
             if (resources != null)
@@ -66,6 +72,12 @@ namespace Flowery.Controls
                 UnregisterPropertyChangedCallback(ForegroundProperty, _foregroundCallbackToken);
                 _foregroundCallbackToken = 0;
             }
+
+            if (_fontSizeCallbackToken != 0)
+            {
+                UnregisterPropertyChangedCallback(FontSizeProperty, _fontSizeCallbackToken);
+                _fontSizeCallbackToken = 0;
+            }
         }
 
         protected override void OnApplyTemplate()
@@ -77,6 +89,7 @@ namespace Flowery.Controls
             _knobTransform = GetTemplateChild("KnobTransform") as TranslateTransform;
 
             EnsureForegroundOverrideInitialized();
+            EnsureFontSizeOverrideInitialized();
             ApplyAll(animateKnob: false);
         }
 
@@ -285,8 +298,10 @@ namespace Flowery.Controls
             // No margin needed - vertical centering via VerticalAlignment="Center" in XAML,
             // horizontal positioning via TranslateTransform.X
 
-            // Apply font size to toggle (affects header via ContentPresenter)
-            FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            if (!_hasFontSizeOverride)
+            {
+                SetFontSize(DaisyResourceLookup.GetDefaultFontSize(Size));
+            }
 
             if (ReadLocalValue(MinHeightProperty) == DependencyProperty.UnsetValue)
             {
@@ -421,6 +436,14 @@ namespace Flowery.Controls
             ApplyAll(animateKnob: false);
         }
 
+        private void OnFontSizeChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (_isApplyingFontSize)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+        }
+
         private void EnsureForegroundOverrideInitialized()
         {
             if (_foregroundOverrideInitialized)
@@ -428,6 +451,15 @@ namespace Flowery.Controls
 
             _hasForegroundOverride = ReadLocalValue(ForegroundProperty) != DependencyProperty.UnsetValue;
             _foregroundOverrideInitialized = true;
+        }
+
+        private void EnsureFontSizeOverrideInitialized()
+        {
+            if (_fontSizeOverrideInitialized)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+            _fontSizeOverrideInitialized = true;
         }
 
         private void SetForeground(Brush brush)
@@ -443,6 +475,22 @@ namespace Flowery.Controls
             finally
             {
                 _isApplyingForeground = false;
+            }
+        }
+
+        private void SetFontSize(double fontSize)
+        {
+            if (Math.Abs(FontSize - fontSize) < 0.001)
+                return;
+
+            _isApplyingFontSize = true;
+            try
+            {
+                FontSize = fontSize;
+            }
+            finally
+            {
+                _isApplyingFontSize = false;
             }
         }
 

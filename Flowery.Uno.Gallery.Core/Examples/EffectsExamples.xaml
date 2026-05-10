@@ -232,7 +232,7 @@
 
                 <Border Background="#1a1a1a" CornerRadius="12" Padding="18" BorderBrush="#333" BorderThickness="1" MaxWidth="640">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="TERMINAL v1.0.4" Foreground="#666" FontSize="10" FontWeight="Bold" />
+                        <TextBlock Text="TERMINAL v1.0.0" Foreground="#666" FontSize="10" FontWeight="Bold" />
                         <TextBlock x:Name="TypewriterDemo"
                                    Text="C:\> flowery --init&#x0a;Initializing Flowery.Uno...&#x0a;Loading DaisyUI tokens...&#x0a;Applying modern transitions...&#x0a;Ready."
                                    Foreground="#4ade80"

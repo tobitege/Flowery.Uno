@@ -14,13 +14,17 @@ namespace Flowery.Controls
     /// </summary>
     public partial class DaisyRadio : RadioButton
     {
-        private Border? _outerBorder;
+        private Border? _indicatorBorder;
         private Ellipse? _innerDot;
         private readonly DaisyControlLifecycle _lifecycle;
         private long _foregroundCallbackToken;
+        private long _fontSizeCallbackToken;
         private bool _hasForegroundOverride;
         private bool _foregroundOverrideInitialized;
         private bool _isApplyingForeground;
+        private bool _hasFontSizeOverride;
+        private bool _fontSizeOverrideInitialized;
+        private bool _isApplyingFontSize;
 
         public DaisyRadio()
         {
@@ -83,7 +87,9 @@ namespace Flowery.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _foregroundCallbackToken = RegisterPropertyChangedCallback(ForegroundProperty, OnForegroundChanged);
+            _fontSizeCallbackToken = RegisterPropertyChangedCallback(FontSizeProperty, OnFontSizeChanged);
             EnsureForegroundOverrideInitialized();
+            EnsureFontSizeOverrideInitialized();
             _lifecycle.HandleLoaded();
         }
 
@@ -96,6 +102,12 @@ namespace Flowery.Controls
                 UnregisterPropertyChangedCallback(ForegroundProperty, _foregroundCallbackToken);
                 _foregroundCallbackToken = 0;
             }
+
+            if (_fontSizeCallbackToken != 0)
+            {
+                UnregisterPropertyChangedCallback(FontSizeProperty, _fontSizeCallbackToken);
+                _fontSizeCallbackToken = 0;
+            }
         }
 
         #endregion
@@ -104,10 +116,11 @@ namespace Flowery.Controls
         {
             base.OnApplyTemplate();
 
-            _outerBorder = GetTemplateChild("PART_OuterBorder") as Border;
+            _indicatorBorder = GetTemplateChild("PART_IndicatorBorder") as Border;
             _innerDot = GetTemplateChild("PART_InnerDot") as Ellipse;
 
             EnsureForegroundOverrideInitialized();
+            EnsureFontSizeOverrideInitialized();
             ApplyAll();
         }
 
@@ -115,7 +128,7 @@ namespace Flowery.Controls
 
         private void ApplyAll()
         {
-            if (_outerBorder == null || _innerDot == null)
+            if (_indicatorBorder == null || _innerDot == null)
                 return;
 
             ApplySizing();
@@ -124,7 +137,7 @@ namespace Flowery.Controls
 
         private void ApplySizing()
         {
-            if (_outerBorder == null || _innerDot == null)
+            if (_indicatorBorder == null || _innerDot == null)
                 return;
 
             // Get sizing from tokens (guaranteed by EnsureDefaults)
@@ -132,19 +145,22 @@ namespace Flowery.Controls
             double boxSize = DaisyResourceLookup.GetDouble($"DaisyCheckbox{sizeKey}Size", 18);
             double dotSize = DaisyResourceLookup.GetDouble($"DaisyRadioDot{sizeKey}Size", 10);
 
-            _outerBorder.Width = boxSize;
-            _outerBorder.Height = boxSize;
-            _outerBorder.CornerRadius = new CornerRadius(boxSize / 2);
+            _indicatorBorder.Width = boxSize;
+            _indicatorBorder.Height = boxSize;
+            _indicatorBorder.CornerRadius = new CornerRadius(boxSize / 2);
 
             _innerDot.Width = dotSize;
             _innerDot.Height = dotSize;
 
-            FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            if (!_hasFontSizeOverride)
+            {
+                SetFontSize(DaisyResourceLookup.GetDefaultFontSize(Size));
+            }
         }
 
         private void ApplyColors()
         {
-            if (_outerBorder == null || _innerDot == null)
+            if (_indicatorBorder == null || _innerDot == null)
                 return;
 
             bool isChecked = IsChecked == true;
@@ -192,18 +208,18 @@ namespace Flowery.Controls
 
             if (isChecked)
             {
-                _outerBorder.BorderBrush = accentBrush;
+                _indicatorBorder.BorderBrush = accentBrush;
                 _innerDot.Fill = accentBrush;
                 _innerDot.Visibility = Visibility.Visible;
             }
             else
             {
-                _outerBorder.BorderBrush = borderBrush;
+                _indicatorBorder.BorderBrush = borderBrush;
                 _innerDot.Visibility = Visibility.Collapsed;
             }
 
             // Background is always transparent for radio
-            _outerBorder.Background = new SolidColorBrush(Colors.Transparent);
+            _indicatorBorder.Background = new SolidColorBrush(Colors.Transparent);
             if (!_hasForegroundOverride)
             {
                 SetForeground(labelBrush);
@@ -221,6 +237,14 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
+        private void OnFontSizeChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (_isApplyingFontSize)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+        }
+
         private void EnsureForegroundOverrideInitialized()
         {
             if (_foregroundOverrideInitialized)
@@ -228,6 +252,15 @@ namespace Flowery.Controls
 
             _hasForegroundOverride = ReadLocalValue(ForegroundProperty) != DependencyProperty.UnsetValue;
             _foregroundOverrideInitialized = true;
+        }
+
+        private void EnsureFontSizeOverrideInitialized()
+        {
+            if (_fontSizeOverrideInitialized)
+                return;
+
+            _hasFontSizeOverride = ReadLocalValue(FontSizeProperty) != DependencyProperty.UnsetValue;
+            _fontSizeOverrideInitialized = true;
         }
 
         private void SetForeground(Brush brush)
@@ -243,6 +276,22 @@ namespace Flowery.Controls
             finally
             {
                 _isApplyingForeground = false;
+            }
+        }
+
+        private void SetFontSize(double fontSize)
+        {
+            if (Math.Abs(FontSize - fontSize) < 0.001)
+                return;
+
+            _isApplyingFontSize = true;
+            try
+            {
+                FontSize = fontSize;
+            }
+            finally
+            {
+                _isApplyingFontSize = false;
             }
         }
 

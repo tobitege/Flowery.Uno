@@ -7,8 +7,11 @@ using Flowery.Enums;
 using Flowery.Helpers;
 using Flowery.Localization;
 using Flowery.Services;
+using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Flowery.Uno.RuntimeTests.Controls
@@ -108,6 +111,41 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             picker.ToggleTag("Alpha");
             Assert.IsEmpty(selected);
+        }
+
+        [TestMethod]
+        public async Task When_TagPicker_HasPublicStyling_OuterBorderAndTextUseIt()
+        {
+            var userBorderBrush = new SolidColorBrush(Colors.Red);
+            var userForeground = new SolidColorBrush(Colors.Blue);
+            var picker = new DaisyTagPicker
+            {
+                Tags = new List<string> { "Alpha", "Beta" },
+                BorderBrush = userBorderBrush,
+                BorderThickness = new Thickness(3),
+                Foreground = userForeground,
+                FontSize = 23,
+                FontWeight = FontWeights.Bold
+            };
+
+            RuntimeTestHelpers.AttachToHost(picker);
+            await RuntimeTestHelpers.EnsureLoadedAsync(picker);
+
+            Assert.IsInstanceOfType(picker.Content, typeof(Border));
+            var outerBorder = (Border)picker.Content;
+            Assert.AreSame(userBorderBrush, outerBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(3), outerBorder.BorderThickness);
+
+            Assert.IsInstanceOfType(outerBorder.Child, typeof(Border));
+            var containerBorder = (Border)outerBorder.Child;
+            Assert.AreNotSame(userBorderBrush, containerBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(1), containerBorder.BorderThickness);
+
+            var title = FindDescendant<TextBlock>(picker);
+            Assert.IsNotNull(title);
+            Assert.AreSame(userForeground, title.Foreground);
+            Assert.AreEqual(23, title.FontSize);
+            Assert.AreEqual(FontWeights.Bold.Weight, title.FontWeight.Weight);
         }
 
         [TestMethod]
@@ -306,6 +344,40 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public async Task When_CheckBox_HasPublicStyling_OuterBorderAndLabelUseIt()
+        {
+            var userBorderBrush = new SolidColorBrush(Colors.Red);
+            var checkBox = new DaisyCheckBox
+            {
+                Content = "Remember me",
+                BorderBrush = userBorderBrush,
+                BorderThickness = new Thickness(3),
+                FontSize = 23,
+                FontWeight = FontWeights.Bold
+            };
+
+            RuntimeTestHelpers.AttachToHost(checkBox);
+            await RuntimeTestHelpers.EnsureLoadedAsync(checkBox);
+
+            Assert.IsInstanceOfType(checkBox.Content, typeof(Border));
+            var outerBorder = (Border)checkBox.Content;
+            Assert.AreSame(userBorderBrush, outerBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(3), outerBorder.BorderThickness);
+
+            Assert.IsInstanceOfType(outerBorder.Child, typeof(StackPanel));
+            var root = (StackPanel)outerBorder.Child;
+            Assert.IsInstanceOfType(root.Children[0], typeof(Border));
+            var indicatorBorder = (Border)root.Children[0];
+            Assert.AreNotSame(userBorderBrush, indicatorBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(2), indicatorBorder.BorderThickness);
+
+            Assert.IsInstanceOfType(root.Children[1], typeof(TextBlock));
+            var label = (TextBlock)root.Children[1];
+            Assert.AreEqual(23, label.FontSize);
+            Assert.AreEqual(FontWeights.Bold.Weight, label.FontWeight.Weight);
+        }
+
+        [TestMethod]
         public async Task When_Radio_Loads_DefaultsHold()
         {
             var radio = new DaisyRadio
@@ -321,6 +393,38 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public async Task When_Radio_HasPublicStyling_OuterBorderAndContentUseIt()
+        {
+            var userBorderBrush = new SolidColorBrush(Colors.Red);
+            var radio = new DaisyRadio
+            {
+                Content = "Option",
+                BorderBrush = userBorderBrush,
+                BorderThickness = new Thickness(3),
+                FontSize = 23,
+                FontWeight = FontWeights.Bold
+            };
+
+            RuntimeTestHelpers.AttachToHost(radio);
+            await RuntimeTestHelpers.EnsureLoadedAsync(radio);
+            radio.ApplyTemplate();
+
+            var outerBorder = FindDescendantByName<Border>(radio, "PART_ControlBorder");
+            var indicatorBorder = FindDescendantByName<Border>(radio, "PART_IndicatorBorder");
+            var presenter = FindDescendant<ContentPresenter>(radio);
+
+            Assert.IsNotNull(outerBorder);
+            Assert.IsNotNull(indicatorBorder);
+            Assert.IsNotNull(presenter);
+            Assert.AreSame(userBorderBrush, outerBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(3), outerBorder.BorderThickness);
+            Assert.AreNotSame(userBorderBrush, indicatorBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(2), indicatorBorder.BorderThickness);
+            Assert.AreEqual(23, presenter.FontSize);
+            Assert.AreEqual(FontWeights.Bold.Weight, presenter.FontWeight.Weight);
+        }
+
+        [TestMethod]
         public async Task When_Toggle_Loads_DefaultsHold()
         {
             var toggle = new DaisyToggle();
@@ -332,6 +436,38 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreEqual(DaisyToggleVariant.Default, toggle.Variant);
             Assert.AreEqual(DaisySize.Medium, toggle.Size);
             Assert.AreEqual(2.0, toggle.TogglePadding);
+        }
+
+        [TestMethod]
+        public async Task When_Toggle_HasPublicStyling_OuterBorderAndHeaderUseIt()
+        {
+            var userBorderBrush = new SolidColorBrush(Colors.Red);
+            var toggle = new DaisyToggle
+            {
+                Header = "Enabled",
+                BorderBrush = userBorderBrush,
+                BorderThickness = new Thickness(3),
+                FontSize = 23,
+                FontWeight = FontWeights.Bold
+            };
+
+            RuntimeTestHelpers.AttachToHost(toggle);
+            await RuntimeTestHelpers.EnsureLoadedAsync(toggle);
+            toggle.ApplyTemplate();
+
+            var outerBorder = FindDescendantByName<Border>(toggle, "PART_ControlBorder");
+            var switchArea = FindDescendantByName<Border>(toggle, "SwitchArea");
+            var presenter = FindDescendant<ContentPresenter>(toggle);
+
+            Assert.IsNotNull(outerBorder);
+            Assert.IsNotNull(switchArea);
+            Assert.IsNotNull(presenter);
+            Assert.AreSame(userBorderBrush, outerBorder.BorderBrush);
+            Assert.AreEqual(new Thickness(3), outerBorder.BorderThickness);
+            Assert.AreNotSame(userBorderBrush, switchArea.BorderBrush);
+            Assert.AreEqual(new Thickness(1), switchArea.BorderThickness);
+            Assert.AreEqual(23, presenter.FontSize);
+            Assert.AreEqual(FontWeights.Bold.Weight, presenter.FontWeight.Weight);
         }
 
         [TestMethod]
@@ -1112,6 +1248,40 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             Assert.IsTrue(dropdown.ApplyOnSelection);
             Assert.AreEqual(200.0, dropdown.MinWidth);
+        }
+
+        private static T? FindDescendantByName<T>(DependencyObject root, string name)
+            where T : FrameworkElement
+        {
+            return FindDescendant<T>(root, element => element.Name == name);
+        }
+
+        private static T? FindDescendant<T>(DependencyObject root)
+            where T : FrameworkElement
+        {
+            return FindDescendant<T>(root, _ => true);
+        }
+
+        private static T? FindDescendant<T>(DependencyObject root, Func<T, bool> predicate)
+            where T : FrameworkElement
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is T element && predicate(element))
+                {
+                    return element;
+                }
+
+                var descendant = FindDescendant<T>(child, predicate);
+                if (descendant != null)
+                {
+                    return descendant;
+                }
+            }
+
+            return null;
         }
     }
 }

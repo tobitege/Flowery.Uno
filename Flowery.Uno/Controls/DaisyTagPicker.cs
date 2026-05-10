@@ -16,12 +16,14 @@ namespace Flowery.Controls
     /// </summary>
     public partial class DaisyTagPicker : DaisyBaseContentControl
     {
+        private Border? _outerBorder;
         private Border? _containerBorder;
         private Border? _dividerBorder;
         private StackPanel? _rootPanel;
         private TextBlock? _titleText;
         private WrapPanel? _selectedPanel;
         private WrapPanel? _availablePanel;
+        private readonly List<(DependencyProperty Property, long Token)> _appearanceCallbackTokens = [];
         private readonly List<string> _internalSelected = [];
         private readonly List<TagChipInfo> _chipInfos = [];
         private string? _pendingFocusedTag;
@@ -51,6 +53,7 @@ namespace Flowery.Controls
         {
             base.OnLoaded();
             BuildVisualTree();
+            RegisterAppearanceCallbacks();
             EnsureCollectionTracking();
             ApplyAll();
         }
@@ -307,7 +310,7 @@ namespace Flowery.Controls
 
         private void BuildVisualTree()
         {
-            if (_rootPanel != null)
+            if (_outerBorder != null)
                 return;
 
             _rootPanel = new StackPanel
@@ -363,11 +366,17 @@ namespace Flowery.Controls
                 Padding = new Thickness(12)
             };
 
-            Content = _containerBorder;
+            _outerBorder = new Border
+            {
+                Child = _containerBorder
+            };
+
+            Content = _outerBorder;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            UnregisterAppearanceCallbacks();
             DetachTagsNotifier();
             DetachSelectedTagsNotifier();
         }
@@ -444,7 +453,8 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
             _titleText.Text = GetEffectiveTitle();
-            _titleText.Foreground = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush");
+            ApplyOuterChrome();
+            ApplyTitleStyle();
 
             // Style the container
             _containerBorder.Background = DaisyResourceLookup.GetBrush("DaisyBase200Brush");
@@ -459,6 +469,31 @@ namespace Flowery.Controls
             }
 
             UpdateListsAndRebuild();
+        }
+
+        private void ApplyOuterChrome()
+        {
+            if (_outerBorder == null)
+                return;
+
+            _outerBorder.Background = Background;
+            _outerBorder.BorderBrush = BorderBrush;
+            _outerBorder.BorderThickness = BorderThickness;
+            _outerBorder.Padding = Padding;
+        }
+
+        private void ApplyTitleStyle()
+        {
+            if (_titleText == null)
+                return;
+
+            _titleText.Foreground = GetEffectiveBaseContentBrush();
+            _titleText.FontFamily = FontFamily;
+            _titleText.FontSize = GetEffectiveTextFontSize();
+            _titleText.FontStyle = FontStyle;
+            _titleText.FontWeight = HasLocalOverride(FontWeightProperty)
+                ? FontWeight
+                : Microsoft.UI.Text.FontWeights.SemiBold;
         }
 
         private string GetEffectiveTitle()
@@ -597,6 +632,7 @@ namespace Flowery.Controls
             double fontSize = DaisyResourceLookup.GetDouble(
                 lookupResources, $"DaisySize{sizeKey}FontSize",
                 DaisyResourceLookup.GetDefaultFontSize(effectiveSize));
+            fontSize = HasLocalOverride(FontSizeProperty) ? FontSize : fontSize;
 
             // Get padding from tokens
             Thickness paddingValue = DaisyResourceLookup.GetThickness(
@@ -628,9 +664,14 @@ namespace Flowery.Controls
                 var tagText = new TextBlock
                 {
                     Text = tag,
-                    Foreground = DaisyResourceLookup.GetBrush("DaisyPrimaryContentBrush"),
+                    Foreground = HasLocalOverride(ForegroundProperty)
+                        ? Foreground
+                        : DaisyResourceLookup.GetBrush("DaisyPrimaryContentBrush"),
                     VerticalAlignment = VerticalAlignment.Center,
-                    FontSize = fontSize
+                    FontFamily = FontFamily,
+                    FontSize = fontSize,
+                    FontStyle = FontStyle,
+                    FontWeight = FontWeight
                 };
                 chipStack.Children.Add(tagText);
 
@@ -648,7 +689,9 @@ namespace Flowery.Controls
                 var closeIcon = FloweryPathHelpers.CreateClose(
                     size: iconSize,
                     strokeThickness: 1.5,
-                    stroke: DaisyResourceLookup.GetBrush("DaisyPrimaryContentBrush"));
+                    stroke: HasLocalOverride(ForegroundProperty)
+                        ? Foreground
+                        : DaisyResourceLookup.GetBrush("DaisyPrimaryContentBrush"));
                 closeButton.Content = closeIcon;
                 closeButton.Click += (_, _) => OnChipInvoked(tag, FocusState.Pointer);
                 chipStack.Children.Add(closeButton);
@@ -676,9 +719,12 @@ namespace Flowery.Controls
                 var tagText = new TextBlock
                 {
                     Text = tag,
-                    Foreground = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush"),
+                    Foreground = GetEffectiveBaseContentBrush(),
                     VerticalAlignment = VerticalAlignment.Center,
-                    FontSize = fontSize
+                    FontFamily = FontFamily,
+                    FontSize = fontSize,
+                    FontStyle = FontStyle,
+                    FontWeight = FontWeight
                 };
 
                 chipBorder.Child = tagText;
@@ -907,6 +953,69 @@ namespace Flowery.Controls
             var name = string.IsNullOrWhiteSpace(focusedTag) ? baseName : $"{baseName}: {focusedTag}";
 
             DaisyAccessibility.SetAutomationNameOrClear(this, name);
+        }
+
+        private Brush GetEffectiveBaseContentBrush()
+        {
+            return HasLocalOverride(ForegroundProperty)
+                ? Foreground
+                : DaisyResourceLookup.GetBrush("DaisyBaseContentBrush");
+        }
+
+        private double GetEffectiveTextFontSize()
+        {
+            if (HasLocalOverride(FontSizeProperty))
+                return FontSize;
+
+            var effectiveSize = FlowerySizeManager.ShouldIgnoreGlobalSize(this) ? Size : FlowerySizeManager.CurrentSize;
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(effectiveSize);
+            var resources = Application.Current?.Resources;
+            return DaisyResourceLookup.GetDouble(
+                resources ?? [],
+                $"DaisySize{sizeKey}FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(effectiveSize));
+        }
+
+        private bool HasLocalOverride(DependencyProperty property)
+        {
+            return ReadLocalValue(property) != DependencyProperty.UnsetValue;
+        }
+
+        private void RegisterAppearanceCallbacks()
+        {
+            if (_appearanceCallbackTokens.Count > 0)
+                return;
+
+            RegisterAppearanceCallback(BackgroundProperty);
+            RegisterAppearanceCallback(BorderBrushProperty);
+            RegisterAppearanceCallback(BorderThicknessProperty);
+            RegisterAppearanceCallback(PaddingProperty);
+            RegisterAppearanceCallback(ForegroundProperty);
+            RegisterAppearanceCallback(FontFamilyProperty);
+            RegisterAppearanceCallback(FontSizeProperty);
+            RegisterAppearanceCallback(FontStyleProperty);
+            RegisterAppearanceCallback(FontWeightProperty);
+        }
+
+        private void RegisterAppearanceCallback(DependencyProperty property)
+        {
+            var token = RegisterPropertyChangedCallback(property, OnAppearancePropertyChanged);
+            _appearanceCallbackTokens.Add((property, token));
+        }
+
+        private void UnregisterAppearanceCallbacks()
+        {
+            foreach (var (property, token) in _appearanceCallbackTokens)
+            {
+                UnregisterPropertyChangedCallback(property, token);
+            }
+
+            _appearanceCallbackTokens.Clear();
+        }
+
+        private void OnAppearancePropertyChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            ApplyAll();
         }
     }
 }

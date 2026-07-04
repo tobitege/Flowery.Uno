@@ -112,6 +112,9 @@ namespace Flowery.Uno.Gallery
             if (bounds is not { } value)
                 return false;
 
+            if (!HasVisibleWindowArea(value))
+                return false;
+
             var appWindow = GetSafeAppWindow();
             if (appWindow != null)
             {
@@ -133,6 +136,38 @@ namespace Flowery.Uno.Gallery
             }
 
             return false;
+        }
+
+        private static bool HasVisibleWindowArea(WindowBounds bounds)
+        {
+            var width = Math.Max(bounds.Width, MinimumWindowDimension);
+            var height = Math.Max(bounds.Height, MinimumWindowDimension);
+            var rect = new RectInt32
+            {
+                X = bounds.X,
+                Y = bounds.Y,
+                Width = width,
+                Height = height
+            };
+
+            try
+            {
+                var displayArea = DisplayArea.GetFromRect(rect, DisplayAreaFallback.Nearest);
+                if (displayArea == null)
+                {
+                    return true;
+                }
+
+                var workArea = displayArea.WorkArea;
+                var visibleWidth = Math.Min(rect.X + rect.Width, workArea.X + workArea.Width) - Math.Max(rect.X, workArea.X);
+                var visibleHeight = Math.Min(rect.Y + rect.Height, workArea.Y + workArea.Height) - Math.Max(rect.Y, workArea.Y);
+
+                return visibleWidth >= MinimumWindowDimension && visibleHeight >= MinimumWindowDimension;
+            }
+            catch
+            {
+                return true;
+            }
         }
 
         private WindowBounds? GetCurrentBounds()

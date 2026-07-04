@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-04
+
+- Added 25 DaisyLoading animations across business workflow and Win95 retro variants.
+- Added the new DaisyLoading variants to the Gallery feedback examples.
+- Improved small-size readability for Win95 recycle-bin document animations.
+
 ## [1.0.0] - 2026-05-10
 
 - Bumped version to 1.0.0 as there's no reason not to. :)

@@ -185,7 +185,7 @@ namespace Flowery.Controls
             var u = size / 96.0;
             var stroke = Math.Max(1, 2.0 * u);
 
-            var container = new Grid
+            var container = new Canvas
             {
                 Width = size,
                 Height = size,
@@ -200,50 +200,60 @@ namespace Flowery.Controls
             var binY = (size - binH) / 2 + 8.0 * u;
 
             var bin = CreateWin95RecycleBin(brush, binW, binH, lidH, stroke, u);
-            bin.Margin = new Thickness(binX, binY, 0, 0);
-            bin.HorizontalAlignment = HorizontalAlignment.Left;
-            bin.VerticalAlignment = VerticalAlignment.Top;
+            Canvas.SetLeft(bin, binX);
+            Canvas.SetTop(bin, binY);
+            container.Children.Add(bin);
 
-            var paperW = 8.0 * u;
-            var paperH = 10.0 * u;
+            var paperW = 18.0 * u;
+            var paperH = 22.0 * u;
             var binCenterX = binX + binW / 2 - paperW / 2;
             var binTopY = binY + lidH;
 
-            for (int i = 0; i < 4; i++)
+            var papers = new List<(Border paper, double startX, double startY, double targetX, double targetY)>();
+            for (int i = 0; i < 3; i++)
             {
-                var angle = (i - 1.5) * 25.0;
-                var outerX = (float)(Math.Sin(angle * Math.PI / 180) * 30.0 * u);
-                var outerY = (float)(-40.0 * u);
+                var angle = (i - 1.0) * 28.0;
+                var outerX = Math.Sin(angle * Math.PI / 180) * 34.0 * u;
+                var outerY = -46.0 * u;
+                var startX = binCenterX + outerX;
+                var startY = binTopY + outerY;
+                var targetX = binCenterX;
+                var targetY = binTopY + 4.0 * u;
 
                 var paper = CreateWin95Paper(brush, paperW, paperH, stroke * 0.8, u);
-                paper.Margin = new Thickness(binCenterX + outerX, binTopY + outerY, 0, 0);
-                paper.HorizontalAlignment = HorizontalAlignment.Left;
-                paper.VerticalAlignment = VerticalAlignment.Top;
+                Canvas.SetLeft(paper, startX);
+                Canvas.SetTop(paper, startY);
                 paper.Opacity = 0;
                 container.Children.Add(paper);
 
-                int index = i;
-                float capturedOuterX = outerX;
-                float capturedOuterY = outerY;
-                paper.Loaded += (_, _) =>
-                {
-                    paper.Opacity = 1;
-                    PlatformCompatibility.TrySetIsTranslationEnabled(paper, true);
-                    var visual = ElementCompositionPreview.GetElementVisual(paper);
-                    var compositor = visual.Compositor;
-                    visual.Opacity = 0f;
-                    TrackVisual(visual);
-                    TrackTranslationVisual(visual);
-
-                    var targetX = -capturedOuterX;
-                    var targetY = -capturedOuterY;
-                    StartWin95DeletePaperAnimation(visual, compositor, targetX, targetY, index * 250);
-                };
+                papers.Add((paper, startX, startY, targetX, targetY));
             }
 
-            container.Children.Add(bin);
-
             _rootGrid.Children.Add(container);
+
+            StartDaisyLoadingFrameTimer(16, 90, frame =>
+            {
+                for (var i = 0; i < papers.Count; i++)
+                {
+                    var item = papers[i];
+                    var phase = (frame + i * 4) % 16;
+
+                    if (phase > 8)
+                    {
+                        item.paper.Opacity = 0.0;
+                        continue;
+                    }
+
+                    var progress = phase / 8.0;
+                    var eased = progress * progress * (3.0 - 2.0 * progress);
+                    var x = item.startX + (item.targetX - item.startX) * eased;
+                    var y = item.startY + (item.targetY - item.startY) * eased;
+
+                    Canvas.SetLeft(item.paper, x);
+                    Canvas.SetTop(item.paper, y);
+                    item.paper.Opacity = phase < 7 ? 1.0 : 1.0 - (phase - 6) / 2.0;
+                }
+            });
         }
 
         private static Grid CreateWin95RecycleBin(Brush brush, double w, double h, double lidH, double stroke, double u)
@@ -310,49 +320,6 @@ namespace Flowery.Controls
             grid.Children.Add(lid);
             grid.Children.Add(lidHandle);
             return grid;
-        }
-
-        private void StartWin95DeletePaperAnimation(Visual visual, Compositor compositor, float targetX, float targetY, int delayMs)
-        {
-            if (!_isAnimating) return;
-
-            var totalCycle = 1600;
-
-            var offsetX = compositor.CreateScalarKeyFrameAnimation();
-            offsetX.InsertKeyFrame(0f, 0f);
-            offsetX.InsertKeyFrame(0.5f, targetX);
-            offsetX.InsertKeyFrame(1f, targetX);
-            offsetX.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            offsetX.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var offsetY = compositor.CreateScalarKeyFrameAnimation();
-            offsetY.InsertKeyFrame(0f, 0f);
-            offsetY.InsertKeyFrame(0.5f, targetY);
-            offsetY.InsertKeyFrame(1f, targetY);
-            offsetY.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            offsetY.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var scale = compositor.CreateVector3KeyFrameAnimation();
-            scale.InsertKeyFrame(0f, new Vector3(0.6f, 0.6f, 1f));
-            scale.InsertKeyFrame(0.2f, new Vector3(1f, 1f, 1f));
-            scale.InsertKeyFrame(0.5f, new Vector3(0.5f, 0.5f, 1f));
-            scale.InsertKeyFrame(1f, new Vector3(0.5f, 0.5f, 1f));
-            scale.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            scale.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var opacity = compositor.CreateScalarKeyFrameAnimation();
-            opacity.InsertKeyFrame(0f, 1f);
-            opacity.InsertKeyFrame(0.4f, 1f);
-            opacity.InsertKeyFrame(0.5f, 0f);
-            opacity.InsertKeyFrame(0.99f, 0f);
-            opacity.InsertKeyFrame(1f, 1f);
-            opacity.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            opacity.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            PlatformCompatibility.StartAnimation(visual, "Translation.X", offsetX, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Translation.Y", offsetY, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Scale", scale, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Opacity", opacity, TimeSpan.FromMilliseconds(delayMs));
         }
 
         #endregion
@@ -506,7 +473,7 @@ namespace Flowery.Controls
             var u = size / 96.0;
             var stroke = Math.Max(1, 2.0 * u);
 
-            var container = new Grid
+            var container = new Canvas
             {
                 Width = size,
                 Height = size,
@@ -521,106 +488,56 @@ namespace Flowery.Controls
             var binY = (size - binH) / 2 + 8.0 * u;
 
             var bin = CreateWin95RecycleBin(brush, binW, binH, lidH, stroke, u);
-            bin.Margin = new Thickness(binX, binY, 0, 0);
-            bin.HorizontalAlignment = HorizontalAlignment.Left;
-            bin.VerticalAlignment = VerticalAlignment.Top;
+            Canvas.SetLeft(bin, binX);
+            Canvas.SetTop(bin, binY);
             container.Children.Add(bin);
 
-            var paperW = 8.0 * u;
-            var paperH = 10.0 * u;
+            var paperW = 18.0 * u;
+            var paperH = 22.0 * u;
             var startX = binX + binW / 2 - paperW / 2;
-            var startY = binY + lidH;
+            var startY = binY + lidH + 4.0 * u;
 
-            for (int i = 0; i < 4; i++)
+            var papers = new List<(Border paper, double startX, double startY, double targetX, double targetY)>();
+            for (int i = 0; i < 3; i++)
             {
+                var angle = (i - 1.0) * 28.0;
+                var targetX = startX + Math.Sin(angle * Math.PI / 180) * 34.0 * u;
+                var targetY = startY - 50.0 * u;
+
                 var paper = CreateWin95Paper(brush, paperW, paperH, stroke * 0.8, u);
-                paper.Margin = new Thickness(startX, startY, 0, 0);
-                paper.HorizontalAlignment = HorizontalAlignment.Left;
-                paper.VerticalAlignment = VerticalAlignment.Top;
+                Canvas.SetLeft(paper, startX);
+                Canvas.SetTop(paper, startY);
                 paper.Opacity = 0;
                 container.Children.Add(paper);
 
-                int index = i;
-                paper.Loaded += (_, _) =>
-                {
-                    paper.Opacity = 1;
-                    PlatformCompatibility.TrySetIsTranslationEnabled(paper, true);
-                    var visual = ElementCompositionPreview.GetElementVisual(paper);
-                    var compositor = visual.Compositor;
-                    visual.Opacity = 0f;
-                    TrackVisual(visual);
-                    TrackTranslationVisual(visual);
-
-                    var angle = (index - 1.5) * 25.0;
-                    var targetX = (float)(Math.Sin(angle * Math.PI / 180) * 30.0 * u);
-                    var targetY = (float)(-40.0 * u);
-                    StartWin95EmptyPaperAnimation(paper, visual, compositor, targetX, targetY, index * 250);
-                };
+                papers.Add((paper, startX, startY, targetX, targetY));
             }
 
             _rootGrid.Children.Add(container);
-        }
 
-        private void StartWin95EmptyPaperAnimation(UIElement element, Visual visual, Compositor compositor, float targetX, float targetY, int delayMs)
-        {
-            if (!_isAnimating) return;
-
-            var totalCycle = 1600;
-
-            var offsetX = compositor.CreateScalarKeyFrameAnimation();
-            offsetX.InsertKeyFrame(0f, 0f);
-            offsetX.InsertKeyFrame(0.5f, targetX);
-            offsetX.InsertKeyFrame(1f, targetX);
-            offsetX.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            offsetX.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var offsetY = compositor.CreateScalarKeyFrameAnimation();
-            offsetY.InsertKeyFrame(0f, 0f);
-            offsetY.InsertKeyFrame(0.5f, targetY);
-            offsetY.InsertKeyFrame(1f, targetY);
-            offsetY.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            offsetY.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var scale = compositor.CreateVector3KeyFrameAnimation();
-            scale.InsertKeyFrame(0f, new Vector3(0.5f, 0.5f, 1f));
-            scale.InsertKeyFrame(0.3f, new Vector3(1f, 1f, 1f));
-            scale.InsertKeyFrame(0.5f, new Vector3(0.6f, 0.6f, 1f));
-            scale.InsertKeyFrame(1f, new Vector3(0.6f, 0.6f, 1f));
-            scale.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            scale.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            var opacity = compositor.CreateScalarKeyFrameAnimation();
-            opacity.InsertKeyFrame(0f, 1f);
-            opacity.InsertKeyFrame(0.4f, 1f);
-            opacity.InsertKeyFrame(0.5f, 0f);
-            opacity.InsertKeyFrame(0.99f, 0f);
-            opacity.InsertKeyFrame(1f, 1f);
-            opacity.Duration = TimeSpan.FromMilliseconds(totalCycle);
-            opacity.IterationBehavior = AnimationIterationBehavior.Forever;
-
-            if (PlatformCompatibility.IsSkiaBackend || PlatformCompatibility.IsWasmBackend)
+            StartDaisyLoadingFrameTimer(16, 90, frame =>
             {
-                var targetAngle = targetX > 0 ? 45d : -45d;
-                var storyboard = PlatformCompatibility.StartRotationKeyframes(
-                    element,
-                    [(0d, 0d), (0.5d, targetAngle), (1d, targetAngle)],
-                    TimeSpan.FromMilliseconds(totalCycle));
-                TrackStoryboard(storyboard);
-            }
-            else
-            {
-                var targetAngle = targetX > 0 ? 45f : -45f;
-                var rotation = PlatformCompatibility.CreateRotationAnimation(
-                    compositor,
-                    [(0f, 0f), (0.5f, targetAngle), (1f, targetAngle)],
-                    TimeSpan.FromMilliseconds(totalCycle));
-                PlatformCompatibility.StartAnimation(visual, "RotationAngle", rotation, TimeSpan.FromMilliseconds(delayMs));
-            }
+                for (var i = 0; i < papers.Count; i++)
+                {
+                    var item = papers[i];
+                    var phase = (frame + i * 4) % 16;
 
-            PlatformCompatibility.StartAnimation(visual, "Translation.X", offsetX, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Translation.Y", offsetY, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Scale", scale, TimeSpan.FromMilliseconds(delayMs));
-            PlatformCompatibility.StartAnimation(visual, "Opacity", opacity, TimeSpan.FromMilliseconds(delayMs));
+                    if (phase > 8)
+                    {
+                        item.paper.Opacity = 0.0;
+                        continue;
+                    }
+
+                    var progress = phase / 8.0;
+                    var eased = progress * progress * (3.0 - 2.0 * progress);
+                    var x = item.startX + (item.targetX - item.startX) * eased;
+                    var y = item.startY + (item.targetY - item.startY) * eased;
+
+                    Canvas.SetLeft(item.paper, x);
+                    Canvas.SetTop(item.paper, y);
+                    item.paper.Opacity = phase < 7 ? 1.0 : 1.0 - (phase - 6) / 2.0;
+                }
+            });
         }
 
         #endregion

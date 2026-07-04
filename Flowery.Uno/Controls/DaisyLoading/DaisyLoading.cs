@@ -79,6 +79,34 @@ namespace Flowery.Controls
         ApprovalFlow,
         /// <summary>Business: briefcase bounce/spin</summary>
         BriefcaseSpin,
+        /// <summary>Business: printer feeding pages out</summary>
+        PrinterOutput,
+        /// <summary>Business: document being shredded into strips</summary>
+        PaperShredder,
+        /// <summary>Business: pen signing a document</summary>
+        SignaturePen,
+        /// <summary>Business: scan beam moving over a document</summary>
+        DocumentScan,
+        /// <summary>Business: folders syncing with a moving document</summary>
+        FolderSync,
+        /// <summary>Business: incoming envelope opening with a document</summary>
+        MailReceive,
+        /// <summary>Business: phone handset ringing with wave arcs</summary>
+        PhoneRing,
+        /// <summary>Business: coins falling onto a growing stack</summary>
+        CoinStack,
+        /// <summary>Business: invoice being stamped as paid</summary>
+        InvoicePaid,
+        /// <summary>Business: coin dropping into a piggy bank</summary>
+        PiggyBank,
+        /// <summary>Business: pie chart segments appearing in sequence</summary>
+        PieChartFill,
+        /// <summary>Business: analytical trend line drawing upward</summary>
+        TrendLine,
+        /// <summary>Business: clock hands spinning while waiting</summary>
+        ClockSpin,
+        /// <summary>Business: coffee cup with rising steam</summary>
+        CoffeeCup,
         /// <summary>Business: battery charging fill</summary>
         BatteryCharging,
         /// <summary>Business: battery emptying fill</summary>
@@ -98,7 +126,29 @@ namespace Flowery.Controls
         /// <summary>Retro Win95: flashlight/magnifying glass searching files</summary>
         Win95Search,
         /// <summary>Retro Win95: papers flying out of recycle bin</summary>
-        Win95EmptyRecycle
+        Win95EmptyRecycle,
+        /// <summary>Retro Win95: block defragmentation grid</summary>
+        Win95Defrag,
+        /// <summary>Retro Win95: paper downloading from globe to folder</summary>
+        Win95Download,
+        /// <summary>Retro Win95: floppy disk sliding into a drive</summary>
+        Win95Install,
+        /// <summary>Retro Win95: scan boxes checking across a disk row</summary>
+        Win95ScanDisk,
+        /// <summary>Retro Win95: chunky hourglass cursor</summary>
+        Win95Hourglass,
+        /// <summary>Retro Win95: two computers exchanging dial-up signals</summary>
+        Win95DialUp,
+        /// <summary>Retro Win95: solitaire cards cascading after a win</summary>
+        Win95Solitaire,
+        /// <summary>Retro Win95: printer output queue</summary>
+        Win95PrintQueue,
+        /// <summary>Retro Win95: magnifying glass searching a PC</summary>
+        Win95FindComputer,
+        /// <summary>Retro Win95: four startup panes lighting in sequence</summary>
+        Win95Startup,
+        /// <summary>Retro Win95: Windows-colored startup panes lighting in sequence</summary>
+        Win95StartupColor
     }
 
     /// <summary>
@@ -343,6 +393,48 @@ namespace Flowery.Controls
                 case DaisyLoadingVariant.BriefcaseSpin:
                     BuildBriefcaseSpinVisual(size);
                     break;
+                case DaisyLoadingVariant.PrinterOutput:
+                    BuildPrinterOutputVisual(size);
+                    break;
+                case DaisyLoadingVariant.PaperShredder:
+                    BuildPaperShredderVisual(size);
+                    break;
+                case DaisyLoadingVariant.SignaturePen:
+                    BuildSignaturePenVisual(size);
+                    break;
+                case DaisyLoadingVariant.DocumentScan:
+                    BuildDocumentScanVisual(size);
+                    break;
+                case DaisyLoadingVariant.FolderSync:
+                    BuildFolderSyncVisual(size);
+                    break;
+                case DaisyLoadingVariant.MailReceive:
+                    BuildMailReceiveVisual(size);
+                    break;
+                case DaisyLoadingVariant.PhoneRing:
+                    BuildPhoneRingVisual(size);
+                    break;
+                case DaisyLoadingVariant.CoinStack:
+                    BuildCoinStackVisual(size);
+                    break;
+                case DaisyLoadingVariant.InvoicePaid:
+                    BuildInvoicePaidVisual(size);
+                    break;
+                case DaisyLoadingVariant.PiggyBank:
+                    BuildPiggyBankVisual(size);
+                    break;
+                case DaisyLoadingVariant.PieChartFill:
+                    BuildPieChartFillVisual(size);
+                    break;
+                case DaisyLoadingVariant.TrendLine:
+                    BuildTrendLineVisual(size);
+                    break;
+                case DaisyLoadingVariant.ClockSpin:
+                    BuildClockSpinVisual(size);
+                    break;
+                case DaisyLoadingVariant.CoffeeCup:
+                    BuildCoffeeCupVisual(size);
+                    break;
                 case DaisyLoadingVariant.BatteryCharging:
                     BuildBatteryChargingVisual(size);
                     break;
@@ -372,6 +464,39 @@ namespace Flowery.Controls
                     break;
                 case DaisyLoadingVariant.Win95EmptyRecycle:
                     BuildWin95EmptyRecycleVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Defrag:
+                    BuildWin95DefragVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Download:
+                    BuildWin95DownloadVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Install:
+                    BuildWin95InstallVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95ScanDisk:
+                    BuildWin95ScanDiskVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Hourglass:
+                    BuildWin95HourglassVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95DialUp:
+                    BuildWin95DialUpVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Solitaire:
+                    BuildWin95SolitaireVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95PrintQueue:
+                    BuildWin95PrintQueueVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95FindComputer:
+                    BuildWin95FindComputerVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95Startup:
+                    BuildWin95StartupVisual(size);
+                    break;
+                case DaisyLoadingVariant.Win95StartupColor:
+                    BuildWin95StartupColorVisual(size);
                     break;
                 default:
                     BuildSpinnerVisual(size);

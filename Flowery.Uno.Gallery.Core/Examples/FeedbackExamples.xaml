@@ -82,6 +82,20 @@
                     <daisy:DaisyLoading Variant="CalendarTick" PixelSize="48" />
                     <daisy:DaisyLoading Variant="ApprovalFlow" PixelSize="48" />
                     <daisy:DaisyLoading Variant="BriefcaseSpin" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="PrinterOutput" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="PaperShredder" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="SignaturePen" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="DocumentScan" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="FolderSync" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="MailReceive" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="PhoneRing" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="CoinStack" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="InvoicePaid" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="PiggyBank" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="PieChartFill" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="TrendLine" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="ClockSpin" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="CoffeeCup" PixelSize="48" />
                 </daisy:WrapPanel>
 
                 <TextBlock Text="Battery + Traffic Lights (48px)" FontWeight="SemiBold" Opacity="0.8" Margin="0,16,0,0"
@@ -102,6 +116,17 @@
                     <daisy:DaisyLoading Variant="Win95Search" PixelSize="48" />
                     <daisy:DaisyLoading Variant="Win95Delete" PixelSize="48" />
                     <daisy:DaisyLoading Variant="Win95EmptyRecycle" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Defrag" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Download" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Install" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95ScanDisk" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Hourglass" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95DialUp" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Solitaire" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95PrintQueue" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95FindComputer" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95Startup" PixelSize="48" />
+                    <daisy:DaisyLoading Variant="Win95StartupColor" PixelSize="48" />
                 </daisy:WrapPanel>
             </StackPanel>
 

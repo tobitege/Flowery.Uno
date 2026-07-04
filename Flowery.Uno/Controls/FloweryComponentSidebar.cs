@@ -1363,25 +1363,23 @@ namespace Flowery.Controls
             var baseContent = GetBrush(resources, "DaisyBaseContentBrush", new SolidColorBrush(Colors.White));
             var base300 = GetBrush(resources, "DaisyBase300Brush", new SolidColorBrush(Color.FromArgb(255, 60, 60, 70)));
 
-            // Use Neutral variant colors for selected items
-            var neutral = GetBrush(resources, "DaisyNeutralBrush", new SolidColorBrush(Color.FromArgb(255, 42, 50, 60)));
-            var neutralContent = GetBrush(resources, "DaisyNeutralContentBrush", new SolidColorBrush(Color.FromArgb(255, 166, 173, 187)));
+            var primary = GetBrush(resources, "DaisyPrimaryBrush", new SolidColorBrush(Colors.Blue));
+            var primaryContent = GetBrush(resources, "DaisyPrimaryContentBrush", new SolidColorBrush(Colors.White));
 
             var isSelected = forceSelected || (SelectedItem != null && view.Item == SelectedItem);
 
             if (isSelected)
             {
-                view.Container.Background = neutral;
-                view.TextItem.Background = neutral;
-                view.TextItem.Variant = DaisyBadgeVariant.Neutral;
-                view.TextItem.Foreground = neutralContent;
+                view.Container.Background = primary;
+                view.TextItem.Background = primary;
+                view.TextItem.Variant = DaisyBadgeVariant.Primary;
+                view.TextItem.Foreground = primaryContent;
 
-                // Also update favorite icons if they exist to match primary content
                 if (view.FavoriteOutline != null)
                 {
-                    view.FavoriteOutline.Background = neutral;
-                    view.FavoriteOutline.Variant = DaisyBadgeVariant.Neutral;
-                    view.FavoriteOutline.Foreground = neutralContent;
+                    view.FavoriteOutline.Background = primary;
+                    view.FavoriteOutline.Variant = DaisyBadgeVariant.Primary;
+                    view.FavoriteOutline.Foreground = primaryContent;
                 }
 
                 return;

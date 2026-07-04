@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 25 DaisyLoading animations across business workflow and Win95 retro variants.
 - Added the new DaisyLoading variants to the Gallery feedback examples.
 - Improved small-size readability for Win95 recycle-bin document animations.
+- Ported theme fixes for neutral outline buttons, focused radios, and selected Gallery sidebar items.
 
 ## [1.0.0] - 2026-05-10
 

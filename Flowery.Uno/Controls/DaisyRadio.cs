@@ -42,6 +42,8 @@ namespace Flowery.Controls
             Unloaded += OnUnloaded;
             Checked += (s, e) => ApplyAll();
             Unchecked += (s, e) => ApplyAll();
+            GotFocus += (s, e) => ApplyAll();
+            LostFocus += (s, e) => ApplyAll();
         }
 
         #region Dependency Properties
@@ -201,6 +203,7 @@ namespace Flowery.Controls
 
             var accentBrush = accentOverride ?? DaisyResourceLookup.GetBrush(accentBrushKey);
             var borderBrush = borderOverride ?? DaisyResourceLookup.GetBrush("DaisyBase300Brush");
+            var focusBrush = DaisyResourceLookup.GetBrush("DaisyPrimaryBrush");
 
             var labelBrush = _hasForegroundOverride
                 ? Foreground
@@ -214,7 +217,9 @@ namespace Flowery.Controls
             }
             else
             {
-                _indicatorBorder.BorderBrush = borderBrush;
+                _indicatorBorder.BorderBrush = FocusState != Microsoft.UI.Xaml.FocusState.Unfocused
+                    ? focusBrush
+                    : borderBrush;
                 _innerDot.Visibility = Visibility.Collapsed;
             }
 

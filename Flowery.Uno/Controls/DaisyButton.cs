@@ -1214,10 +1214,10 @@ namespace Flowery.Controls
                 case DaisyButtonVariant.Neutral:
                     if (ButtonStyle == DaisyButtonStyle.Outline || ButtonStyle == DaisyButtonStyle.Dash)
                     {
-                        variantBg = neutralContent;
-                        variantHoverBg = neutralContent;
-                        variantFg = neutral;
-                        variantHoverFg = neutral;
+                        variantBg = neutral;
+                        variantHoverBg = neutral;
+                        variantFg = neutralContent;
+                        variantHoverFg = neutralContent;
                     }
                     else
                     {

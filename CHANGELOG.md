@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0] - 2026-07-09
 
+- Windows: fixed the Gallery startup crash (0xC000027B) caused by library XBFs missing from the app output; the WinAppSDK PRI merge skips multi-targeted library projects, so the Windows head now copies theme/resource XBFs to the library layout paths after build.
 - Kanban: fixed dropping cards onto swimlane cells (lane reassignment within the same column did nothing and drop positions were mapped incorrectly in lane-filtered cells).
 - Kanban: card moves now update the board incrementally instead of rebuilding all lane rows and task lists, removing the visible flicker on drag and drop.
 - Kanban: bounded lane-cell heights in swimlane layout so task lists virtualize and scroll instead of realizing every card.

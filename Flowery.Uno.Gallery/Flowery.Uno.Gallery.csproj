@@ -162,6 +162,38 @@
           SkipUnchangedFiles="true" />
   </Target>
 
+  <!--
+    WinUI resolves ResourceDictionary.Source ms-appx URIs (e.g. ms-appx:///Flowery.Uno/Themes/Generic.xaml)
+    to compiled .xbf files. The WinAppSDK PRI merge skips multi-targeted library projects
+    (GetPriOutputs/GetMrtPackagingOutputs hit the TFM-less outer build and are silently skipped),
+    so the library XBFs never reach resources.pri and the app crashes at startup (0xC000027B).
+    WinUI's loose-file fallback works when the XBFs exist under the library layout paths, so copy
+    them there from each library's own output (the root Themes\ folder is a collision zone where
+    Flowery.Uno and Flowery.Uno.Kanban overwrite each other's Generic.xbf).
+  -->
+  <Target Name="ForceCopyWindowsLibraryXbf"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'"
+          AfterTargets="Build">
+    <PropertyGroup>
+      <_FloweryLibOutRoot>$(BaseOutputPath)</_FloweryLibOutRoot>
+      <_FloweryLibOutSuffix>$(TargetFramework)\win-x64\</_FloweryLibOutSuffix>
+    </PropertyGroup>
+    <ItemGroup>
+      <_FloweryUnoThemeXbf Include="$(_FloweryLibOutRoot)Flowery.Uno\$(_FloweryLibOutSuffix)Themes\*.xbf" />
+      <_FloweryKanbanThemeXbf Include="$(_FloweryLibOutRoot)Flowery.Uno.Kanban\$(_FloweryLibOutSuffix)Themes\DaisyKanban.xbf;$(_FloweryLibOutRoot)Flowery.Uno.Kanban\$(_FloweryLibOutSuffix)Themes\Generic.xbf" />
+      <_FloweryGalleryCoreXbf Include="$(_FloweryLibOutRoot)Flowery.Uno.Gallery.Core\$(_FloweryLibOutSuffix)GalleryResources.xbf" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_FloweryUnoThemeXbf)"
+          DestinationFiles="@(_FloweryUnoThemeXbf->'$(TargetDir)Flowery.Uno\Themes\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_FloweryKanbanThemeXbf)"
+          DestinationFiles="@(_FloweryKanbanThemeXbf->'$(TargetDir)Flowery.Uno.Kanban\Themes\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_FloweryGalleryCoreXbf)"
+          DestinationFiles="@(_FloweryGalleryCoreXbf->'$(TargetDir)Flowery.Uno.Gallery.Core\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
   <Target Name="ForceCopyWindowsXamlDictionaries"
           Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'"
           AfterTargets="Publish">

@@ -288,6 +288,115 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public void When_MovingTask_WithTargetLane_LaneIdUpdates()
+        {
+            var lane = new FlowKanbanLane { Id = "lane-1", Title = "Lane 1" };
+            var task = new FlowTask { Title = "Task A" };
+            var source = new FlowKanbanColumnData { Title = "Todo", Tasks = { task } };
+            var target = new FlowKanbanColumnData { Title = "Doing" };
+            var kanban = new FlowKanban
+            {
+                Board = new FlowKanbanData
+                {
+                    GroupBy = FlowKanbanGroupBy.Lane,
+                    Lanes = { lane },
+                    Columns = { source, target }
+                }
+            };
+
+            var manager = new FlowKanbanManager(kanban, autoAttach: false);
+            var result = manager.TryMoveTaskWithWipEnforcement(task, target, 0, lane.Id, enforceHard: false);
+
+            Assert.AreEqual(MoveResult.Success, result);
+            Assert.AreEqual(lane.Id, task.LaneId);
+            Assert.IsTrue(target.Tasks.Contains(task));
+
+            var back = manager.TryMoveTaskWithWipEnforcement(task, source, 0, FlowKanban.UnassignedLaneId, enforceHard: false);
+            Assert.AreEqual(MoveResult.Success, back);
+            Assert.IsNull(task.LaneId);
+            Assert.IsTrue(source.Tasks.Contains(task));
+        }
+
+        [TestMethod]
+        public async Task When_CalculatingDropIndex_PositionsMapToIndices()
+        {
+            var tasks = new[]
+            {
+                new FlowTask { Title = "First" },
+                new FlowTask { Title = "Second" },
+                new FlowTask { Title = "Third" }
+            };
+            var column = new FlowKanbanColumnData { Title = "Todo" };
+            foreach (var task in tasks)
+            {
+                column.Tasks.Add(task);
+            }
+
+            var kanban = new FlowKanban
+            {
+                Board = new FlowKanbanData { Columns = { column } }
+            };
+
+            RuntimeTestHelpers.AttachToHost(kanban);
+            await RuntimeTestHelpers.EnsureLoadedAsync(kanban);
+
+            FlowKanbanColumn? columnControl = null;
+            Microsoft.UI.Xaml.Controls.ListView? tasksListView = null;
+            Microsoft.UI.Xaml.Controls.ListViewItem? lastContainer = null;
+            for (var attempt = 0; attempt < 50; attempt++)
+            {
+                kanban.UpdateLayout();
+                columnControl = FindDescendant<FlowKanbanColumn>(kanban, c => c.ColumnData == column);
+                tasksListView = columnControl != null
+                    ? FindDescendant<Microsoft.UI.Xaml.Controls.ListView>(columnControl, lv => lv.Name == "PART_TasksItemsControl")
+                    : null;
+                lastContainer = tasksListView?.ContainerFromIndex(2) as Microsoft.UI.Xaml.Controls.ListViewItem;
+
+                if (lastContainer is { ActualHeight: > 0 })
+                {
+                    break;
+                }
+
+                await Task.Delay(100);
+            }
+
+            Assert.IsNotNull(columnControl, "Column control was not realized.");
+            Assert.IsNotNull(tasksListView, "Tasks list was not realized.");
+            Assert.IsNotNull(lastContainer, "Task containers were not realized.");
+
+            // Above the first card: insert at the top.
+            Assert.AreEqual(0, columnControl!.CalculateInsertIndex(0, out _));
+
+            // Below the midpoint of the last card: insert at the end.
+            var lastTop = lastContainer!
+                .TransformToVisual(tasksListView)
+                .TransformPoint(new Windows.Foundation.Point(0, 0)).Y;
+            var belowLastMidpoint = lastTop + lastContainer.ActualHeight;
+            Assert.AreEqual(3, columnControl.CalculateInsertIndex(belowLastMidpoint, out _));
+
+            // Far beyond all realized cards: clamped to the task count.
+            Assert.AreEqual(3, columnControl.CalculateInsertIndex(100000, out _));
+        }
+
+        private static T? FindDescendant<T>(Microsoft.UI.Xaml.DependencyObject root, Func<T, bool>? predicate = null)
+            where T : Microsoft.UI.Xaml.DependencyObject
+        {
+            var count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(root);
+            for (var i = 0; i < count; i++)
+            {
+                var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(root, i);
+                if (child is T match && (predicate == null || predicate(match)))
+                    return match;
+
+                var found = FindDescendant(child, predicate);
+                if (found != null)
+                    return found;
+            }
+
+            return default;
+        }
+
+        [TestMethod]
         public void When_PersistingBoard_RoundTrips()
         {
             var storage = new InMemoryStateStorage();

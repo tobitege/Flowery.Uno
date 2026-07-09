@@ -81,6 +81,9 @@ namespace Flowery.Uno.Gallery
                 StartRuntimeTestsIfRequested(args);
                 return;
             }
+#elif __SKIA__
+            var isRuntimeTests = RuntimeTestArguments.TryGetRuntimeTestsPath(args.Arguments, RuntimeArguments, out _);
+            EnsureGalleryResources();
 #else
             EnsureGalleryResources();
 #endif
@@ -114,7 +117,20 @@ namespace Flowery.Uno.Gallery
             FloweryScaleManager.MainWindow = _window;
 
             // Apply remaining persisted settings AFTER MainWindow is set (for visual tree propagation).
+#if __SKIA__
+            // Runtime tests must not inherit user-persisted theme/size (nondeterministic
+            // assertions) and must not write back to the user's settings.
+            if (isRuntimeTests)
+            {
+                DaisyThemeManager.ApplyTheme("Dark");
+            }
+            else
+            {
+                ApplyPersistedSettings();
+            }
+#else
             ApplyPersistedSettings();
+#endif
 
             _window.Activate();
 

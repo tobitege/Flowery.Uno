@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-09
+
+- Kanban: fixed dropping cards onto swimlane cells (lane reassignment within the same column did nothing and drop positions were mapped incorrectly in lane-filtered cells).
+- Kanban: card moves now update the board incrementally instead of rebuilding all lane rows and task lists, removing the visible flicker on drag and drop.
+- Kanban: bounded lane-cell heights in swimlane layout so task lists virtualize and scroll instead of realizing every card.
+- Kanban: made drop-index calculation order-independent under ListView container recycling and simplified the internal visual caches.
+- Tests: runtime tests now run with deterministic theme and global size instead of inheriting user-persisted Gallery settings, and no longer overwrite them.
+- Tests: fixed stale default-value assertions and added coverage for drop-index calculation and lane-aware moves; full Skia runtime suite passes again.
+
 ## [1.1.0] - 2026-07-04
 
 - Added 25 DaisyLoading animations across business workflow and Win95 retro variants.

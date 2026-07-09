@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Flowery.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,6 +21,10 @@ namespace Flowery.Uno.RuntimeTests
 
             await RunOnDispatcherAsync(dispatcher, async () =>
             {
+                // Pin the global size so default-value assertions don't depend on
+                // whatever size the hosting app (or a previous user session) applied.
+                FlowerySizeManager.Reset();
+
                 var host = PrepareHost(window);
                 RuntimeTestContext.Initialize(window, host);
                 await EnsureLoadedAsync(host);

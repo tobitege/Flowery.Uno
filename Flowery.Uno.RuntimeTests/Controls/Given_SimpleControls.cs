@@ -7,6 +7,7 @@ using Flowery.Enums;
 using Flowery.Helpers;
 using Flowery.Localization;
 using Flowery.Services;
+using Flowery.Theming;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -141,7 +142,21 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreNotSame(userBorderBrush, containerBorder.BorderBrush);
             Assert.AreEqual(new Thickness(1), containerBorder.BorderThickness);
 
-            var title = FindDescendant<TextBlock>(picker);
+            // The title sits inside a ScrollViewer; on Skia its content is only
+            // realized after a layout pass, so retry until it shows up.
+            TextBlock? title = null;
+            for (var attempt = 0; attempt < 20; attempt++)
+            {
+                picker.UpdateLayout();
+                title = FindDescendant<TextBlock>(picker);
+                if (title != null)
+                {
+                    break;
+                }
+
+                await Task.Delay(50);
+            }
+
             Assert.IsNotNull(title);
             Assert.AreSame(userForeground, title.Foreground);
             Assert.AreEqual(23, title.FontSize);
@@ -435,7 +450,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsFalse(toggle.IsOn);
             Assert.AreEqual(DaisyToggleVariant.Default, toggle.Variant);
             Assert.AreEqual(DaisySize.Medium, toggle.Size);
-            Assert.AreEqual(2.0, toggle.TogglePadding);
+            Assert.AreEqual(4.0, toggle.TogglePadding);
         }
 
         [TestMethod]
@@ -1160,6 +1175,9 @@ namespace Flowery.Uno.RuntimeTests.Controls
         {
             var graph = new DaisyContributionGraph();
 
+            // Opt out of the global size so the control's own DP defaults hold.
+            FlowerySizeManager.SetIgnoreGlobalSize(graph, true);
+
             RuntimeTestHelpers.AttachToHost(graph);
             await RuntimeTestHelpers.EnsureLoadedAsync(graph);
 
@@ -1173,7 +1191,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreEqual(12.0, graph.CellSize);
             Assert.AreEqual(new Thickness(1), graph.CellMargin);
             Assert.AreEqual(new CornerRadius(2), graph.CellCornerRadius);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, graph.Size);
+            Assert.AreEqual(DaisySize.Medium, graph.Size);
         }
 
         [TestMethod]
@@ -1181,14 +1199,21 @@ namespace Flowery.Uno.RuntimeTests.Controls
         {
             var timeline = new DaisyDateTimeline();
 
+            // Opt out of the global size so the control's own DP defaults hold.
+            FlowerySizeManager.SetIgnoreGlobalSize(timeline, true);
+
             RuntimeTestHelpers.AttachToHost(timeline);
             await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
 
             Assert.AreEqual(DateTime.Today.AddMonths(-1), timeline.FirstDate);
             Assert.AreEqual(DateTime.Today.AddMonths(3), timeline.LastDate);
             Assert.AreEqual(DateTime.Today, timeline.SelectedDate);
-            Assert.AreEqual(64.0, timeline.ItemWidth);
-            Assert.AreEqual(8.0, timeline.ItemSpacing);
+            // ItemWidth is resolved from the DaisyDateTimelineMediumItemWidth token (52)
+            // during ApplySizing unless explicitly set.
+            Assert.AreEqual(52.0, timeline.ItemWidth);
+            // ItemSpacing is resolved from the DaisyDateTimelineItemSpacing token (6)
+            // during ApplySizing unless explicitly set.
+            Assert.AreEqual(6.0, timeline.ItemSpacing);
             Assert.AreEqual(DateElementDisplay.Default, timeline.DisplayElements);
             Assert.AreEqual(DateDisableStrategy.None, timeline.DisableStrategy);
             Assert.AreEqual(DateSelectionMode.AutoCenter, timeline.SelectionMode);
@@ -1197,7 +1222,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsFalse(timeline.AutoWidth);
             Assert.AreEqual(7, timeline.VisibleDaysCount);
             Assert.IsTrue(timeline.ShowTodayHighlight);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, timeline.Size);
+            Assert.AreEqual(DaisySize.Medium, timeline.Size);
             Assert.AreEqual(DateTime.Today.ToString("MMMM yyyy", CultureInfo.CurrentCulture), timeline.HeaderText);
         }
 
@@ -1247,7 +1272,10 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await RuntimeTestHelpers.EnsureLoadedAsync(dropdown);
 
             Assert.IsTrue(dropdown.ApplyOnSelection);
-            Assert.AreEqual(200.0, dropdown.MinWidth);
+            // ApplySizing recomputes MinWidth from the swatch size on load; the
+            // constructor's 200 only applies before the control is loaded.
+            var expectedMinWidth = (DaisyResourceLookup.GetDefaultSwatchSize(dropdown.Size) * 5) + 4 + 8 + 60 + 26;
+            Assert.AreEqual(expectedMinWidth, dropdown.MinWidth);
         }
 
         private static T? FindDescendantByName<T>(DependencyObject root, string name)

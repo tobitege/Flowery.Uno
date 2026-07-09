@@ -1210,7 +1210,6 @@ namespace Flowery.Uno.Kanban.Controls
             IsStandardLayoutVisible = isBoardActive && IsStandardLayoutEnabled && !isCompact;
             IsSwimlaneLayoutVisible = isBoardActive && IsSwimlaneLayoutEnabled && !isCompact;
             UpdateLayoutItemsSources();
-            InvalidateVisualCache();
             ScheduleCompactColumnSizingUpdate();
         }
 

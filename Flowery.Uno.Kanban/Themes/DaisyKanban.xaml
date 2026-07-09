@@ -2336,7 +2336,8 @@
                                         </Grid>
                                     </Grid>
                                     <!-- Lane Rows -->
-                                    <ItemsControl ItemsSource="{Binding LaneRows, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ItemsControl x:Name="PART_LaneRowsHost"
+                                                  ItemsSource="{Binding LaneRows, RelativeSource={RelativeSource TemplatedParent}}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Orientation="Vertical"
@@ -2580,6 +2581,7 @@
                                                                                       ItemsSource="{Binding TaskViews, ElementName=PART_KanbanColumn}"
                                                                                       SelectionMode="None"
                                                                                       IsItemClickEnabled="False"
+                                                                                      MaxHeight="{Binding Tag.SwimlaneCellMaxHeight, ElementName=PART_BoardRoot}"
                                                                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                                                                       ScrollViewer.VerticalScrollMode="Enabled"
                                                                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"

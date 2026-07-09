@@ -806,7 +806,6 @@ namespace Flowery.Uno.Kanban.Controls
             if (column == null)
                 return null;
 
-            EnsureVisualCache();
             var key = (column.Id, NormalizeLaneId(laneId));
             if (!_columnByKey.TryGetValue(key, out var columnControl))
                 return null;

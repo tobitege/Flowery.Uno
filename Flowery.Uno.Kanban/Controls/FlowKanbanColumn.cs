@@ -1567,8 +1567,167 @@ namespace Flowery.Uno.Kanban.Controls
                 }
             }
 
-            RebuildTaskViews();
+            if (!TryApplyIncrementalTaskViewChange(e))
+            {
+                RebuildTaskViews();
+            }
+
             UpdateTaskCountDisplay();
+        }
+
+        /// <summary>
+        /// Applies a single Add/Remove/Replace/Move to the existing task views
+        /// instead of rebuilding them all, so the ListView keeps its realized
+        /// containers and a card move doesn't visibly rebuild the whole column.
+        /// </summary>
+        private bool TryApplyIncrementalTaskViewChange(NotifyCollectionChangedEventArgs e)
+        {
+            if (!SupportsIncrementalTaskViewUpdates())
+                return false;
+
+            // A staggered rebuild is still draining; let the full rebuild win.
+            if (_taskViewBuildPending || _taskViewBuildState != null)
+                return false;
+
+            if (e.OldItems != null)
+            {
+                foreach (FlowTask task in e.OldItems)
+                {
+                    RemoveTaskViewForTask(task);
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (FlowTask task in e.NewItems)
+                {
+                    InsertTaskViewForTask(task);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Inline lane headers (grouping enabled without a lane filter) depend on
+        /// neighbor order, so those columns still rebuild wholesale.
+        /// </summary>
+        private bool SupportsIncrementalTaskViewUpdates()
+        {
+            if (ParentKanban?.IsLaneGroupingEnabled != true)
+                return true;
+
+            return !string.IsNullOrWhiteSpace(LaneFilterId);
+        }
+
+        private void RemoveTaskViewForTask(FlowTask task)
+        {
+            for (var i = 0; i < _taskViews.Count; i++)
+            {
+                if (ReferenceEquals(_taskViews[i].Task, task))
+                {
+                    _taskViews.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        private void InsertTaskViewForTask(FlowTask task)
+        {
+            if (_trackedTasksCollection == null || !_trackedTasksCollection.Contains(task))
+                return;
+
+            if (!TaskPassesCellFilter(task, out var lane))
+                return;
+
+            // Guard against duplicates (LaneId sync and the Add event can both fire).
+            for (var i = 0; i < _taskViews.Count; i++)
+            {
+                if (ReferenceEquals(_taskViews[i].Task, task))
+                    return;
+            }
+
+            _taskViews.Insert(FindTaskViewInsertIndex(task), new FlowKanbanTaskView(task, lane, showLaneHeader: false));
+        }
+
+        /// <summary>
+        /// Mirrors the visibility rules of <see cref="BuildTaskViewsBatch"/> for a
+        /// single task in the incremental update path.
+        /// </summary>
+        private bool TaskPassesCellFilter(FlowTask task, out FlowKanbanLane? lane)
+        {
+            lane = null;
+
+            if (!task.IsSearchMatch)
+                return false;
+
+            var laneFilterId = string.IsNullOrWhiteSpace(LaneFilterId) ? null : LaneFilterId;
+            if (ParentKanban?.IsLaneGroupingEnabled != true || laneFilterId == null)
+                return true;
+
+            var rawLaneId = task.LaneId;
+            if (IsUnassignedLaneId(laneFilterId))
+            {
+                var missingLane = !string.IsNullOrWhiteSpace(rawLaneId) && FindBoardLane(rawLaneId) == null;
+                if (!IsUnassignedLaneId(rawLaneId) && !missingLane)
+                    return false;
+
+                lane = new FlowKanbanLane
+                {
+                    Id = FlowKanban.UnassignedLaneId,
+                    Title = FloweryLocalization.GetStringInternal("Kanban_Lanes_Unassigned")
+                };
+                return true;
+            }
+
+            if (!string.Equals(rawLaneId, laneFilterId, StringComparison.Ordinal))
+                return false;
+
+            lane = FindBoardLane(laneFilterId);
+            return true;
+        }
+
+        private FlowKanbanLane? FindBoardLane(string laneId)
+        {
+            var lanes = ParentKanban?.Board?.Lanes;
+            if (lanes == null)
+                return null;
+
+            foreach (var lane in lanes)
+            {
+                if (string.Equals(lane.Id, laneId, StringComparison.Ordinal))
+                    return lane;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Task views are kept in task-list order, so the insert position is just
+        /// before the first view whose task sits after the new task in the column.
+        /// </summary>
+        private int FindTaskViewInsertIndex(FlowTask task)
+        {
+            var tasks = _trackedTasksCollection;
+            if (tasks == null)
+                return _taskViews.Count;
+
+            var positions = new Dictionary<FlowTask, int>(tasks.Count);
+            for (var i = 0; i < tasks.Count; i++)
+            {
+                positions[tasks[i]] = i;
+            }
+
+            if (!positions.TryGetValue(task, out var taskPosition))
+                return _taskViews.Count;
+
+            for (var i = 0; i < _taskViews.Count; i++)
+            {
+                if (positions.TryGetValue(_taskViews[i].Task, out var position) && position > taskPosition)
+                    return i;
+            }
+
+            return _taskViews.Count;
         }
 
         private void TrackViewTask(FlowTask task)
@@ -1591,12 +1750,63 @@ namespace Flowery.Uno.Kanban.Controls
         {
             if (string.Equals(e.PropertyName, nameof(FlowTask.LaneId), StringComparison.Ordinal))
             {
-                RebuildTaskViews();
+                if (sender is not FlowTask task || !TrySyncTaskViewAfterLaneChange(task))
+                {
+                    RebuildTaskViews();
+                }
             }
             else if (string.Equals(e.PropertyName, nameof(FlowTask.IsSearchMatch), StringComparison.Ordinal))
             {
                 UpdateTaskCountDisplay();
             }
+        }
+
+        /// <summary>
+        /// Adds or removes the single affected task view when a task's lane
+        /// changes, instead of rebuilding the whole column.
+        /// </summary>
+        private bool TrySyncTaskViewAfterLaneChange(FlowTask task)
+        {
+            if (ParentKanban?.IsLaneGroupingEnabled != true)
+            {
+                // Views don't render lane information in this mode.
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(LaneFilterId))
+                return false;
+
+            if (_taskViewBuildPending || _taskViewBuildState != null)
+                return false;
+
+            if (_trackedTasksCollection == null || !_trackedTasksCollection.Contains(task))
+            {
+                // LaneId can change before a cross-column move; drop any stale view.
+                RemoveTaskViewForTask(task);
+                return true;
+            }
+
+            var passes = TaskPassesCellFilter(task, out var lane);
+            var existingIndex = -1;
+            for (var i = 0; i < _taskViews.Count; i++)
+            {
+                if (ReferenceEquals(_taskViews[i].Task, task))
+                {
+                    existingIndex = i;
+                    break;
+                }
+            }
+
+            if (passes && existingIndex < 0)
+            {
+                _taskViews.Insert(FindTaskViewInsertIndex(task), new FlowKanbanTaskView(task, lane, showLaneHeader: false));
+            }
+            else if (!passes && existingIndex >= 0)
+            {
+                _taskViews.RemoveAt(existingIndex);
+            }
+
+            return true;
         }
 
         private void ApplySizing()
@@ -2268,13 +2478,20 @@ namespace Flowery.Uno.Kanban.Controls
                     insertIndex = CalculateInsertIndex(dropPosition.Y, out _);
                 }
 
-                var targetIndex = insertIndex;
-                if (sourceColumn == ColumnData && targetIndex == sourceIndex)
+                // The drop index is relative to this cell's (possibly lane-filtered)
+                // task views; translate it into an index in the column's task list.
+                var targetIndex = MapViewIndexToColumnIndex(insertIndex);
+
+                var targetLaneId = LaneFilterId;
+                var isLaneReassignment = ParentKanban.IsLaneGroupingEnabled
+                    && !string.IsNullOrWhiteSpace(targetLaneId)
+                    && !AreLaneIdsEquivalent(draggedTask.LaneId, targetLaneId);
+
+                if (sourceColumn == ColumnData && targetIndex == sourceIndex && !isLaneReassignment)
                     return;
 
                 var manager = new FlowKanbanManager(ParentKanban, autoAttach: false);
                 int? moveIndex = targetIndex >= 0 ? targetIndex : null;
-                var targetLaneId = LaneFilterId;
                 var result = manager.TryMoveTaskWithWipEnforcement(draggedTask, ColumnData, moveIndex, targetLaneId, enforceHard: false);
                 if (result == MoveResult.AllowedWithWipWarning)
                 {
@@ -2283,6 +2500,42 @@ namespace Flowery.Uno.Kanban.Controls
             }
 
             e.Handled = true;
+        }
+
+        private int MapViewIndexToColumnIndex(int viewIndex)
+        {
+            if (ColumnData == null || viewIndex < 0)
+                return viewIndex;
+
+            // Unfiltered cells: the view list mirrors the column's task list.
+            var laneFilterId = string.IsNullOrWhiteSpace(LaneFilterId) ? null : LaneFilterId;
+            if (laneFilterId == null || ParentKanban?.IsLaneGroupingEnabled != true)
+                return viewIndex;
+
+            if (viewIndex < _taskViews.Count)
+            {
+                var anchorIndex = ColumnData.Tasks.IndexOf(_taskViews[viewIndex].Task);
+                if (anchorIndex >= 0)
+                    return anchorIndex;
+            }
+            else if (_taskViews.Count > 0)
+            {
+                var lastIndex = ColumnData.Tasks.IndexOf(_taskViews[_taskViews.Count - 1].Task);
+                if (lastIndex >= 0)
+                    return lastIndex + 1;
+            }
+
+            return ColumnData.Tasks.Count;
+        }
+
+        private static bool AreLaneIdsEquivalent(string? left, string? right)
+        {
+            var leftUnassigned = IsUnassignedLaneId(left);
+            var rightUnassigned = IsUnassignedLaneId(right);
+            if (leftUnassigned || rightUnassigned)
+                return leftUnassigned && rightUnassigned;
+
+            return string.Equals(FlowKanban.NormalizeLaneId(left), FlowKanban.NormalizeLaneId(right), StringComparison.Ordinal);
         }
 
         private static bool IsTaskDragData(Windows.ApplicationModel.DataTransfer.DataPackageView dataView)
@@ -2538,7 +2791,7 @@ namespace Flowery.Uno.Kanban.Controls
         /// Calculate the insertion index based on the Y position of the drop.
         /// Uses edge-based detection - if you're past the top half of a task, insert after it.
         /// </summary>
-        private int CalculateInsertIndex(double dropY, out double indicatorY)
+        internal int CalculateInsertIndex(double dropY, out double indicatorY)
         {
             indicatorY = 0;
             if (ColumnData == null)
@@ -2556,9 +2809,9 @@ namespace Flowery.Uno.Kanban.Controls
             if (panel == null || panel.Children.Count == 0)
                 return 0;
 
-            FrameworkElement? lastContainer = null;
-            var lastIndex = -1;
-
+            // With container recycling the panel's child order is not guaranteed to
+            // match item order, so collect realized containers first and sort by index.
+            var containers = new List<(int Index, double Top, double Height)>(panel.Children.Count);
             foreach (var child in panel.Children)
             {
                 if (child is not FrameworkElement fe)
@@ -2569,26 +2822,27 @@ namespace Flowery.Uno.Kanban.Controls
                     continue;
 
                 var topLeft = fe.TransformToVisual(_tasksItemsControl).TransformPoint(new Point(0, 0));
-                var midpoint = topLeft.Y + (fe.ActualHeight / 2);
+                containers.Add((index, topLeft.Y, fe.ActualHeight));
+            }
 
+            if (containers.Count == 0)
+                return ColumnData.Tasks.Count;
+
+            containers.Sort((a, b) => a.Index.CompareTo(b.Index));
+
+            foreach (var container in containers)
+            {
+                var midpoint = container.Top + (container.Height / 2);
                 if (dropY < midpoint)
                 {
-                    indicatorY = topLeft.Y;
-                    return index;
+                    indicatorY = container.Top;
+                    return container.Index;
                 }
-
-                lastContainer = fe;
-                lastIndex = index;
             }
 
-            if (lastContainer != null)
-            {
-                var topLeft = lastContainer.TransformToVisual(_tasksItemsControl).TransformPoint(new Point(0, 0));
-                indicatorY = topLeft.Y + lastContainer.ActualHeight;
-                return Math.Min(lastIndex + 1, ColumnData.Tasks.Count);
-            }
-
-            return ColumnData.Tasks.Count;
+            var last = containers[containers.Count - 1];
+            indicatorY = last.Top + last.Height;
+            return Math.Min(last.Index + 1, ColumnData.Tasks.Count);
         }
     }
 }

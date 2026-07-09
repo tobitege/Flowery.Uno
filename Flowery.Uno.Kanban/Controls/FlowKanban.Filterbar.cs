@@ -692,6 +692,7 @@ namespace Flowery.Uno.Kanban.Controls
             base.OnApplyTemplate();
             // Manual sync avoids DateTimeOffset binding conversion issues in Uno.
             HookFilterDatePickers();
+            ResolveThemeRefreshTemplateParts();
         }
 
         private void HookFilterDatePickers()

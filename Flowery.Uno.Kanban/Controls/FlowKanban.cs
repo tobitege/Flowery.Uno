@@ -1835,7 +1835,6 @@ namespace Flowery.Uno.Kanban.Controls
             NotifyLaneGroupingChanged();
             ClampKeyboardColumnIndex();
             RefreshDoneAgingState();
-            InvalidateVisualCache();
         }
 
         private void DetachBoardTracking()
@@ -1874,7 +1873,6 @@ namespace Flowery.Uno.Kanban.Controls
             _trackedLaneItems.Clear();
             _trackedBoard = null;
             UpdateLayoutItemsSources();
-            InvalidateVisualCache();
         }
 
         private void TrackColumn(FlowKanbanColumnData column)
@@ -2099,7 +2097,6 @@ namespace Flowery.Uno.Kanban.Controls
             RefreshDoneAgingState();
             RequestAutoSave();
             ClampKeyboardColumnIndex();
-            InvalidateVisualCache();
         }
 
         private void OnTasksCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -2132,7 +2129,6 @@ namespace Flowery.Uno.Kanban.Controls
             UpdateLaneRows();
             UpdateSelectionMetrics();
             RequestAutoSave();
-            InvalidateVisualCache();
         }
 
         private void OnSubtasksCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -2290,7 +2286,6 @@ namespace Flowery.Uno.Kanban.Controls
 
             RequestAutoSave();
             NotifyLaneGroupingChanged();
-            InvalidateVisualCache();
         }
 
         private void OnLanePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -2504,7 +2499,7 @@ namespace Flowery.Uno.Kanban.Controls
     /// <summary>
     /// View model for a swimlane cell, bound to a column and lane filter.
     /// </summary>
-    public sealed class FlowKanbanLaneCellView
+    public sealed class FlowKanbanLaneCellView : INotifyPropertyChanged
     {
         public FlowKanbanLaneCellView(FlowKanbanColumnData column, string? laneId)
         {
@@ -2518,6 +2513,19 @@ namespace Flowery.Uno.Kanban.Controls
         public string LaneWipDisplay => Column.GetLaneWipDisplay(LaneId);
         public bool IsLaneWipExceeded => Column.IsLaneWipExceeded(LaneId);
         public bool HasLaneWipLimit => Column.GetLaneWipLimit(LaneId).HasValue;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Re-evaluates the computed WIP properties. Used when lane rows are kept
+        /// alive across task moves instead of being rebuilt wholesale.
+        /// </summary>
+        internal void RefreshWipState()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LaneWipDisplay)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLaneWipExceeded)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasLaneWipLimit)));
+        }
     }
 
     /// <summary>

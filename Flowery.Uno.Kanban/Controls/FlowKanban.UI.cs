@@ -20,6 +20,9 @@ namespace Flowery.Uno.Kanban.Controls
         private const double CompactLayoutColumnPadding = 16;
         private const double CompactLayoutColumnSpacing = 8;
         private const int CompactLayoutMinColumnCount = 2;
+        private const double DefaultSwimlaneCellMaxHeight = 480;
+        private const double MinSwimlaneCellMaxHeight = 240;
+        private const double SwimlaneCellViewportFraction = 0.6;
         // Board header elements for hover behavior
         private Grid? _boardHeaderGrid;
         private Grid? _boardContentHost;
@@ -48,11 +51,9 @@ namespace Flowery.Uno.Kanban.Controls
         private bool _columnWidthSavePending;
         private bool _isClampingColumnWidth;
         private bool _compactScrollRefreshPending;
-        private bool _visualCacheDirty = true;
         private readonly List<FlowKanbanColumn> _cachedColumnControls = new();
-        private readonly List<Border> _cachedLaneHeaderBorders = new();
-        private readonly List<TextBlock> _cachedLaneHeaderTexts = new();
-        private readonly List<FlowKanbanUserManagement> _cachedUserManagementViews = new();
+        private ItemsControl? _laneRowsHost;
+        private FlowKanbanUserManagement? _userManagementView;
         private readonly Dictionary<(string ColumnId, string? LaneId), FlowKanbanColumn> _columnByKey = new();
 
         #region Layout DPs
@@ -158,6 +159,25 @@ namespace Flowery.Uno.Kanban.Controls
         {
             get => (double)GetValue(CompactColumnMaxHeightProperty);
             private set => SetValue(CompactColumnMaxHeightProperty, value);
+        }
+
+        public static readonly DependencyProperty SwimlaneCellMaxHeightProperty =
+            DependencyProperty.Register(
+                nameof(SwimlaneCellMaxHeight),
+                typeof(double),
+                typeof(FlowKanban),
+                new PropertyMetadata(DefaultSwimlaneCellMaxHeight));
+
+        /// <summary>
+        /// Upper bound for the tasks list inside a swimlane lane cell. Keeping the
+        /// list bounded is required for ListView virtualization: inside the vertically
+        /// scrolling swimlane panel the list would otherwise measure with infinite
+        /// height and realize every container.
+        /// </summary>
+        public double SwimlaneCellMaxHeight
+        {
+            get => (double)GetValue(SwimlaneCellMaxHeightProperty);
+            private set => SetValue(SwimlaneCellMaxHeightProperty, value);
         }
 
         public static readonly DependencyProperty EnableStaggeredTaskRenderingProperty =
@@ -790,7 +810,6 @@ namespace Flowery.Uno.Kanban.Controls
             }
             FindBoardHeaderElements();
             AttachBoardTracking(Board);
-            InvalidateVisualCache();
             RefreshBoardSizeLabel();
             ApplySearchFilter();
             AttachBoardLayoutTracking();
@@ -845,7 +864,7 @@ namespace Flowery.Uno.Kanban.Controls
                 FloweryLocalization.CultureChanged -= OnLocalizationCultureChanged;
                 _isLocalizationSubscribed = false;
             }
-            InvalidateVisualCache();
+            ClearVisualCaches();
         }
 
         private void OnLocalizationCultureChanged(object? sender, string cultureName)
@@ -862,7 +881,6 @@ namespace Flowery.Uno.Kanban.Controls
 
         private void RefreshTaskCardLocalization()
         {
-            EnsureVisualCache();
             foreach (var column in _cachedColumnControls)
             {
                 if (!column.IsLoaded || column.Visibility != Visibility.Visible)
@@ -875,49 +893,14 @@ namespace Flowery.Uno.Kanban.Controls
             }
         }
 
-        private void InvalidateVisualCache()
+        // Column lookups are populated exclusively through Loaded/Unloaded
+        // self-registration of FlowKanbanColumn; there is no tree-scan fallback.
+        // _laneRowsHost/_userManagementView are template parts resolved in
+        // OnApplyTemplate and stay valid across Loaded/Unloaded cycles.
+        private void ClearVisualCaches()
         {
-            _visualCacheDirty = true;
             _cachedColumnControls.Clear();
-            _cachedLaneHeaderBorders.Clear();
-            _cachedLaneHeaderTexts.Clear();
-            _cachedUserManagementViews.Clear();
             _columnByKey.Clear();
-        }
-
-        private void EnsureVisualCache()
-        {
-            if (!_visualCacheDirty)
-                return;
-
-            if (!IsLoaded)
-                return;
-
-            _cachedLaneHeaderBorders.Clear();
-            _cachedLaneHeaderTexts.Clear();
-            _cachedUserManagementViews.Clear();
-
-            foreach (var element in EnumerateVisualTree(this))
-            {
-                if (element is Border border && string.Equals(border.Name, "PART_LaneHeaderBorder", StringComparison.Ordinal))
-                {
-                    _cachedLaneHeaderBorders.Add(border);
-                    continue;
-                }
-
-                if (element is TextBlock textBlock && string.Equals(textBlock.Name, "PART_LaneHeaderText", StringComparison.Ordinal))
-                {
-                    _cachedLaneHeaderTexts.Add(textBlock);
-                    continue;
-                }
-
-                if (element is FlowKanbanUserManagement view)
-                {
-                    _cachedUserManagementViews.Add(view);
-                }
-            }
-
-            _visualCacheDirty = false;
         }
 
         internal void RegisterColumn(FlowKanbanColumn column)
@@ -933,7 +916,6 @@ namespace Flowery.Uno.Kanban.Controls
 
             var key = (column.ColumnData.Id, NormalizeLaneId(column.LaneFilterId));
             _columnByKey[key] = column;
-            _visualCacheDirty = false;
         }
 
         internal void UnregisterColumn(FlowKanbanColumn column)
@@ -947,93 +929,6 @@ namespace Flowery.Uno.Kanban.Controls
             if (_columnByKey.TryGetValue(key, out var existing) && ReferenceEquals(existing, column))
             {
                 _columnByKey.Remove(key);
-            }
-        }
-
-        private void RegisterLaneHeaderBorder(Border border)
-        {
-            if (!_cachedLaneHeaderBorders.Contains(border))
-                _cachedLaneHeaderBorders.Add(border);
-
-            _visualCacheDirty = false;
-        }
-
-        private void UnregisterLaneHeaderBorder(Border border)
-        {
-            _cachedLaneHeaderBorders.Remove(border);
-        }
-
-        private void RegisterLaneHeaderText(TextBlock textBlock)
-        {
-            if (!_cachedLaneHeaderTexts.Contains(textBlock))
-                _cachedLaneHeaderTexts.Add(textBlock);
-
-            _visualCacheDirty = false;
-        }
-
-        private void UnregisterLaneHeaderText(TextBlock textBlock)
-        {
-            _cachedLaneHeaderTexts.Remove(textBlock);
-        }
-
-        private void RegisterUserManagementView(FlowKanbanUserManagement view)
-        {
-            if (!_cachedUserManagementViews.Contains(view))
-                _cachedUserManagementViews.Add(view);
-
-            _visualCacheDirty = false;
-        }
-
-        private void UnregisterUserManagementView(FlowKanbanUserManagement view)
-        {
-            _cachedUserManagementViews.Remove(view);
-        }
-
-        private void OnLaneHeaderBorderLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is Border border)
-            {
-                RegisterLaneHeaderBorder(border);
-            }
-        }
-
-        private void OnLaneHeaderBorderUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is Border border)
-            {
-                UnregisterLaneHeaderBorder(border);
-            }
-        }
-
-        private void OnLaneHeaderTextLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBlock textBlock)
-            {
-                RegisterLaneHeaderText(textBlock);
-            }
-        }
-
-        private void OnLaneHeaderTextUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBlock textBlock)
-            {
-                UnregisterLaneHeaderText(textBlock);
-            }
-        }
-
-        private void OnUserManagementViewLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is FlowKanbanUserManagement view)
-            {
-                RegisterUserManagementView(view);
-            }
-        }
-
-        private void OnUserManagementViewUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is FlowKanbanUserManagement view)
-            {
-                UnregisterUserManagementView(view);
             }
         }
 
@@ -1227,6 +1122,7 @@ namespace Flowery.Uno.Kanban.Controls
 
             UpdateCompactLayoutState();
             ApplyCompactColumnsScrollLock();
+            UpdateSwimlaneCellSizing();
         }
 
         private void DetachBoardLayoutTracking()
@@ -1251,6 +1147,16 @@ namespace Flowery.Uno.Kanban.Controls
         {
             UpdateCompactLayoutState();
             ScheduleCompactColumnSizingUpdate();
+            UpdateSwimlaneCellSizing();
+        }
+
+        private void UpdateSwimlaneCellSizing()
+        {
+            var availableHeight = _boardContentHost?.ActualHeight ?? 0;
+            if (availableHeight <= 0 || double.IsNaN(availableHeight))
+                return;
+
+            SwimlaneCellMaxHeight = Math.Max(MinSwimlaneCellMaxHeight, availableHeight * SwimlaneCellViewportFraction);
         }
 
         private void OnCompactColumnsHostSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1558,7 +1464,6 @@ namespace Flowery.Uno.Kanban.Controls
 
         internal void RefreshLayoutAfterSettingsChange()
         {
-            InvalidateVisualCache();
             ScheduleCompactColumnSizingUpdate();
 
             if (IsCompactLayoutEnabled)
@@ -1651,7 +1556,6 @@ namespace Flowery.Uno.Kanban.Controls
             if (compactColumn != null)
                 return compactColumn;
 
-            EnsureVisualCache();
             foreach (var column in _cachedColumnControls)
             {
                 if (!column.IsLoaded || column.Visibility != Visibility.Visible)
@@ -1853,22 +1757,23 @@ namespace Flowery.Uno.Kanban.Controls
 
             if (_trackedBoard == null || !groupingEnabled || IsCompactLayoutEnabled)
             {
-                LaneRows = new ObservableCollection<FlowKanbanLaneRowView>();
-                InvalidateVisualCache();
+                if (LaneRows.Count > 0)
+                {
+                    LaneRows = new ObservableCollection<FlowKanbanLaneRowView>();
+                }
                 return;
             }
 
-            var rows = new ObservableCollection<FlowKanbanLaneRowView>();
             var columns = _trackedBoard.Columns;
+            var desiredLanes = new List<FlowKanbanLane>();
 
             if (HasUnassignedTasks(_trackedBoard))
             {
-                var unassignedLane = new FlowKanbanLane
+                desiredLanes.Add(new FlowKanbanLane
                 {
                     Id = UnassignedLaneId,
                     Title = FloweryLocalization.GetStringInternal("Kanban_Lanes_Unassigned")
-                };
-                rows.Add(BuildLaneRow(unassignedLane, columns, UnassignedLaneId));
+                });
             }
 
             foreach (var lane in _trackedBoard.Lanes)
@@ -1876,11 +1781,67 @@ namespace Flowery.Uno.Kanban.Controls
                 if (string.IsNullOrWhiteSpace(lane.Id))
                     continue;
 
+                desiredLanes.Add(lane);
+            }
+
+            // Task moves don't change the lane/column structure. Keeping the
+            // existing row/cell views avoids re-templating the whole swimlane
+            // board on every collection change; only the WIP badges need a poke.
+            if (LaneRowsMatch(LaneRows, desiredLanes, columns))
+            {
+                foreach (var row in LaneRows)
+                {
+                    foreach (var cell in row.Cells)
+                    {
+                        cell.RefreshWipState();
+                    }
+                }
+                return;
+            }
+
+            var rows = new ObservableCollection<FlowKanbanLaneRowView>();
+            foreach (var lane in desiredLanes)
+            {
                 rows.Add(BuildLaneRow(lane, columns, lane.Id));
             }
 
             LaneRows = rows;
-            InvalidateVisualCache();
+        }
+
+        private static bool LaneRowsMatch(
+            ObservableCollection<FlowKanbanLaneRowView> currentRows,
+            List<FlowKanbanLane> desiredLanes,
+            ObservableCollection<FlowKanbanColumnData> columns)
+        {
+            if (currentRows.Count != desiredLanes.Count)
+                return false;
+
+            for (var i = 0; i < desiredLanes.Count; i++)
+            {
+                var row = currentRows[i];
+                var lane = desiredLanes[i];
+
+                var laneMatches = IsUnassignedLaneId(lane.Id)
+                    ? IsUnassignedLaneId(row.Lane.Id)
+                    : ReferenceEquals(row.Lane, lane);
+                if (!laneMatches)
+                    return false;
+
+                if (row.Cells.Count != columns.Count)
+                    return false;
+
+                for (var j = 0; j < columns.Count; j++)
+                {
+                    var cell = row.Cells[j];
+                    if (!ReferenceEquals(cell.Column, columns[j])
+                        || !string.Equals(cell.LaneId, lane.Id, StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private static FlowKanbanLaneRowView BuildLaneRow(
@@ -1939,37 +1900,65 @@ namespace Flowery.Uno.Kanban.Controls
             }
         }
 
+        internal void ResolveThemeRefreshTemplateParts()
+        {
+            _laneRowsHost = GetTemplateChild("PART_LaneRowsHost") as ItemsControl;
+            _userManagementView = GetTemplateChild("PART_UserManagementView") as FlowKanbanUserManagement;
+        }
+
         private void ApplySwimlaneLaneHeaderTheme()
         {
+            if (_laneRowsHost == null)
+                return;
+
             var base200 = DaisyResourceLookup.GetBrush("DaisyBase200Brush");
             var base300 = DaisyResourceLookup.GetBrush("DaisyBase300Brush");
             var baseContent = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush");
 
-            EnsureVisualCache();
-            foreach (var border in _cachedLaneHeaderBorders)
+            var count = _laneRowsHost.Items.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (!border.IsLoaded)
+                if (_laneRowsHost.ContainerFromIndex(i) is not DependencyObject container)
+                    continue;
+
+                var border = FindLaneHeaderBorder(container, maxDepth: 4);
+                if (border == null || !border.IsLoaded)
                     continue;
 
                 if (base200 != null)
                     border.Background = base200;
                 if (base300 != null)
                     border.BorderBrush = base300;
-            }
 
-            foreach (var textBlock in _cachedLaneHeaderTexts)
-            {
-                if (!textBlock.IsLoaded)
-                    continue;
-
-                if (baseContent != null)
+                if (border.Child is TextBlock textBlock && baseContent != null)
                     textBlock.Foreground = baseContent;
             }
         }
 
+        private static Border? FindLaneHeaderBorder(DependencyObject root, int maxDepth)
+        {
+            // Container -> PART_LaneRow grid -> PART_LaneHeaderBorder; the depth limit
+            // keeps the lookup from descending into the lane's task cards.
+            var count = VisualTreeHelper.GetChildrenCount(root);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is Border border && string.Equals(border.Name, "PART_LaneHeaderBorder", StringComparison.Ordinal))
+                    return border;
+
+                if (maxDepth > 1)
+                {
+                    var found = FindLaneHeaderBorder(child, maxDepth - 1);
+                    if (found != null)
+                        return found;
+                }
+            }
+
+            return null;
+        }
+
         private void RefreshTaskCardThemes()
         {
-            EnsureVisualCache();
             foreach (var column in _cachedColumnControls)
             {
                 if (!column.IsLoaded || column.Visibility != Visibility.Visible)
@@ -2008,12 +1997,8 @@ namespace Flowery.Uno.Kanban.Controls
 
         private void RefreshUserManagementThemes()
         {
-            EnsureVisualCache();
-            foreach (var view in _cachedUserManagementViews)
+            if (_userManagementView is { IsLoaded: true } view)
             {
-                if (!view.IsLoaded)
-                    continue;
-
                 view.RefreshTheme();
             }
         }
@@ -2050,19 +2035,6 @@ namespace Flowery.Uno.Kanban.Controls
                     return found;
             }
             return default;
-        }
-
-        private static IEnumerable<DependencyObject> EnumerateVisualTree(DependencyObject root)
-        {
-            yield return root;
-
-            var count = VisualTreeHelper.GetChildrenCount(root);
-            for (int i = 0; i < count; i++)
-            {
-                var child = VisualTreeHelper.GetChild(root, i);
-                foreach (var descendant in EnumerateVisualTree(child))
-                    yield return descendant;
-            }
         }
 
         #region Zoom Methods

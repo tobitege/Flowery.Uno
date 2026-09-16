@@ -137,6 +137,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v5
@@ -179,13 +180,20 @@ jobs:
           echo "$CHANGELOG" > changelog_section.md
           echo "✅ Extracted changelog for v$VERSION"
 
+      - name: NuGet login
+        if: ${{ inputs.skip_nuget != true }}
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: tobitege
+
       - name: Publish to NuGet
         if: ${{ inputs.skip_nuget != true }}
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
         run: |
           if [ -z "$NUGET_API_KEY" ]; then
-            echo "::error::NUGET_API_KEY secret is missing or empty. Configure it in repository secrets."
+            echo "::error::NuGet login did not return an API key."
             exit 1
           fi
 

@@ -275,7 +275,7 @@ pwsh ./scripts/build_browser.ps1 -Configuration Release
 
 **To build from source:**
 
-- .NET 9.0 SDK or later (recommended: .NET 10.0 SDK)
+- .NET 10.0 SDK or later
 - Visual Studio 2022, JetBrains Rider, or VS Code
 - Windows, macOS, or Linux
 

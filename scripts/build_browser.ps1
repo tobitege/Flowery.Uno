@@ -73,7 +73,7 @@ if ($rawArgs -contains "--cli") { $Cli = $true }
 $repoRoot = Get-RepoRoot
 $floweryProject = Join-Path $repoRoot "Flowery.Uno\Flowery.Uno.csproj"
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery\Flowery.Uno.Gallery.csproj"
-$targetFramework = "net9.0-browserwasm"
+$targetFramework = "net10.0-browserwasm"
 
 # --- INITIALIZE ---
 Initialize-BuildEnvironment -HeadName "Browser" -LogFileName "browser_build.log" -Configuration $Configuration -VerboseOutput:$VerboseOutput -Cli:$Cli

@@ -119,7 +119,7 @@ function Invoke-ProjectBuild {
     .PARAMETER Rebuild
         If true, performs a clean rebuild
     .PARAMETER Framework
-        Target framework (e.g., net9.0-windows10.0.19041, net9.0-desktop)
+        Target framework (e.g., net10.0-windows10.0.19041, net10.0-desktop)
     .RETURNS
         $true if build succeeded, $false otherwise
     #>

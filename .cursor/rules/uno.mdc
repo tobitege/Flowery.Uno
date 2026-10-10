@@ -51,7 +51,7 @@ These are compile-time issues that should be avoided up front:
 These are the practical fixes and gotchas encountered when getting the Browser head running with Skia:
 
 - Use `Microsoft.NET.Sdk.WebAssembly` for the Browser head when using `Uno.WinUI.Runtime.Skia.WebAssembly.Browser`. Do NOT reference `Uno.WinUI.Runtime.WebAssembly` (triggers `UNOB0017`).
-- Target `net9.0` with `RuntimeIdentifier=browser-wasm` and run via `dotnet run` on the project (not the output folder) to avoid `hostpolicy.dll` self-contained errors.
+- Target `net10.0` with `RuntimeIdentifier=browser-wasm` and run via `dotnet run` on the project (not the output folder) to avoid `hostpolicy.dll` self-contained errors.
 - Use `HostBuilder.UseWebAssembly()` directly; avoid reflection-based host builder hacks (inaccessible method errors).
 - Fix culture crashes by disabling invariant globalization and including ICU data:
   - `<InvariantGlobalization>false</InvariantGlobalization>`
@@ -60,7 +60,7 @@ These are the practical fixes and gotchas encountered when getting the Browser h
   - `SkiaSharp` and `SkiaSharp.NativeAssets.WebAssembly` MUST match (e.g., `3.119.1`) or you will hit undefined symbol errors.
 - Static web assets duplicates (library layout + root assets) cause:
   - `Two assets found targeting the same path with incompatible asset kinds`
-  - Fix by disabling root asset copies for `net9.0` library projects and using `ms-appx:///Flowery.Uno.Gallery/Assets/...` paths.
+  - Fix by disabling root asset copies for `net10.0` library projects and using `ms-appx:///Flowery.Uno.Gallery/Assets/...` paths.
   - Add a Browser-head build target that `RemoveDuplicates` on `@(UnoAllCopyToOutputItems)` before `_UnoAssetsGetCopyToPublishDirectoryItems`.
 - CSP warnings (workers, `unsafe-eval`) and `WEBGL_invalid_enum` messages are expected in debug and are not fatal.
 - Keep Browser script ports aligned (5236) to avoid mismatched logs vs URL.
@@ -103,7 +103,7 @@ These are the practical fixes and gotchas encountered when getting the Browser h
 
 ### Correct setup snapshot
 
-- `Flowery.Uno.RuntimeTests` targets: `net9.0;net9.0-windows10.0.19041`.
+- `Flowery.Uno.RuntimeTests` targets: `net10.0;net10.0-windows10.0.19041`.
 - Windows runner build args: `-p:EnableCoreMrtTooling=false` (do **not** disable PRI or copy-local outputs).
 - Windows runner execution: run the app `.exe` when available; always set `FLOWERY_RUNTIME_TESTS_PATH`.
 - `App.xaml.cs` for Windows: load runtime-test resources before the early return; copy `Themes` into `Flowery.Uno/Themes` for ms-appx resolution.

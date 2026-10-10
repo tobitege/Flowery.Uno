@@ -40,7 +40,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Get-RepoRoot
 $floweryProject = Join-Path $repoRoot "Flowery.Uno\Flowery.Uno.csproj"
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery\Flowery.Uno.Gallery.csproj"
-$targetFramework = "net9.0-desktop"
+$targetFramework = "net10.0-desktop"
 
 # --- INITIALIZE ---
 Initialize-BuildEnvironment -HeadName "Desktop" -LogFileName "desktop_build.log" -Configuration $Configuration -VerboseOutput:$VerboseOutput

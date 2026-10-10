@@ -23,7 +23,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj"
-$targetFramework = "net9.0-desktop"
+$targetFramework = "net10.0-desktop"
 
 if (-not (Test-Path $galleryProject)) {
     Write-Host "ERROR: Gallery project not found at $galleryProject" -ForegroundColor Red

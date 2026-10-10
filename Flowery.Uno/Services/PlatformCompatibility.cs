@@ -491,7 +491,7 @@ namespace Flowery.Services
         {
             // Uno Platform defines different symbols depending on SDK version:
             // - HAS_UNO_SKIA: Newer Uno SDK 5.x+
-            // - __DESKTOP__: net9.0-desktop target
+            // - __DESKTOP__: net10.0-desktop target
             // - __SKIA__: Legacy/alternative symbol
 #if HAS_UNO_SKIA || __DESKTOP__ || __SKIA__
             return true;
@@ -550,7 +550,7 @@ namespace Flowery.Services
             return true;
 #else
             return OperatingSystem.IsWindows() && !DetectSkiaDesktop();
-            // Note: OperatingSystem.IsWindows() can return true for net9.0-windows based Skia targets too (e.g. WPF),
+            // Note: OperatingSystem.IsWindows() can return true for net10.0-windows based Skia targets too (e.g. WPF),
             // but usually we distinguish 'Native Windows App SDK' (WINDOWS) vs 'Skia on Windows' (DetectSkiaDesktop).
             // This flag is intended for "Native OneCore/UWP/WinUI" path.
 #endif

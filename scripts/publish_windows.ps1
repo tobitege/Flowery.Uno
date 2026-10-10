@@ -40,7 +40,7 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $floweryProject = Join-Path $repoRoot "Flowery.Uno\Flowery.Uno.csproj"
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery\Flowery.Uno.Gallery.csproj"
 $win2dProject = Join-Path $repoRoot "Flowery.Uno.Win2D\Flowery.Uno.Win2D.csproj"
-$windowsTfm = "net9.0-windows10.0.19041"
+$windowsTfm = "net10.0-windows10.0.19041"
 
 $missingProjects = @()
 if (-not (Test-Path $floweryProject)) { $missingProjects += $floweryProject }

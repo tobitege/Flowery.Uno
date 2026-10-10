@@ -38,7 +38,7 @@ if ($args -contains "--cli") { $Cli = $true }
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $projectPath = Join-Path $repoRoot $Project
-$targetFramework = "net9.0-browserwasm"
+$targetFramework = "net10.0-browserwasm"
 
 if (-not (Test-Path $projectPath)) {
     Write-Host "ERROR: Project not found at $projectPath" -ForegroundColor Red
@@ -110,8 +110,8 @@ try {
 
     # Find the wwwroot folder in the build output
     # The structure can be either:
-    # - bin/Debug/Flowery.Uno.Gallery.Browser/net9.0-browserwasm/wwwroot (older)
-    # - bin/Debug/Flowery.Uno.Gallery.Browser/net9.0-browserwasm/browser-wasm/wwwroot (newer)
+    # - bin/Debug/Flowery.Uno.Gallery.Browser/net10.0-browserwasm/wwwroot (older)
+    # - bin/Debug/Flowery.Uno.Gallery.Browser/net10.0-browserwasm/browser-wasm/wwwroot (newer)
     $baseBuildPath = Join-Path $repoRoot "bin\$Configuration\$Project\$targetFramework"
     $wwwrootPath = Join-Path $baseBuildPath "wwwroot"
 
@@ -138,7 +138,7 @@ try {
 
     # Create _framework symlink if it doesn't exist
     # uno-bootstrap.js expects runtime files at /_framework/dotnet.js
-    # but they're in the parent folder (net9.0-browserwasm)
+    # but they're in the parent folder (net10.0-browserwasm)
     $frameworkLink = Join-Path $wwwrootPath "_framework"
     $parentPath = Split-Path $wwwrootPath -Parent
 

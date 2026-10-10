@@ -19,7 +19,7 @@ namespace Flowery.Uno.RuntimeTests.WindowsRunner
             var projectPath = Path.Combine(repoRoot, "Flowery.Uno.Gallery", "Flowery.Uno.Gallery.csproj");
             var runDirectory = TestContext?.TestRunDirectory ?? Path.Combine(repoRoot, "TestResults", "runtime-tests");
             var resultPath = Path.Combine(runDirectory, "runtime-tests-windows.xml");
-            var tfm = "net9.0-windows10.0.19041";
+            var tfm = "net10.0-windows10.0.19041";
             var configuration = "Debug";
 
             Directory.CreateDirectory(runDirectory);

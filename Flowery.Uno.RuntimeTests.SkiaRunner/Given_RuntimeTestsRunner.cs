@@ -19,7 +19,7 @@ namespace Flowery.Uno.RuntimeTests.SkiaRunner
             var projectPath = Path.Combine(repoRoot, "Flowery.Uno.Gallery", "Flowery.Uno.Gallery.csproj");
             var runDirectory = TestContext?.TestRunDirectory ?? Path.Combine(repoRoot, "TestResults", "runtime-tests");
             var resultPath = Path.Combine(runDirectory, "runtime-tests-skia.xml");
-            var tfm = "net9.0-desktop";
+            var tfm = "net10.0-desktop";
             var configuration = "Debug";
 
             Directory.CreateDirectory(runDirectory);

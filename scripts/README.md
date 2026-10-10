@@ -17,7 +17,7 @@ PowerShell scripts for building and running Flowery.Uno projects. All scripts fo
 
 ## Prerequisites
 
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
 - PowerShell 7+ (`pwsh`)
 - Visual Studio 2022 with MSBuild (for `build_desktop.ps1` and `build_windows.ps1`)
 
@@ -314,11 +314,11 @@ pwsh ./scripts/build_nuget.ps1 -OutputDir ./packages
 
 ### Build fails with missing SDK
 
-Ensure you have .NET 9.0 SDK installed:
+Ensure you have .NET 10.0 SDK installed:
 
 ```powershell
 dotnet --version
-# Should show 9.0.x
+# Should show 10.0.x
 ```
 
 ### MSBuild not found

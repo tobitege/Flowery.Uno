@@ -48,8 +48,8 @@ $repoRoot = Get-RepoRoot
 $floweryProject = Join-Path $repoRoot "Flowery.Uno\Flowery.Uno.csproj"
 $kioskProject = Join-Path $repoRoot "Flowery.Uno.Kiosk.Browser\Flowery.Uno.Kiosk.Browser.csproj"
 # Build Flowery.Uno only for the browser TFM to avoid duplicate pattern assets
-# coming from multiple TFMs (net9.0 + net9.0-browserwasm) in the same build.
-$floweryBrowserTfm = "net9.0-browserwasm"
+# coming from multiple TFMs (net10.0 + net10.0-browserwasm) in the same build.
+$floweryBrowserTfm = "net10.0-browserwasm"
 
 # --- INITIALIZE ---
 Initialize-BuildEnvironment -HeadName "Kiosk Browser" -LogFileName "kiosk_browser_build.log" -Configuration $Configuration -VerboseOutput:$VerboseOutput -Cli:$Cli

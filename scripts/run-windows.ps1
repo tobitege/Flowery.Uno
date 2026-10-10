@@ -35,7 +35,7 @@ $ErrorActionPreference = "Stop"
 # --- SETUP ---
 $repoRoot = Get-RepoRoot
 $galleryProject = Join-Path $repoRoot "Flowery.Uno.Gallery\Flowery.Uno.Gallery.csproj"
-$targetFramework = "net9.0-windows10.0.19041"
+$targetFramework = "net10.0-windows10.0.19041"
 
 if (-not (Test-Path $galleryProject)) {
     Write-Host "ERROR: Gallery project not found at $galleryProject" -ForegroundColor Red

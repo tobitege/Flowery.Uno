@@ -75,7 +75,7 @@ namespace Flowery.Tools
             {
                 // From Tools/IconGenerator - go up to repo root, then into Flowery.Uno
                 IOPath.Combine(Environment.CurrentDirectory, "..", "..", "Flowery.Uno", "Themes", "DaisyIcons.xaml"),
-                // From bin/Debug/net9.0 output folder
+                // From bin/Debug/net10.0 output folder
                 IOPath.Combine(assemblyDir ?? ".", "..", "..", "..", "..", "..", "Flowery.Uno", "Themes", "DaisyIcons.xaml"),
                 // Direct sibling (if running from solution root)
                 IOPath.Combine(Environment.CurrentDirectory, "Flowery.Uno", "Themes", "DaisyIcons.xaml"),

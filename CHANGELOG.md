@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - **Breaking:** Build: moved all Windows, Desktop (Skia), Browser and tooling target frameworks from net9.0 to net10.0 (Android was already net10.0); consumers must now target net10.0. Build/run scripts, CI build, runtime test runners and developer docs updated accordingly.
-- Build: removed the direct `Tmds.DBus.Protocol` reference and central version pin from the Gallery; the version now flows transitively from Uno.Sdk (`Uno.WinUI.Runtime.Skia.X11` resolves 0.21.3).
+- Linux: the Desktop (Skia) Gallery head starts again. The `Tmds.DBus.Protocol` 0.93.0 pin broke Uno's X11 host, which expects the 0.21 API, and aborted startup on `Tmds.DBus.Protocol.Address`. The direct reference and central version pin are removed; the version now flows transitively from Uno.Sdk (`Uno.WinUI.Runtime.Skia.X11` resolves 0.21.3).
 
 ## [1.2.0] - 2026-07-09
 

@@ -89,7 +89,6 @@
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'desktop'">
     <PackageReference Include="Uno.Toolkit.Skia.WinUI" />
-    <PackageReference Include="Tmds.DBus.Protocol" />
     <ProjectReference Include="..\Flowery.Uno.RuntimeTests\Flowery.Uno.RuntimeTests.csproj" />
   </ItemGroup>
 

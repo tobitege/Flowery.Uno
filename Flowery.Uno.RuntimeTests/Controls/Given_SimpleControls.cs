@@ -87,7 +87,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await RuntimeTestHelpers.EnsureLoadedAsync(picker);
 
             Assert.AreEqual(DaisySize.Small, picker.Size);
-            Assert.AreEqual("Selected Tags", picker.Title);
+            Assert.AreEqual(FloweryLocalization.GetStringInternal("TagPicker_SelectedTags", "Selected Tags"), picker.Title);
             Assert.IsNull(picker.Tags);
             Assert.IsNull(picker.SelectedTags);
         }

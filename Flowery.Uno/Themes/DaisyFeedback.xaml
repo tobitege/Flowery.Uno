@@ -4,6 +4,16 @@
     xmlns:controls="using:Flowery.Controls">
 
     <!-- ===================== DaisyBadge ===================== -->
+    <!--
+        The implicit style below references these tokens via ThemeResource. On WinUI a
+        ThemeResource that is missing when the style is applied fails the tree insertion
+        (E_FAIL), and the code-side defaults in DaisyTokenDefaults only run on Loaded.
+        Values mirror DaisyTokenDefaults.
+    -->
+    <Thickness x:Key="DaisyBadgeMediumPadding">8,0,8,0</Thickness>
+    <x:Double x:Key="DaisyBadgeMediumHeight">20</x:Double>
+    <x:Double x:Key="DaisyBadgeMediumFontSize">10</x:Double>
+
     <Style TargetType="controls:DaisyBadge">
         <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />

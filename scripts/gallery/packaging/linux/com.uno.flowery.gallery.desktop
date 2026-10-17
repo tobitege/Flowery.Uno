@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Flowery.Uno Gallery
+GenericName=Control Gallery
+Comment=Flowery.Uno controls demo
+Exec=flowery-uno-gallery
+Icon=flowery-uno-gallery
+Terminal=false
+Categories=Development;
+Keywords=uno;flowery;daisyui;gallery;
+StartupWMClass=Flowery.Uno.Gallery

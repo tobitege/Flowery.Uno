@@ -132,8 +132,157 @@ jobs:
           name: Flowery.Gallery-Windows-x64
           path: ./Flowery.Gallery-Windows-x64.zip
 
+  # Gallery packages built by scripts/gallery (see scripts/gallery/README.md).
+  # Windows (Skia) zips and Linux .deb files are cross-published from one Linux runner.
+  build-gallery-desktop:
+    needs: [validate, build-library]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Verify version from evaluated MSBuild properties
+        run: |
+          EVALUATED_VERSION=$(dotnet msbuild Flowery.Uno/Flowery.Uno.csproj -nologo -getProperty:Version | tail -n 1 | tr -d '[:space:]')
+          if [ "$EVALUATED_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
+            echo "::error::Version mismatch! evaluated project version is $EVALUATED_VERSION but you specified ${{ needs.validate.outputs.version }}"
+            exit 1
+          fi
+
+      - name: Install librsvg (icon rendering)
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Build Windows zips (x64 + arm64)
+        run: bash scripts/gallery/build-windows.sh
+
+      - name: Build Linux .deb packages (amd64 + arm64)
+        run: bash scripts/gallery/build-deb-linux.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Flowery.Gallery-Desktop
+          path: scripts/gallery/output/installer/*
+
+  build-gallery-android:
+    needs: [validate, build-library]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Verify version from evaluated MSBuild properties
+        run: |
+          EVALUATED_VERSION=$(dotnet msbuild Flowery.Uno/Flowery.Uno.csproj -nologo -getProperty:Version | tail -n 1 | tr -d '[:space:]')
+          if [ "$EVALUATED_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
+            echo "::error::Version mismatch! evaluated project version is $EVALUATED_VERSION but you specified ${{ needs.validate.outputs.version }}"
+            exit 1
+          fi
+
+      # Optional: sign with your own keystore. Without these secrets the APK uses the debug key.
+      - name: Prepare Android keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+            echo "FLOWERY_ANDROID_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "FLOWERY_ANDROID_KEY_ALIAS=$KEYSTORE_ALIAS" >> "$GITHUB_ENV"
+            echo "FLOWERY_ANDROID_KEYSTORE_PASS=$KEYSTORE_PASS" >> "$GITHUB_ENV"
+          else
+            echo "No keystore secret: the APK will be signed with the debug key."
+          fi
+
+      - name: Build APK
+        run: bash scripts/gallery/build-android.sh -p:InstallAndroidDependencies=true -p:AcceptAndroidSDKLicenses=true -p:CheckEolWorkloads=false
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Flowery.Gallery-Android
+          path: scripts/gallery/output/installer/*.apk
+
+  build-gallery-macos:
+    needs: [validate, build-library]
+    runs-on: macos-15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Verify version from evaluated MSBuild properties
+        run: |
+          EVALUATED_VERSION=$(dotnet msbuild Flowery.Uno/Flowery.Uno.csproj -nologo -getProperty:Version | tail -n 1 | tr -d '[:space:]')
+          if [ "$EVALUATED_VERSION" != "${{ needs.validate.outputs.version }}" ]; then
+            echo "::error::Version mismatch! evaluated project version is $EVALUATED_VERSION but you specified ${{ needs.validate.outputs.version }}"
+            exit 1
+          fi
+
+      - name: Install tools
+        run: brew install create-dmg librsvg
+
+      # Optional: Developer ID signing. Without these secrets the app gets an ad-hoc signature
+      # (the DMG opens with right-click > Open).
+      - name: Import signing certificate
+        env:
+          CERT_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          CERT_NAME: ${{ secrets.MACOS_DEV_ID_CERT }}
+        run: |
+          if [ -n "$CERT_P12_BASE64" ]; then
+            KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+            KEYCHAIN_PASS="$(uuidgen)"
+            echo "$CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+            security create-keychain -p "$KEYCHAIN_PASS" "$KEYCHAIN"
+            security set-keychain-settings -lut 21600 "$KEYCHAIN"
+            security unlock-keychain -p "$KEYCHAIN_PASS" "$KEYCHAIN"
+            security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+            security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASS" "$KEYCHAIN"
+            security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+            echo "FLOWERY_DEV_ID_CERT=$CERT_NAME" >> "$GITHUB_ENV"
+          else
+            echo "No certificate secret: ad-hoc signing."
+            echo "FLOWERY_DEV_ID_CERT=__no_certificate__" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build DMG
+        run: bash scripts/gallery/build-dmg-macos.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Flowery.Gallery-macOS
+          path: scripts/gallery/output/installer/*.dmg
+
   publish:
-    needs: [validate, build-library, build-gallery]
+    needs: [validate, build-library, build-gallery, build-gallery-desktop, build-gallery-android, build-gallery-macos]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -156,6 +305,7 @@ jobs:
           mkdir -p ./final
           find ./release-artifacts -name "*.nupkg" -exec cp {} ./final/ \; || true
           find ./release-artifacts -name "*.zip" -exec cp {} ./final/ \;
+          find ./release-artifacts \( -name "*.deb" -o -name "*.dmg" -o -name "*.apk" \) -exec cp {} ./final/ \;
           echo "=== Release artifacts ==="
           ls -la ./final/
 
@@ -254,7 +404,13 @@ jobs:
 
           | Platform | Download |
           |----------|----------|
-          | Windows x64 | `Flowery.Gallery-Windows-x64.zip` |
+          | Windows x64 (WinUI) | `Flowery.Gallery-Windows-x64.zip` |
+          | Windows x64 (Skia, portable) | `FloweryUnoGallery_win-x64.zip` |
+          | Windows arm64 (Skia, portable) | `FloweryUnoGallery_win-arm64.zip` |
+          | Linux x64 (.deb) | `flowery-uno-gallery_<version>_amd64.deb` |
+          | Linux arm64 (.deb) | `flowery-uno-gallery_<version>_arm64.deb` |
+          | macOS (arm64 + x64) | `FloweryUnoGallery.dmg` |
+          | Android (arm64 + x64) | `FloweryUnoGallery.apk` |
           GALLERY
 
           echo "=== Release Notes ==="

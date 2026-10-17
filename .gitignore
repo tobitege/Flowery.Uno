@@ -229,3 +229,6 @@ fixes.txt
 
 # JetBrains Junie agent files
 .junie/
+
+# Gallery installers/publish output (scripts/gallery)
+/scripts/gallery/output/

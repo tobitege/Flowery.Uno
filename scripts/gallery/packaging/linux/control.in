@@ -1,0 +1,13 @@
+Package: flowery-uno-gallery
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Stefano Del Furia <delfuria@gmail.com>
+Installed-Size: @INSTALLED_SIZE@
+Section: devel
+Priority: optional
+Homepage: https://github.com/tobitege/Flowery.Uno
+Depends: libfontconfig1, libx11-6, libgl1, libuuid1, libfreetype6, libicu78 | libicu77 | libicu76 | libicu74 | libicu72 | libicu70, libssl3t64 | libssl3, ca-certificates
+Description: Flowery.Uno Gallery demo
+ Showcase of the Flowery.Uno controls (DaisyUI-style theming for Uno Platform).
+ .
+ Linux desktop build of the Gallery (Uno Platform, Skia).

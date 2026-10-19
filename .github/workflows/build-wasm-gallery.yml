@@ -1,0 +1,61 @@
+# Standalone WebAssembly Gallery build; does not change docs or desktop releases.
+name: Build WASM Gallery
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Flowery.Uno/**'
+      - 'Flowery.Uno.Gallery/**'
+      - 'Flowery.Uno.Gallery.Core/**'
+      - 'Flowery.Uno.Kanban/**'
+      - '*.props'
+      - 'Directory.*'
+      - 'global.json'
+      - '.github/workflows/build-wasm-gallery.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wasm-gallery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wasm:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Install WASM tools
+        run: dotnet workload install wasm-tools
+      - name: Publish browser Gallery
+        run: |
+          dotnet publish Flowery.Uno.Gallery/Flowery.Uno.Gallery.csproj \
+            -c Release -f net10.0-browserwasm \
+            -p:TargetFrameworks=net10.0-browserwasm \
+            -p:WasmShellWebAppBasePath=/Flowery.Uno/gallery/ \
+            -p:CheckEolWorkloads=false \
+            -o "$RUNNER_TEMP/flowery-wasm"
+      - name: Validate published site
+        run: |
+          test -f "$RUNNER_TEMP/flowery-wasm/wwwroot/index.html"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"]) / "flowery-wasm/wwwroot/manifest.webmanifest"
+          if p.exists():
+              data = json.loads(p.read_text(encoding="utf-8"))
+              data["start_url"] = "./"
+              data["scope"] = "./"
+              p.write_text(json.dumps(data, indent=2), encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pages-gallery
+          path: ${{ runner.temp }}/flowery-wasm/wwwroot/
+          if-no-files-found: error
+          retention-days: 30

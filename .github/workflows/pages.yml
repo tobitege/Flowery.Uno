@@ -1,0 +1,101 @@
+# A successful Docs OR WASM run updates only its own site folder.
+# pages-content is persistent: the other component keeps its last good version.
+name: Publish Pages
+
+on:
+  workflow_run:
+    workflows: ["Generate Documentation", "Build WASM Gallery"]
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download successful build result
+        uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.event.workflow_run.name == 'Generate Documentation' && 'pages-docs' || 'pages-gallery' }}
+          path: ${{ runner.temp }}/new-content
+
+      - name: Check artifact entry point
+        run: test -f "$RUNNER_TEMP/new-content/index.html"
+
+      - name: Checkout repository for persistent site content
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update only the changed component
+        env:
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+        run: |
+          set -euo pipefail
+          if git show-ref --verify --quiet refs/remotes/origin/pages-content; then
+            git switch -C pages-content origin/pages-content
+          else
+            git switch --orphan pages-content
+            git rm -rfq . || true
+          fi
+
+          if [ "$SOURCE_WORKFLOW" = "Generate Documentation" ]; then
+            # Keep the previously published Gallery, if one exists.
+            mkdir -p "$RUNNER_TEMP/preserved-gallery"
+            if [ -d gallery ]; then
+              cp -a gallery/. "$RUNNER_TEMP/preserved-gallery/"
+            fi
+            git rm -rfq . || true
+            rm -rf ./* ./.nojekyll
+            cp -a "$RUNNER_TEMP/new-content/." .
+            if [ -d "$RUNNER_TEMP/preserved-gallery" ] && [ "$(ls -A "$RUNNER_TEMP/preserved-gallery")" ]; then
+              mkdir -p gallery
+              cp -a "$RUNNER_TEMP/preserved-gallery/." gallery/
+            fi
+          else
+            # A Gallery update never touches the docs.
+            mkdir -p gallery
+            rm -rf gallery
+            mkdir -p gallery
+            cp -a "$RUNNER_TEMP/new-content/." gallery/
+          fi
+
+          test -f index.html || { echo "::error::Run Generate Documentation once before publishing Gallery."; exit 1; }
+          touch .nojekyll
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "pages: update $SOURCE_WORKFLOW"
+            git push origin HEAD:pages-content
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload combined site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

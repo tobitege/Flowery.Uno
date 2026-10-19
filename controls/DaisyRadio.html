@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyRadio</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyRadio</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyRadio.png" alt="DaisyRadio" class="doc-image">
+
+<p>DaisyRadio is a styled <code>RadioButton</code> with <strong>8 color variants</strong> and <strong>5 size presets</strong>. It shows a filled inner circle when checked and supports standard radio grouping via <code>GroupName</code>. Use variants for semantic meaning or brand alignment in forms and option groups.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Neutral fill when checked.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Brand-aligned fills.</td>
+</tr>
+<tr>
+<td>Success / Warning / Info / Error</td>
+<td>Semantic fills for status or validation.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Outer</th>
+<th>Inner</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>8px</td>
+<td>4px</td>
+<td>Dense tables/toolbars.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>10px</td>
+<td>5px</td>
+<td>Compact forms.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>12px</td>
+<td>6px</td>
+<td>General usage.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>14px</td>
+<td>7px</td>
+<td>Spacious layouts or touch targets.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>16px</td>
+<td>8px</td>
+<td>Hero sections or large touch targets.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic group --&gt;
+&lt;StackPanel Spacing="6"&gt;
+    &lt;controls:DaisyRadio Content="Option A" GroupName="demo" /&gt;
+    &lt;controls:DaisyRadio Content="Option B" GroupName="demo" IsChecked="True" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Semantic variants --&gt;
+&lt;controls:DaisyRadio Content="Success" Variant="Success" GroupName="status" /&gt;
+&lt;controls:DaisyRadio Content="Error" Variant="Error" GroupName="status" /&gt;
+
+&lt;!-- Compact radios --&gt;
+&lt;controls:DaisyRadio Content="Small" Size="Small" GroupName="sizeDemo" IsChecked="True" /&gt;
+&lt;controls:DaisyRadio Content="XS" Size="ExtraSmall" GroupName="sizeDemo" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Always set <code>GroupName</code> for mutually exclusive choices; WinUI handles exclusivity within a group.</li>
+<li>Align size with neighboring inputs; use Small/XS for dense forms, Large for mobile-friendly layouts.</li>
+<li>Use semantic variants to indicate consequence (e.g., Error for destructive choices).</li>
+<li>Keep labels short; adjust <code>Padding</code> if you customize spacing.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyRadialProgress.html">← RadialProgress</a></div>
+    <div class="nav-right"><a href="DaisyRange.html">Range →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

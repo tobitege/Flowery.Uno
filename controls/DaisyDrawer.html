@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDrawer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDrawer</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyDrawer.png" alt="DaisyDrawer" class="doc-image">
+
+<p>DaisyDrawer wraps WinUI's <code>SplitView</code> to create a sidebar drawer. Defaults to an inline drawer on the left with a 300px open width and no compact pane. The template includes a slide-in animation and optional overlay support for overlay mode. Use it to host navigation or settings panels that toggle in/out of view.</p>
+
+<h2>Key Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsPaneOpen</code></td>
+<td>Shows/hides the pane. Toggle this to open/close the drawer.</td>
+</tr>
+<tr>
+<td><code>Pane</code> / <code>PaneTemplate</code></td>
+<td>Content for the sidebar.</td>
+</tr>
+<tr>
+<td><code>Content</code> / <code>ContentTemplate</code></td>
+<td>Main area content.</td>
+</tr>
+<tr>
+<td><code>OpenPaneLength</code> (default 300)</td>
+<td>Drawer width when open.</td>
+</tr>
+<tr>
+<td><code>PanePlacement</code> (default Left)</td>
+<td>Side where the drawer appears.</td>
+</tr>
+<tr>
+<td><code>DisplayMode</code> (default Inline)</td>
+<td>Set to <code>Overlay</code> for overlay behavior with scrim support in the template.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic inline drawer --&gt;
+&lt;controls:DaisyDrawer IsPaneOpen="True" OpenPaneLength="280"&gt;
+    &lt;controls:DaisyDrawer.Pane&gt;
+        &lt;StackPanel Margin="16" Spacing="8"&gt;
+            &lt;TextBlock Text="Menu" FontWeight="SemiBold" /&gt;
+            &lt;Button Content="Item 1" /&gt;
+            &lt;Button Content="Item 2" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyDrawer.Pane&gt;
+    &lt;Grid Background="{ThemeResource DaisyBase100Brush}"&gt;
+        &lt;TextBlock Text="Main content" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/Grid&gt;
+&lt;/controls:DaisyDrawer&gt;
+
+&lt;!-- Toggling from a button --&gt;
+&lt;controls:DaisyButton Content="Toggle" Click="OnToggleDrawer" /&gt;
+&lt;controls:DaisyDrawer x:Name="Drawer" DisplayMode="Overlay" PanePlacement="Left"&gt;
+    &lt;!-- Pane/Content here --&gt;
+&lt;/controls:DaisyDrawer&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>For overlay behavior, set <code>DisplayMode="Overlay"</code> and toggle <code>IsPaneOpen</code>; the template includes a slide-in transform and overlay placeholder.</li>
+<li>Keep <code>OpenPaneLength</code> between 240–320px for comfortable navigation panels.</li>
+<li>Wrap pane contents in a <code>ScrollViewer</code> if the menu can exceed the viewport height.</li>
+<li>If you manage selection in the pane, pair with <code>DaisyDock</code> or <code>DaisyMenu</code> styles for consistent navigation visuals.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyDock.html">← Dock</a></div>
+    <div class="nav-right"><a href="DaisyDropdown.html">Dropdown →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

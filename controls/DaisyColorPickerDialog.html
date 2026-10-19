@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyColorPickerDialog</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyColorPickerDialog</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyColorPickerDialog.png" alt="DaisyColorPickerDialog" style="max-width:50%;width:50%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+
+<p>DaisyColorPickerDialog is a comprehensive color picker dialog that combines all color picker components into a single, professional interface.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Color</code></td>
+<td><code>Color</code></td>
+<td><code>Red</code></td>
+<td>The selected color</td>
+</tr>
+<tr>
+<td><code>OriginalColor</code></td>
+<td><code>Color</code></td>
+<td><code>Red</code></td>
+<td>The original color (for comparison)</td>
+</tr>
+<tr>
+<td><code>CustomColors</code></td>
+<td><code>ColorCollection?</code></td>
+<td><code>null</code></td>
+<td>Custom colors collection</td>
+</tr>
+<tr>
+<td><code>ShowAlphaChannel</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show alpha channel controls</td>
+</tr>
+<tr>
+<td><code>ShowColorWheel</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the color wheel</td>
+</tr>
+<tr>
+<td><code>ShowColorGrid</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the color palette grid</td>
+</tr>
+<tr>
+<td><code>ShowColorEditor</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the RGB/HSL editor</td>
+</tr>
+<tr>
+<td><code>ShowScreenColorPicker</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the eyedropper tool</td>
+</tr>
+<tr>
+<td><code>PreserveAlphaChannel</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Preserve alpha when selecting colors</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>PreviewColorChanged</code></td>
+<td>Fired when the selected color changes while the dialog is open (before OK is clicked)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Architecture</h2>
+
+<p>The dialog is a <strong>composite control</strong> that assembles several standalone color picker controls into a unified interface. Each component is a separate, reusable control with its own C# class and XAML theme:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>File</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyColorPickerDialog.cs</code></td>
+<td>Dialog (a <code>FloweryDialogBase</code> shown through <code>FloweryDialogHost</code>), layout, history and coordination logic</td>
+</tr>
+<tr>
+<td><code>DaisyColorWheel.cs</code> + <code>.xaml</code></td>
+<td>Standalone color wheel control</td>
+</tr>
+<tr>
+<td><code>DaisyColorGrid.cs</code> + <code>.xaml</code></td>
+<td>Standalone color palette grid</td>
+</tr>
+<tr>
+<td><code>DaisyColorEditor.cs</code> + <code>.xaml</code></td>
+<td>Standalone RGB/HSL editor with sliders</td>
+</tr>
+<tr>
+<td><code>DaisyColorSlider.cs</code> + <code>.xaml</code></td>
+<td>Standalone color channel slider</td>
+</tr>
+<tr>
+<td><code>DaisyScreenColorPicker.cs</code> + <code>.xaml</code></td>
+<td>Standalone eyedropper tool</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The dialog builds its UI programmatically in C# (not XAML) by creating instances of these controls and arranging them in a layout. This means:</p>
+
+<ul><li><strong>Dialog layout</strong> (margins, spacing, dialog size) → edit <code>DaisyColorPickerDialog.cs</code></li>
+<li><strong>Individual control appearance</strong> (slider heights, input widths) → edit the control's <code>.xaml</code> theme</li>
+</ul>
+<p>Each component can also be used independently outside the dialog.</p>
+
+<h2>Dialog Components</h2>
+
+<p>The dialog integrates these components:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyColorWheel</code></td>
+<td>Visual hue/saturation selection</td>
+</tr>
+<tr>
+<td><code>DaisyColorSlider</code></td>
+<td>Lightness adjustment</td>
+</tr>
+<tr>
+<td><code>DaisyColorGrid</code></td>
+<td>Palette-based color selection</td>
+</tr>
+<tr>
+<td><code>DaisyColorEditor</code></td>
+<td>Precise RGB/HSL/Hex editing</td>
+</tr>
+<tr>
+<td><code>DaisyScreenColorPicker</code></td>
+<td>Pick colors from screen</td>
+</tr>
+<tr>
+<td>Color Preview</td>
+<td>Shows selected vs. original color</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Methods</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>static ShowAsync(XamlRoot xamlRoot, Color initialColor)</code></td>
+<td>Shows the dialog over the app content; returns the selected color, or <code>null</code> when cancelled</td>
+</tr>
+<tr>
+<td><code>static ShowAsync(XamlRoot, Color, bool showAlphaChannel, ColorCollection? customColors)</code></td>
+<td>Same, with alpha channel option and a custom color collection to show and extend</td>
+</tr>
+<tr>
+<td><code>ShowAsync(XamlRoot xamlRoot)</code></td>
+<td>Shows a configured dialog instance</td>
+</tr>
+<tr>
+<td><code>Undo()</code> / <code>Redo()</code></td>
+<td>Step through the colors chosen while the dialog is open (latest 50 values); also the two history buttons in the footer</td>
+</tr>
+<tr>
+<td><code>CanUndo</code> / <code>CanRedo</code></td>
+<td>Whether a history step is available</td>
+</tr>
+<tr>
+<td><code>Confirm()</code> / <code>Cancel()</code></td>
+<td>Close with or without a result; OK also adds the color to <code>CustomColors</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Escape and a click outside the dialog count as Cancel. Wheel, lightness slider, palette, screen picker, hex input and the RGB/HSL sliders all update the new-color preview and the returned color.</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-csharp">// Show the dialog and use the result
+var color = await DaisyColorPickerDialog.ShowAsync(XamlRoot, currentColor);
+if (color is { } selected)
+{
+    ApplyColor(selected);
+}</code></pre>
+
+<pre><code class="language-csharp">// Keep custom colors across openings, without alpha
+private readonly ColorCollection _customColors = ColorCollection.CreateCustom(16);
+
+var color = await DaisyColorPickerDialog.ShowAsync(XamlRoot, currentColor, showAlphaChannel: false, _customColors);</code></pre>
+
+<pre><code class="language-csharp">// Minimal dialog (wheel + editor only) with a live preview
+var dialog = new DaisyColorPickerDialog
+{
+    Color = currentColor,
+    OriginalColor = currentColor,
+    ShowColorGrid = false,
+    ShowScreenColorPicker = false
+};
+dialog.PreviewColorChanged += (s, e) =&gt; PreviewBorder.Background = new SolidColorBrush(e.Color);
+
+var color = await dialog.ShowAsync(XamlRoot);</code></pre>
+
+<p>The screen color picker is hidden on Android and iOS, where screen capture is not available.</p>
+
+<h2>Typical Layout</h2>
+
+<pre><code class="language-txt">┌─────────────────────────────────────────────────────────┐
+│  ┌──────────────┐  ┌─────────────────────────────────┐  │
+│  │              │  │  Color Grid (Palette)           │  │
+│  │  Color       │  │  ████████████████████████████   │  │
+│  │  Wheel       │  │  ████████████████████████████   │  │
+│  │              │  │                                 │  │
+│  │      ●       │  ├─────────────────────────────────┤  │
+│  │              │  │  RGB Sliders                    │  │
+│  └──────────────┘  │  R: ═══════════○═══════ [255]   │  │
+│  ┌──┐              │  G: ═══○═══════════════ [128]   │  │
+│  │L │              │  B: ○═════════════════ [0]      │  │
+│  │i │              ├─────────────────────────────────┤  │
+│  │g │              │  HSL Sliders                    │  │
+│  │h │              │  H: ═══════════○═══════ [180]   │  │
+│  │t │              │  S: ═══════════════○═══ [100]   │  │
+│  │  │              │  L: ═══════○═══════════ [50]    │  │
+│  └──┘              ├─────────────────────────────────┤  │
+│                    │  Hex: #FF8000                 │  │
+│  ┌────┬────┐       └─────────────────────────────────┘  │
+│  │New │Orig│  [👁 Eyedropper]                           │
+│  └────┴────┘                                            │
+│                              [  OK  ]  [ Cancel ]       │
+└─────────────────────────────────────────────────────────┘</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set <code>OriginalColor</code> to show a comparison between old and new colors.</li>
+<li>Use <code>PreviewColorChanged</code> event for real-time preview updates in the parent UI.</li>
+<li>Enable <code>PreserveAlphaChannel</code> when editing colors that should keep their transparency.</li>
+<li>Hide components you don't need (e.g., <code>ShowColorGrid="False"</code>) for a simpler interface.</li>
+<li>The dialog returns <code>true</code> when OK is clicked, <code>false</code> or <code>null</code> when cancelled.</li>
+<li>Custom colors persist across dialog sessions if you reuse the same <code>ColorCollection</code>.</li>
+<li>Click the original color preview to revert to the starting color.</li>
+</ul>
+<h2>Acknowledgments</h2>
+
+<p>This dialog and its component controls are inspired by the <a href="https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker" target="_blank" rel="noopener">Cyotek ColorPicker</a> library (MIT License).</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyColorGrid.html">← ColorGrid</a></div>
+    <div class="nav-right"><a href="DaisyColorSlider.html">ColorSlider →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

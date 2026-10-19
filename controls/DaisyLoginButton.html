@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyLoginButton</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyLoginButton</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyLoginButton is a <strong>batteries-included</strong> login button derived from DaisyButton. It bundles a brand icon, localized label, and optional brand styling in a single control. Use it to avoid verbose XAML when rendering OAuth-style login buttons.</p>
+
+<h2>Brand Presets</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Brand</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Email</td>
+<td>Outline envelope icon</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>Google</td>
+<td>Multi-color icon</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>X</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>Kakao</td>
+<td>Solid icon, Korean label</td>
+</tr>
+<tr>
+<td>Apple</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>Amazon</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>Microsoft</td>
+<td>Multi-color icon</td>
+</tr>
+<tr>
+<td>Line</td>
+<td>Solid icon, Japanese label</td>
+</tr>
+<tr>
+<td>Slack</td>
+<td>Multi-color icon</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>VK</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>WeChat</td>
+<td>Solid icon</td>
+</tr>
+<tr>
+<td>MetaMask</td>
+<td>Multi-color icon</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Key Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Brand</code></td>
+<td><code>DaisyLoginBrand</code></td>
+<td><code>Email</code></td>
+<td>Selects the icon and default label</td>
+</tr>
+<tr>
+<td><code>UseBrandColors</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When true, applies brand background/foreground/border colors</td>
+</tr>
+<tr>
+<td><code>LoginText</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Overrides the default label (no localization lookup)</td>
+</tr>
+<tr>
+<td><code>IconSize</code></td>
+<td><code>double</code></td>
+<td><code>NaN</code></td>
+<td>Overrides icon size (falls back to size token)</td>
+</tr>
+<tr>
+<td><code>IconSpacing</code></td>
+<td><code>double</code></td>
+<td><code>NaN</code></td>
+<td>Overrides icon/text spacing (falls back to size token)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Localization</h2>
+
+<p>Default labels are resolved via <code>FloweryLocalization.GetStringInternal</code> using the keys below. If <code>LoginText</code> is set, localization is skipped.</p>
+
+<pre><code class="language-txt">LoginButton_Email
+LoginButton_GitHub
+LoginButton_Google
+LoginButton_Facebook
+LoginButton_X
+LoginButton_Kakao
+LoginButton_Apple
+LoginButton_Amazon
+LoginButton_Microsoft
+LoginButton_Line
+LoginButton_Slack
+LoginButton_LinkedIn
+LoginButton_VK
+LoginButton_WeChat
+LoginButton_MetaMask</code></pre>
+
+<p>Runtime language switching is supported; the control refreshes its label when <code>FloweryLocalization.CultureChanged</code> fires.</p>
+
+<h2>Theme Behavior</h2>
+
+<ul><li>When <code>UseBrandColors="true"</code> (default), the button overrides its own background, foreground, and border to match brand colors.</li>
+<li>When <code>UseBrandColors="false"</code>, the control uses the current theme's foreground colors and does <strong>not</strong> override button brushes. This is useful when you want brand icons with theme-consistent text.</li>
+</ul>
+<h2>Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Default brand styling --&gt;
+&lt;controls:DaisyLoginButton Brand="GitHub" /&gt;
+
+&lt;!-- Use theme colors instead of brand colors --&gt;
+&lt;controls:DaisyLoginButton Brand="GitHub" UseBrandColors="False" /&gt;
+
+&lt;!-- Override label and size --&gt;
+&lt;controls:DaisyLoginButton Brand="Google"
+                           LoginText="Continue with Google"
+                           IconSize="14"
+                           IconSpacing="6" /&gt;
+
+&lt;!-- Compact layout --&gt;
+&lt;controls:DaisyLoginButton Brand="Apple" Size="Small" /&gt;</code></pre>
+
+<h2>Tips</h2>
+
+<ul><li>If you want a uniform look across all themes, set <code>UseBrandColors="false"</code> and rely on theme resources.</li>
+<li>To fully customize the label, set <code>LoginText</code> and keep localization keys untouched.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyLoading.html">← Loading</a></div>
+    <div class="nav-right"><a href="DaisyMask.html">Mask →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyStat</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyStat</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyStat.png" alt="DaisyStat" class="doc-image">
+
+<p>DaisyStat displays a metric with title, value, optional description, figure (icon/media), and action slot. <code>DaisyStats</code> groups multiple stats horizontally or vertically, adding separators between items. Variants color the value text; <code>DescriptionVariant</code> colors the description independently.</p>
+
+<h2>DaisyStat Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Title</code></td>
+<td>Small label above the value.</td>
+</tr>
+<tr>
+<td><code>Value</code></td>
+<td>Main metric (large text).</td>
+</tr>
+<tr>
+<td><code>Description</code></td>
+<td>Secondary text below the value.</td>
+</tr>
+<tr>
+<td><code>Figure</code></td>
+<td>Optional leading visual (icon, image).</td>
+</tr>
+<tr>
+<td><code>Actions</code></td>
+<td>Optional trailing actions (e.g., buttons).</td>
+</tr>
+<tr>
+<td><code>IsCentered</code></td>
+<td>Centers text and actions within the stat.</td>
+</tr>
+<tr>
+<td><code>Variant</code></td>
+<td>Colors value text (Default/Primary/Secondary/Accent/Info/Success/Warning/Error).</td>
+</tr>
+<tr>
+<td><code>DescriptionVariant</code></td>
+<td>Colors description text using the same variant set.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>DaisyStats Container</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Orientation</code></td>
+<td>Horizontal (default) or Vertical; adds dividers between items.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple stats --&gt;
+&lt;controls:DaisyStats&gt;
+    &lt;controls:DaisyStat Title="Total Page Views" Value="89,400" Description="21% more than last month" /&gt;
+    &lt;controls:DaisyStat Title="Downloads" Value="31K" Description="Jan 1st - Feb 1st" Variant="Primary" /&gt;
+    &lt;controls:DaisyStat Title="New Users" Value="4,200" Description="+400 (22%)" Variant="Secondary" /&gt;
+&lt;/controls:DaisyStats&gt;
+
+&lt;!-- With figure and actions --&gt;
+&lt;controls:DaisyStat Title="Account balance" Value="$89,400"&gt;
+    &lt;controls:DaisyStat.Figure&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconStar}" Width="32" Height="32"
+                  Foreground="{ThemeResource DaisyWarningBrush}" /&gt;
+    &lt;/controls:DaisyStat.Figure&gt;
+    &lt;controls:DaisyStat.Actions&gt;
+        &lt;controls:DaisyButton Size="ExtraSmall" Variant="Success" Content="Add funds" /&gt;
+    &lt;/controls:DaisyStat.Actions&gt;
+&lt;/controls:DaisyStat&gt;
+
+&lt;!-- Vertical grouping and centered --&gt;
+&lt;controls:DaisyStats Orientation="Vertical"&gt;
+    &lt;controls:DaisyStat Title="Downloads" Value="31K" Description="Jan 1st - Feb 1st" IsCentered="True" /&gt;
+    &lt;controls:DaisyStat Title="Users" Value="4,200" Description="+40 (2%)" Variant="Secondary" DescriptionVariant="Secondary" IsCentered="True" /&gt;
+&lt;/controls:DaisyStats&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>DescriptionVariant</code> to align secondary text with status (e.g., Success for growth, Error for decline).</li>
+<li>Center stats (<code>IsCentered=True</code>) when presenting small sets or when values/figures need emphasis.</li>
+<li>For long lists, prefer <code>Orientation="Vertical"</code> and ensure consistent padding for readability.</li>
+<li>Keep titles short; use <code>Figure</code> to add meaning without overloading text.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyStack.html">← Stack</a></div>
+    <div class="nav-right"><a href="DaisyStatusIndicator.html">StatusIndicator →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

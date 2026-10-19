@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnifiedIconApi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div><h1>Unified Icon API for DaisyButton</h1>
+
+<p>The <strong>Unified Icon API</strong> provides a batteries-included approach for adding icons to <code>DaisyButton</code> controls. It eliminates the need for complex XAML markup by handling icon creation, scaling, and color inheritance automatically.</p>
+
+<h2>Features</h2>
+
+<ul><li><strong>Auto-scaling</strong> - Icon size adapts to button Size (XS→12px, S→14px, M→16px, L→18px, XL→20px)</li>
+<li><strong>Auto-coloring</strong> - Icon inherits button Foreground color (including hover/pressed states)</li>
+<li><strong>Icon-only mode</strong> - If Content is null, shows just the icon</li>
+<li><strong>Icon + Content mode</strong> - Shows icon and content together with proper spacing</li>
+<li><strong>Safe rendering</strong> - Uses <code>Path</code> instead of <code>PathIcon</code> to avoid Uno runtime issues</li>
+<li><strong>Viewbox wrapping</strong> - For proper scaling of 24x24 coordinate system paths</li>
+</ul>
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IconSymbol</code></td>
+<td><code>Symbol?</code></td>
+<td>Windows Symbol enum (Add, Edit, Delete, Favorite, etc.)</td>
+</tr>
+<tr>
+<td><code>IconData</code></td>
+<td><code>string?</code></td>
+<td>Raw SVG path data string (24x24 coordinate system)</td>
+</tr>
+<tr>
+<td><code>IconPlacement</code></td>
+<td><code>IconPlacement</code></td>
+<td>Where the icon appears relative to content (Left, Right, Top, Bottom). Default: Left</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Usage</h2>
+
+<h3>IconSymbol (Windows Symbols)</h3>
+
+<p>The simplest approach using built-in Windows Symbol icons:</p>
+
+<pre><code class="language-xml">&lt;!-- Icon + Text --&gt;
+&lt;daisy:DaisyButton IconSymbol="Add" Content="Add" Variant="Primary" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Edit" Content="Edit" Variant="Info" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Delete" Content="Delete" Variant="Error" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Accept" Content="Save" Variant="Success" /&gt;
+
+&lt;!-- Icon-only buttons --&gt;
+&lt;daisy:DaisyButton IconSymbol="Add" Shape="Circle" Variant="Primary" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Favorite" Shape="Circle" Variant="Error" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Setting" Shape="Square" Variant="Ghost" /&gt;</code></pre>
+
+<h3>IconData (Custom SVG Paths)</h3>
+
+<p>For custom icons, provide raw SVG path data. The path should be designed for a 24x24 coordinate system:</p>
+
+<pre><code class="language-xml">&lt;!-- Heart icon --&gt;
+&lt;daisy:DaisyButton 
+    IconData="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"
+    Content="Heart" 
+    Variant="Error" /&gt;
+
+&lt;!-- Star icon --&gt;
+&lt;daisy:DaisyButton 
+    IconData="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
+    Content="Star" 
+    Variant="Warning" /&gt;
+
+&lt;!-- Home icon --&gt;
+&lt;daisy:DaisyButton 
+    IconData="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"
+    Content="Home" 
+    Variant="Ghost" /&gt;</code></pre>
+
+<h3>Icon Placement</h3>
+
+<p>Control where the icon appears relative to the text:</p>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton IconSymbol="Add" Content="Left" IconPlacement="Left" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Add" Content="Right" IconPlacement="Right" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Add" Content="Top" IconPlacement="Top" /&gt;
+&lt;daisy:DaisyButton IconSymbol="Add" Content="Bottom" IconPlacement="Bottom" /&gt;</code></pre>
+
+<h3>Size Scaling</h3>
+
+<p>Icons automatically scale with button size:</p>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton IconSymbol="Home" Content="XS" Size="ExtraSmall" /&gt;  &lt;!-- 12px icon --&gt;
+&lt;daisy:DaisyButton IconSymbol="Home" Content="S" Size="Small" /&gt;        &lt;!-- 14px icon --&gt;
+&lt;daisy:DaisyButton IconSymbol="Home" Content="M" Size="Medium" /&gt;       &lt;!-- 16px icon --&gt;
+&lt;daisy:DaisyButton IconSymbol="Home" Content="L" Size="Large" /&gt;        &lt;!-- 18px icon --&gt;
+&lt;daisy:DaisyButton IconSymbol="Home" Content="XL" Size="ExtraLarge" /&gt;  &lt;!-- 20px icon --&gt;</code></pre>
+
+<h2>Comparison with Other Approaches</h2>
+
+<h3>Before (StackPanel layout)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton Variant="Primary"&gt;
+    &lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+        &lt;SymbolIcon Symbol="Add" /&gt;
+        &lt;TextBlock Text="Add Item" VerticalAlignment="Center" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyButton&gt;</code></pre>
+
+<h3>After (StackPanel layout)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton IconSymbol="Add" Content="Add Item" Variant="Primary" /&gt;</code></pre>
+
+<h3>Before (Custom icon with Viewbox scaling)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton Shape="Circle" Variant="Error"&gt;
+    &lt;Viewbox Width="16" Height="16"&gt;
+        &lt;Path Data="M12,21.35L10.55,20.03C5.4..." Fill="{ThemeResource DaisyErrorContentBrush}" /&gt;
+    &lt;/Viewbox&gt;
+&lt;/daisy:DaisyButton&gt;</code></pre>
+
+<h3>After (Custom icon with Viewbox scaling)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton IconData="M12,21.35L10.55,20.03C5.4..." Shape="Circle" Variant="Error" /&gt;</code></pre>
+
+<h2>Technical Details</h2>
+
+<h3>Priority Order</h3>
+
+<p>When multiple icon properties are set, they are processed in this order:</p>
+
+<p>1. <code>DaisyControlExtensions.Icon</code> (attached property - legacy)</p>
+<p>2. <code>IconSymbol</code></p>
+<p>3. <code>IconData</code></p>
+
+<p>Only the first non-null icon source is used.</p>
+
+<h3>Icon Sizing by Button Size</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Button Size</th>
+<th>Icon Size</th>
+<th>Icon Spacing</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>12px</td>
+<td>4px</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>14px</td>
+<td>6px</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>16px</td>
+<td>8px</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>18px</td>
+<td>8px</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>20px</td>
+<td>10px</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Color Inheritance</h3>
+
+<p>Icons automatically inherit the button's <code>Foreground</code> color via data binding. This means:</p>
+
+<ul><li>Normal state: Uses the button's normal foreground</li>
+<li>Hover state: Updates with the button's hover foreground  </li>
+<li>Pressed state: Updates with the button's pressed foreground</li>
+<li>Disabled state: Properly dimmed with the button</li>
+</ul>
+<h3>Path Data Format</h3>
+
+<p>The <code>IconData</code> property expects path data in the standard SVG path format, designed for a 24x24 coordinate system. The icon is rendered inside a <code>Viewbox</code> that scales it to the appropriate size.</p>
+
+<p>You can find icon path data from:</p>
+
+<ul><li><a href="https://materialdesignicons.com/" target="_blank" rel="noopener">Material Design Icons</a></li>
+<li><a href="https://heroicons.com/" target="_blank" rel="noopener">Heroicons</a></li>
+<li><a href="https://feathericons.com/" target="_blank" rel="noopener">Feather Icons</a></li>
+<li>The project's <code>DaisyIcons.xaml</code> resource dictionary</li>
+</ul>
+<h2>Available System Symbols</h2>
+
+<p>Common <code>Symbol</code> enum values you can use with <code>IconSymbol</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Category</th>
+<th>Symbols</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Actions</td>
+<td>Add, Delete, Edit, Save, Cancel, Accept, Refresh, Sync</td>
+</tr>
+<tr>
+<td>Navigation</td>
+<td>Back, Forward, Home, Up, Down, Previous, Next</td>
+</tr>
+<tr>
+<td>Media</td>
+<td>Play, Pause, Stop, Volume, Mute</td>
+</tr>
+<tr>
+<td>Communication</td>
+<td>Mail, Message, Send, Share</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Help, Important, Warning, Flag</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>More, Setting, Find, Filter, Sort, Zoom, ZoomIn, ZoomOut</td>
+</tr>
+<tr>
+<td>Objects</td>
+<td>Document, Folder, Camera, Photo, Video, Download, Upload</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>See the <a href="https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbol" target="_blank" rel="noopener">Microsoft Symbol enum documentation</a> for the complete list.</p>
+
+<h2>Migration from Attached Properties</h2>
+
+<p>If you were using <code>DaisyControlExtensions.Icon</code>:</p>
+
+<h3>Before</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton Content="Save"&gt;
+    &lt;daisy:DaisyControlExtensions.Icon&gt;
+        &lt;SymbolIcon Symbol="Save" /&gt;
+    &lt;/daisy:DaisyControlExtensions.Icon&gt;
+&lt;/daisy:DaisyButton&gt;</code></pre>
+
+<h3>After</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton IconSymbol="Save" Content="Save" /&gt;</code></pre>
+
+<p>The attached property pattern is still supported for complex icon scenarios, but the Unified Icon API is the recommended approach for most use cases.</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

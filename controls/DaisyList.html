@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyList</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyList</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyList.png" alt="DaisyList" class="doc-image">
+
+<p>DaisyList is a vertical list container with row and column primitives for structured content. <code>DaisyListRow</code> uses a custom panel that can designate a grow column and wrap specific columns onto new lines. Use it for media lists, stats rows, or mixed text/icon layouts with consistent spacing.</p>
+
+<h2>Structure</h2>
+
+<ul><li><code>DaisyList</code>: Overall list container (default StackPanel items).</li>
+<li><code>DaisyListRow</code>: A row of columns; supports spacing and a grow column.</li>
+<li><code>DaisyListColumn</code>: A cell; can grow to fill remaining space or wrap to a new line.</li>
+</ul>
+<h2>Key Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Element</th>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyListRow</code></td>
+<td><code>GrowColumn</code> (int, default 1)</td>
+<td>0-based index of the child that should fill remaining width; set <code>-1</code> to disable.</td>
+</tr>
+<tr>
+<td><code>DaisyListRow</code></td>
+<td><code>Spacing</code> (default 12)</td>
+<td>Gap between columns.</td>
+</tr>
+<tr>
+<td><code>DaisyListColumn</code></td>
+<td><code>Grow</code> (bool)</td>
+<td>Force this column to fill remaining space (overrides <code>GrowColumn</code>).</td>
+</tr>
+<tr>
+<td><code>DaisyListColumn</code></td>
+<td><code>Wrap</code> (bool)</td>
+<td>Moves the column to a new line below the main row.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple list --&gt;
+&lt;controls:DaisyList CornerRadius="16" Background="{ThemeResource DaisyBase100Brush}"&gt;
+    &lt;TextBlock Text="Most played songs" FontSize="11" Opacity="0.6" Margin="16,12,16,4" /&gt;
+    &lt;controls:DaisyListRow&gt;
+        &lt;controls:DaisyListColumn&gt;
+            &lt;Border Width="40" Height="40" CornerRadius="8" Background="{ThemeResource DaisyPrimaryBrush}" /&gt;
+        &lt;/controls:DaisyListColumn&gt;
+        &lt;controls:DaisyListColumn Grow="True"&gt;
+            &lt;StackPanel&gt;
+                &lt;TextBlock Text="Dio Lupa" FontWeight="Medium" /&gt;
+                &lt;TextBlock Text="Remaining Reason" FontSize="11" Opacity="0.6" /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/controls:DaisyListColumn&gt;
+        &lt;controls:DaisyListColumn&gt;
+            &lt;controls:DaisyButton Variant="Ghost" Shape="Square" Size="Small"&gt;
+                &lt;PathIcon Width="16" Height="16" Data="M6 3L20 12 6 21 6 3z" /&gt;
+            &lt;/controls:DaisyButton&gt;
+        &lt;/controls:DaisyListColumn&gt;
+    &lt;/controls:DaisyListRow&gt;
+&lt;/controls:DaisyList&gt;
+
+&lt;!-- Wrapping description column --&gt;
+&lt;controls:DaisyList Width="380"&gt;
+    &lt;controls:DaisyListRow&gt;
+        &lt;controls:DaisyListColumn MinWidth="40"&gt;
+            &lt;Border Width="40" Height="40" CornerRadius="8" Background="{ThemeResource DaisyInfoBrush}" /&gt;
+        &lt;/controls:DaisyListColumn&gt;
+        &lt;controls:DaisyListColumn Grow="True"&gt;
+            &lt;StackPanel&gt;
+                &lt;TextBlock Text="Song Title" FontWeight="Medium" /&gt;
+                &lt;TextBlock Text="Subtitle" FontSize="11" Opacity="0.6" /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/controls:DaisyListColumn&gt;
+        &lt;controls:DaisyListColumn Wrap="True"&gt;
+            &lt;TextBlock Text="Long description that wraps to its own line." TextWrapping="Wrap" Opacity="0.7" /&gt;
+        &lt;/controls:DaisyListColumn&gt;
+    &lt;/controls:DaisyListRow&gt;
+&lt;/controls:DaisyList&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Grow</code> on a single column (or <code>GrowColumn</code> on the row) to keep actions/icons aligned while text stretches.</li>
+<li>For multi-line descriptions, set <code>Wrap=True</code> on the description column; keep other columns non-wrapping.</li>
+<li>Maintain consistent <code>Spacing</code> across rows for visual rhythm; default 12 works well for compact lists.</li>
+<li>Combine with <code>CornerRadius</code> and background on <code>DaisyList</code> for card-like blocks.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyKbd.html">← Kbd</a></div>
+    <div class="nav-right"><a href="DaisyLoading.html">Loading →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

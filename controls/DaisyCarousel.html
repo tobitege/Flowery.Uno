@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCarousel</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCarousel</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCarousel.png" alt="DaisyCarousel" class="doc-image">
+
+<p>DaisyCarousel is a slide container with built-in previous/next buttons and directional slide transitions. Supports manual navigation, automatic slideshow modes, and cinematic visual effects like Pan And Zoom pan/zoom. Perfect for galleries, hero banners, or featured content.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedIndex</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Index of the currently displayed item.</td>
+</tr>
+<tr>
+<td><code>SlideTransition</code></td>
+<td><code>FlowerySlideTransition</code></td>
+<td><code>None</code></td>
+<td>Visual transition between slides (e.g. <code>Fade</code>, <code>Cube</code>, <code>Wormhole</code>).</td>
+</tr>
+<tr>
+<td><code>SlideEffect</code></td>
+<td><code>FlowerySlideEffect</code></td>
+<td><code>None</code></td>
+<td>Continuous visual effect applied to the active slide (e.g. <code>PanAndZoom</code>).</td>
+</tr>
+<tr>
+<td><code>TransitionDuration</code></td>
+<td><code>double</code></td>
+<td><code>0.4</code></td>
+<td>Duration of the transition in seconds.</td>
+</tr>
+<tr>
+<td><code>SlideInterval</code></td>
+<td><code>double</code></td>
+<td><code>3.0</code></td>
+<td>Seconds between automatic advances in slideshow modes. Min: 0.5s.</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td><code>FlowerySlideshowMode</code></td>
+<td><code>Manual</code></td>
+<td>Navigation mode (<code>Manual</code>, <code>Slideshow</code>, <code>Random</code>, <code>Kiosk</code>).</td>
+</tr>
+<tr>
+<td><code>WrapAround</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>When <code>true</code>, navigation wraps around (last→first, first→last).</td>
+</tr>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Orientation</code></td>
+<td><code>Horizontal</code></td>
+<td>Navigation direction: <code>Horizontal</code> or <code>Vertical</code>.</td>
+</tr>
+<tr>
+<td><code>ShowNavigation</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to show prev/next buttons.</td>
+</tr>
+<tr>
+<td><code>ZoomIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.15</code></td>
+<td>Default zoom factor for zoom effects (0.0 to 0.5).</td>
+</tr>
+<tr>
+<td><code>PanDistance</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Default pan distance in pixels for pan effects (0 to 200).</td>
+</tr>
+<tr>
+<td><code>PulseIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.08</code></td>
+<td>Pulse amplitude for the Pulse effect (0.0 to 0.2).</td>
+</tr>
+<tr>
+<td><code>SwipeThreshold</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Minimum swipe distance in pixels to trigger navigation.</td>
+</tr>
+<tr>
+<td><code>ItemCount</code></td>
+<td><code>int</code></td>
+<td>(read-only)</td>
+<td>Total number of items in the carousel.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Transition Parameters</h2>
+
+<p>These properties fine-tune the behavior of specific transitions (Tier 2 and Tier 3).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Targets</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TransitionSliceCount</code></td>
+<td><code>int</code></td>
+<td><code>8</code></td>
+<td>Blinds, Slices, Checkerboard, Spiral.</td>
+</tr>
+<tr>
+<td><code>TransitionStaggerSlices</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether cells reveal sequentially or randomly.</td>
+</tr>
+<tr>
+<td><code>TransitionSliceStaggerMs</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Milliseconds between individual cell reveals.</td>
+</tr>
+<tr>
+<td><code>TransitionPixelateSize</code></td>
+<td><code>int</code></td>
+<td><code>20</code></td>
+<td>Block size for <code>Pixelate</code> (HD vs 8-bit look).</td>
+</tr>
+<tr>
+<td><code>TransitionDissolveDensity</code></td>
+<td><code>double</code></td>
+<td><code>0.5</code></td>
+<td>Grain density for <code>Dissolve</code> (0.1 to 1.0).</td>
+</tr>
+<tr>
+<td><code>TransitionFlipAngle</code></td>
+<td><code>double</code></td>
+<td><code>90</code></td>
+<td>Rotation intensity for <code>Flip</code> and <code>Cube</code> (0 to 180).</td>
+</tr>
+<tr>
+<td><code>TransitionPerspectiveDepth</code></td>
+<td><code>double</code></td>
+<td><code>1000</code></td>
+<td>3D depth for <code>Flip</code> and <code>Cube</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note</strong>: The <code>FlowerySlideshowMode</code> and <code>FlowerySlideEffect</code> enums, along with the <code>FlowerySlideshowController</code> class and <code>FlowerySlideEffects</code> attached properties, are documented in <a href="FloweryAnimationHelpers.html">FloweryAnimationHelpers</a>.</p>
+
+<h2>Animations & Transitions</h2>
+
+<p>DaisyCarousel distinguishes between <strong>SlideTransitions</strong> (the animation when switching between two slides) and <strong>SlideEffects</strong> (continuous loop animations on the active slide).</p>
+
+<h3>Slide Transitions (<code>FlowerySlideTransition</code>)</h3>
+
+<p>Transitions are grouped into tiers based on complexity and platform support:</p>
+
+<p>* <strong>Tier 1 (Universal)</strong>: Fade, Slide, Push, Zoom, Flip, Cube, Cover, Reveal. Works on all platforms.</p>
+<p>* <strong>Tier 2 (Clip-based)</strong>: Wipe, Blinds, Slices, Checkerboard, Spiral, Matrix Rain, Wormhole.</p>
+<p>* <strong>Tier 3 (Advanced)</strong>: Dissolve, Pixelate. ✨ Requires Skia-based targets for full effect.</p>
+
+<h3>Slide Effects (<code>FlowerySlideEffect</code>)</h3>
+
+<p>Continuous hardware-accelerated animations inspired by cinematic documentary styles:</p>
+
+<p>* <strong>Pan And Zoom</strong>: Dramatic pan and zoom that switches direction on every slide.</p>
+<p>* <strong>Drift</strong>: Random-direction slow panning.</p>
+<p>* Breath: Subtle keyframe-based "zooming in and out" pulse.</p>
+<p>* <strong>Throw</strong>: High-speed parallax fly-through effect.</p>
+<p>* <strong>Pulse</strong>: Uniform rhythmic scale animation.</p>
+
+<h2>Behavior & Navigation</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>3D PlaneProjection</strong></td>
+<td>Transitions like <code>Flip</code> and <code>Cube</code> utilize true 3D rotations via hardware-accelerated projections.</td>
+</tr>
+<tr>
+<td><strong>Mask Visual System</strong></td>
+<td>Tier 2 transitions use a sophisticated <code>VisualMask</code> tree for per-cell staggered reveals.</td>
+</tr>
+<tr>
+<td><strong>Auto-Performance</strong></td>
+<td>Grid-based transitions (Pixelate, Dissolve) automatically adjust cell density to stay within GPU budgets (~5k elements).</td>
+</tr>
+<tr>
+<td><strong>Direction-Aware</strong></td>
+<td>Animations enter/exit based on whether you clicked "Next" or "Previous".</td>
+</tr>
+<tr>
+<td><strong>Kiosk Mode</strong></td>
+<td>Randomly selects both transitions and effects for every slide, ensuring a dynamic, non-repetitive display.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Input & Interaction</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Input Method</th>
+<th>Behavior</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Keyboard</strong></td>
+<td>Arrow keys navigate (based on <code>Orientation</code>). Home/End jump to first/last. PageUp/PageDown navigate.</td>
+</tr>
+<tr>
+<td><strong>Touch/Mouse Swipe</strong></td>
+<td>Swipe gestures navigate when exceeding <code>SwipeThreshold</code>. Direction matches <code>Orientation</code>.</td>
+</tr>
+<tr>
+<td><strong>Focus</strong></td>
+<td>The carousel is focusable (Tab-navigable) for keyboard accessibility.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic carousel with colored slides --&gt;
+&lt;controls:DaisyCarousel Width="450" Height="150"&gt;
+    &lt;Border Background="#FF5F56" CornerRadius="8" /&gt;
+    &lt;Border Background="#FFBD2E" CornerRadius="8" /&gt;
+    &lt;Border Background="#27C93F" CornerRadius="8" /&gt;
+    &lt;Border Background="#007BFF" CornerRadius="8" /&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- Pan And Zoom effect photo gallery --&gt;
+&lt;controls:DaisyCarousel Width="520" Height="300"
+                        Mode="Slideshow"
+                        SlideInterval="5"
+                        SlideEffect="PanAndZoom"
+                        ShowNavigation="False"&gt;
+    &lt;StackPanel&gt;
+        &lt;Border CornerRadius="8"&gt;
+            &lt;Image Source="ms-appx:///Assets/photo1.jpg" Stretch="UniformToFill" /&gt;
+        &lt;/Border&gt;
+        &lt;Border CornerRadius="8"&gt;
+            &lt;Image Source="ms-appx:///Assets/photo2.jpg" Stretch="UniformToFill" /&gt;
+        &lt;/Border&gt;
+        &lt;Border CornerRadius="8"&gt;
+            &lt;Image Source="ms-appx:///Assets/photo3.jpg" Stretch="UniformToFill" /&gt;
+        &lt;/Border&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- Vertical carousel with WrapAround --&gt;
+&lt;controls:DaisyCarousel Width="250" Height="400"
+                        Orientation="Vertical"
+                        WrapAround="True"&gt;
+    &lt;StackPanel&gt;
+        &lt;Border Background="#667eea" CornerRadius="8" /&gt;
+        &lt;Border Background="#f093fb" CornerRadius="8" /&gt;
+        &lt;Border Background="#4facfe" CornerRadius="8" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- 3D Cube navigation --&gt;
+&lt;controls:DaisyCarousel Width="600" Height="350"
+                        SlideTransition="CubeRight"
+                        TransitionDuration="0.6"
+                        SlideEffect="Throw"&gt;
+    &lt;Image Source="..." Stretch="UniformToFill" /&gt;
+    &lt;Image Source="..." Stretch="UniformToFill" /&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- Cinematic Matrix Rain transition --&gt;
+&lt;controls:DaisyCarousel Width="520" Height="300"
+                        SlideTransition="MatrixRain"
+                        TransitionSliceCount="12"
+                        TransitionSliceStaggerMs="80"&gt;
+    &lt;Border Background="#1a1a1b"&gt;
+        &lt;TextBlock Text="System Active" Foreground="#00ff41" HorizontalAlignment="Center"/&gt;
+    &lt;/Border&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- Photo gallery with Spiral reveal --&gt;
+&lt;controls:DaisyCarousel Width="520" Height="220"
+                        Mode="Slideshow"
+                        SlideInterval="4"
+                        SlideTransition="Spiral"
+                        TransitionSliceCount="10"&gt;
+    &lt;Image Source="..." Stretch="UniformToFill" /&gt;
+    &lt;Image Source="..." Stretch="UniformToFill" /&gt;
+&lt;/controls:DaisyCarousel&gt;
+
+&lt;!-- Carousel with templated items --&gt;
+&lt;controls:DaisyCarousel ItemsSource="{Binding FeaturedCards}"
+                        Width="480"
+                        Height="200"&gt;
+    &lt;controls:DaisyCarousel.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;controls:DaisyCard Variant="Compact" BodyPadding="16"&gt;
+                &lt;StackPanel Spacing="6"&gt;
+                    &lt;TextBlock Text="{Binding Title}" FontWeight="SemiBold" /&gt;
+                    &lt;TextBlock Text="{Binding Subtitle}" Opacity="0.8" /&gt;
+                    &lt;controls:DaisyButton Content="View" Variant="Primary" Size="Small" /&gt;
+                &lt;/StackPanel&gt;
+            &lt;/controls:DaisyCard&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/controls:DaisyCarousel.ItemTemplate&gt;
+&lt;/controls:DaisyCarousel&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<p>* Set explicit <code>Width</code>/<code>Height</code> so content clips cleanly within the rounded host.</p>
+<p>* Use lightweight slide content (images, simple cards) to keep transitions smooth.</p>
+<p>* For data-bound scenarios, use <code>ItemsSource</code> + <code>ItemTemplate</code> instead of manually adding children.</p>
+<p>* Use <code>Orientation="Vertical"</code> for tall content areas or story-style feeds (top/bottom navigation).</p>
+<p>* Use <code>Mode="Slideshow"</code> for hero banners that cycle through content automatically.</p>
+<p>* Use <code>Mode="Random"</code> for digital signage or kiosk displays where variety prevents repetition.</p>
+<p>* Combine <code>Mode="Slideshow"</code> with <code>ShowNavigation="False"</code> for a cleaner auto-play experience.</p>
+<p>* Use <code>SlideEffect="PanAndZoom"</code> for cinematic photo galleries - it randomly selects pan/zoom per slide.</p>
+<p>* Use <code>WrapAround="True"</code> for manual photo galleries where users expect to loop continuously.</p>
+<p>* The carousel is keyboard-accessible: Tab to focus, arrow keys to navigate.</p>
+<p>* The timer and effects automatically stop when the carousel is unloaded to prevent memory leaks.</p>
+<p>* <strong>Platform note</strong>: Slide effects require <code>HAS_UNO</code> or <code>WINDOWS</code> compilation symbols; on other platforms they gracefully fall back to static display.</p>
+
+<h2>Related Documentation</h2>
+
+<p>* <strong><a href="FloweryAnimationHelpers.html">FloweryAnimationHelpers</a></strong> - Complete reference for:</p>
+<p>* <code>FlowerySlideEffect</code> enum values</p>
+<p>* <code>FlowerySlideshowMode</code> enum values</p>
+<p>* <code>FlowerySlideshowController</code> for building custom slideshows</p>
+<p>* <code>FlowerySlideEffects</code> attached properties for standalone animations</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCard.html">← Card</a></div>
+    <div class="nav-right"><a href="DaisyChatBubble.html">ChatBubble →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

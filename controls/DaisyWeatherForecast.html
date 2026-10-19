@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyWeatherForecast</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyWeatherForecast</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyWeatherForecast.png" alt="DaisyWeatherForecast" class="doc-image">
+
+<p>DaisyWeatherForecast is an <code>ItemsControl</code> that renders a row of forecast cards. Each card shows the day name, an animated weather icon, and the temperature range. Ideal for showing 5-7 day forecasts.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ItemsSource</code></td>
+<td><code>IEnumerable</code></td>
+<td>-</td>
+<td>Collection of <code>ForecastDay</code> items</td>
+</tr>
+<tr>
+<td><code>TemperatureUnit</code></td>
+<td><code>string</code></td>
+<td><code>"C"</code></td>
+<td>Temperature unit (C or F)</td>
+</tr>
+<tr>
+<td><code>ShowPrecipitation</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Show precipitation chance</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Control size (ExtraSmall, Small, Medium, Large, ExtraLarge)</td>
+</tr>
+<tr>
+<td><code>AutoFitItems</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Auto-calculate item widths to fit container (recommended)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>ForecastDay Model</h2>
+
+<p>Bind a collection of <code>ForecastDay</code> objects to the <code>ItemsSource</code>:</p>
+
+<pre><code class="language-csharp">public class ForecastDay
+{
+    public DateTime Date { get; set; }
+    public WeatherCondition Condition { get; set; }
+    public double HighTemperature { get; set; }
+    public double LowTemperature { get; set; }
+    public int PrecipitationChance { get; set; }  // 0-100
+}</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic forecast strip --&gt;
+&lt;controls:DaisyWeatherForecast
+    ItemsSource="{Binding WeekForecast}"
+    TemperatureUnit="C" /&gt;
+
+&lt;!-- Fahrenheit with precipitation --&gt;
+&lt;controls:DaisyWeatherForecast
+    ItemsSource="{Binding Forecast}"
+    TemperatureUnit="F"
+    ShowPrecipitation="True" /&gt;
+
+&lt;!-- Static example data --&gt;
+&lt;controls:DaisyWeatherForecast TemperatureUnit="C"&gt;
+    &lt;controls:DaisyWeatherForecast.ItemsSource&gt;
+        &lt;x:Array Type="{x:Type models:ForecastDay}"&gt;
+            &lt;models:ForecastDay Date="2025-12-08" Condition="Sunny" HighTemperature="22" LowTemperature="14" /&gt;
+            &lt;models:ForecastDay Date="2025-12-09" Condition="PartlyCloudy" HighTemperature="20" LowTemperature="12" /&gt;
+            &lt;models:ForecastDay Date="2025-12-10" Condition="Rain" HighTemperature="18" LowTemperature="11" /&gt;
+        &lt;/x:Array&gt;
+    &lt;/controls:DaisyWeatherForecast.ItemsSource&gt;
+&lt;/controls:DaisyWeatherForecast&gt;</code></pre>
+
+<h2>Layout</h2>
+
+<p>Each forecast item displays:</p>
+
+<p>1. <strong>Day name</strong> (Mon, Tue, Wed, etc.) - derived from <code>Date</code></p>
+<p>2. <strong>Animated weather icon</strong> - based on <code>Condition</code></p>
+<p>3. <strong>Temperature range</strong> - High°/Low° format</p>
+
+<p>Items are arranged horizontally with equal spacing.</p>
+
+<h2>Styling</h2>
+
+<ul><li>Day name: Bold, <code>DaisyBaseContentBrush</code></li>
+<li>Temperature high: <code>DaisyPrimaryBrush</code></li>
+<li>Temperature low: <code>DaisyBaseContentBrush</code> with opacity</li>
+<li>Icons: Colored based on condition type</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyWeatherCurrent.html">← WeatherCurrent</a></div>
+    <div class="nav-right"><a href="DaisyWeatherForecastItem.html">WeatherForecastItem →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDivider</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDivider</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisydivider">
+  <input type="radio" name="daisydivider_tabs" id="daisydivider_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisydivider_tabs" id="daisydivider_tab1" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisydivider_tab0" class="tab-label">Part 1</label>
+    <label for="daisydivider_tab1" class="tab-label">Part 2</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyDivider_a.png" alt="DaisyDivider - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyDivider_b.png" alt="DaisyDivider - Part 2" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyDivider separates content with a line that can run horizontally (default) or vertically (<code>Horizontal=True</code>). It supports <strong>10 visual styles</strong>, <strong>9 color options</strong>, <strong>start/end placement</strong>, optional inline content, <strong>ornament decorations</strong>, and <strong>responsive sizing</strong> via the global Size system.</p>
+
+<h2>Visual Styles</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Style</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Solid</code> (default)</td>
+<td>Simple single solid line</td>
+</tr>
+<tr>
+<td><code>Inset</code></td>
+<td>3D embossed dual-line effect (groove/ridge)</td>
+</tr>
+<tr>
+<td><code>Gradient</code></td>
+<td>Fades from full opacity at center to transparent at edges</td>
+</tr>
+<tr>
+<td><code>Ornament</code></td>
+<td>Line with decorative geometric shape in center (diamond, circle, star, square)</td>
+</tr>
+<tr>
+<td><code>Wave</code></td>
+<td>Curved/wavy line pattern</td>
+</tr>
+<tr>
+<td><code>Glow</code></td>
+<td>Neon-style glowing effect with soft blur</td>
+</tr>
+<tr>
+<td><code>Dashed</code></td>
+<td>Dashed line pattern <code>- - - -</code></td>
+</tr>
+<tr>
+<td><code>Dotted</code></td>
+<td>Dotted line pattern <code>• • • •</code></td>
+</tr>
+<tr>
+<td><code>Tapered</code></td>
+<td>Thick center tapering to thin points at ends</td>
+</tr>
+<tr>
+<td><code>Double</code></td>
+<td>Two parallel lines with gap</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Ornament Shapes</h2>
+
+<p>When using <code>DividerStyle="Ornament"</code>, set the <code>Ornament</code> property:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Ornament</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Diamond</code> (default)</td>
+<td>Diamond shape ◆</td>
+</tr>
+<tr>
+<td><code>Circle</code></td>
+<td>Circle shape ●</td>
+</tr>
+<tr>
+<td><code>Star</code></td>
+<td>4-point star shape ✦</td>
+</tr>
+<tr>
+<td><code>Square</code></td>
+<td>Square shape ■</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Orientation & Placement</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Option</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Horizontal=False</code> (default)</td>
+<td>Renders a horizontal rule (line left/right).</td>
+</tr>
+<tr>
+<td><code>Horizontal=True</code></td>
+<td>Renders a vertical rule (line above/below).</td>
+</tr>
+<tr>
+<td><code>Placement=Start</code></td>
+<td>Positions content at the start of the line.</td>
+</tr>
+<tr>
+<td><code>Placement=End</code></td>
+<td>Positions content at the end of the line.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Color Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Color</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Subtle base-content line.</td>
+</tr>
+<tr>
+<td>Neutral / Primary / Secondary / Accent / Success / Warning / Info / Error</td>
+<td>Solid colored line matching the Daisy palette.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Layout & Sizing</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Thickness</code></td>
+<td>Line thickness in pixels. Default is 2.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>Controls font size, text padding, and margins. Follows <code>FlowerySizeManager.CurrentSize</code> by default.</td>
+</tr>
+<tr>
+<td><code>DividerText</code></td>
+<td>Text displayed in the center (or at placement position) of the divider.</td>
+</tr>
+<tr>
+<td><code>TextBackground</code></td>
+<td>Background brush for the text container. Set this to match parent container backgrounds (e.g., <code>DaisyBase200Brush</code> inside cards). Defaults to <code>DaisyBase100Brush</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Size Token Values</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Font Size</th>
+<th>Text Padding</th>
+<th>Margin</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>9</td>
+<td>8</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>10</td>
+<td>10</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>12</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>14</td>
+<td>16</td>
+<td>6</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>16</td>
+<td>18</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic divider with text --&gt;
+&lt;controls:DaisyDivider DividerText="OR" /&gt;
+
+&lt;!-- Different styles --&gt;
+&lt;controls:DaisyDivider DividerStyle="Solid" Color="Primary" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Inset" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Gradient" Color="Accent" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Double" Color="Secondary" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Dashed" Color="Info" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Dotted" Color="Success" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Tapered" Color="Primary" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Wave" Color="Warning" Height="20" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Glow" Color="Error" /&gt;
+
+&lt;!-- Ornament dividers with different shapes --&gt;
+&lt;controls:DaisyDivider DividerStyle="Ornament" Ornament="Diamond" Color="Primary" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Ornament" Ornament="Circle" Color="Secondary" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Ornament" Ornament="Star" Color="Accent" /&gt;
+&lt;controls:DaisyDivider DividerStyle="Ornament" Ornament="Square" Color="Neutral" /&gt;
+
+&lt;!-- Vertical divider between items --&gt;
+&lt;StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16"&gt;
+    &lt;TextBlock Text="Left" VerticalAlignment="Center" /&gt;
+    &lt;controls:DaisyDivider Horizontal="True" DividerText="OR" Height="60" /&gt;
+    &lt;TextBlock Text="Right" VerticalAlignment="Center" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Colored dividers --&gt;
+&lt;controls:DaisyDivider Color="Primary" DividerText="Primary" /&gt;
+&lt;controls:DaisyDivider Color="Success" DividerText="Success" /&gt;
+&lt;controls:DaisyDivider Color="Error" DividerText="Error" /&gt;
+
+&lt;!-- Placements --&gt;
+&lt;controls:DaisyDivider Placement="Start" DividerText="Start" /&gt;
+&lt;controls:DaisyDivider DividerText="Default" /&gt;
+&lt;controls:DaisyDivider Placement="End" DividerText="End" /&gt;
+
+&lt;!-- Inside a card (match TextBackground to card's background) --&gt;
+&lt;Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="16" Padding="24"&gt;
+    &lt;controls:DaisyDivider Horizontal="True" DividerText="OR" DividerStyle="Glow" Color="Primary"
+                           TextBackground="{ThemeResource DaisyBase200Brush}" /&gt;
+&lt;/Border&gt;
+
+&lt;!-- Explicit size override --&gt;
+&lt;controls:DaisyDivider Size="Large" DividerText="Thick divider" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Horizontal=True</code> for separating items in toolbars or inline menus.</li>
+<li>Apply <code>Placement=Start</code> to align section titles with a trailing rule without a leading line.</li>
+<li><strong>Set <code>TextBackground</code></strong> when placing a divider inside a card or container with a non-default background to ensure the text is visible.</li>
+<li>The divider automatically responds to global size changes via <code>FlowerySizeManager</code>. Set an explicit <code>Size</code> to opt out.</li>
+<li>If the divider appears too faint on dark backgrounds, pick a color variant instead of the default.</li>
+<li><strong><code>Wave</code> style note</strong>: For best visual results, set an explicit <code>Height="20"</code> or larger when using horizontal Wave dividers.</li>
+<li><strong><code>Glow</code> style</strong>: Works best with vibrant colors like Primary, Accent, or Error for a neon effect.</li>
+<li><strong><code>Inset</code> style</strong>: Creates a subtle 3D groove effect—best visible on medium-toned backgrounds.</li>
+<li><strong><code>Ornament</code> style</strong>: Use for elegant section breaks in formal or typographic layouts.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyDiff.html">← Diff</a></div>
+    <div class="nav-right"><a href="DaisyDock.html">Dock →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

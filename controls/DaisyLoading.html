@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyLoading</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyLoading</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyLoading provides animated loading indicators with <strong>27 different animation styles</strong>, <strong>5 size options</strong>, and <strong>9 color variants</strong>. The control includes standard DaisyUI animations, creative terminal-inspired variants, Matrix/retro variants, and unique special effect variants. All animations scale properly across all sizes using Viewbox-based rendering.</p>
+
+<img src="../images/loading_animations.gif" alt="Loading Animations" class="doc-image">
+
+<strong>Key Feature:</strong> DaisyLoading includes built-in accessibility support for screen readers via the <code>AccessibleText</code> property and proper automation peers.
+
+<h2>Animation Variants</h2>
+
+<h3>DaisyUI Standard Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Spinner</strong></td>
+<td>Classic rotating arc animation (default). Smooth 270° arc that rotates continuously.</td>
+</tr>
+<tr>
+<td><strong>Dots</strong></td>
+<td>Three dots bouncing vertically with staggered timing, creating a wave-like effect.</td>
+</tr>
+<tr>
+<td><strong>Ring</strong></td>
+<td>Rotating 90° arc with a subtle background track showing the full circle.</td>
+</tr>
+<tr>
+<td><strong>Ball</strong></td>
+<td>Single ball bouncing with squash/stretch deformation for a playful effect.</td>
+</tr>
+<tr>
+<td><strong>Bars</strong></td>
+<td>Three vertical bars with staggered height animation (audio equalizer style).</td>
+</tr>
+<tr>
+<td><strong>Infinity</strong></td>
+<td>Infinity symbol (∞) with animated dash offset creating a flowing path effect.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Terminal-Inspired Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Orbit</strong></td>
+<td>Dots orbiting around a square border (npm/yarn terminal-style). Three dots with trailing opacity follow the square's perimeter: top → right → bottom → left.</td>
+</tr>
+<tr>
+<td><strong>Snake</strong></td>
+<td>Five segments moving back and forth horizontally with staggered delays, creating a "centipede" or "caterpillar" crawling effect.</td>
+</tr>
+<tr>
+<td><strong>Pulse</strong></td>
+<td>Sonar/heartbeat style - a center dot gently pulses while two rings expand outward and fade, creating a radar ping effect.</td>
+</tr>
+<tr>
+<td><strong>Wave</strong></td>
+<td>Five dots moving in a smooth sine wave pattern with staggered phases, reminiscent of audio equalizers or water ripples.</td>
+</tr>
+<tr>
+<td><strong>Bounce</strong></td>
+<td>Four squares in a 2×2 grid that gently highlight in clockwise sequence. Uses soft opacity transitions (0.25 → 0.7) to avoid harsh flashing.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Matrix/Colon-Dot Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Matrix</strong></td>
+<td>Colon-dotted pattern (<code>::: :::</code>) with a smooth wave of brightness traveling left to right. Each "colon" is two vertically stacked dots, grouped in sets of 3 with gaps between groups.</td>
+</tr>
+<tr>
+<td><strong>MatrixInward</strong></td>
+<td>Same colon pattern but the wave starts from the center (inner dots) and moves outward to the edges. Creates a "burst from center" effect.</td>
+</tr>
+<tr>
+<td><strong>MatrixOutward</strong></td>
+<td>Same colon pattern but the wave starts from the edges (outer dots) and converges toward the center. Creates a "closing in" effect.</td>
+</tr>
+<tr>
+<td><strong>MatrixVertical</strong></td>
+<td>Same colon pattern but the wave moves vertically - all top dots light up together, then all bottom dots. Creates a vertical "blink" effect.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Special Effect Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>MatrixRain</strong></td>
+<td>Digital rain inspired by "The Matrix" movie. Four columns of falling dots at different speeds, each with a bright leading dot and dimmer trailing dot.</td>
+</tr>
+<tr>
+<td><strong>Hourglass</strong></td>
+<td>Classic hourglass timer with flowing sand animation. Top sand depletes, stream flows through the middle, bottom sand accumulates. 2-second cycle.</td>
+</tr>
+<tr>
+<td><strong>SignalSweep</strong></td>
+<td>Oscilloscope-style bar sweeping left to right with a fading gradient trail. Includes subtle horizontal grid lines.</td>
+</tr>
+<tr>
+<td><strong>BitFlip</strong></td>
+<td>4×2 grid of dots flipping on/off in pseudo-random binary patterns, like data streaming through a register.</td>
+</tr>
+<tr>
+<td><strong>PacketBurst</strong></td>
+<td>Center dot pulses while four particles shoot outward to all edges (left, right, up, down), mimicking network packet transmission.</td>
+</tr>
+<tr>
+<td><strong>CometTrail</strong></td>
+<td>Bright dot orbiting in a circle with three trailing dots that fade behind it, creating a comet-like tail effect.</td>
+</tr>
+<tr>
+<td><strong>Heartbeat</strong></td>
+<td>EKG/heart monitor-style pulse line scrolling horizontally with characteristic heartbeat spikes.</td>
+</tr>
+<tr>
+<td><strong>TunnelZoom</strong></td>
+<td>Three concentric rings expanding outward from center and fading, creating a warp tunnel/zoom effect.</td>
+</tr>
+<tr>
+<td><strong>GlitchReveal</strong></td>
+<td>Six vertical columns flashing in random-seeming patterns, mimicking terminal glitch/interference effects.</td>
+</tr>
+<tr>
+<td><strong>RippleMatrix</strong></td>
+<td>3×3 dot grid (9 dots) with brightness rippling outward from the center dot to adjacent dots then corner dots.</td>
+</tr>
+<tr>
+<td><strong>CursorBlink</strong></td>
+<td>Classic CLI terminal prompt (<code>></code>) with a blinking block cursor. Simple and nostalgic.</td>
+</tr>
+<tr>
+<td><strong>CountdownSpinner</strong></td>
+<td>12 dots arranged in a clock face pattern, lighting up sequentially like clock hands ticking.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Accessibility Support</h2>
+
+<p>DaisyLoading is designed to be accessible to users of assistive technologies like screen readers. The visual animation is decorative; the accessibility layer provides meaningful information.</p>
+
+<h3>How It Works</h3>
+
+<p>1. <strong>AutomationPeer</strong>: The control exposes itself as a <code>ProgressBar</code> to assistive technologies via a custom <code>DaisyLoadingAutomationPeer</code>.</p>
+
+<p>2. <strong>Default Accessible Name</strong>: By default, screen readers announce <strong>"Loading"</strong> when encountering this control.</p>
+
+<p>3. <strong>Customizable Text</strong>: Use the <code>AccessibleText</code> property to provide context-specific messages.</p>
+
+<h3>The AccessibleText Property</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AccessibleText</code></td>
+<td><code>string</code></td>
+<td><code>"Loading"</code></td>
+<td>The text announced by screen readers when the control receives focus or is encountered.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>When you change <code>AccessibleText</code>, the control automatically updates its <code>AutomationProperties.Name</code> so screen readers pick up the new value.</p>
+
+<h3>Accessibility Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Default: screen reader announces "Loading" --&gt;
+&lt;controls:DaisyLoading Variant="Spinner" /&gt;
+
+&lt;!-- Contextual message: announces "Loading your profile data" --&gt;
+&lt;controls:DaisyLoading Variant="Dots" AccessibleText="Loading your profile data" /&gt;
+
+&lt;!-- Action-specific: announces "Saving your changes" --&gt;
+&lt;controls:DaisyLoading Variant="Ring" AccessibleText="Saving your changes" /&gt;
+
+&lt;!-- With full context: announces "Uploading file, please wait" --&gt;
+&lt;controls:DaisyLoading Variant="Bars" AccessibleText="Uploading file, please wait" /&gt;
+
+&lt;!-- Processing state: announces "Processing payment" --&gt;
+&lt;controls:DaisyLoading Variant="Pulse" AccessibleText="Processing payment" Color="Primary" Size="Large" /&gt;</code></pre>
+
+<h3>Best Practices for Accessible Loading States</h3>
+
+<p>1. <strong>Be Specific</strong>: Instead of generic "Loading", describe <em>what</em> is loading:</p>
+<p>- ✅ <code>"Loading search results"</code></p>
+<p>- ✅ <code>"Fetching user data"</code></p>
+<p>- ❌ <code>"Loading"</code> (too generic when context matters)</p>
+
+<p>2. <strong>Include Progress if Known</strong>: If you know the progress, consider using <code>DaisyProgress</code> instead, or append progress info:</p>
+<p>- <code>"Uploading file (45% complete)"</code></p>
+
+<p>3. <strong>Keep It Concise</strong>: Screen readers read the text aloud, so keep messages short and clear:</p>
+<p>- ✅ <code>"Saving changes"</code></p>
+<p>- ❌ <code>"Please wait while we save your changes to the database"</code></p>
+
+<p>4. <strong>Match Visual Context</strong>: If there's visible text near the loader (e.g., "Loading your dashboard..."), use the same text for <code>AccessibleText</code>.</p>
+
+<p>5. <strong>Update Dynamically</strong>: If the loading state changes (e.g., from "Connecting" to "Downloading"), update <code>AccessibleText</code> accordingly in your ViewModel.</p>
+
+<h3>Technical Implementation Details</h3>
+
+<p>The accessibility is implemented via:</p>
+
+<pre><code class="language-csharp">// Static constructor sets default accessible name
+static DaisyLoading()
+{
+    AutomationProperties.NameProperty.OverrideDefaultValue&lt;DaisyLoading&gt;("Loading");
+}
+
+// Custom automation peer exposes control as ProgressBar
+protected override AutomationPeer OnCreateAutomationPeer()
+{
+    return new DaisyLoadingAutomationPeer(this);
+}
+
+// DaisyLoadingAutomationPeer returns:
+// - AutomationControlType.ProgressBar (so AT recognizes it as a progress indicator)
+// - The AccessibleText value as the control's Name
+// - IsContentElement = true, IsControlElement = true (so it's discoverable)</code></pre>
+
+<p>This ensures that:</p>
+
+<ul><li>Screen readers identify the control as a <strong>progress indicator</strong> (not just a generic element)</li>
+<li>The accessible name is always available and customizable</li>
+<li>The control participates in the accessibility tree properly</li>
+</ul>
+<h2>Theme File Organization</h2>
+
+<p>The DaisyLoading theme styles are organized into multiple files for maintainability:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>File</th>
+<th>Contents</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Themes/DaisyLoading.xaml</code></td>
+<td>Main aggregator with design preview; includes all sub-files</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Base.xaml</code></td>
+<td>Base control template with default Spinner, shared animations, size styles, and color styles</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Classic.xaml</code></td>
+<td>Dots, Ring, Ball, Bars, Infinity variants</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Terminal.xaml</code></td>
+<td>Orbit, Snake, Pulse, Wave, Bounce variants</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Matrix.xaml</code></td>
+<td>Matrix, MatrixInward, MatrixOutward, MatrixVertical variants</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Dots.xaml</code></td>
+<td>MatrixRain, BitFlip, PacketBurst, CometTrail, RippleMatrix, CountdownSpinner variants (dot-based animations)</td>
+</tr>
+<tr>
+<td><code>Themes/DaisyLoading/DaisyLoading.Special.xaml</code></td>
+<td>Hourglass, SignalSweep, Heartbeat, TunnelZoom, GlitchReveal, CursorBlink variants (non-dot special effects)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Adding New Variants</h3>
+
+<p>To add a new loading variant:</p>
+
+<p>1. Choose the appropriate category file (or create a new one if it doesn't fit existing categories)</p>
+<p>2. Add a <code>Style</code> with <code>TargetType="controls:DaisyLoading"</code> and appropriate visual states for your variant</p>
+<p>3. Add animation logic in the control's code-behind or via Composition API</p>
+<p>4. Add the new enum value to <code>DaisyLoadingVariant</code> in <code>Controls/DaisyLoading.cs</code></p>
+<p>5. Update the design preview in <code>DaisyLoading.xaml</code> to include the new variant</p>
+
+<h2>Size Options</h2>
+
+<p>All variants scale proportionally across sizes. Canvas-based animations use Viewbox wrapping for smooth scaling.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Dimensions</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>16×16px</td>
+<td>Inline with text, compact buttons</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>20×20px</td>
+<td>Small UI elements, table cells</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>24×24px</td>
+<td>Default, general purpose (recommended)</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>36×36px</td>
+<td>Prominent loading states, cards</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>48×48px</td>
+<td>Full-page loading overlays, hero sections</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Color Variants</h2>
+
+<p>Use the <code>Color</code> property to apply theme colors. All variants support coloring.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Color</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Default</code></td>
+<td>Base content color (inherits from theme)</td>
+</tr>
+<tr>
+<td><code>Primary</code></td>
+<td>Primary brand color</td>
+</tr>
+<tr>
+<td><code>Secondary</code></td>
+<td>Secondary brand color</td>
+</tr>
+<tr>
+<td><code>Accent</code></td>
+<td>Accent/highlight color</td>
+</tr>
+<tr>
+<td><code>Neutral</code></td>
+<td>Neutral/muted color</td>
+</tr>
+<tr>
+<td><code>Info</code></td>
+<td>Information/help color (typically blue)</td>
+</tr>
+<tr>
+<td><code>Success</code></td>
+<td>Success/confirmation color (typically green)</td>
+</tr>
+<tr>
+<td><code>Warning</code></td>
+<td>Warning/caution color (typically yellow/orange)</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td>Error/danger color (typically red)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic spinner (default) --&gt;
+&lt;controls:DaisyLoading Variant="Spinner" /&gt;
+
+&lt;!-- Different sizes --&gt;
+&lt;controls:DaisyLoading Variant="Spinner" Size="ExtraSmall" /&gt;
+&lt;controls:DaisyLoading Variant="Spinner" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="Spinner" Size="ExtraLarge" /&gt;
+
+&lt;!-- With colors --&gt;
+&lt;controls:DaisyLoading Variant="Spinner" Color="Primary" /&gt;
+&lt;controls:DaisyLoading Variant="Ring" Color="Success" /&gt;
+&lt;controls:DaisyLoading Variant="Dots" Color="Warning" /&gt;
+
+&lt;!-- Terminal-style variants --&gt;
+&lt;controls:DaisyLoading Variant="Orbit" Color="Primary" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="Snake" Color="Success" /&gt;
+&lt;controls:DaisyLoading Variant="Pulse" Color="Info" Size="ExtraLarge" /&gt;
+&lt;controls:DaisyLoading Variant="Wave" Color="Warning" /&gt;
+&lt;controls:DaisyLoading Variant="Bounce" Color="Error" Size="Large" /&gt;
+
+&lt;!-- Matrix/Colon-dot variants --&gt;
+&lt;controls:DaisyLoading Variant="Matrix" Color="Accent" /&gt;
+&lt;controls:DaisyLoading Variant="MatrixInward" Color="Primary" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="MatrixOutward" Color="Info" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="MatrixVertical" Color="Success" /&gt;
+
+&lt;!-- Special effect variants --&gt;
+&lt;controls:DaisyLoading Variant="MatrixRain" Color="Success" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="Hourglass" Color="Warning" Size="ExtraLarge" /&gt;
+&lt;controls:DaisyLoading Variant="SignalSweep" Color="Info" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="BitFlip" Color="Primary" /&gt;
+&lt;controls:DaisyLoading Variant="PacketBurst" Color="Secondary" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="CometTrail" Color="Accent" /&gt;
+&lt;controls:DaisyLoading Variant="Heartbeat" Color="Error" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="TunnelZoom" Color="Info" Size="ExtraLarge" /&gt;
+&lt;controls:DaisyLoading Variant="GlitchReveal" Color="Success" /&gt;
+&lt;controls:DaisyLoading Variant="RippleMatrix" Color="Primary" Size="Large" /&gt;
+&lt;controls:DaisyLoading Variant="CursorBlink" Color="Success" /&gt;
+&lt;controls:DaisyLoading Variant="CountdownSpinner" Color="Warning" Size="Large" /&gt;
+
+&lt;!-- With accessibility --&gt;
+&lt;controls:DaisyLoading Variant="Spinner" AccessibleText="Loading dashboard" /&gt;</code></pre>
+
+<h2>Animation Timing Reference</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Duration</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Spinner</td>
+<td>0.75s</td>
+<td>Single rotation cycle</td>
+</tr>
+<tr>
+<td>Dots</td>
+<td>0.6s</td>
+<td>Bounce cycle with 0.1s stagger</td>
+</tr>
+<tr>
+<td>Ring</td>
+<td>0.75s</td>
+<td>Same as Spinner</td>
+</tr>
+<tr>
+<td>Ball</td>
+<td>0.6s</td>
+<td>Bounce with squash/stretch</td>
+</tr>
+<tr>
+<td>Bars</td>
+<td>0.8s</td>
+<td>Height pulse with 0.15s stagger</td>
+</tr>
+<tr>
+<td>Infinity</td>
+<td>1.5s</td>
+<td>Full dash offset cycle</td>
+</tr>
+<tr>
+<td>Orbit</td>
+<td>1.2s</td>
+<td>Full perimeter orbit with 0.15s trailing</td>
+</tr>
+<tr>
+<td>Snake</td>
+<td>1.6s</td>
+<td>Back-and-forth with 0.08s segment delay</td>
+</tr>
+<tr>
+<td>Pulse</td>
+<td>1.5s</td>
+<td>Ring expansion with 0.5s stagger</td>
+</tr>
+<tr>
+<td>Wave</td>
+<td>1.0s</td>
+<td>Sine wave with 0.1s phase delay</td>
+</tr>
+<tr>
+<td>Bounce</td>
+<td>1.6s</td>
+<td>Gentle clockwise sequence (0.4s per square)</td>
+</tr>
+<tr>
+<td>Matrix</td>
+<td>1.8s</td>
+<td>Smooth wave left-to-right with overlap</td>
+</tr>
+<tr>
+<td>MatrixInward</td>
+<td>1.2s</td>
+<td>Center-to-edges wave</td>
+</tr>
+<tr>
+<td>MatrixOutward</td>
+<td>1.2s</td>
+<td>Edges-to-center wave</td>
+</tr>
+<tr>
+<td>MatrixVertical</td>
+<td>1.0s</td>
+<td>Top-to-bottom blink</td>
+</tr>
+<tr>
+<td>MatrixRain</td>
+<td>0.7-1.1s</td>
+<td>Variable speeds per column</td>
+</tr>
+<tr>
+<td>Hourglass</td>
+<td>2.0s</td>
+<td>Full sand flow cycle</td>
+</tr>
+<tr>
+<td>SignalSweep</td>
+<td>1.2s</td>
+<td>Left-to-right sweep with trail</td>
+</tr>
+<tr>
+<td>BitFlip</td>
+<td>1.6s</td>
+<td>Pseudo-random binary patterns</td>
+</tr>
+<tr>
+<td>PacketBurst</td>
+<td>1.2s</td>
+<td>Center pulse with 4-direction burst</td>
+</tr>
+<tr>
+<td>CometTrail</td>
+<td>1.5s</td>
+<td>Full circular orbit with 0.1s trail delays</td>
+</tr>
+<tr>
+<td>Heartbeat</td>
+<td>1.5s</td>
+<td>Horizontal scroll of EKG pattern</td>
+</tr>
+<tr>
+<td>TunnelZoom</td>
+<td>1.5s</td>
+<td>Ring expansion with 0.5s stagger</td>
+</tr>
+<tr>
+<td>GlitchReveal</td>
+<td>2.0s</td>
+<td>Random column flash patterns</td>
+</tr>
+<tr>
+<td>RippleMatrix</td>
+<td>1.2s</td>
+<td>Center-outward ripple wave</td>
+</tr>
+<tr>
+<td>CursorBlink</td>
+<td>1.0s</td>
+<td>50% on, 50% off blink cycle</td>
+</tr>
+<tr>
+<td>CountdownSpinner</td>
+<td>1.2s</td>
+<td>Sequential 12-position lighting</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Property Summary</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Variant</code></td>
+<td><code>DaisyLoadingVariant</code></td>
+<td><code>Spinner</code></td>
+<td>Animation style (27 options)</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Control dimensions (5 options). Uses shared enum.</td>
+</tr>
+<tr>
+<td><code>Color</code></td>
+<td><code>DaisyColor</code></td>
+<td><code>Default</code></td>
+<td>Theme color (9 options). Uses shared enum.</td>
+</tr>
+<tr>
+<td><code>AccessibleText</code></td>
+<td><code>string</code></td>
+<td><code>"Loading"</code></td>
+<td>Screen reader announcement</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Variant Selection Guide</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Use Case</th>
+<th>Recommended Variants</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>General purpose</td>
+<td><code>Spinner</code>, <code>Ring</code>, <code>Dots</code></td>
+</tr>
+<tr>
+<td>Form submission</td>
+<td><code>Spinner</code>, <code>Pulse</code>, <code>Hourglass</code></td>
+</tr>
+<tr>
+<td>Data fetching</td>
+<td><code>Dots</code>, <code>Wave</code>, <code>Matrix</code>, <code>RippleMatrix</code></td>
+</tr>
+<tr>
+<td>File upload/download</td>
+<td><code>Bars</code>, <code>MatrixRain</code>, <code>Hourglass</code>, <code>SignalSweep</code></td>
+</tr>
+<tr>
+<td>Connection/sync</td>
+<td><code>Orbit</code>, <code>Pulse</code>, <code>PacketBurst</code></td>
+</tr>
+<tr>
+<td>Terminal/developer UI</td>
+<td><code>Snake</code>, <code>Matrix</code>, <code>MatrixRain</code>, <code>CursorBlink</code>, <code>BitFlip</code>, <code>GlitchReveal</code></td>
+</tr>
+<tr>
+<td>Gaming/entertainment</td>
+<td><code>Bounce</code>, <code>MatrixRain</code>, <code>CometTrail</code>, <code>TunnelZoom</code></td>
+</tr>
+<tr>
+<td>Retro/nostalgic</td>
+<td><code>Hourglass</code>, <code>Matrix</code>, <code>Infinity</code>, <code>CursorBlink</code></td>
+</tr>
+<tr>
+<td>Health/medical UI</td>
+<td><code>Heartbeat</code>, <code>Pulse</code></td>
+</tr>
+<tr>
+<td>Sci-fi/futuristic</td>
+<td><code>TunnelZoom</code>, <code>SignalSweep</code>, <code>PacketBurst</code>, <code>GlitchReveal</code></td>
+</tr>
+<tr>
+<td>Time-based operations</td>
+<td><code>Hourglass</code>, <code>CountdownSpinner</code></td>
+</tr>
+</tbody>
+</table></div>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyList.html">← List</a></div>
+    <div class="nav-right"><a href="DaisyLoginButton.html">LoginButton →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

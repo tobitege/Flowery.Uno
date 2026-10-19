@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyResizableColumnsHost</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyResizableColumnsHost</h1>
+
+<h2>Overview</h2>
+
+<code>DaisyResizableColumnsHost</code> is a reusable horizontal multi-column host that provides a shared resize gripper between columns. It is designed to decouple column widths from content sizing, allowing all columns in a collection to be resized simultaneously.
+
+<h2>Key Features</h2>
+
+<ul><li><strong>Shared Resizing</strong>: Dragging the gripper between any two columns updates the <code>ColumnWidth</code> for all columns.</li>
+<li><strong>Auto-Discovery</strong>: The resize grip appears automatically when hovering near the gaps between columns.</li>
+<li><strong>Clamped Width</strong>: Support for <code>MinColumnWidth</code> and <code>MaxColumnWidth</code> constraints.</li>
+<li><strong>Orientation Support</strong>: Default is Horizontal, with Vertical support for future expansions.</li>
+</ul>
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>ColumnWidth</strong></td>
+<td><code>double</code></td>
+<td>250.0</td>
+<td>The shared width of all columns.</td>
+</tr>
+<tr>
+<td><strong>MinColumnWidth</strong></td>
+<td><code>double</code></td>
+<td>100.0</td>
+<td>The minimum allowed width for columns.</td>
+</tr>
+<tr>
+<td><strong>MaxColumnWidth</strong></td>
+<td><code>double</code></td>
+<td>1000.0</td>
+<td>The maximum allowed width for columns.</td>
+</tr>
+<tr>
+<td><strong>ColumnSpacing</strong></td>
+<td><code>double</code></td>
+<td>0.0</td>
+<td>The spacing between columns.</td>
+</tr>
+<tr>
+<td><strong>GripVisibility</strong></td>
+<td><code>DaisyGripVisibility</code></td>
+<td>Auto</td>
+<td>Visibility mode for the resize grip.</td>
+</tr>
+<tr>
+<td><strong>Orientation</strong></td>
+<td><code>Orientation</code></td>
+<td>Horizontal</td>
+<td>The layout orientation of the columns.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage with ItemsSource --&gt;
+&lt;daisy:DaisyResizableColumnsHost ItemsSource="{Binding Columns}" 
+                                 ColumnWidth="300" 
+                                 MinColumnWidth="150" /&gt;
+
+&lt;!-- Customized spacing and template --&gt;
+&lt;daisy:DaisyResizableColumnsHost ItemsSource="{Binding Columns}" 
+                                 ColumnSpacing="8" 
+                                 ColumnWidth="{Binding SharedWidth, Mode=TwoWay}"&gt;
+    &lt;daisy:DaisyResizableColumnsHost.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;Border Background="{DynamicResource DaisyBase200Brush}" 
+                    Width="{Binding ColumnWidth, RelativeSource={RelativeSource AncestorType=daisy:DaisyResizableColumnsHost}}"&gt;
+                &lt;!-- Column Content --&gt;
+            &lt;/Border&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/daisy:DaisyResizableColumnsHost.ItemTemplate&gt;
+&lt;/daisy:DaisyResizableColumnsHost&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Binding Item Width</strong>: For the columns to resize correctly, the root element of your <code>ItemTemplate</code> should bind its <code>Width</code> to the <code>ColumnWidth</code> of the host using <code>RelativeSource</code>.</li>
+<li><strong>ItemsPanel</strong>: The host uses a <code>StackPanel</code> by default. If you need virtualization, you can override the <code>ItemsPanel</code> with a <code>VirtualizingStackPanel</code>.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyRating.html">← Rating</a></div>
+    <div class="nav-right"><a href="DaisyScreenColorPicker.html">ScreenColorPicker →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

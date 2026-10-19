@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyProductThemeDropdown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyProductThemeDropdown</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyProductThemeDropdown is a specialized theme dropdown that provides <strong>96 industry-specific color palettes</strong> from the <a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener">UI UX Pro Max Skill</a> project. Unlike the standard <code>DaisyThemeDropdown</code> (which uses the 35+ DaisyUI themes), this control uses professionally crafted palettes designed for specific product types and industries.</p>
+
+<h2>When to Use</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Scenario</th>
+<th>Recommended Control</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Standard DaisyUI theming (Light, Dark, Dracula, etc.)</td>
+<td><code>DaisyThemeDropdown</code></td>
+</tr>
+<tr>
+<td>Industry-specific product themes (SaaS, Fintech, Healthcare, etc.)</td>
+<td><code>DaisyProductThemeDropdown</code> ✓</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Available Industries & Themes</h2>
+
+<p>The 96 product themes span 12+ industry categories:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Industry</th>
+<th>Example Themes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>SaaS</strong></td>
+<td>SaaS, SaaSLight, SaaSDark, Enterprise, StartupFresh</td>
+</tr>
+<tr>
+<td><strong>E-commerce</strong></td>
+<td>EcommModern, EcommLuxury, EcommMinimal, EcommBold</td>
+</tr>
+<tr>
+<td><strong>Fintech</strong></td>
+<td>FintechTrust, FintechModern, FintechBold, CryptoNeon</td>
+</tr>
+<tr>
+<td><strong>Healthcare</strong></td>
+<td>HealthCalm, HealthPro, HealthVitality, MedicalClean</td>
+</tr>
+<tr>
+<td><strong>EdTech</strong></td>
+<td>EduBright, EduPro, LearningFun, AcademicClassic</td>
+</tr>
+<tr>
+<td><strong>Travel</strong></td>
+<td>TravelAdventure, TravelLuxury, TravelBudget</td>
+</tr>
+<tr>
+<td><strong>Food & Beverage</strong></td>
+<td>FoodFresh, FoodOrganic, CafeCozy, RestaurantElegant</td>
+</tr>
+<tr>
+<td><strong>Real Estate</strong></td>
+<td>RealtyPremium, RealtyModern, RealtyTrust</td>
+</tr>
+<tr>
+<td><strong>Fitness</strong></td>
+<td>FitEnergy, FitCalm, GymPower, WellnessZen</td>
+</tr>
+<tr>
+<td><strong>Gaming</strong></td>
+<td>GameNeon, GameRetro, GameDark, ESportsVibes</td>
+</tr>
+<tr>
+<td><strong>Social Media</strong></td>
+<td>SocialVibrant, SocialClean, InfluencerPink</td>
+</tr>
+<tr>
+<td><strong>Productivity</strong></td>
+<td>ProdClean, ProdFocus, TaskMaster, OfficePro</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedTheme</code></td>
+<td><code>string</code></td>
+<td>Name of the currently selected product theme.</td>
+</tr>
+<tr>
+<td><code>ApplyOnSelection</code></td>
+<td><code>bool</code></td>
+<td>When true (default), selecting a theme immediately applies it globally. Set to false to only update SelectedTheme without applying.</td>
+</tr>
+<tr>
+<td><code>ProductThemeSelected</code></td>
+<td><code>event</code></td>
+<td>Event raised when a product theme is selected, with the theme name.</td>
+</tr>
+<tr>
+<td><code>AddTheme(originalName, displayName, preferred)</code></td>
+<td>method</td>
+<td>Adds a standard, registered or product theme to this dropdown only, with its own display text and group.</td>
+</tr>
+<tr>
+<td><code>RemoveThemeOverride(originalName)</code></td>
+<td>method</td>
+<td>Removes a local entry and restores the global or product entry, if any.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The list honours <code>DaisyThemeManager.ExcludedThemes</code>, <code>PreferredThemes</code> and global <code>AddTheme</code> entries, like <code>DaisyThemeDropdown</code>. See <a href="DaisyThemeManager.md#theme-visibility-and-ordering">DaisyThemeManager</a>.</p>
+
+<h2>How It Works</h2>
+
+<p>1. The dropdown populates from <code>ProductPalettes.GetAllNames()</code> (pre-compiled for performance)</p>
+<p>2. Each theme shows a color preview with Primary, Secondary, Accent, and Neutral colors</p>
+<p>3. When selected, the theme is:</p>
+<p>- Registered with <code>DaisyThemeManager</code> as a dynamic theme</p>
+<p>- Applied via <code>DaisyThemeManager.ApplyTheme()</code> for consistent resource updates</p>
+<p>4. Product themes integrate seamlessly with the standard DaisyUI theme system</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Add namespace --&gt;
+xmlns:daisy="using:Flowery.Controls"
+
+&lt;!-- Basic product theme dropdown --&gt;
+&lt;daisy:DaisyProductThemeDropdown Width="200" /&gt;
+
+&lt;!-- With size variants --&gt;
+&lt;daisy:DaisyProductThemeDropdown Size="Small" /&gt;
+&lt;daisy:DaisyProductThemeDropdown Size="Medium" /&gt;
+&lt;daisy:DaisyProductThemeDropdown Size="Large" /&gt;
+
+&lt;!-- Without immediate application --&gt;
+&lt;daisy:DaisyProductThemeDropdown 
+    x:Name="ThemeSelector"
+    ApplyOnSelection="False"
+    ProductThemeSelected="OnProductThemeSelected" /&gt;</code></pre>
+
+<h3>Code-Behind Usage</h3>
+
+<pre><code class="language-csharp">using Flowery.Theming;
+
+// Get all available product theme names
+var allThemes = ProductPalettes.GetAllNames();
+
+// Get a specific palette
+var saasTheme = ProductPalettes.Get("SaaS");
+if (saasTheme != null)
+{
+    // Access palette colors
+    string primaryColor = saasTheme.Primary;    // e.g., "#6366F1"
+    string accentColor = saasTheme.Accent;
+    bool isDark = FloweryColorHelpers.IsDark(saasTheme.Base100);
+}
+
+// Apply a product theme programmatically
+var palette = ProductPalettes.Get("FintechTrust");
+if (palette != null)
+{
+    DaisyThemeManager.RegisterTheme(
+        new DaisyThemeInfo("FintechTrust", FloweryColorHelpers.IsDark(palette.Base100)),
+        () =&gt; DaisyPaletteFactory.Create(palette));
+    DaisyThemeManager.ApplyTheme("FintechTrust");
+}</code></pre>
+
+<h2>Differences from DaisyThemeDropdown</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>DaisyThemeDropdown</th>
+<th>DaisyProductThemeDropdown</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Theme source</td>
+<td>35+ DaisyUI themes</td>
+<td>96 product palettes</td>
+</tr>
+<tr>
+<td>Default theme</td>
+<td>"Dark"</td>
+<td>"SaaS"</td>
+</tr>
+<tr>
+<td>Theme sync</td>
+<td>Syncs with <code>CurrentThemeName</code></td>
+<td>Independent (no sync)</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>General theming</td>
+<td>Industry-specific apps</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>ProductPalette Structure</h2>
+
+<p>Each product palette provides:</p>
+
+<pre><code class="language-csharp">public class ProductPalette
+{
+    public string Primary { get; }      // Primary brand color
+    public string Secondary { get; }    // Secondary brand color  
+    public string Accent { get; }       // Accent/highlight color
+    public string Neutral { get; }      // Neutral/text color
+    public string Base100 { get; }      // Background color
+    public string Base200 { get; }      // Card background
+    public string Base300 { get; }      // Border/divider
+    public string BaseContent { get; }  // Primary text
+    public string Info { get; }         // Info state
+    public string Success { get; }      // Success state
+    public string Warning { get; }      // Warning state
+    public string Error { get; }        // Error state
+}</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>DaisyProductThemeDropdown</code> when building industry-specific applications that need tailored color schemes</li>
+<li>Product themes are registered dynamically with <code>DaisyThemeManager</code>, so they work with all theme-aware controls</li>
+<li>For apps that need both DaisyUI and product themes, you can include both dropdowns</li>
+<li>The <code>ProductThemeSelected</code> event is useful for analytics or custom behavior on theme change</li>
+<li>Set <code>ApplyOnSelection="False"</code> if you want to preview the theme before applying</li>
+</ul>
+<h2>Related Controls</h2>
+
+<ul><li><a href="DaisyThemeDropdown.html">DaisyThemeDropdown</a> - Standard DaisyUI theme selection</li>
+<li><a href="DaisyThemeManager.html">DaisyThemeManager</a> - Central theme management</li>
+<li><a href="DaisyThemeController.html">DaisyThemeController</a> - Light/dark toggle</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyPopover.html">← Popover</a></div>
+    <div class="nav-right"><a href="DaisyProgress.html">Progress →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

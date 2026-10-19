@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalizeExtensionBase</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div>
+<h1>Overview</h1>
+
+<p>LocalizeExtensionBase is an abstract base class for creating localization markup extensions in Uno Platform/WinUI applications. It provides the core implementation for XAML localization with runtime culture switching support.</p>
+
+<h2>Why Use This?</h2>
+
+<p>Instead of duplicating localization extension code across projects, inherit from <code>LocalizeExtensionBase</code> and plug in your application's localization source. The base class handles:</p>
+
+<ul><li>Target property detection</li>
+<li>Automatic subscription to culture change events</li>
+<li>Runtime UI updates when language changes</li>
+<li>Binding fallback for complex scenarios</li>
+</ul>
+<h2>Creating Your LocalizeExtension</h2>
+
+<pre><code class="language-csharp">using Flowery.Localization;
+using System;
+using System.Globalization;
+
+namespace MyApp.Localization
+{
+    public class LocalizeExtension : LocalizeExtensionBase
+    {
+        public LocalizeExtension() { }
+
+        public LocalizeExtension(string key) : base(key) { }
+
+        protected override string GetLocalizedString(string key)
+            =&gt; MyAppLocalization.GetString(key);
+
+        protected override void SubscribeToCultureChanged(EventHandler&lt;CultureInfo&gt; handler)
+            =&gt; MyAppLocalization.CultureChanged += handler;
+
+        protected override object? GetBindingSource()
+            =&gt; MyAppLocalization.Instance;
+    }
+}</code></pre>
+
+<h2>XAML Usage</h2>
+
+<pre><code class="language-xml">&lt;!-- Add namespace --&gt;
+xmlns:loc="using:MyApp.Localization"
+
+&lt;!-- Use the extension --&gt;
+&lt;TextBlock Text="{loc:Localize Button_Save}"/&gt;
+&lt;Button Content="{loc:Localize Menu_File}"/&gt;</code></pre>
+
+<h2>Requirements for Your Localization Source</h2>
+
+<p>Your localization class (e.g., <code>MyAppLocalization</code>) needs:</p>
+
+<p>1. <strong>GetString method</strong>: Returns localized string for a key</p>
+<p>2. <strong>CultureChanged event</strong>: Fires when UI culture changes</p>
+<p>3. <strong>Instance property</strong> (optional): Singleton with indexer for binding fallback</p>
+
+<p>Example localization class structure:</p>
+
+<pre><code class="language-csharp">public class MyAppLocalization : INotifyPropertyChanged
+{
+    public static MyAppLocalization Instance { get; } = new();
+
+    public static event EventHandler&lt;CultureInfo&gt;? CultureChanged;
+
+    public string this[string key] =&gt; GetString(key);
+
+    public static string GetString(string key)
+    {
+        // Your localization lookup logic
+    }
+
+    public static void SetCulture(CultureInfo culture)
+    {
+        // Update current culture
+        CultureChanged?.Invoke(null, culture);
+    }
+}</code></pre>
+
+<h2>How Runtime Updates Work</h2>
+
+<p>1. When <code>{loc:Localize Key}</code> is processed, the extension:</p>
+<p>- Gets the initial localized value</p>
+<p>- Subscribes to <code>CultureChanged</code> event</p>
+<p>- Returns the value to the target property</p>
+
+<p>2. When culture changes:</p>
+<p>- Your localization source fires <code>CultureChanged</code></p>
+<p>- The extension retrieves the new localized string</p>
+<p>- Updates the target property directly via <code>SetValue</code></p>
+
+<h2>Base Class API</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Key</code></td>
+<td>The resource key to look up</td>
+</tr>
+<tr>
+<td><code>GetLocalizedString(key)</code></td>
+<td>Abstract - return localized string for key</td>
+</tr>
+<tr>
+<td><code>SubscribeToCultureChanged(handler)</code></td>
+<td>Abstract - subscribe to culture changes</td>
+</tr>
+<tr>
+<td><code>GetBindingSource()</code></td>
+<td>Virtual - return indexer source for fallback binding</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Tips</h2>
+
+<ul><li>Your <code>LocalizeExtension</code> class should be in a namespace that's easy to reference in XAML</li>
+<li>Use short XML namespace aliases like <code>loc:</code> for cleaner markup</li>
+<li>The extension works with any <code>DependencyProperty</code> (Text, Content, Header, etc.)</li>
+</ul>
+<h2>Related: CustomResolver for Library Controls</h2>
+
+<p>If you need to provide translations for Flowery.Uno library controls (like <code>FloweryComponentSidebar</code>), use the <code>CustomResolver</code>:</p>
+
+<pre><code class="language-csharp">// In your app's localization static constructor:
+FloweryLocalization.CustomResolver = MyAppLocalization.GetString;</code></pre>
+
+<p>This allows library controls to resolve app-specific keys (like <code>Sidebar_Home</code>) through your localization source, while the library's internal keys (<code>Size_<em></code>, <code>Theme_</em></code>) continue to work from the library's resources.</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

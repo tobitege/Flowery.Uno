@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCalendarDatePicker</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCalendarDatePicker</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyCalendarDatePicker provides a themed CalendarDatePicker that matches Daisy input surfaces while keeping the native calendar flyout behavior.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Bordered</strong></td>
+<td>Standard input outline (default).</td>
+</tr>
+<tr>
+<td><strong>Ghost</strong></td>
+<td>Transparent background with no border.</td>
+</tr>
+<tr>
+<td><strong>Filled</strong></td>
+<td>Subtle filled background with bottom border.</td>
+</tr>
+<tr>
+<td><strong>Primary</strong></td>
+<td>Emphasized border using the primary palette.</td>
+</tr>
+<tr>
+<td><strong>Secondary</strong></td>
+<td>Emphasized border using the secondary palette.</td>
+</tr>
+<tr>
+<td><strong>Accent</strong></td>
+<td>Emphasized border using the accent palette.</td>
+</tr>
+<tr>
+<td><strong>Info</strong></td>
+<td>Emphasized border using the info palette.</td>
+</tr>
+<tr>
+<td><strong>Success</strong></td>
+<td>Emphasized border using the success palette.</td>
+</tr>
+<tr>
+<td><strong>Warning</strong></td>
+<td>Emphasized border using the warning palette.</td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td>Emphasized border using the error palette.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>Compact toolbars or dense forms.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>Tight layouts.</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Default sizing.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>Touch-friendly inputs.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>Prominent date entry surfaces.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage --&gt;
+&lt;daisy:DaisyCalendarDatePicker PlaceholderText="Select date" /&gt;
+
+&lt;!-- Variant styling --&gt;
+&lt;daisy:DaisyCalendarDatePicker Variant="Primary" PlaceholderText="Primary" /&gt;
+
+&lt;!-- Size override --&gt;
+&lt;daisy:DaisyCalendarDatePicker Size="Small" PlaceholderText="Small" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Provide a short, action-oriented placeholder when no date is selected.</li>
+<li>Use <code>Variant="Filled"</code> for low-contrast, form-heavy layouts.</li>
+<li>Pair with form validation to highlight missing or invalid dates.</li>
+</ul><hr><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyButtonGroup.html">← ButtonGroup</a></div>
+    <div class="nav-right"><a href="DaisyCard.html">Card →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

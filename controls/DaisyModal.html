@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyModal</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyModal</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyModal is an overlay dialog container with backdrop and configurable corner radii. It toggles visibility via <code>IsOpen</code> and centers its content with a max width of 500px, default padding, and drop shadow. Use it for confirmations, forms, or focused flows that require blocking UI beneath.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsOpen</code></td>
+<td>Shows/hides the modal and backdrop.</td>
+</tr>
+<tr>
+<td><code>TopLeftRadius</code> / <code>TopRightRadius</code> / <code>BottomLeftRadius</code> / <code>BottomRightRadius</code></td>
+<td>Individual corner radii combined via <code>ModalCornerRadiusConverter</code>.</td>
+</tr>
+<tr>
+<td><code>Padding</code></td>
+<td>Inner spacing for modal content (default 24).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic modal --&gt;
+&lt;controls:DaisyModal IsOpen="True"&gt;
+    &lt;StackPanel Spacing="12"&gt;
+        &lt;TextBlock Text="Hello!" FontSize="20" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Press ESC or click below to close." /&gt;
+        &lt;controls:DaisyButton Content="Close" Variant="Primary" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyModal&gt;
+
+&lt;!-- Custom corners and max width --&gt;
+&lt;controls:DaisyModal IsOpen="True"
+                    TopLeftRadius="24"
+                    TopRightRadius="24"
+                    BottomLeftRadius="12"
+                    BottomRightRadius="12"&gt;
+    &lt;StackPanel Spacing="10"&gt;
+        &lt;TextBlock Text="Custom Modal" FontSize="18" FontWeight="SemiBold" /&gt;
+        &lt;TextBlock Text="Rounded top corners, tighter bottom." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyModal&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Bind <code>IsOpen</code> to view state and close on ESC or backdrop click in your view logic.</li>
+<li>Keep modal content concise; if you need long forms, add a <code>ScrollViewer</code> inside to avoid overflow.</li>
+<li>Adjust individual corner radii to match brand shapes or align with other components.</li>
+<li>For more animation, wrap modal content in transitions; the template currently toggles visibility instantly.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyMockup.html">← Mockup</a></div>
+    <div class="nav-right"><a href="DaisyModifierKeys.html">ModifierKeys →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

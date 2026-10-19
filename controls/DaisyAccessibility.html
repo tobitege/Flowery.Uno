@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyAccessibility</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyAccessibility</h1>
+
+<h2>Overview</h2>
+
+<p>A static helper class providing accessibility utilities for Daisy controls. It simplifies setting up screen reader support across all controls.</p>
+
+<strong>Namespace:</strong> <code>Flowery.Services</code>
+
+<code>DaisyAccessibility</code> provides:
+
+<ul><li>An attached property for custom screen reader text</li>
+<li>A setup helper for control authors to register accessibility defaults</li>
+<li>Automatic syncing to WinUI's <code>AutomationProperties.Name</code></li>
+</ul>
+<h2>Attached Property</h2>
+
+<h3>AccessibleText</h3>
+
+<p>Set custom screen reader text on any Daisy control:</p>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton 
+    Content="🗑️"
+    services:DaisyAccessibility.AccessibleText="Delete item" /&gt;</code></pre>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>Add <code>xmlns:services="using:Flowery.Services"</code> to your XAML namespace declarations.</div>
+<p>This ensures screen readers announce "Delete item" instead of the emoji.</p>
+
+<h2>API Reference</h2>
+
+<h3>Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GetAccessibleText(obj)</code></td>
+<td>Gets the accessible text for a control</td>
+</tr>
+<tr>
+<td><code>SetAccessibleText(obj, value)</code></td>
+<td>Sets the accessible text for a control</td>
+</tr>
+<tr>
+<td><code>SetupAccessibility<T>(defaultText)</code></td>
+<td>Registers accessibility handling for a control type (for control authors)</td>
+</tr>
+<tr>
+<td><code>GetEffectiveAccessibleText(control, defaultText)</code></td>
+<td>Gets accessible text with fallback to default</td>
+</tr>
+<tr>
+<td><code>ApplyAccessibility(control, defaultText)</code></td>
+<td>Applies the effective accessible text to <code>AutomationProperties.Name</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>For Control Authors</h2>
+
+<p>When creating a new Daisy control, call <code>SetupAccessibility</code> in the static constructor and <code>ApplyAccessibility</code> in <code>OnApplyTemplate</code>:</p>
+
+<pre><code class="language-csharp">using Flowery.Services;
+
+public class DaisyMyControl : Control
+{
+    static DaisyMyControl()
+    {
+        DaisyAccessibility.SetupAccessibility&lt;DaisyMyControl&gt;("My Control");
+    }
+
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        DaisyAccessibility.ApplyAccessibility(this, "My Control");
+    }
+}</code></pre>
+
+<p>This:</p>
+
+<p>1. Registers a default accessible text for the control type</p>
+<p>2. Applies it to <code>AutomationProperties.Name</code> when the template is applied</p>
+<p>3. Automatically syncs any custom <code>AccessibleText</code> changes to <code>AutomationProperties.Name</code></p>
+
+<h2>Examples</h2>
+
+<h3>Icon-Only Button</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton 
+    services:DaisyAccessibility.AccessibleText="Search"&gt;
+    &lt;PathIcon Data="{StaticResource SearchIcon}" /&gt;
+&lt;/daisy:DaisyButton&gt;</code></pre>
+
+<h3>Status Indicator</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyStatusIndicator 
+    Status="Online"
+    services:DaisyAccessibility.AccessibleText="User is currently online" /&gt;</code></pre>
+
+<h3>Rating Control</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyRating 
+    Value="4"
+    services:DaisyAccessibility.AccessibleText="Rating: 4 out of 5 stars" /&gt;</code></pre>
+
+<h2>Best Practices</h2>
+
+<p>1. <strong>Always set AccessibleText for icon-only controls</strong> - Screen readers can't interpret icons</p>
+<p>2. <strong>Be descriptive but concise</strong> - "Delete" is better than "Click to delete this item from the list"</p>
+<p>3. <strong>Include state information</strong> - "Mute (currently unmuted)" is more helpful than just "Mute"</p>
+<p>4. <strong>Test with a screen reader</strong> - Windows Narrator (Win+Ctrl+Enter) or NVDA</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

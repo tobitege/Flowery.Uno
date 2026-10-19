@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCollapse</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCollapse</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCollapse.png" alt="DaisyCollapse" class="doc-image">
+
+<p>DaisyCollapse is an <code>Expander</code>-based container for revealing content under a clickable header. It offers <strong>Arrow</strong> and <strong>Plus</strong> indicator variants with a 0.2s rotation animation, uses configurable padding/corners from the theme, and hides content when collapsed. Ideal for short disclosures, FAQs, or inline details.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Arrow (default)</td>
+<td>Chevron on the right rotates 180° when expanded.</td>
+</tr>
+<tr>
+<td>Plus</td>
+<td>Plus icon rotates into an “×” when expanded.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Behavior</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsExpanded</code></td>
+<td>Toggles visibility of the content presenter; bound to the header toggle.</td>
+</tr>
+<tr>
+<td><code>Header</code></td>
+<td>Shown in the toggle button; can be any content.</td>
+</tr>
+<tr>
+<td><code>Content</code></td>
+<td>Shown below the header when expanded; supports any child UI.</td>
+</tr>
+<tr>
+<td><code>Padding</code> / <code>CornerRadius</code></td>
+<td>Control spacing and rounding of both header and body regions.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Default arrow collapse --&gt;
+&lt;controls:DaisyCollapse Header="Focus me to see content"&gt;
+    &lt;TextBlock Text="Here is the hidden content." Padding="10" /&gt;
+&lt;/controls:DaisyCollapse&gt;
+
+&lt;!-- Plus variant --&gt;
+&lt;controls:DaisyCollapse Variant="Plus" Header="Plus Variant"&gt;
+    &lt;TextBlock Text="More content." Padding="10" /&gt;
+&lt;/controls:DaisyCollapse&gt;
+
+&lt;!-- Nested content with inputs --&gt;
+&lt;controls:DaisyCollapse Header="Filters"&gt;
+    &lt;StackPanel Spacing="8"&gt;
+        &lt;controls:DaisyCheckBox Content="In stock" IsChecked="True" /&gt;
+        &lt;controls:DaisyCheckBox Content="On sale" /&gt;
+        &lt;controls:DaisyButton Content="Apply" Variant="Primary" Size="Small" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCollapse&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Plus</strong> when you want a bold open/close affordance; use <strong>Arrow</strong> for subtle disclosures.</li>
+<li>Keep headers concise; long text wraps but can push icons aside - use tooltips for extra context.</li>
+<li>If you need multiple collapsibles with mutual exclusivity, use <code>DaisyAccordion</code> instead.</li>
+<li>Add <code>Padding</code> to the body content for spacing; default padding is applied from the theme.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyClock.html">← Clock</a></div>
+    <div class="nav-right"><a href="DaisyColorEditor.html">ColorEditor →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

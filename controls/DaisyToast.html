@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyToast</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyToast</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyToast.png" alt="DaisyToast" class="doc-image">
+
+<p>DaisyToast is a simple toast container (ItemsControl) that stacks toast items such as <code>DaisyAlert</code>. You control its screen position via alignment and offset properties. Place it in an overlay/top layer to float above other content; set <code>ZIndex</code> accordingly.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ToastHorizontalOffset</code></td>
+<td>Horizontal margin from the aligned edge (default 16).</td>
+</tr>
+<tr>
+<td><code>ToastVerticalOffset</code></td>
+<td>Vertical margin from the aligned edge (default 16).</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td>Use <code>HorizontalAlignment</code>/<code>VerticalAlignment</code> on the control to place it (e.g., <code>BottomRight</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Bottom-right toast stack --&gt;
+&lt;Grid&gt;
+    &lt;!-- app content --&gt;
+    &lt;controls:DaisyToast HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         ToastHorizontalOffset="16"
+                         ToastVerticalOffset="16"&gt;
+        &lt;controls:DaisyAlert Variant="Info" Content="New message arrived." /&gt;
+        &lt;controls:DaisyAlert Variant="Success" Content="Message sent successfully." /&gt;
+    &lt;/controls:DaisyToast&gt;
+&lt;/Grid&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Place DaisyToast in an overlay layer or at the end of your layout with a high <code>ZIndex</code> so it sits above content.</li>
+<li>Use <code>ItemsPanel</code> (default StackPanel) spacing to control gap between toasts.</li>
+<li>Pair with timers/dismiss logic in your viewmodel to add/remove items.</li>
+<li>Set alignment (<code>Bottom/Top</code> and <code>Left/Right</code>) plus offsets for desired corner placement.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTimeline.html">← Timeline</a></div>
+    <div class="nav-right"><a href="DaisyToggle.html">Toggle →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

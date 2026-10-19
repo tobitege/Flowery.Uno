@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyModifierKeys</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyModifierKeys</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyModifierKeys.png" alt="DaisyModifierKeys" class="doc-image">
+
+<p>A visual indicator that displays the current state of keyboard modifier keys (Shift, Ctrl, Alt) and lock keys (Caps Lock, Num Lock, Scroll Lock). Automatically syncs with the OS keyboard state.</p>
+
+<p>DaisyModifierKeys is useful for applications where users need to see which modifier keys are currently pressed, such as:</p>
+
+<ul><li>Keyboard shortcut help dialogs</li>
+<li>Accessibility features</li>
+<li>Key combination tutorials</li>
+<li>Gaming overlays</li>
+</ul>
+<p>The control automatically hooks into keyboard events and updates in real-time. On Windows, it uses native APIs to read the actual lock key states from the OS.</p>
+
+<h2>Properties</h2>
+
+<h3>State Properties (Read from keyboard)</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsShiftPressed</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Shift is currently held</td>
+</tr>
+<tr>
+<td><code>IsCtrlPressed</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Ctrl is currently held</td>
+</tr>
+<tr>
+<td><code>IsAltPressed</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Alt is currently held</td>
+</tr>
+<tr>
+<td><code>IsCapsLockOn</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Caps Lock is active</td>
+</tr>
+<tr>
+<td><code>IsNumLockOn</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Num Lock is active</td>
+</tr>
+<tr>
+<td><code>IsScrollLockOn</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether Scroll Lock is active</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Visibility Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ShowShift</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the Shift indicator</td>
+</tr>
+<tr>
+<td><code>ShowCtrl</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the Ctrl indicator</td>
+</tr>
+<tr>
+<td><code>ShowAlt</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the Alt indicator</td>
+</tr>
+<tr>
+<td><code>ShowCapsLock</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the Caps Lock indicator</td>
+</tr>
+<tr>
+<td><code>ShowNumLock</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show the Num Lock indicator</td>
+</tr>
+<tr>
+<td><code>ShowScrollLock</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Show the Scroll Lock indicator</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Show all modifier keys (default) --&gt;
+&lt;controls:DaisyModifierKeys /&gt;
+
+&lt;!-- Show only modifier keys, hide lock keys --&gt;
+&lt;controls:DaisyModifierKeys 
+    ShowCapsLock="False" 
+    ShowNumLock="False" /&gt;
+
+&lt;!-- Show only Ctrl and Shift --&gt;
+&lt;controls:DaisyModifierKeys 
+    ShowAlt="False"
+    ShowCapsLock="False"
+    ShowNumLock="False" /&gt;
+
+&lt;!-- Show all including Scroll Lock --&gt;
+&lt;controls:DaisyModifierKeys ShowScrollLock="True" /&gt;</code></pre>
+
+<h2>Platform Support</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Platform</th>
+<th>Modifier Keys</th>
+<th>Lock Keys</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>✅ Native API</td>
+<td>✅ Native API</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>✅ Key events</td>
+<td>⚠️ Toggle fallback</td>
+</tr>
+<tr>
+<td>Linux</td>
+<td>✅ Key events</td>
+<td>⚠️ Toggle fallback</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>On platforms without native lock key support, the control uses a toggle-based fallback that tracks key presses but may not reflect the actual OS state on startup.</p>
+
+<h2>Styling</h2>
+
+<p>The control displays each key as a <code>DaisyKbd</code> element. Active keys are highlighted:</p>
+
+<ul><li><strong>Modifier keys</strong> (Shift/Ctrl/Alt): Highlighted when pressed</li>
+<li><strong>Lock keys</strong> (Caps/Num/Scroll): Highlighted when toggled on</li>
+</ul>
+<p>Customize appearance using standard <code>DaisyKbd</code> theming.</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyModal.html">← Modal</a></div>
+    <div class="nav-right"><a href="DaisyNavbar.html">Navbar →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

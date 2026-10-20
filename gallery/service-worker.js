@@ -1,4 +1,4 @@
-﻿import { config as unoConfig } from "/Flowery.Uno/gallery/package_02e6a511b4389cdcf68524c79d0d5eac91dd61ce/uno-config.js";
+﻿import { config as unoConfig } from "/Flowery.Uno/gallery/package_51d07f53ad6ea1cf071607f59ad35b1a7ab9fbc1/uno-config.js";
 
 const MAX_CACHE_CONCURRENCY = 10;
 
@@ -72,7 +72,7 @@ if (unoConfig.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True")
     self.addEventListener('install', function (e) {
         console.debug('[ServiceWorker] Installing offline worker');
         e.waitUntil(
-            caches.open('5439987c-6e9e-4fa1-8728-2e9b148b2f86').then(async function (cache) {
+            caches.open('9d2aa14f-9ff8-4d4b-9ac8-d8e00fbb2468').then(async function (cache) {
                 console.debug('[ServiceWorker] Caching app binaries and content');
 
                 await cacheFilesWithConcurrency(cache, unoConfig.offline_files, MAX_CACHE_CONCURRENCY);
@@ -150,7 +150,7 @@ if (unoConfig.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True")
             caches.keys().then(function (cacheNames) {
                 return Promise.all(
                     cacheNames.filter(function (cacheName) {
-                        return cacheName !== '5439987c-6e9e-4fa1-8728-2e9b148b2f86';
+                        return cacheName !== '9d2aa14f-9ff8-4d4b-9ac8-d8e00fbb2468';
                     }).map(function (cacheName) {
                         console.debug('[ServiceWorker] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);

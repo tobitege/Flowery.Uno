@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence). An automatic step uses the container's explicit size; an explicit step size wins.
+
 DaisySteps renders a sequence of step items with lines and circles. It supports horizontal or vertical layouts, **5 sizes**, colored states per step, and an `SelectedIndex` to mark completed/active steps. Each `DaisyStepItem` can show custom text or icons via `Content`/`DataContent`.
 
 ## DaisySteps Properties
@@ -10,7 +12,7 @@ DaisySteps renders a sequence of step items with lines and circles. It supports 
 | Property | Description |
 | --- | --- |
 | `Orientation` | Horizontal (default) or Vertical. |
-| `Size` | ExtraSmall, Small, Medium (default), Large, ExtraLarge (affects circle/line sizes and fonts). |
+| `Size` | Auto (default), ExtraSmall, Small, Medium, Large, ExtraLarge (affects circle/line sizes and fonts). |
 | `SelectedIndex` | 0-based index; steps with index ≤ SelectedIndex become active. |
 | `JsonSteps` | A JSON string describing step objects: `[{"content": "Label", "color": "Primary", "isActive": true}, ...]`. |
 

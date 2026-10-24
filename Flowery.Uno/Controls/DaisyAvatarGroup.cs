@@ -33,7 +33,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyAvatarGroup),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -144,7 +144,12 @@ namespace Flowery.Controls
 
         private static void OnAppearanceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DaisyAvatarGroup g) g.RebuildAvatars();
+            if (d is DaisyAvatarGroup g)
+            {
+                g.RebuildAvatars();
+                if (e.Property == SizeProperty)
+                    FlowerySizeManager.RefreshSizeScope(g);
+            }
         }
 
         private static void OnInitialsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -188,7 +193,7 @@ namespace Flowery.Controls
                     Initials = parts[i].Trim(),
                     HasRing = ShowRings,
                     RingColor = ShowRings ? RingColors[i % RingColors.Length] : DaisyColor.Primary,
-                    Size = Size  // Set Size last since it may trigger ApplyAll
+                    Size = ResolvedSize  // Set Size last since it may trigger ApplyAll
                 };
 
                 _avatarItems.Add(avatar);
@@ -217,18 +222,15 @@ namespace Flowery.Controls
             RebuildAvatars();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            RebuildAvatars();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
+        internal override DaisySize? ChildSizeOverride => Size == DaisySize.Auto ? null : Size;
 
         #endregion
 
@@ -332,7 +334,8 @@ namespace Flowery.Controls
             for (int i = 0; i < showCount && i < count; i++)
             {
                 var avatar = _avatarItems[i];
-                avatar.Size = Size;
+                if (!string.IsNullOrWhiteSpace(Initials))
+                    avatar.Size = ResolvedSize;
 
                 // Apply overlap margin (not for first item) based on orientation
                 if (i > 0)
@@ -350,6 +353,7 @@ namespace Flowery.Controls
                 Canvas.SetZIndex(avatar, count - i);
 
                 _avatarsPanel.Children.Add(avatar);
+                avatar.RefreshResolvedSize();
             }
 
             // Add overflow indicator if needed
@@ -361,7 +365,7 @@ namespace Flowery.Controls
                 
                 _overflowAvatar = new DaisyAvatar
                 {
-                    Size = Size,
+                    Size = ResolvedSize,
                     IsPlaceholder = true,
                     Initials = $"+{OverflowCount}",
                     Margin = isHorizontal 
@@ -373,7 +377,7 @@ namespace Flowery.Controls
                 };
                 
                 // Apply a border that matches the page background (visual separation)
-                ApplyOverflowBorder(_overflowAvatar, overflowBorderBrush, Size);
+                ApplyOverflowBorder(_overflowAvatar, overflowBorderBrush, ResolvedSize);
                 
                 Canvas.SetZIndex(_overflowAvatar, 0);
                 _avatarsPanel.Children.Add(_overflowAvatar);

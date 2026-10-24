@@ -42,7 +42,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyRating),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -192,10 +192,10 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -246,11 +246,6 @@ namespace Flowery.Controls
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #endregion
 
@@ -366,7 +361,7 @@ namespace Flowery.Controls
 
         private void ApplySizing()
         {
-            double starSize = DaisyResourceLookup.GetDefaultRatingStarSize(Size);
+            double starSize = DaisyResourceLookup.GetDefaultRatingStarSize(ResolvedSize);
 
             foreach (var star in _stars)
             {
@@ -376,7 +371,7 @@ namespace Flowery.Controls
 
             if (_starsPanel != null)
             {
-                _starsPanel.Spacing = DaisyResourceLookup.GetDefaultRatingSpacing(Size);
+                _starsPanel.Spacing = DaisyResourceLookup.GetDefaultRatingSpacing(ResolvedSize);
             }
         }
 

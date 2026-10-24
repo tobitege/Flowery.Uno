@@ -390,7 +390,7 @@ namespace Flowery.Uno.Gallery
             base.ApplySizeToControls();
 
             var metrics = GetSidebarMetrics();
-            var selectorSize = GetSelectorSize(Size);
+            var selectorSize = GetSelectorSize(ResolvedSize);
 
             if (_languageSelector != null)
             {
@@ -430,7 +430,7 @@ namespace Flowery.Uno.Gallery
             base.ApplyControlFontSizes();
 
             var resources = Application.Current?.Resources;
-            var selectorSize = GetSelectorSize(Size);
+            var selectorSize = GetSelectorSize(ResolvedSize);
             var fontSize = GetFontSizeForSize(selectorSize, resources);
 
             if (_languageSelector != null)
@@ -505,8 +505,7 @@ namespace Flowery.Uno.Gallery
 
             var panel = new StackPanel
             {
-                Spacing = 4,
-                HorizontalAlignment = HorizontalAlignment.Left
+                Spacing = 4
             };
             panel.Children.Add(label);
             panel.Children.Add(selector);
@@ -517,7 +516,7 @@ namespace Flowery.Uno.Gallery
         private StackPanel BuildThemeSelector(SidebarItem item, Panel parentPanel)
         {
             var metrics = GetSidebarMetrics();
-            var selectorSize = GetSelectorSize(Size);
+            var selectorSize = GetSelectorSize(ResolvedSize);
             var selectorHeight = DaisyResourceLookup.GetDefaultHeight(selectorSize);
 
             var selector = new DaisyThemeDropdown
@@ -525,8 +524,6 @@ namespace Flowery.Uno.Gallery
                 Name = "SidebarThemeSelector",
                 Size = selectorSize,
                 Height = selectorHeight,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Width = 220,
                 PlaceholderText = FloweryLocalization.GetStringInternal("Select_Placeholder")
             };
 
@@ -546,7 +543,7 @@ namespace Flowery.Uno.Gallery
         private StackPanel BuildLanguageSelector(SidebarItem item, Panel parentPanel)
         {
             var metrics = GetSidebarMetrics();
-            var selectorSize = GetSelectorSize(Size);
+            var selectorSize = GetSelectorSize(ResolvedSize);
             var selectorHeight = DaisyResourceLookup.GetDefaultHeight(selectorSize);
 
             var selector = new DaisySelect
@@ -554,8 +551,6 @@ namespace Flowery.Uno.Gallery
                 Name = "SidebarLanguageSelector",
                 Size = selectorSize,
                 Height = selectorHeight,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Width = 220,
                 PlaceholderText = FloweryLocalization.GetStringInternal("Select_Placeholder")
             };
 
@@ -579,23 +574,20 @@ namespace Flowery.Uno.Gallery
         private StackPanel BuildSizeSelector(SidebarItem item, Panel parentPanel)
         {
             var metrics = GetSidebarMetrics();
-            var selectorSize = GetSelectorSize(Size);
+            var selectorSize = GetSelectorSize(ResolvedSize);
             var selectorHeight = DaisyResourceLookup.GetDefaultHeight(selectorSize);
 
             var panel = new StackPanel
             {
                 Margin = metrics.SelectorPanelMargin,
-                Spacing = 6,
-                HorizontalAlignment = HorizontalAlignment.Left
+                Spacing = 6
             };
 
             var selector = new DaisySizeDropdown
             {
                 Name = "SidebarSizeSelector",
                 Size = selectorSize,
-                Height = selectorHeight,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Width = 220
+                Height = selectorHeight
             };
 
             FlowerySizeManager.SetIgnoreGlobalSize(selector, true);
@@ -606,8 +598,6 @@ namespace Flowery.Uno.Gallery
                 Name = "SidebarNeumorphicSelector",
                 Size = selectorSize,
                 Height = selectorHeight,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Width = 220,
                 PlaceholderText = FloweryLocalization.GetStringInternal("Select_Placeholder")
             };
             FlowerySizeManager.SetIgnoreGlobalSize(neumorphicSelector, true);

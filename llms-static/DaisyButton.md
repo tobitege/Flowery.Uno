@@ -24,8 +24,22 @@ DaisyButton delivers DaisyUI-styled actions with **11 color variants**, **4 visu
 | Default | Solid fill (or transparent for Ghost/Link) with hover transitions. |
 | Outline | Transparent background with colored border/text; fills with the variant color on hover. |
 | Dash | Dashed stroke around the button (shown via a dashed rectangle) with transparent fill until hover. |
-| Soft | Tinted background with colored text; hover deepens the tint. |
+| Soft | Tinted background, translucent border, and colored text. Hover deepens the tint. |
 | `IsOutline` (obsolete) | Legacy flag; prefer `ButtonStyle="Outline"`. |
+
+## Soft Palette Resources
+
+Primary, Secondary, Accent, Info, Success, Warning, and Error use three resources per variant:
+
+| Resource pattern | Default alpha relative to the variant color |
+| --- | --- |
+| `DaisyButton{Variant}SoftBrush` | 0.15 |
+| `DaisyButton{Variant}SoftHoverBrush` | 0.30, for hover and press |
+| `DaisyButton{Variant}SoftBorderBrush` | 0.45, with the thin border token |
+
+The Business palette uses 0.12 for the Primary surface. Default and Neutral use Base200, Base300, and the Base300 border.
+Variant text keeps its color during hover and press. Existing control-specific background, foreground, and border resources take precedence.
+The palette stores alpha in `Color`. Each generated brush has `Opacity=1`, so theme changes preserve alpha through existing brush instances.
 
 ## Shape Options
 
@@ -39,16 +53,38 @@ DaisyButton delivers DaisyUI-styled actions with **11 color variants**, **4 visu
 
 ## Size Options
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier used to render the control. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 | Size | Height | Padding | Typical Use |
 | --- | --- | --- | --- |
 | ExtraSmall | 24px | 8px horizontal | Dense toolbars, icon circles. |
 | Small | 32px | 12px horizontal | Compact forms, secondary actions. |
-| Medium (default) | 48px | 16px horizontal | General purpose. |
+| Medium | 48px | 16px horizontal | General purpose. |
 | Large | 64px | 24px horizontal | Hero sections, primary CTAs. |
 | ExtraLarge | 80px | 32px horizontal | Splash/marketing layouts. |
 
 > [!NOTE]
 > DaisyButton uses **fixed heights** (not MinHeight) for each size to match DaisyUI's design. Buttons will not grow vertically to accommodate multi-line content. If you need a flexible-height button, override `Height="NaN"` on the individual button.
+
+## Content Padding
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `ContentPadding` (`Thickness?`) | `null` | Inner content spacing. Automatic padding follows `ResolvedSize`; Link, Square and Circle use zero. An explicit value, including zero, takes precedence. |
+| `ResolvedContentPadding` (`Thickness`) | Computed | The concrete inner padding used by the control template. |
+| Inherited `Padding` (`Thickness`) | Native default | Separate outer spacing inside the button border, added around the inner content spacing. The control does not write this property. |
+
+Use `ContentPadding` for a complete inner-padding override. Its local values, style setters and bindings remain authored values when size, shape or variant changes. Set it to `null` to request automatic padding. `ClearValue(DaisyButton.ContentPaddingProperty)` restores the applicable style value, or automatic padding if the style supplies no value.
+
+```xml
+<!-- No inner spacing, including after size changes -->
+<controls:DaisyButton Content="Edge-to-edge" ContentPadding="0" />
+
+<!-- Authored outer spacing plus automatic inner spacing -->
+<controls:DaisyButton Content="Additional spacing" Padding="2" />
+```
+
+Migration: code or XAML that previously used `Padding` to replace the size-based inner padding should use `ContentPadding`. Inherited `Padding` now retains its authored value and contributes separate outer spacing. Custom templates should bind inner spacing to `ResolvedContentPadding` and outer spacing to `Padding`.
 
 ## Shadows & States
 

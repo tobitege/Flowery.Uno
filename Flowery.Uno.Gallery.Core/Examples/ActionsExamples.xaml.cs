@@ -84,16 +84,6 @@ namespace Flowery.Uno.Gallery.Examples
             _figmaExpandedWidth = 320 * scale;
             _figmaDetailsWidth = 220 * scale;
 
-            var avatarSize = size switch
-            {
-                DaisySize.ExtraSmall => DaisySize.ExtraSmall,
-                DaisySize.Small => DaisySize.Small,
-                DaisySize.Medium => DaisySize.Medium,
-                DaisySize.Large => DaisySize.Medium,
-                DaisySize.ExtraLarge => DaisySize.Large,
-                _ => DaisySize.Small
-            };
-
             var padding = size switch
             {
                 DaisySize.ExtraSmall => 4,
@@ -145,11 +135,6 @@ namespace Flowery.Uno.Gallery.Examples
             if (CommentDetailsPanel != null)
             {
                 CommentDetailsPanel.Width = _figmaDetailsWidth;
-            }
-
-            if (CommentAvatar != null)
-            {
-                CommentAvatar.Size = avatarSize;
             }
 
             if (CommentContentGrid != null)

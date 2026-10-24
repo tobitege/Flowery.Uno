@@ -103,10 +103,10 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override void OnKeyDown(KeyRoutedEventArgs e)
@@ -148,11 +148,6 @@ namespace Flowery.Controls
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #region CurrentPage
         public static readonly DependencyProperty CurrentPageProperty =
@@ -251,7 +246,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyPagination),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of pagination buttons.
@@ -749,9 +744,7 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
-            var effectiveSize = FlowerySizeManager.ShouldIgnoreGlobalSize(this)
-                ? Size
-                : FlowerySizeManager.CurrentSize;
+            var effectiveSize = ResolvedSize;
 
             // Get sizing from centralized defaults
             double baseHeight = DaisyResourceLookup.GetDefaultHeight(effectiveSize);

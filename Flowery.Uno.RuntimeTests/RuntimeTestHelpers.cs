@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,6 +44,24 @@ namespace Flowery.Uno.RuntimeTests
             };
             element.Loaded += handler;
             return tcs.Task;
+        }
+
+        // CI runners can hold back low-priority dispatcher work for more than five seconds.
+        private static readonly TimeSpan LayoutTimeout = TimeSpan.FromSeconds(30);
+
+        public static async Task CompleteLayoutAsync(FrameworkElement element, params FrameworkElement[] requiredElements)
+        {
+            await EnsureLoadedAsync(element).WaitAsync(LayoutTimeout);
+            foreach (var required in requiredElements)
+                await EnsureLoadedAsync(required).WaitAsync(LayoutTimeout);
+            var completion = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (!element.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+                {
+                    element.UpdateLayout();
+                    completion.TrySetResult(null);
+                }))
+                throw new InvalidOperationException("The runtime dispatcher rejected layout verification.");
+            await completion.Task.WaitAsync(LayoutTimeout);
         }
     }
 }

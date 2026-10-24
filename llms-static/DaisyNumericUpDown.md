@@ -37,11 +37,13 @@
 
 ## Size Options
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier used to render the control. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 | Size | Height | Use Case |
 | --- | --- | --- |
 | ExtraSmall | 24px | Compact tables, dense UIs |
 | Small | 32px | Secondary inputs |
-| Medium | 48px | General purpose (default) |
+| Medium | 48px | General purpose |
 | Large | 64px | Primary inputs, touch targets |
 
 > [!NOTE]
@@ -185,7 +187,7 @@
 | `Suffix` | string | null | Fixed text displayed on the right (e.g., `"%"`, `"kg"`) |
 | `Watermark` | string | null | Placeholder text when empty |
 | `Variant` | DaisyInputVariant | Bordered | Visual style variant |
-| `Size` | DaisySize | Medium | Control size |
+| `Size` | DaisySize | Auto | Requested control size; `ResolvedSize` provides the concrete tier. |
 | `ShowButtons` | bool | true | Show/hide spin buttons |
 | `ShowClearButton` | bool | false | Show clear button on left when focused (resets to 0) |
 | `IsReadOnly` | bool | false | Prevent editing |

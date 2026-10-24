@@ -23,12 +23,22 @@ Use it directly in any UI, or as the `Content` of buttons, menu items, tabs, lis
 | `IconData` | `string` | `null` | Path data string for a custom icon (24×24 coordinate system). Takes precedence over `IconSymbol`. |
 | `IconSymbol` | `Symbol?` | `null` | A Windows Symbol enum value (e.g., `Symbol.Home`, `Symbol.Save`). Used when `IconData` is not set. |
 | `Text` | `string` | `null` | Text to display alongside or instead of the icon. `&` underlines the access character and `&&` is a literal `&` (see [DaisyMnemonicText](DaisyMnemonicText.md)). |
-| `Size` | `DaisySize` | `Medium` | Controls both icon dimensions and font size. Follows global size if `FlowerySizeManager` is active. |
+| `Size` | `DaisySize` | `Auto` | Controls icon dimensions and font size. `ResolvedSize` exposes the concrete tier from [global sizing](FlowerySizeManager.md); explicit tiers remain unchanged. |
 | `IconPlacement` | `IconPlacement` | `Left` | Position of the icon relative to text: `Left`, `Right`, `Top`, or `Bottom`. |
 | `Spacing` | `double` | `NaN` (auto) | Gap between icon and text. If `NaN`, auto-computed based on `Size`. |
-| `IconSize` | `double` | `NaN` (auto) | Explicit icon size override. If `NaN`, auto-computed based on `Size`. |
+| `IconSize` | `double` | `NaN` (auto) | Explicit icon size override. If `NaN`, computed from `ResolvedSize` or the containing dock's icon default. Local values, styles, and bindings retain precedence. |
 | `FontSizeOverride` | `double` | `NaN` (auto) | Explicit font size override. If `NaN`, auto-computed based on `Size`. |
 | `FontWeight` | `FontWeight` | `Normal` | Font weight for the text (e.g., `Normal`, `SemiBold`, `Bold`). |
+
+## Dynamic Content
+
+Bind `Text`, `IconData`, `IconGeometry` or `IconSymbol` to update the display. `Content` hosts the
+generated layout; it is not an alternative label property. Bindings remain active through visual
+updates and reload. Properties changed while unloaded are applied when the control loads again.
+
+The existing layout handles all four icon placements and removes the gap when either part is absent.
+Changing an explicit `Size` refreshes automatic spacing as well as icon and font dimensions.
+An explicit `Spacing` remains authoritative. These lifecycle rules also apply to `DaisyKbd`.
 
 ## Size Presets
 
@@ -41,7 +51,7 @@ Use it directly in any UI, or as the `Content` of buttons, menu items, tabs, lis
 | ExtraLarge | 24px | 18px | 12px |
 
 > [!NOTE]
-> These values come from `DaisyResourceLookup` and may vary slightly by theme. The control automatically responds to `FlowerySizeManager.SizeChanged` for global size changes, unless `IgnoreGlobalSize="True"` is set on the control or an ancestor.
+> These values come from `DaisyResourceLookup` and may vary slightly by theme. Automatic sizing follows the global policy unless ignored or an explicit parent default applies. An explicit child tier takes precedence.
 
 ## Quick Examples
 

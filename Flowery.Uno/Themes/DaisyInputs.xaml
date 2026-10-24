@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:rounding="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:controls="using:Flowery.Controls">
 
     <!-- Shared ListBoxItem template for DaisyComboBoxBase dropdowns -->
@@ -267,12 +268,12 @@
                                  rounding both separately can move the dot off center at 125 % or 175 % scaling. -->
                             <Border x:Name="PART_IndicatorBorder"
                                     BorderThickness="2"
-                                    UseLayoutRounding="False"
+                                    rounding:UseLayoutRounding="False"
                                     VerticalAlignment="Center">
                                 <!-- The Grid hosts the neumorphic inset layer below the dot. -->
-                                <Grid UseLayoutRounding="False">
+                                <Grid rounding:UseLayoutRounding="False">
                                     <Ellipse x:Name="PART_InnerDot"
-                                             UseLayoutRounding="False"
+                                             rounding:UseLayoutRounding="False"
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"
                                              Canvas.ZIndex="2"

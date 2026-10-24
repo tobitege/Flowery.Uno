@@ -448,7 +448,7 @@ namespace Flowery.Controls
             try
             {
                 var newPalette = def.PaletteFactory();
-                EnsureDerivedPaletteKeys(newPalette);
+                EnsureDerivedPaletteKeys(newPalette, app.Resources);
                 if (_currentPalette == null)
                 {
                     app.Resources.MergedDictionaries.Add(newPalette);
@@ -559,14 +559,22 @@ namespace Flowery.Controls
             "DaisyWarning", "DaisyWarningContent",
             "DaisyError", "DaisyErrorContent",
             "DaisyPrimaryForeground", "DaisySecondaryForeground", "DaisyAccentForeground",
-            "DaisyButtonPrimaryForeground", "DaisyButtonPrimaryDisabled"
+            "DaisyButtonPrimaryForeground", "DaisyButtonPrimaryDisabled",
+            "DaisyBaseContentMuted", "DaisyBaseContentSubtle", "DaisyBaseContentDisabled",
+            "DaisyButtonPrimarySoft", "DaisyButtonPrimarySoftHover", "DaisyButtonPrimarySoftBorder",
+            "DaisyButtonSecondarySoft", "DaisyButtonSecondarySoftHover", "DaisyButtonSecondarySoftBorder",
+            "DaisyButtonAccentSoft", "DaisyButtonAccentSoftHover", "DaisyButtonAccentSoftBorder",
+            "DaisyButtonInfoSoft", "DaisyButtonInfoSoftHover", "DaisyButtonInfoSoftBorder",
+            "DaisyButtonSuccessSoft", "DaisyButtonSuccessSoftHover", "DaisyButtonSuccessSoftBorder",
+            "DaisyButtonWarningSoft", "DaisyButtonWarningSoftHover", "DaisyButtonWarningSoftBorder",
+            "DaisyButtonErrorSoft", "DaisyButtonErrorSoftHover", "DaisyButtonErrorSoftBorder"
         ];
 
         /// <summary>
         /// Adds the variant foreground keys to palettes that don't define them (custom factories,
         /// CSS themes), so a theme switch never keeps the previous theme's foregrounds.
         /// </summary>
-        private static void EnsureDerivedPaletteKeys(ResourceDictionary palette)
+        private static void EnsureDerivedPaletteKeys(ResourceDictionary palette, ResourceDictionary fallbackResources)
         {
             foreach (var (prefix, source) in DerivedForegroundPrefixes)
             {
@@ -584,6 +592,7 @@ namespace Flowery.Controls
                     palette[prefix + "Brush"] = new SolidColorBrush(brush.Color);
                 }
             }
+            DaisyPaletteFactory.EnsureSemanticBrushes(palette, fallbackResources);
         }
 
         private static void RemoveMissingOptionalKeys(ResourceDictionary target, ResourceDictionary palette)

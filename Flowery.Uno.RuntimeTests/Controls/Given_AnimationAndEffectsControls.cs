@@ -2,8 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Flowery.Controls;
 using Flowery.Enums;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Windows.Foundation;
 using Colors = Microsoft.UI.Colors;
 
 namespace Flowery.Uno.RuntimeTests.Controls
@@ -20,7 +22,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await RuntimeTestHelpers.EnsureLoadedAsync(loading);
 
             Assert.AreEqual(DaisyLoadingVariant.Spinner, loading.Variant);
-            Assert.AreEqual(DaisySize.Small, loading.Size);
+            Assert.AreEqual(DaisySize.Auto, loading.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, loading.ResolvedSize);
             Assert.AreEqual(DaisyColor.Default, loading.Color);
             Assert.IsTrue(double.IsNaN(loading.PixelSize));
 
@@ -58,7 +61,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreEqual(0, animated.MinDigits);
             Assert.AreEqual(TimeSpan.FromMilliseconds(250), animated.Duration);
             Assert.AreEqual(18.0, animated.SlideDistance);
-            Assert.AreEqual(DaisySize.Small, animated.Size);
+            Assert.AreEqual(DaisySize.Auto, animated.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, animated.ResolvedSize);
 
             animated.MinDigits = 3;
             animated.Value = 7;
@@ -103,6 +107,42 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreEqual(0.2, glass.GlassBorderOpacity);
             Assert.AreEqual(0.1, glass.GlassReflectOpacity);
             Assert.AreEqual(16, glass.CornerRadius.TopLeft);
+        }
+
+        [TestMethod]
+        public async Task When_GlassHasPadding_TheContentIsInset()
+        {
+            var content = new Border
+            {
+                Width = 100,
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+            var glass = new DaisyGlass
+            {
+                Padding = new Thickness(24),
+                Width = 220,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Content = content
+            };
+
+            RuntimeTestHelpers.AttachToHost(glass);
+            await RuntimeTestHelpers.CompleteLayoutAsync(glass, content);
+            AssertInset(glass, content, 24);
+
+            glass.Padding = new Thickness(8);
+            await RuntimeTestHelpers.CompleteLayoutAsync(glass);
+            AssertInset(glass, content, 8);
+        }
+
+        private static void AssertInset(DaisyGlass glass, FrameworkElement content, double padding)
+        {
+            var offset = content.TransformToVisual(glass).TransformPoint(new Point(0, 0));
+            Assert.AreEqual(padding, offset.X, 0.5, "The content starts after the left padding.");
+            Assert.AreEqual(padding, offset.Y, 0.5, "The content starts after the top padding.");
+            Assert.AreEqual(content.Height + 2 * padding, glass.ActualHeight, 0.5, "The glass grows by the padding.");
         }
 
         [TestMethod]

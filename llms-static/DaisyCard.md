@@ -9,8 +9,8 @@ DaisyCard provides a panel for grouping content with padding, rounded corners, a
 
 | Variant | Description |
 | --- | --- |
-| Normal (default) | Standard padding (32) and 16px corner radius. |
-| Compact | Reduced padding (16) for dense layouts or nested cards. |
+| Normal (default) | Standard padding (32 at Medium size) and 16px corner radius. |
+| Compact | Reduced padding (16 at Medium size) for dense layouts or nested cards. |
 | Side | Reserved for side-by-side card styling; currently matches Normal styling. |
 
 ## Color Variants
@@ -89,9 +89,16 @@ The WASM Gallery now uses the Skia renderer and SkiaSharp 4 for backdrop blur an
 
 | Property | Description |
 | --- | --- |
-| `BodyPadding` | Controls padding around content (default 32; compact sets 16). |
+| `BodyPadding` (`Thickness?`) | Authored padding around content. The default `null` follows `ResolvedSize` and `Variant`. Explicit values, including zero, take precedence. |
+| `ResolvedBodyPadding` (`Thickness`) | The concrete body padding used by the control template. |
 | `BodyFontSize` | Default body text size for custom layouts (default 14). |
 | `TitleFontSize` | Default title text size for custom layouts (default 20). |
+
+Automatic body padding is 16, 24, 32, 40 and 48 for ExtraSmall through ExtraLarge. Compact uses half of each value. See [size precedence](FlowerySizeManager.md#size-ownership-and-precedence) for `Size` and `ResolvedSize`.
+
+Local values, style setters and bindings remain authored values when size or variant changes. Set `BodyPadding` to `null` to request automatic padding. `ClearValue(DaisyCard.BodyPaddingProperty)` restores the applicable style value, or automatic padding if the style supplies no value.
+
+Migration: `BodyPadding` now has type `Thickness?` and defaults to `null`. Existing numeric XAML values remain valid. Code that needs concrete padding should read `ResolvedBodyPadding`; custom templates should bind to that property. This contract also applies to `DaisyPatternedCard` and `DaisyExpandableCard`.
 
 ## Batteries-Included Header
 

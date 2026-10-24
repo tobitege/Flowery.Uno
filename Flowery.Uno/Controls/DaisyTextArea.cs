@@ -35,9 +35,9 @@ namespace Flowery.Controls
             RefreshLayout();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
+            base.OnResolvedSizeChanged();
             RefreshLayout();
         }
 

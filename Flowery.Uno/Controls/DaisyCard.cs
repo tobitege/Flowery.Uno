@@ -80,7 +80,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyCard),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// The size/scale of the card.
@@ -129,17 +129,36 @@ namespace Flowery.Controls
         public static readonly DependencyProperty BodyPaddingProperty =
             DependencyProperty.Register(
                 nameof(BodyPadding),
+                // Native bindings cannot convert boxed Thickness to IReference<Thickness>.
+                typeof(object),
+                typeof(DaisyCard),
+                new PropertyMetadata(null, OnAppearanceChanged));
+
+        /// <summary>
+        /// The padding of the card body. Null follows the resolved size and card variant.
+        /// </summary>
+        public Thickness? BodyPadding
+        {
+            get => GetValue(BodyPaddingProperty) is { } value
+                ? (Thickness)Microsoft.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(Thickness), value)
+                : null;
+            set => SetValue(BodyPaddingProperty, value);
+        }
+
+        public static readonly DependencyProperty ResolvedBodyPaddingProperty =
+            DependencyProperty.Register(
+                nameof(ResolvedBodyPadding),
                 typeof(Thickness),
                 typeof(DaisyCard),
                 new PropertyMetadata(new Thickness(32)));
 
         /// <summary>
-        /// The padding of the card body.
+        /// The body padding currently used by the control template.
         /// </summary>
-        public Thickness BodyPadding
+        public Thickness ResolvedBodyPadding
         {
-            get => (Thickness)GetValue(BodyPaddingProperty);
-            set => SetValue(BodyPaddingProperty, value);
+            get => (Thickness)GetValue(ResolvedBodyPaddingProperty);
+            private set => SetValue(ResolvedBodyPaddingProperty, value);
         }
         #endregion
 
@@ -408,18 +427,13 @@ namespace Flowery.Controls
             ScheduleBackdropCapture();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -612,9 +626,9 @@ namespace Flowery.Controls
 
             // WinUI/Uno doesn't support TextElement.FontSize attached properties.
             // If Size is set, we prefer its scaled font size over BodyFontSize.
-            if (ReadLocalValue(SizeProperty) != DependencyProperty.UnsetValue || FlowerySizeManager.UseGlobalSizeByDefault)
+            if (Size != DaisySize.Auto || (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.ShouldIgnoreGlobalSize(this)))
             {
-                FontSize = FlowerySizeManager.GetFontSizeForTier(ResponsiveFontTier.Primary, Size);
+                FontSize = FlowerySizeManager.GetFontSizeForTier(ResponsiveFontTier.Primary, ResolvedSize);
             }
             else
             {
@@ -625,7 +639,7 @@ namespace Flowery.Controls
             {
                 ApplyThemeColors();
             }
-            ApplyVariantDefaults();
+            ApplyBodyPadding();
             ApplyStyleEffects();
             ApplyGlassMode();
             _isInternalColorSet = true;
@@ -824,39 +838,17 @@ namespace Flowery.Controls
             }
         }
 
-        private void ApplyVariantDefaults()
+        private void ApplyBodyPadding()
         {
-            // Compact variant sets BodyPadding based on Size (unless overridden locally).
-            if (Variant == DaisyCardVariant.Compact)
+            double padding = ResolvedSize switch
             {
-                if (ReadLocalValue(BodyPaddingProperty) == DependencyProperty.UnsetValue)
-                {
-                    double p = Size switch
-                    {
-                        DaisySize.ExtraSmall => 8,
-                        DaisySize.Small => 12,
-                        DaisySize.Large => 20,
-                        DaisySize.ExtraLarge => 24,
-                        _ => 16
-                    };
-                    BodyPadding = new Thickness(p);
-                }
-            }
-            else
-            {
-                if (ReadLocalValue(BodyPaddingProperty) == DependencyProperty.UnsetValue)
-                {
-                    double p = Size switch
-                    {
-                        DaisySize.ExtraSmall => 16,
-                        DaisySize.Small => 24,
-                        DaisySize.Large => 40,
-                        DaisySize.ExtraLarge => 48,
-                        _ => 32
-                    };
-                    BodyPadding = new Thickness(p);
-                }
-            }
+                DaisySize.ExtraSmall => 16,
+                DaisySize.Small => 24,
+                DaisySize.Large => 40,
+                DaisySize.ExtraLarge => 48,
+                _ => 32
+            };
+            ResolvedBodyPadding = BodyPadding ?? new Thickness(Variant == DaisyCardVariant.Compact ? padding / 2 : padding);
         }
 
         private void ApplyGlassMode()

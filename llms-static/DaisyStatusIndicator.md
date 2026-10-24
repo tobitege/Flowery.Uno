@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the effective tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyStatusIndicator shows a status dot with **27 animation variants**. It supports **9 colors** and **5 sizes**, making it suitable for online/offline markers, alerts, or activity indicators.
 
 ![Status Indicator Animations](images/status_animations.gif)
@@ -13,7 +15,7 @@ DaisyStatusIndicator shows a status dot with **27 animation variants**. It suppo
 | --- | --- |
 | `Variant` | Animation style: Default (static), Ping, Bounce, Pulse, Blink, Ripple, Heartbeat, Spin, Wave, Glow, Morph, Orbit, Radar, Sonar, Beacon, Shake, Wobble, Pop, Flicker, Breathe, Ring, Flash, Swing, Jiggle, Throb, Twinkle, Splash. |
 | `Color` | Default, Neutral, Primary, Secondary, Accent, Info, Success, Warning, Error (sets dot fill). Uses shared `DaisyColor` enum. |
-| `Size` | ExtraSmall, Small, Medium (default), Large, ExtraLarge (adjusts diameter). Uses shared `DaisySize` enum. |
+| `Size` | ExtraSmall, Small, Medium, Large, ExtraLarge (adjusts diameter). Uses shared `DaisySize` enum. |
 | `AccessibleText` | Custom text for screen readers. When null, auto-derived from Color (see below). |
 
 ## Color Selection Guide

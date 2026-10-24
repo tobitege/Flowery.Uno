@@ -58,11 +58,7 @@ namespace Flowery.Controls
         private static bool s_daisyControlsLoaded;
         private ObservableCollection<object>? _items;
 
-        protected DaisyComboBoxBase() : this(true)
-        {
-        }
-
-        protected DaisyComboBoxBase(bool subscribeSizeChanges)
+        protected DaisyComboBoxBase()
         {
             IsTabStop = false;
             // Initialize Items collection
@@ -70,20 +66,11 @@ namespace Flowery.Controls
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            // Apply initial global size before creating lifecycle and building visual tree.
-            // This ensures BuildVisualTree() and its internal ApplyAll() call use correct dimensions from the start.
-            if (subscribeSizeChanges && FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-            {
-                Size = FlowerySizeManager.CurrentSize;
-            }
-
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 OnThemeUpdated,
-                () => Size,
-                s => Size = s,
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: subscribeSizeChanges);
+                handleLifecycleEvents: false);
+            FlowerySizeManager.Register(this, RequestApplyAll, () => ResolvedSize);
 
             _listViewItemTappedHandler = OnListViewItemTapped;
             Loaded += OnBaseLoaded;
@@ -96,13 +83,15 @@ namespace Flowery.Controls
         #region Properties
 
         public static readonly DependencyProperty SizeProperty =
-             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyComboBoxBase), new PropertyMetadata(DaisySize.Medium, OnUnifiedPropertyChanged));
+             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyComboBoxBase), new PropertyMetadata(DaisySize.Auto, OnUnifiedPropertyChanged));
 
         public DaisySize Size
         {
             get => (DaisySize)GetValue(SizeProperty);
             set => SetValue(SizeProperty, value);
         }
+
+        public DaisySize ResolvedSize => FlowerySizeManager.ResolveSize(this, Size);
 
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(DaisyComboBoxBase), new PropertyMetadata(null, OnItemsSourceChanged));
@@ -1656,9 +1645,9 @@ namespace Flowery.Controls
         protected virtual void ApplySizing(ResourceDictionary? resources)
         {
              // Apply Height, FontSize based on daisy tokens
-             double height = DaisyResourceLookup.GetDefaultHeight(Size);
+             double height = DaisyResourceLookup.GetDefaultHeight(ResolvedSize);
              this.Height = height;
-             this.FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+             this.FontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
              this.CornerRadius = new CornerRadius(4);
 
              if (_rootGrid != null) _rootGrid.Height = height;
@@ -1741,7 +1730,7 @@ namespace Flowery.Controls
 
             var mode = resolution.Mode;
             var intensity = resolution.Intensity;
-            var elevation = DaisyResourceLookup.GetDefaultElevation(Size);
+            var elevation = DaisyResourceLookup.GetDefaultElevation(ResolvedSize);
             var (offset, blur) = DaisyNeumorphicHelper.GetShadowMetrics(this, elevation, mode);
 
             var darkShadowColor = DaisyNeumorphic.GetEffectiveDarkShadowColor(this);
@@ -1994,10 +1983,10 @@ namespace Flowery.Controls
 
         private void UpdateMenuItemSizing(ResourceDictionary? resources)
         {
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
-            var defaultPadding = DaisyResourceLookup.GetDefaultPadding(Size);
-            var defaultFontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
-            var defaultHeight = DaisyResourceLookup.GetDefaultHeight(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
+            var defaultPadding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize);
+            var defaultFontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
+            var defaultHeight = DaisyResourceLookup.GetDefaultHeight(ResolvedSize);
 
             _menuItemPadding = resources != null
                 ? DaisyResourceLookup.GetThickness(resources, $"DaisyButton{sizeKey}Padding", defaultPadding)

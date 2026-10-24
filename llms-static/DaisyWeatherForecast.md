@@ -1,5 +1,7 @@
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence). Automatic supplied items use the forecast's calculated tier, including auto-fit; explicit item sizes are preserved.
+
 DaisyWeatherForecast is an `ItemsControl` that renders a row of forecast cards. Each card shows the day name, an animated weather icon, and the temperature range. Ideal for showing 5-7 day forecasts.
 
 ## Properties
@@ -9,7 +11,7 @@ DaisyWeatherForecast is an `ItemsControl` that renders a row of forecast cards. 
 | `ItemsSource` | `IEnumerable` | - | Collection of `ForecastDay` items |
 | `TemperatureUnit` | `string` | `"C"` | Temperature unit (C or F) |
 | `ShowPrecipitation` | `bool` | `false` | Show precipitation chance |
-| `Size` | `DaisySize` | `Medium` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
+| `Size` | `DaisySize` | `Auto` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
 | `AutoFitItems` | `bool` | `true` | Auto-calculate item widths to fit container (recommended) |
 
 ## ForecastDay Model

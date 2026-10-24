@@ -3,86 +3,59 @@
 
 # Overview
 
-DaisyMenu is a styled menu control for navigation menus. It supports vertical or horizontal layout, size presets, and customizable active colors for selected items. Submenus can be nested via another DaisyMenu or Expander. Use it for sidebars, nav bars, and contextual menus that need DaisyUI styling.
+DaisyMenu arranges DaisyMenuItem controls vertically or horizontally. It supports size presets, active colors, and non-interactive section titles.
+Its Content must contain a panel with the items. The menu moves those items into its internal panel on first load.
 
-## Orientation & Sizes
+## Properties and Interaction
 
-| Option | Description |
+| Member | Description |
 | --- | --- |
-| `Orientation` | `Vertical` (default) or `Horizontal`. Horizontal enables horizontal scrolling if needed. |
-| `Size` | ExtraSmall, Small, Medium (default), Large, ExtraLarge adjust padding/font on items. |
+| `Orientation` | Vertical (default) or Horizontal. |
+| `Size` | Auto (default), ExtraSmall, Small, Medium, Large, or ExtraLarge. |
+| `ResolvedSize` | The concrete tier from the control, containing scope, or global size. |
+| `ActiveForeground` / `ActiveBackground` | Colors for active items. Defaults use PrimaryContent and Primary. |
+| `DaisyMenuItem.IsActive` | Marks an item active. Activation clears the other items' active state. |
+| `DaisyMenuItem.IsDisabled` | Prevents activation and keyboard focus. Default text uses `DaisyBaseContentDisabledBrush`. |
+| `DaisyMenuItem.IsTitle` | Shows a non-interactive section title with Primary text, bold font, and a Base300 bottom divider. |
+| `ItemInvoking` / `ItemInvoked` | Events on the menu before and after an item invokes its base command and click behavior. |
+| `Command` / `CommandParameter` | Command properties on each item. |
 
-## Active Styling
+Explicit sizes and bindings retain normal precedence. See [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
 
-| Property | Description |
-| --- | --- |
-| `ActiveForeground` / `ActiveBackground` | Colors applied to selected items; defaults to Neutral theme colors. |
-| Selection | Inherits ListBox selection; `SelectedItem`/`SelectedIndex` works as usual. |
+Titles cannot activate through pointer input, Enter, Space, or commands. They receive no selection indicator, even with `IsActive=True`.
+Changing `IsTitle` at runtime restores the normal row behavior without replacing its content.
+Disabled rows use a text brush instead of opacity on the entire row. Authored child visuals retain their own foreground and opacity.
 
-## Item Interaction
+## Resource Overrides
 
-| Property | Description |
-| --- | --- |
-| `Click` | DaisyMenuItem raises a click event and supports keyboard activation. |
-| `Command` / `CommandParameter` | DaisyMenuItem inherits the base command pattern; use these for MVVM. |
+`DaisyMenuItemForeground` overrides normal, disabled, and title text.
+`DaisyMenuItemActiveForeground`, `DaisyMenuItemActiveBackground`, and `DaisyMenuItemHoverBackground` retain their existing behavior.
+The menu's explicit active brushes take precedence over the active resources.
 
-### Hover Styling
-
-To override hover background on menu items, define:
-
-```txt
-DaisyMenuItemHoverBackground
-```
-
-## Quick Examples
+## Example
 
 ```xml
-<!-- Vertical menu -->
 <controls:DaisyMenu Width="200">
-    <controls:DaisyMenuItem Content="Dashboard" IsActive="True" />
-    <controls:DaisyMenuItem Content="Profile" />
-    <controls:DaisyMenuItem Content="Settings" />
-</controls:DaisyMenu>
-
-<!-- Horizontal nav -->
-<controls:DaisyMenu Orientation="Horizontal" Size="Small">
-    <controls:DaisyMenuItem>Home</controls:DaisyMenuItem>
-    <controls:DaisyMenuItem>About</controls:DaisyMenuItem>
-    <controls:DaisyMenuItem>Contact</controls:DaisyMenuItem>
-</controls:DaisyMenu>
-
-<!-- Nested submenu -->
-<controls:DaisyMenu>
-    <controls:DaisyMenuItem Content="Main" />
-    <controls:DaisyMenuItem IsActive="True">Overview</controls:DaisyMenuItem>
-    <Expander Header="More">
-        <controls:DaisyMenu>
-            <controls:DaisyMenuItem>Subitem A</controls:DaisyMenuItem>
-            <controls:DaisyMenuItem>Subitem B</controls:DaisyMenuItem>
-        </controls:DaisyMenu>
-    </Expander>
-</controls:DaisyMenu>
-
-<!-- Checked item (toggle-style menu entry) -->
-<controls:DaisyMenu>
-    <controls:DaisyMenuItem Content="Resize columns" IsChecked="True" />
+    <StackPanel>
+        <controls:DaisyMenuItem Content="Workspace" IsTitle="True" />
+        <controls:DaisyMenuItem Content="Dashboard" IsActive="True" />
+        <controls:DaisyMenuItem Content="Profile" />
+        <controls:DaisyMenuItem Content="Administration" IsTitle="True" />
+        <controls:DaisyMenuItem Content="Settings" />
+        <controls:DaisyMenuItem Content="Unavailable" IsDisabled="True" />
+    </StackPanel>
 </controls:DaisyMenu>
 ```
+
+The Uno API uses `IsTitle=True`. Avalonia's `Classes="menu-title"` syntax does not apply.
 
 ## Keyboard Mnemonics
 
-String content of a `DaisyMenuItem` shows WinForms-style mnemonics: `&` underlines the access character and `&&` is a literal `&`. The item's automation name is the display text. It is display only, so handle Alt+key in your app. See [DaisyMnemonicText](DaisyMnemonicText.md).
+String content shows WinForms-style mnemonics. A single `&` underlines the next character, and `&&` shows a literal `&`.
+The automation name contains the display text. The application handles Alt+key activation.
+See [DaisyMnemonicText](DaisyMnemonicText.md).
 
 ```xml
-<controls:DaisyMenuItem>&amp;File</controls:DaisyMenuItem>
-<controls:DaisyMenuItem>Save &amp;&amp; Close</controls:DaisyMenuItem>
+<controls:DaisyMenuItem Content="&amp;File" />
+<controls:DaisyMenuItem Content="Save &amp;&amp; Close" />
 ```
-
-## Tips & Best Practices
-
-- Use size presets to match surrounding controls; Small/ExtraSmall pair well with toolbars.
-- Set `ActiveForeground/ActiveBackground` to align with your brand colors if Neutral isn't desired.
-- For horizontal menus, ensure there's enough padding/margin in the parent to avoid crowding.
-- Use `Classes="menu-title"` for non-interactive section headers inside the menu.
-- Nest DaisyMenu or use `Expander` for collapsible submenus; adjust margins for indentation as needed.
-- Use `IsChecked` for toggle-like items so all menu rows keep the same layout.

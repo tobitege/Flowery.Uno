@@ -108,7 +108,16 @@ jobs:
             if ($framework -eq 'net10.0-windows10.0.19041') { $runArgs += '--no-build' }
             $runArgs += @('--', '--runtime-tests', $result)
             dotnet @runArgs
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $exitCode = $LASTEXITCODE
+            # Name failed and inconclusive tests before stopping, so the log shows the cause.
+            if (Test-Path -LiteralPath $result) {
+              [xml]$report = Get-Content -LiteralPath $result -Raw
+              foreach ($test in @($report.tests.test | Where-Object outcome -NE 'Passed')) {
+                Write-Host ('{0}: {1} {2}' -f $framework, $test.outcome, $test.name)
+                if ($test.message) { Write-Host $test.message }
+              }
+            }
+            if ($exitCode -ne 0) { exit $exitCode }
             [xml]$report = Get-Content -LiteralPath $result -Raw
             if ([int]$report.tests.failed -ne 0) { throw 'Gallery runtime tests failed.' }
             if ([int]$report.tests.total -le 0 -or [int]$report.tests.passed -le 0) { throw 'No Gallery runtime tests ran.' }
@@ -118,6 +127,14 @@ jobs:
             }
             Write-Host ('{0}: {1} runtime tests passed' -f $framework, $report.tests.passed)
           }
+
+      - name: Upload Windows runtime test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gallery-runtime-windows
+          path: ${{ runner.temp }}/flowery-runtime-*.xml
+          if-no-files-found: warn
 
   test-gallery-drawer:
     runs-on: ubuntu-24.04

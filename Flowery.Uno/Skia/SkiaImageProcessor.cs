@@ -55,7 +55,7 @@ namespace Flowery.Skia
                 IsAntialias = true
             };
 
-            canvas.DrawBitmap(source, 0, 0, paint);
+            canvas.DrawBitmap(source, 0, 0, SKSamplingOptions.Default, paint);
 
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 90);
@@ -121,7 +121,7 @@ namespace Flowery.Skia
                 IsAntialias = true
             };
 
-            canvas.DrawBitmap(source, 0, 0, paint);
+            canvas.DrawBitmap(source, 0, 0, SKSamplingOptions.Default, paint);
 
             // Cleanup filters
             combinedFilter?.Dispose();
@@ -196,7 +196,7 @@ namespace Flowery.Skia
             // Draw blurred background
             using (var paint = new SKPaint { ImageFilter = combinedFilter, IsAntialias = true })
             {
-                canvas.DrawBitmap(source, 0, 0, paint);
+                canvas.DrawBitmap(source, 0, 0, SKSamplingOptions.Default, paint);
             }
 
             // Draw tint overlay

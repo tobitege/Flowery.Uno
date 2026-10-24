@@ -41,7 +41,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyAvatar),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -202,18 +202,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -363,12 +358,12 @@ namespace Flowery.Controls
                 return;
 
             // Get sizing from centralized helpers (tokens guaranteed by EnsureDefaults)
-            double avatarSize = DaisyResourceLookup.GetAvatarSize(Size);
+            double avatarSize = DaisyResourceLookup.GetAvatarSize(ResolvedSize);
             double ringThickness = HasRing ? GetRingThickness() : 0;
             double innerSize = avatarSize - (ringThickness * 2);
-            double statusSize = DaisyResourceLookup.GetAvatarStatusSize(Size);
-            double fontSize = DaisyResourceLookup.GetAvatarFontSize(Size);
-            double iconSize = DaisyResourceLookup.GetAvatarIconSize(Size);
+            double statusSize = DaisyResourceLookup.GetAvatarStatusSize(ResolvedSize);
+            double fontSize = DaisyResourceLookup.GetAvatarFontSize(ResolvedSize);
+            double iconSize = DaisyResourceLookup.GetAvatarIconSize(ResolvedSize);
 
             // Set size on the control itself
             Width = avatarSize;
@@ -581,7 +576,7 @@ namespace Flowery.Controls
         /// Gets the ring thickness based on the current Size.
         /// Smaller avatars get thinner rings for visual proportion.
         /// </summary>
-        private double GetRingThickness() => Size switch
+        private double GetRingThickness() => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 1,
             DaisySize.Small => 2,

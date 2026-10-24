@@ -25,6 +25,41 @@ namespace Flowery.Controls
         {
         }
 
+        /// <summary>
+        /// Identifies the Size dependency property for the accordion's default item size.
+        /// </summary>
+        public static readonly DependencyProperty SizeProperty =
+            DependencyProperty.Register(
+                nameof(Size), typeof(DaisySize), typeof(DaisyAccordion),
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
+
+        public DaisySize Size
+        {
+            get => (DaisySize)GetValue(SizeProperty);
+            set => SetValue(SizeProperty, value);
+        }
+
+        private static void OnSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            var accordion = (DaisyAccordion)sender;
+            accordion.RefreshResolvedSize();
+            FlowerySizeManager.RefreshSizeScope(accordion);
+        }
+
+        protected override DaisySize? GetControlSize() => Size;
+
+        internal override DaisySize? ChildSizeOverride => Size == DaisySize.Auto ? null : Size;
+
+        protected override void OnResolvedSizeChanged()
+        {
+            base.OnResolvedSizeChanged();
+            foreach (var item in _accordionItems)
+            {
+                if (IsCurrentItem(item))
+                    item.RefreshResolvedSize();
+            }
+        }
+
         protected override void OnLoaded()
         {
             base.OnLoaded();
@@ -111,7 +146,6 @@ namespace Flowery.Controls
                     {
                         item.Index = index;
                         item.Variant = Variant;
-                        item.ParentAccordion = this;
                         _accordionItems.Add(item);
                         _itemsPanel.Children.Add(item);
                         index++;
@@ -120,12 +154,16 @@ namespace Flowery.Controls
             }
 
             Content = _itemsPanel;
+            RefreshResolvedSize();
             UpdateExpandedStates();
             ApplyTheme();
         }
 
         internal void OnItemExpanded(DaisyAccordionItem expandedItem)
         {
+            if (!IsCurrentItem(expandedItem))
+                return;
+
             int index = _accordionItems.IndexOf(expandedItem);
             if (index >= 0)
             {
@@ -135,7 +173,7 @@ namespace Flowery.Controls
             // Collapse other items
             foreach (var item in _accordionItems)
             {
-                if (item != expandedItem && item.IsExpanded)
+                if (IsCurrentItem(item) && item != expandedItem && item.IsExpanded)
                 {
                     item.IsExpanded = false;
                 }
@@ -146,7 +184,8 @@ namespace Flowery.Controls
         {
             for (int i = 0; i < _accordionItems.Count; i++)
             {
-                _accordionItems[i].IsExpanded = i == ExpandedIndex;
+                if (IsCurrentItem(_accordionItems[i]))
+                    _accordionItems[i].IsExpanded = i == ExpandedIndex;
             }
         }
 
@@ -154,6 +193,8 @@ namespace Flowery.Controls
         {
             foreach (var item in _accordionItems)
             {
+                if (!IsCurrentItem(item))
+                    continue;
                 item.Variant = Variant;
                 item.RebuildVisual();
             }
@@ -163,9 +204,13 @@ namespace Flowery.Controls
         {
             foreach (var item in _accordionItems)
             {
-                item.RebuildVisual();
+                if (IsCurrentItem(item))
+                    item.RebuildVisual();
             }
         }
+
+        private bool IsCurrentItem(DaisyAccordionItem item) =>
+            _itemsPanel != null && _itemsPanel.Children.Contains(item);
     }
 
     /// <summary>
@@ -181,7 +226,7 @@ namespace Flowery.Controls
         private object? _userContent;
         private bool _isFocused;
 
-        internal DaisyAccordion? ParentAccordion { get; set; }
+        internal DaisyAccordion? ParentAccordion { get; private set; }
         internal int Index { get; set; }
 
         public DaisyAccordionItem()
@@ -190,9 +235,41 @@ namespace Flowery.Controls
             UseSystemFocusVisuals = true;
         }
 
+        public static readonly DependencyProperty SizeProperty =
+            DependencyProperty.Register(
+                nameof(Size), typeof(DaisySize), typeof(DaisyAccordionItem),
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
+
+        /// <summary>
+        /// Gets or sets the header and body spacing tier. Auto follows the containing size scope or global size.
+        /// </summary>
+        public DaisySize Size
+        {
+            get => (DaisySize)GetValue(SizeProperty);
+            set => SetValue(SizeProperty, value);
+        }
+
+        private static void OnSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            ((DaisyAccordionItem)sender).RefreshResolvedSize();
+        }
+
+        protected override DaisySize? GetControlSize() => Size;
+
+        protected override void OnResolvedSizeChanged()
+        {
+            base.OnResolvedSizeChanged();
+            RebuildVisual();
+        }
+
         protected override void OnLoaded()
         {
             base.OnLoaded();
+
+            var ancestor = VisualTreeHelper.GetParent(this) ?? Parent;
+            while (ancestor != null && ancestor is not DaisyAccordion)
+                ancestor = VisualTreeHelper.GetParent(ancestor) ?? (ancestor as FrameworkElement)?.Parent;
+            ParentAccordion = ancestor as DaisyAccordion;
 
             // Capture user content before replacing
             if (Content != null && !ReferenceEquals(Content, _rootGrid))
@@ -202,6 +279,12 @@ namespace Flowery.Controls
             
             BuildVisualTree();
             RebuildVisual();
+        }
+
+        protected override void OnUnloaded()
+        {
+            ParentAccordion = null;
+            base.OnUnloaded();
         }
 
         protected override void OnThemeChanged(string themeName)
@@ -395,9 +478,30 @@ namespace Flowery.Controls
             var base300Brush = DaisyResourceLookup.GetBrush(resources, "DaisyBase300Brush");
             var baseContentBrush = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentBrush");
 
+            var size = ResolvedSize;
+            var padding = size switch
+            {
+                DaisySize.ExtraSmall => 8d,
+                DaisySize.Small => 12d,
+                DaisySize.Large => 20d,
+                DaisySize.ExtraLarge => 24d,
+                _ => 16d
+            };
+            var bodyPadding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyAccordion", size, "Padding", new Thickness(padding));
+            var headerMinHeight = size switch
+            {
+                DaisySize.ExtraSmall => 32d,
+                DaisySize.Small => 40d,
+                DaisySize.Large => 56d,
+                DaisySize.ExtraLarge => 64d,
+                _ => 48d
+            };
+
             // Header styling
             if (_headerBorder != null)
             {
+                _headerBorder.Padding = bodyPadding;
+                _headerBorder.MinHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisyAccordion", size, "HeaderMinHeight", headerMinHeight);
                 _headerBorder.Background = headerBgOverride ?? base200Brush;
                 _headerBorder.BorderBrush = _isFocused
                     ? DaisyResourceLookup.GetBrush("DaisyAccentBrush")
@@ -407,6 +511,7 @@ namespace Flowery.Controls
 
             if (_headerText != null)
             {
+                _headerText.FontSize = FlowerySizeManager.GetFontSizeForTier(ResponsiveFontTier.Primary, size);
                 _headerText.Text = Header;
                 _headerText.Foreground = fgOverride ?? baseContentBrush;
             }
@@ -438,6 +543,7 @@ namespace Flowery.Controls
             // Content visibility
             if (_contentPresenter != null)
             {
+                _contentPresenter.Margin = bodyPadding;
                 _contentPresenter.Visibility = IsExpanded ? Visibility.Visible : Visibility.Collapsed;
                 _contentPresenter.Content = _userContent;
             }

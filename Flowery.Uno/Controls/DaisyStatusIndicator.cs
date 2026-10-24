@@ -106,7 +106,7 @@ namespace Flowery.Controls
 
         public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyStatusIndicator),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -200,18 +200,14 @@ namespace Flowery.Controls
             RebuildVisual();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            RebuildVisual();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         private void RebuildVisual()
         {
@@ -221,14 +217,14 @@ namespace Flowery.Controls
             _ringAnimations.Clear();
             _animatedContainer = null;
 
-            var size = DaisyResourceLookup.GetSizeValue(Size);
+            var size = DaisyResourceLookup.GetSizeValue(ResolvedSize);
             _cachedSize = size;
             var brush = GetColorBrush();
             var isStatusGlyph = IsStatusGlyphVariant();
             var usesEffectPadding = UsesEffectPadding();
             var padding = usesEffectPadding
-                ? DaisyResourceLookup.GetStatusIndicatorEffectPadding(Size)
-                : DaisyResourceLookup.GetStatusIndicatorPadding(Size);
+                ? DaisyResourceLookup.GetStatusIndicatorEffectPadding(ResolvedSize)
+                : DaisyResourceLookup.GetStatusIndicatorPadding(ResolvedSize);
             var containerSize = isStatusGlyph ? size : size + (padding * 2);
 
             _rootGrid = new Grid

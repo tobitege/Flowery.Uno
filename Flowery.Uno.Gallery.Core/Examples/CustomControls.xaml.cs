@@ -30,6 +30,9 @@ namespace Flowery.Uno.Gallery.Examples
         {
             foreach (var size in Enum.GetValues<DaisySize>())
             {
+                if (size == DaisySize.Auto)
+                    continue;
+
                 var height = FlowerySizeManager.GetControlHeight(size);
                 ControlHeightPanel.Children.Add(new Border
                 {

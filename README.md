@@ -116,7 +116,7 @@ xmlns:daisy="using:Flowery.Controls"
 
 ### Actions
 
-- **Button** (`DaisyButton`): Buttons with variants (Primary, Secondary, Accent, Ghost, Link) and sizes (Large, Normal, Small, Tiny). Supports Outline and Active states.
+- **Button** (`DaisyButton`): Buttons with variants (Primary, Secondary, Accent, Ghost, Link). Explicit size tiers are ExtraSmall, Small, Medium, Large and ExtraLarge. `Size` defaults to `Auto`. `ResolvedSize` reports the effective tier. Supports Outline and Active states.
 - **Fab** (`DaisyFab`): Floating Action Button (Speed Dial) with support for multiple actions.
 - **Modal** (`DaisyModal`): Dialog box with backdrop overlay.
 - **Swap** (`DaisySwap`): Toggle control that swaps between two content states with optional Rotate/Flip effects.

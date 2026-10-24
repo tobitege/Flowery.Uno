@@ -34,11 +34,6 @@ namespace Flowery.Controls
             DefaultStyleKey = typeof(DaisyCalendarDatePicker);
             IsTabStop = false;
 
-            // Apply global size early if allowed and not explicitly ignored.
-            if (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-            {
-                Size = FlowerySizeManager.CurrentSize;
-            }
         }
 
         #region Dependency Properties
@@ -108,7 +103,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyCalendarDatePicker),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of the date picker.
@@ -214,18 +209,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -351,12 +341,12 @@ namespace Flowery.Controls
             if (_inputBorder == null || _calendarDatePicker == null)
                 return;
 
-            var controlHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "Height",
-                DaisyResourceLookup.GetDefaultHeight(Size));
-            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
-            var defaultPadding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyInput", Size, "Padding",
-                DaisyResourceLookup.GetDefaultPadding(Size));
+            var controlHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "Height",
+                DaisyResourceLookup.GetDefaultHeight(ResolvedSize));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
+            var defaultPadding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyInput", ResolvedSize, "Padding",
+                DaisyResourceLookup.GetDefaultPadding(ResolvedSize));
 
             Height = controlHeight;
             FontSize = fontSize;
@@ -477,6 +467,8 @@ namespace Flowery.Controls
             _baseInputBorderBrush = border;
 
             var textForeground = fgOverride ?? baseContent;
+            var placeholderForeground = DaisyResourceLookup.TryGetControlBrush(this, "DaisyCalendarDatePicker", "PlaceholderForeground")
+                ?? fgOverride ?? DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentMutedBrush", baseContent);
             _calendarDatePicker.Foreground = textForeground;
             _calendarDatePicker.Background = background;
 
@@ -489,10 +481,10 @@ namespace Flowery.Controls
 
             _calendarDatePicker.Resources["CalendarDatePickerForeground"] = textForeground;
             _calendarDatePicker.Resources["CalendarDatePickerForegroundDisabled"] = textForeground;
-            _calendarDatePicker.Resources["CalendarDatePickerTextForeground"] = textForeground;
-            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundPointerOver"] = textForeground;
-            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundPressed"] = textForeground;
-            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundDisabled"] = textForeground;
+            _calendarDatePicker.Resources["CalendarDatePickerTextForeground"] = placeholderForeground;
+            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundPointerOver"] = placeholderForeground;
+            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundPressed"] = placeholderForeground;
+            _calendarDatePicker.Resources["CalendarDatePickerTextForegroundDisabled"] = placeholderForeground;
             _calendarDatePicker.Resources["CalendarDatePickerTextForegroundSelected"] = textForeground;
             _calendarDatePicker.Resources["CalendarDatePickerCalendarGlyphForeground"] = textForeground;
             _calendarDatePicker.Resources["CalendarDatePickerCalendarGlyphForegroundPointerOver"] = textForeground;
@@ -507,16 +499,6 @@ namespace Flowery.Controls
             _calendarDatePicker.Resources["CalendarDatePickerBackgroundPressed"] = background;
             _calendarDatePicker.Resources["CalendarDatePickerBackgroundDisabled"] = background;
             _calendarDatePicker.Resources["CalendarDatePickerBackgroundFocused"] = background;
-
-            if (textForeground is SolidColorBrush scb)
-            {
-                var placeholderColor = Color.FromArgb(153, scb.Color.R, scb.Color.G, scb.Color.B);
-                var placeholderBrush = new SolidColorBrush(placeholderColor);
-                _calendarDatePicker.Resources["TextControlPlaceholderForeground"] = placeholderBrush;
-                _calendarDatePicker.Resources["TextControlPlaceholderForegroundPointerOver"] = placeholderBrush;
-                _calendarDatePicker.Resources["TextControlPlaceholderForegroundFocused"] = placeholderBrush;
-                _calendarDatePicker.Resources["TextControlPlaceholderForegroundDisabled"] = placeholderBrush;
-            }
         }
 
         private void ApplyContent()

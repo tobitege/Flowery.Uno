@@ -34,6 +34,19 @@ namespace Flowery.Controls
         protected StackPanel? _rootPanel;
         protected Viewbox? _iconViewbox;
         protected TextBlock? _textBlock;
+        private double _containerIconSize = double.NaN;
+
+        internal double ContainerIconSize
+        {
+            get => _containerIconSize;
+            set
+            {
+                if (_containerIconSize.Equals(value))
+                    return;
+                _containerIconSize = value;
+                ApplySizing();
+            }
+        }
 
         #region Dependency Properties
 
@@ -109,7 +122,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyIconText),
-                new PropertyMetadata(DaisySize.Medium, OnSizeChanged));
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
 
         /// <summary>
         /// Gets or sets the size preset. Controls both icon dimensions and font size.
@@ -212,19 +225,21 @@ namespace Flowery.Controls
         /// Gets the effective icon size, computing from Size if not explicitly set.
         /// </summary>
         public double EffectiveIconSize =>
-            !double.IsNaN(IconSize) ? IconSize : DaisyResourceLookup.GetDefaultIconSize(Size);
+            !double.IsNaN(IconSize) ? IconSize
+                : !double.IsNaN(ContainerIconSize) ? ContainerIconSize
+                : DaisyResourceLookup.GetDefaultIconSize(ResolvedSize);
 
         /// <summary>
         /// Gets the effective font size, computing from Size if not explicitly set.
         /// </summary>
         public double EffectiveFontSize =>
-            !double.IsNaN(FontSizeOverride) ? FontSizeOverride : DaisyResourceLookup.GetDefaultFontSize(Size);
+            !double.IsNaN(FontSizeOverride) ? FontSizeOverride : DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
 
         /// <summary>
         /// Gets the effective spacing, computing from Size if not explicitly set.
         /// </summary>
         public double EffectiveSpacing =>
-            !double.IsNaN(Spacing) ? Spacing : DaisyResourceLookup.GetDefaultIconSpacing(Size);
+            !double.IsNaN(Spacing) ? Spacing : DaisyResourceLookup.GetDefaultIconSpacing(ResolvedSize);
 
         /// <summary>
         /// Returns true if an icon should be displayed.
@@ -257,13 +272,7 @@ namespace Flowery.Controls
                 _foregroundCallbackToken = RegisterPropertyChangedCallback(ForegroundProperty, OnForegroundChanged);
             }
 
-            if (_rootPanel != null)
-            {
-                ApplyTheme();
-                return;
-            }
-
-            // Watch for Foreground changes to sync internal elements
+            // Rebuild from current properties, including changes made while unloaded.
             BuildVisualTree();
             ApplyTheme();
         }
@@ -271,6 +280,7 @@ namespace Flowery.Controls
         protected override void OnUnloaded()
         {
             base.OnUnloaded();
+            ContainerIconSize = double.NaN;
 
             if (_foregroundCallbackToken != 0)
             {
@@ -295,18 +305,14 @@ namespace Flowery.Controls
                 icon.Foreground = Foreground;
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplySizing();
+            ApplyLayout();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override void OnThemeChanged(string themeName)
         {
@@ -331,6 +337,8 @@ namespace Flowery.Controls
             if (d is DaisyIconText iconText && iconText.IsLoaded)
             {
                 iconText.ApplySizing();
+                if (e.Property == SizeProperty)
+                    iconText.ApplyLayout();
             }
         }
 
@@ -356,6 +364,9 @@ namespace Flowery.Controls
 
         protected virtual void BuildVisualTree()
         {
+            _iconViewbox = null;
+            _textBlock = null;
+
             // Create root panel
             _rootPanel = new StackPanel
             {

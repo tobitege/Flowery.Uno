@@ -142,18 +142,14 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
+            ScrollToSelectedDate(defer: true);
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #region Dependency Properties
 
@@ -331,7 +327,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyDateTimeline),
-                new PropertyMetadata(DaisySize.Medium, OnRebuildRequested));
+                new PropertyMetadata(DaisySize.Auto, OnRebuildRequested));
 
         public DaisySize Size
         {
@@ -616,7 +612,7 @@ namespace Flowery.Controls
             if (_headerTextBlock == null)
                 return;
 
-            var effectiveSize = GetEffectiveTimelineSize();
+            var effectiveSize = ResolvedSize;
             var sizeKey = DaisyResourceLookup.GetSizeKeyFull(effectiveSize);
             _effectiveItemWidth = ResolveItemWidth(effectiveSize, sizeKey);
             _effectiveItemSpacing = ResolveItemSpacing();
@@ -635,11 +631,6 @@ namespace Flowery.Controls
                 if (MaxWidth > 0 && MaxWidth < double.MaxValue) calculatedWidth = Math.Min(MaxWidth, calculatedWidth);
                 Width = calculatedWidth;
             }
-        }
-
-        private DaisySize GetEffectiveTimelineSize()
-        {
-            return FlowerySizeManager.ShouldIgnoreGlobalSize(this) ? Size : FlowerySizeManager.CurrentSize;
         }
 
         private double ResolveItemWidth(DaisySize size, string sizeKey)
@@ -828,7 +819,7 @@ namespace Flowery.Controls
                     markerLookup[marker.Date.Date] = marker.Text;
             }
 
-            var effectiveSize = GetEffectiveTimelineSize();
+            var effectiveSize = ResolvedSize;
             var itemWidth = _effectiveItemWidth > 0 ? _effectiveItemWidth : ItemWidth;
             var itemSpacing = _effectiveItemSpacing > 0 ? _effectiveItemSpacing : ItemSpacing;
 
@@ -1183,18 +1174,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #region Dependency Properties
 
@@ -1329,7 +1315,7 @@ namespace Flowery.Controls
         }
 
         public static readonly DependencyProperty SizeProperty =
-            DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyDateTimelineItem), new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+            DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyDateTimelineItem), new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -1433,11 +1419,11 @@ namespace Flowery.Controls
             _dayNumber.Foreground = baseContent;
 
             // Layout tweaks
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             if (Layout == DateItemLayout.Horizontal)
             {
                 _stack.Orientation = Orientation.Horizontal;
-                _stack.Spacing = GetHorizontalSpacingForSize(Size);
+                _stack.Spacing = GetHorizontalSpacingForSize(ResolvedSize);
                 _monthName.Visibility = Visibility.Collapsed;
 
                 _dayName.FontSize = DaisyResourceLookup.GetDouble($"DaisyDateTimeline{sizeKey}DayNameFontSize", 10);

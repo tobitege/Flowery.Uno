@@ -10,14 +10,14 @@ namespace Flowery.Controls
             if (_rootGrid == null) return;
 
             // All sizing tokens are integers and sum to Size for each DaisySize.
-            var barWidth = (int)DaisyResourceLookup.GetBatteryBarWidth(Size);
-            var barGap = (int)DaisyResourceLookup.GetBatteryBarGap(Size);
-            var stroke = (int)DaisyResourceLookup.GetBatteryStroke(Size);
-            var barCorner = (int)DaisyResourceLookup.GetBatteryBarCornerRadius(Size);
-            var shellCorner = (int)DaisyResourceLookup.GetBatteryShellCornerRadius(Size);
-            var tipWidth = (int)DaisyResourceLookup.GetBatteryTipWidth(Size);
-            var tipCorner = (int)DaisyResourceLookup.GetBatteryTipCornerRadius(Size);
-            var padding = (int)DaisyResourceLookup.GetBatteryInternalPadding(Size);
+            var barWidth = (int)DaisyResourceLookup.GetBatteryBarWidth(ResolvedSize);
+            var barGap = (int)DaisyResourceLookup.GetBatteryBarGap(ResolvedSize);
+            var stroke = (int)DaisyResourceLookup.GetBatteryStroke(ResolvedSize);
+            var barCorner = (int)DaisyResourceLookup.GetBatteryBarCornerRadius(ResolvedSize);
+            var shellCorner = (int)DaisyResourceLookup.GetBatteryShellCornerRadius(ResolvedSize);
+            var tipWidth = (int)DaisyResourceLookup.GetBatteryTipWidth(ResolvedSize);
+            var tipCorner = (int)DaisyResourceLookup.GetBatteryTipCornerRadius(ResolvedSize);
+            var padding = (int)DaisyResourceLookup.GetBatteryInternalPadding(ResolvedSize);
 
             const int barCount = 4;
 

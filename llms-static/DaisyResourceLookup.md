@@ -17,17 +17,20 @@ These methods safely retrieve values from a `ResourceDictionary`, searching merg
 
 ```csharp
 using Flowery.Theming;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 var resources = Application.Current.Resources;
 
 // Get a double value with fallback
-double height = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", 28);
+double height = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", 32);
 
 // Get a Thickness
-Thickness padding = DaisyResourceLookup.GetThickness(resources, "DaisyButtonMediumPadding", new Thickness(10, 0));
+Thickness padding = DaisyResourceLookup.GetThickness(resources, "DaisyButtonMediumPadding", new Thickness(12, 0));
 
 // Get a CornerRadius
-CornerRadius radius = DaisyResourceLookup.GetCornerRadius(resources, "DaisyCornerRadiusMedium", new CornerRadius(6));
+CornerRadius radius = DaisyResourceLookup.GetCornerRadius(resources, "DaisySizeMediumCornerRadius", new CornerRadius(8));
 
 // Get a Brush
 Brush primary = DaisyResourceLookup.GetBrush(resources, "DaisyPrimaryBrush", new SolidColorBrush(Colors.Blue));
@@ -37,7 +40,7 @@ Brush primary = DaisyResourceLookup.GetBrush(resources, "DaisyPrimaryBrush", new
 
 ```csharp
 // Shorter syntax when using app-level resources
-double height = DaisyResourceLookup.GetDouble("DaisySizeMediumHeight", 28);
+double height = DaisyResourceLookup.GetDouble("DaisySizeMediumHeight", 32);
 Brush primary = DaisyResourceLookup.GetBrush("DaisyPrimaryBrush");
 ```
 
@@ -54,45 +57,50 @@ if (DaisyResourceLookup.TryGetResource(resources, "MyCustomKey", out var value))
 ## Size Key Helpers
 
 Convert `DaisySize` enum values to string keys for resource lookups.
+Import `Flowery.Enums` for `DaisySize` and `Flowery.Theming` for `DaisyResourceLookup`.
 
 ### GetSizeKey - Abbreviated (XS, S, M, L, XL)
 
 ```csharp
-string key = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraSmall); // "XS"
-string key = DaisyResourceLookup.GetSizeKey(DaisySize.Medium);     // "M"
-string key = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraLarge); // "XL"
+string extraSmallKey = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraSmall); // "XS"
+string mediumKey = DaisyResourceLookup.GetSizeKey(DaisySize.Medium);         // "M"
+string extraLargeKey = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraLarge); // "XL"
 
-// Use for resources like "DaisyBadgeXSHeight"
-var resourceKey = $"DaisyBadge{GetSizeKey(size)}Height";
+// Abbreviated keys are useful for your own resource names.
+var resourceKey = $"MyBadge{DaisyResourceLookup.GetSizeKey(DaisySize.ExtraSmall)}Height";
 ```
 
 ### GetSizeKeyFull - Full Name
 
 ```csharp
-string key = DaisyResourceLookup.GetSizeKeyFull(DaisySize.ExtraSmall); // "ExtraSmall"
-string key = DaisyResourceLookup.GetSizeKeyFull(DaisySize.Medium);     // "Medium"
+string extraSmallKey = DaisyResourceLookup.GetSizeKeyFull(DaisySize.ExtraSmall); // "ExtraSmall"
+string mediumKey = DaisyResourceLookup.GetSizeKeyFull(DaisySize.Medium);         // "Medium"
 
 // Use for resources like "DaisySizeExtraSmallHeight"
-var resourceKey = $"DaisySize{GetSizeKeyFull(size)}Height";
+var resourceKey = $"DaisySize{DaisyResourceLookup.GetSizeKeyFull(DaisySize.Medium)}Height";
 ```
 
 ## Default Sizing Methods
 
-These methods return hardcoded default values for each `DaisySize`. They're used as fallbacks when resources aren't defined.
+Pass a concrete tier to these helpers. For a Daisy control with automatic sizing, use `ResolvedSize` instead of its authored `Size`.
+The default helpers return fallback dimensions; resource lookup is a separate operation. Avatar helpers also read their named tokens.
+Use `DaisyResourceLookup.EnsureTokens()` before reading startup tokens. Built-in sizing tokens use full tier names, such as `DaisyBadgeExtraSmallHeight`.
 
 ### Available Methods
 
 | Method | Returns | XS | S | M | L | XL |
 | ------ | ------- | -- | - | - | - | -- |
-| `GetDefaultHeight(size)` | double | 22 | 24 | 28 | 32 | 36 |
-| `GetDefaultFloatingInputHeight(size)` | double | 28 | 32 | 36 | 40 | 44 |
-| `GetDefaultFontSize(size)` | double | 9 | 10 | 12 | 14 | 16 |
+| `GetDefaultHeight(size)` desktop | double | 24 | 28 | 32 | 36 | 40 |
+| `GetDefaultHeight(size)` mobile | double | 36 | 40 | 44 | 48 | 56 |
+| `GetDefaultFloatingInputHeight(size)` desktop | double | 36 | 40 | 44 | 48 | 50 |
+| `GetDefaultFloatingInputHeight(size)` mobile | double | 44 | 48 | 52 | 56 | 64 |
+| `GetDefaultFontSize(size)` | double | 10 | 12 | 14 | 18 | 20 |
 | `GetDefaultHeaderFontSize(size)` | double | 14 | 16 | 20 | 24 | 28 |
-| `GetDefaultIconSize(size)` | double | 10 | 12 | 14 | 16 | 18 |
-| `GetDefaultIconSpacing(size)` | double | 3 | 4 | 6 | 6 | 8 |
+| `GetDefaultIconSize(size)` | double | 8 | 12 | 16 | 20 | 24 |
+| `GetDefaultIconSpacing(size)` | double | 4 | 4 | 8 | 8 | 8 |
 | `GetDefaultSwatchSize(size)` | double | 6 | 8 | 10 | 12 | 14 |
-| `GetDefaultPadding(size)` | Thickness | 6,0 | 8,0 | 10,0 | 12,0 | 14,0 |
-| `GetDefaultCornerRadius(size)` | CornerRadius | 2 | 4 | 6 | 8 | 10 |
+| `GetDefaultPadding(size)` | Thickness | 8,0 | 8,0 | 12,0 | 12,0 | 16,0 |
+| `GetDefaultCornerRadius(size)` | CornerRadius | 4 | 4 | 8 | 8 | 12 |
 | `GetSizeValue(size)` | double | 14 | 20 | 26 | 38 | 52 |
 
 ### Specialized Methods
@@ -115,7 +123,7 @@ These methods return hardcoded default values for each `DaisySize`. They're used
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `GetAvatarSize(size)` | double | Avatar width/height (22-80) |
+| `GetAvatarSize(size)` | double | Reads the avatar token; fallback width/height 22-80 |
 | `GetAvatarStatusSize(size)` | double | Status indicator size (5-16) |
 | `GetAvatarFontSize(size)` | double | Placeholder text font size |
 | `GetAvatarIconSize(size)` | double | Avatar icon size |
@@ -124,14 +132,17 @@ These methods return hardcoded default values for each `DaisySize`. They're used
 
 ## Usage in Custom Controls
 
+These methods assume a `DaisyBaseContentControl` subclass with `ResolvedSize`.
+Use the [registration and refresh contract](FlowerySizeManager.md#custom-controls) to keep its visuals current.
+
 ### Pattern 1: Direct Defaults (Simple)
 
 ```csharp
 private void ApplySizing()
 {
-    Height = DaisyResourceLookup.GetDefaultHeight(Size);
-    FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
-    Padding = DaisyResourceLookup.GetDefaultPadding(Size);
+    Height = DaisyResourceLookup.GetDefaultHeight(ResolvedSize);
+    FontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
+    Padding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize);
 }
 ```
 
@@ -141,31 +152,26 @@ private void ApplySizing()
 private void ApplySizing()
 {
     var resources = Application.Current?.Resources;
-    var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+    var size = ResolvedSize;
+    var sizeKey = DaisyResourceLookup.GetSizeKeyFull(size);
 
     Height = DaisyResourceLookup.GetDouble(resources, 
         $"DaisySize{sizeKey}Height", 
-        DaisyResourceLookup.GetDefaultHeight(Size));
+        DaisyResourceLookup.GetDefaultHeight(size));
 
     FontSize = DaisyResourceLookup.GetDouble(resources, 
         $"DaisySize{sizeKey}FontSize", 
-        DaisyResourceLookup.GetDefaultFontSize(Size));
+        DaisyResourceLookup.GetDefaultFontSize(size));
 }
 ```
 
 ### Pattern 3: Control-Specific Resources
 
-```csharp
-private void ApplySizing()
-{
-    var resources = Application.Current?.Resources;
-    var sizeKey = DaisyResourceLookup.GetSizeKey(Size); // "XS", "S", "M", etc.
+Control-specific keys also use full tier names. For example, read a Medium badge height with its own fallback:
 
-    // Look for control-specific resource first, fall back to default
-    Height = DaisyResourceLookup.GetDouble(resources, 
-        $"DaisyBadge{sizeKey}Height", 
-        DaisyResourceLookup.GetDefaultHeight(Size));
-}
+```csharp
+var resources = Application.Current?.Resources;
+double badgeHeight = DaisyResourceLookup.GetDouble(resources, "DaisyBadgeMediumHeight", 24);
 ```
 
 ## Overriding Defaults via Resources
@@ -180,8 +186,8 @@ You can override any default value by defining resources in your app:
     <x:Double x:Key="DaisySizeMediumHeight">26</x:Double>
     
     <!-- Override control-specific values -->
-    <x:Double x:Key="DaisyBadgeXSHeight">18</x:Double>
-    <x:Double x:Key="DaisyButtonLHeight">40</x:Double>
+    <x:Double x:Key="DaisyBadgeExtraSmallHeight">18</x:Double>
+    <x:Double x:Key="DaisySizeLargeHeight">40</x:Double>
 </Application.Resources>
 ```
 

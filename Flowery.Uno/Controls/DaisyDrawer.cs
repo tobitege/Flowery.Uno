@@ -27,10 +27,7 @@ namespace Flowery.Controls
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 ApplyTheme,
-                () => DaisySize.Medium,
-                _ => { },
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;

@@ -52,10 +52,7 @@ namespace Flowery.Controls
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 SyncState,
-                () => DaisySize.Medium,
-                _ => { },
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
 
             TransitionEffect = SwapEffect.Rotate;
             Click += OnClick;

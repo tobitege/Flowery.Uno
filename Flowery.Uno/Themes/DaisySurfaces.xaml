@@ -8,7 +8,6 @@
     <Style TargetType="controls:DaisyCard">
         <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
-        <Setter Property="BodyPadding" Value="32" />
         <Setter Property="BodyFontSize" Value="14" />
         <Setter Property="TitleFontSize" Value="20" />
         <Setter Property="IconSize" Value="56" />
@@ -59,7 +58,7 @@
                                     <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
 
                                     <Border x:Name="PART_BuiltInLayout"
-                                            Padding="{TemplateBinding BodyPadding}"
+                                            Padding="{TemplateBinding ResolvedBodyPadding}"
                                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                                         <StackPanel Orientation="Vertical" Spacing="12">
@@ -121,7 +120,6 @@
     <Style TargetType="controls:DaisyPatternedCard">
         <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
-        <Setter Property="BodyPadding" Value="32" />
         <Setter Property="BodyFontSize" Value="14" />
         <Setter Property="TitleFontSize" Value="20" />
         <Setter Property="IconSize" Value="56" />
@@ -162,7 +160,7 @@
                                 <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
 
                                 <Border x:Name="PART_BuiltInLayout"
-                                        Padding="{TemplateBinding BodyPadding}"
+                                        Padding="{TemplateBinding ResolvedBodyPadding}"
                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                                     <StackPanel Orientation="Vertical" Spacing="12">
@@ -271,7 +269,6 @@
     <Style TargetType="controls:DaisyExpandableCard">
         <Setter Property="Background" Value="{ThemeResource DaisyBase100Brush}" />
         <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
-        <Setter Property="BodyPadding" Value="32" />
         <Setter Property="BodyFontSize" Value="14" />
         <Setter Property="TitleFontSize" Value="20" />
         <Setter Property="Margin" Value="0,12,0,12" />
@@ -312,7 +309,7 @@
                                 <!-- Layer for patterns (behind everything, fills the card) -->
                                 <Canvas x:Name="PART_PatternLayer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
 
-                                <Grid Margin="{TemplateBinding BodyPadding}">
+                                <Grid x:Name="PART_BodyLayout" Margin="{TemplateBinding ResolvedBodyPadding}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />

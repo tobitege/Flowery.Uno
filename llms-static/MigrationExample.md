@@ -69,7 +69,7 @@ Initialize the theme in your `App.xaml.cs`:
 protected override void OnLaunched(LaunchActivatedEventArgs args)
 {
     // Initialize default tokens and apply a theme
-    DaisyTokenDefaults.EnsureDefaults();
+    Flowery.Theming.DaisyResourceLookup.EnsureTokens();
     DaisyThemeManager.ApplyTheme("Dark");
     
     // ... rest of your startup code
@@ -167,7 +167,7 @@ protected override void OnLaunched(LaunchActivatedEventArgs args)
     DaisyThemeManager.CustomThemeApplicator = ApplyThemeCustom;
 
     // Initialize tokens
-    DaisyTokenDefaults.EnsureDefaults();
+    Flowery.Theming.DaisyResourceLookup.EnsureTokens();
 
     // Load saved theme or use default
     var savedTheme = Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] as string;

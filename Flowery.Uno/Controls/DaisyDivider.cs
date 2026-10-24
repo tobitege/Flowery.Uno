@@ -82,7 +82,7 @@ namespace Flowery.Controls
         }
 
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
-            nameof(Size), typeof(DaisySize), typeof(DaisyDivider), new PropertyMetadata(DaisySize.Small, OnSizeChanged));
+            nameof(Size), typeof(DaisySize), typeof(DaisyDivider), new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
 
         /// <summary>
         /// Gets or sets the size of the divider.
@@ -224,23 +224,17 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
+        protected override DaisySize DefaultSize => DaisySize.Small;
 
         #region Sizing Helpers
-
-        private DaisySize EffectiveSize =>
-            FlowerySizeManager.ShouldIgnoreGlobalSize(this) ? Size : FlowerySizeManager.CurrentSize;
 
         private double GetThickness()
         {
@@ -249,19 +243,19 @@ namespace Flowery.Controls
 
         private double GetFontSize()
         {
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(EffectiveSize);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             return DaisyResourceLookup.GetDouble($"DaisyDivider{sizeKey}FontSize", 12d);
         }
 
         private double GetTextPadding()
         {
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(EffectiveSize);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             return DaisyResourceLookup.GetDouble($"DaisyDivider{sizeKey}TextPadding", 12d);
         }
 
         private double GetMargin()
         {
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(EffectiveSize);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             return DaisyResourceLookup.GetDouble($"DaisyDivider{sizeKey}Margin", 3d);
         }
 

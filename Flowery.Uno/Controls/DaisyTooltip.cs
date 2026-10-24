@@ -115,14 +115,19 @@ namespace Flowery.Controls
         {
             base.OnLoaded();
 
-            if (_toolTip != null)
-            {
-                ApplyColors();
-                return;
-            }
-
-            SetupToolTip();
+            if (_toolTip == null)
+                SetupToolTip();
             ApplyColors();
+            // IsOpen set before loading, or kept true while unloaded, opens the tooltip now.
+            _toolTip!.IsOpen = IsOpen;
+        }
+
+        protected override void OnUnloaded()
+        {
+            // The native tooltip is a separate popup; it would stay on screen without its owner.
+            if (_toolTip != null)
+                _toolTip.IsOpen = false;
+            base.OnUnloaded();
         }
 
         protected override void OnThemeChanged(string themeName)

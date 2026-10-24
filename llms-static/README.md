@@ -1,4 +1,4 @@
-# Primary Documentation (llms-static/)
+# Primary Documentation (llms-static/)
 
 This folder holds the **curated, hand-written** documentation for Flowery.Uno. Files here are the primary source for both the generated site (`docs/`) and the machine-readable `docs/llms.txt`.
 
@@ -38,7 +38,7 @@ What the control does and when to use it.
 | Size | Description |
 | --- | --- |
 | Small | Compact |
-| Medium | Default |
+| Auto | Automatic size (default). Read `ResolvedSize` for the effective tier |
 
 ## Quick Examples
 ```xml

@@ -108,14 +108,17 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="DaisyThemeControllerCheckboxTemplate" TargetType="controls:DaisyThemeController">
-        <Grid Background="Transparent">
-            <Border Width="48"
-                    Height="48"
+        <Grid x:Name="CheckboxRoot" Background="Transparent">
+            <Border x:Name="CheckboxMode"
+                    Width="20"
+                    Height="20"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
                     CornerRadius="8"
                     Background="{ThemeResource DaisyBase300Brush}">
                 <Path x:Name="CheckMark"
-                      Width="24"
-                      Height="24"
+                      Width="12"
+                      Height="12"
                       Fill="{ThemeResource DaisyBaseContentBrush}"
                       Opacity="0"
                       Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
@@ -246,7 +249,7 @@
             <TextBlock Text="{TemplateBinding UncheckedLabel}"
                        Foreground="{ThemeResource DaisyBaseContentBrush}"
                        VerticalAlignment="Center"
-                       FontSize="14" />
+                       FontSize="{TemplateBinding FontSize}" />
             <Border Width="48"
                     Height="24"
                     CornerRadius="12"
@@ -267,7 +270,7 @@
             <TextBlock Text="{TemplateBinding CheckedLabel}"
                        Foreground="{ThemeResource DaisyBaseContentBrush}"
                        VerticalAlignment="Center"
-                       FontSize="14" />
+                       FontSize="{TemplateBinding FontSize}" />
 
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CheckStates">

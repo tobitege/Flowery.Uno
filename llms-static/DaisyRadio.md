@@ -15,11 +15,13 @@ DaisyRadio is a styled `RadioButton` with **8 color variants** and **5 size pres
 
 ## Size Options
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier used to render the control. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 | Size | Outer | Inner | Use Case |
 | --- | --- | --- | --- |
 | ExtraSmall | 14px | 8px | Dense tables/toolbars. |
 | Small | 16px | 10px | Compact forms. |
-| Medium (default) | 20px | 12px | General usage. |
+| Medium | 20px | 12px | General usage. |
 | Large | 24px | 14px | Spacious layouts or touch targets. |
 | ExtraLarge | 28px | 16px | Hero sections or large touch targets. |
 

@@ -85,6 +85,11 @@
     </ItemGroup>
   </Target>
 
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'android' Or '$(TargetPlatformIdentifier)' == 'browserwasm'">
+    <!-- Layout rounding is supported on Windows and Skia Desktop, but not these native API surfaces. -->
+    <ExcludeXamlNamespaces Include="rounding" />
+  </ItemGroup>
+
   <!-- SkiaSharp for cross-platform image processing and effects -->
   <ItemGroup>
     <PackageReference Include="SkiaSharp" />

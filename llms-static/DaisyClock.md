@@ -33,7 +33,7 @@ DaisyClock is a comprehensive "batteries included" clock control that displays t
 | `Separator` | `string` | `":"` | Separator between time units (used with `LabelFormat.None`). |
 | `Format` | `ClockFormat` | `TwentyFourHour` | 12-hour or 24-hour format. |
 | `ShowAmPm` | `bool` | `false` | Whether to show AM/PM suffix (only in 12h mode). |
-| `Size` | `DaisySize` | `Medium` | Size of the clock display. |
+| `Size` | `DaisySize` | `Auto` | Size of the clock display; `ResolvedSize` exposes the concrete tier from [global sizing](FlowerySizeManager.md). |
 | `Spacing` | `double` | `6.0` | Spacing between time units. |
 | `UseJoin` | `bool` | `false` | Use DaisyJoin for a segmented appearance. |
 | `TimerDuration` | `TimeSpan` | `5 minutes` | Duration for Timer mode. |

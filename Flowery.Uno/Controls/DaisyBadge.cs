@@ -71,7 +71,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyBadge),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// The size of the badge.
@@ -137,18 +137,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -170,10 +165,10 @@ namespace Flowery.Controls
             if (_border == null) return;
 
             // Get sizing from tokens (guaranteed by EnsureDefaults)
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             var tokenHeight = DaisyResourceLookup.GetDouble($"DaisyBadge{sizeKey}Height", 20);
             var tokenPadding = DaisyResourceLookup.GetThickness($"DaisyBadge{sizeKey}Padding", new Thickness(8, 0, 8, 0));
-            var tokenCornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(Size);
+            var tokenCornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(ResolvedSize);
 
             // Apply to _border for cross-platform rendering
             // BUT respect explicit user-set values (check if property was set locally)

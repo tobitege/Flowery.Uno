@@ -51,6 +51,14 @@ namespace Flowery.Controls
             DefaultStyleKey = typeof(DaisyGlass);
             CornerRadius = new CornerRadius(16);
             IsTabStop = false;
+            RegisterPropertyChangedCallback(PaddingProperty, OnPaddingPropertyChanged);
+        }
+
+        // The visual tree is built in code without a template, so Padding has to reach the content here.
+        private void OnPaddingPropertyChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (_contentPresenter != null)
+                _contentPresenter.Margin = Padding;
         }
 
         #region Dependency Properties
@@ -312,6 +320,7 @@ namespace Flowery.Controls
             _contentPresenter = new ContentPresenter
             {
                 Content = _userContent,
+                Margin = Padding,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };

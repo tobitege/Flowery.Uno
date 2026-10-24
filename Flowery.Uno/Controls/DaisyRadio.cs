@@ -30,15 +30,13 @@ namespace Flowery.Controls
         public DaisyRadio()
         {
             DefaultStyleKey = typeof(DaisyRadio);
-            _neumorphic = DaisyNeumorphicParticipant.Create(this, GetNeumorphicSurfaces, () => Size);
+            _neumorphic = DaisyNeumorphicParticipant.Create(this, GetNeumorphicSurfaces, () => ResolvedSize);
 
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 ApplyAll,
-                () => Size,
-                s => Size = s,
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
+            FlowerySizeManager.Register(this, ApplyAll, () => ResolvedSize);
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
@@ -68,13 +66,15 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyRadio),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
             get => (DaisySize)GetValue(SizeProperty);
             set => SetValue(SizeProperty, value);
         }
+
+        public DaisySize ResolvedSize => FlowerySizeManager.ResolveSize(this, Size);
 
         #endregion
 
@@ -146,7 +146,7 @@ namespace Flowery.Controls
                 return;
 
             // Get sizing from tokens (guaranteed by EnsureDefaults)
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             double boxSize = DaisyResourceLookup.GetDouble($"DaisyRadio{sizeKey}Size", 20);
             double dotSize = DaisyResourceLookup.GetDouble($"DaisyRadioDot{sizeKey}Size", 12);
 
@@ -160,7 +160,7 @@ namespace Flowery.Controls
             if (!_hasFontSizeOverride)
             {
                 SetFontSize(DaisyResourceLookup.GetDouble($"DaisyRadio{sizeKey}FontSize",
-                    DaisyResourceLookup.GetDefaultFontSize(Size)));
+                    DaisyResourceLookup.GetDefaultFontSize(ResolvedSize)));
             }
         }
 

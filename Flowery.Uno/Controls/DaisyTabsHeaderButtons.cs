@@ -147,7 +147,7 @@ namespace Flowery.Controls
         /// </summary>
         public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyTabsHeaderButtons),
-                new PropertyMetadata(DaisySize.Small, OnSizePropertyChanged));
+                new PropertyMetadata(DaisySize.Auto, OnSizePropertyChanged));
 
         /// <summary>
         /// Gets or sets the size of the buttons and icons.
@@ -327,20 +327,17 @@ namespace Flowery.Controls
         }
 
         /// <inheritdoc/>
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            UpdateButtonSizes();
         }
 
         /// <inheritdoc/>
         protected override DaisySize? GetControlSize() => Size;
 
         /// <inheritdoc/>
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
+        protected override DaisySize DefaultSize => DaisySize.Small;
 
         #endregion
 
@@ -414,7 +411,7 @@ namespace Flowery.Controls
 
         private void UpdateButtonSizes()
         {
-            var size = Size;
+            var size = ResolvedSize;
             var iconSize = FloweryScaleManager.ApplyScale(DaisyResourceLookup.GetDefaultIconSize(size), _scaleFactor);
 
             foreach (var button in new[] { _previousButton, _nextButton, _viewMenuButton })

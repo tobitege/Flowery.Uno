@@ -1,5 +1,7 @@
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyWeatherCurrent is a standalone widget for showing the current weather state. It features a large animated weather icon, prominent temperature display, and supporting information like "feels like" and sun times.
 
 ## Properties
@@ -15,7 +17,7 @@ DaisyWeatherCurrent is a standalone widget for showing the current weather state
 | `TemperatureUnit` | `string` | `"C"` | Temperature unit (C or F) |
 | `ShowSunTimes` | `bool` | `true` | Whether to show sunrise/sunset |
 | `DateFormat` | `string` | `"dddd, d MMMM"` | Date display format (e.g., "ddd, d MMM" for short) |
-| `Size` | `DaisySize` | `Medium` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
+| `Size` | `DaisySize` | `Auto` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
 
 ## Quick Examples
 

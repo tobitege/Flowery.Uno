@@ -142,7 +142,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyMockup),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -155,14 +155,9 @@ namespace Flowery.Controls
         #region Size Scaling
 
         /// <summary>
-        /// Gets the effective size (Size property is updated by lifecycle for global size changes).
-        /// </summary>
-        private DaisySize EffectiveSize => Size;
-
-        /// <summary>
         /// Size scale factors for different DaisySize values.
         /// </summary>
-        private double SizeScale => EffectiveSize switch
+        private double SizeScale => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 0.65,
             DaisySize.Small => 0.8,
@@ -171,7 +166,7 @@ namespace Flowery.Controls
             _ => 1.0
         };
 
-        private double HeaderHeight => EffectiveSize switch
+        private double HeaderHeight => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 22,
             DaisySize.Small => 26,
@@ -180,7 +175,7 @@ namespace Flowery.Controls
             _ => 32
         };
 
-        private double BrowserHeaderHeight => EffectiveSize switch
+        private double BrowserHeaderHeight => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 36,
             DaisySize.Small => 44,
@@ -189,7 +184,7 @@ namespace Flowery.Controls
             _ => 52
         };
 
-        private double TrafficDotSize => EffectiveSize switch
+        private double TrafficDotSize => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 8,
             DaisySize.Small => 10,
@@ -198,7 +193,7 @@ namespace Flowery.Controls
             _ => 12
         };
 
-        private double CornerRadiusValue => EffectiveSize switch
+        private double CornerRadiusValue => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 10,
             DaisySize.Small => 12,
@@ -207,7 +202,7 @@ namespace Flowery.Controls
             _ => 16
         };
 
-        private double UrlBarCornerRadius => EffectiveSize switch
+        private double UrlBarCornerRadius => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 5,
             DaisySize.Small => 6,
@@ -216,7 +211,7 @@ namespace Flowery.Controls
             _ => 8
         };
 
-        private double UrlFontSize => EffectiveSize switch
+        private double UrlFontSize => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 10,
             DaisySize.Small => 11,
@@ -225,7 +220,7 @@ namespace Flowery.Controls
             _ => 13
         };
 
-        private double WindowsButtonWidth => EffectiveSize switch
+        private double WindowsButtonWidth => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 28,  // Minimum for visibility
             DaisySize.Small => 34,
@@ -234,7 +229,7 @@ namespace Flowery.Controls
             _ => 42
         };
 
-        private double LinuxButtonSize => EffectiveSize switch
+        private double LinuxButtonSize => ResolvedSize switch
         {
             DaisySize.ExtraSmall => 18,  // Minimum for visibility
             DaisySize.Small => 20,
@@ -312,19 +307,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
             OnSizeChanged();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {

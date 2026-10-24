@@ -235,7 +235,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyClock),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of the clock display.
@@ -509,18 +509,13 @@ namespace Flowery.Controls
             UpdateDisplay();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         private void OnCultureChanged(object? sender, string e)
         {
@@ -772,7 +767,7 @@ namespace Flowery.Controls
 
         private TextBlock CreateFlipDigit()
         {
-            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize);
             return new TextBlock
             {
                 Text = "00",
@@ -786,7 +781,7 @@ namespace Flowery.Controls
 
         private TextBlock CreateFlipSeparator()
         {
-            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize);
             return new TextBlock
             {
                 Text = Separator,
@@ -828,7 +823,7 @@ namespace Flowery.Controls
 
         private TextBlock CreatePlainTextBlock()
         {
-            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize);
             return new TextBlock
             {
                 Text = "00:00:00",
@@ -844,7 +839,7 @@ namespace Flowery.Controls
             var countdown = new DaisyCountdown
             {
                 Digits = 2,
-                Size = Size,
+                Size = ResolvedSize,
                 ClockUnit = CountdownClockUnit.None, // We manage time ourselves
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -859,7 +854,7 @@ namespace Flowery.Controls
 
         private Grid CreateSeparator()
         {
-            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize);
 
             // Wrap in Grid like DaisyCountdown for consistent vertical alignment
             var grid = new Grid
@@ -1261,12 +1256,12 @@ namespace Flowery.Controls
         private void ApplySizing()
         {
             // Update countdown controls
-            if (_hoursCountdown != null) _hoursCountdown.Size = Size;
-            if (_minutesCountdown != null) _minutesCountdown.Size = Size;
-            if (_secondsCountdown != null) _secondsCountdown.Size = Size;
+            if (_hoursCountdown != null) _hoursCountdown.Size = ResolvedSize;
+            if (_minutesCountdown != null) _minutesCountdown.Size = ResolvedSize;
+            if (_secondsCountdown != null) _secondsCountdown.Size = ResolvedSize;
 
             // Update separator font size
-            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize);
 
             // Separators are wrapped in Grid - get the TextBlock inside
             if (GetSeparatorTextBlock(_separator1) is TextBlock sep1) sep1.FontSize = fontSize;

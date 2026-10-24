@@ -44,11 +44,6 @@ namespace Flowery.Controls
             DefaultStyleKey = typeof(DaisyInput);
             IsTabStop = false;
 
-            // Apply global size early if allowed and not explicitly ignored.
-            if (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-            {
-                Size = FlowerySizeManager.CurrentSize;
-            }
         }
 
         protected override void OnLoaded()
@@ -109,10 +104,10 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         /// <summary>
@@ -192,11 +187,6 @@ namespace Flowery.Controls
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
-
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
             return _inputBorder ?? base.GetNeumorphicHostElement();
@@ -271,7 +261,6 @@ namespace Flowery.Controls
             _optionalText = new TextBlock
             {
                 Text = FloweryLocalization.GetStringInternal("Input_Optional", "Optional"),
-                Opacity = 0.7,
                 Visibility = Visibility.Collapsed
             };
             _labelPanel.Children.Add(_optionalText);
@@ -282,7 +271,6 @@ namespace Flowery.Controls
             // Row 1: Hint text
             _hintTextBlock = new TextBlock
             {
-                Opacity = 0.7,
                 Margin = new Thickness(0, 0, 0, 4),
                 Visibility = Visibility.Collapsed
             };
@@ -475,7 +463,6 @@ namespace Flowery.Controls
             // Row 3: Helper text
             _helperTextBlock = new TextBlock
             {
-                Opacity = 0.7,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(0, 4, 0, 0),
                 Visibility = Visibility.Collapsed
@@ -580,17 +567,17 @@ namespace Flowery.Controls
             // Calculate the vertical offset to center the label in the input when not floating.
             // Input row has top margin (floatingTopSpace) + input height.
             // The label should be centered in the input area, not at the top of the row.
-            var inputHeight = _inputBorder?.MinHeight > 0 ? _inputBorder.MinHeight : DaisyResourceLookup.GetDefaultHeight(Size);
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var inputHeight = _inputBorder?.MinHeight > 0 ? _inputBorder.MinHeight : DaisyResourceLookup.GetDefaultHeight(ResolvedSize);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             var floatingHeight = resources != null
                 ? DaisyResourceLookup.GetDouble(resources, $"DaisyInputFloating{sizeKey}Height", inputHeight)
                 : inputHeight;
 
             // SYNC-CRITICAL: Must match ApplySizing logic precisely
-            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
-            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
-                DaisyResourceLookup.GetDefaultLineHeight(Size));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(ResolvedSize));
             var labelFontSize = fontSize * 0.85;
             var labelHeight = labelFontSize * 1.5;
             var minFloatingTopSpace = labelHeight + 6;
@@ -604,7 +591,7 @@ namespace Flowery.Controls
             if (shouldFloat)
             {
                 // Floated state: label stays at top (TranslateY = 0), scaled down
-                targetScale = Size == DaisySize.ExtraSmall ? 0.80 : 0.85;
+                targetScale = ResolvedSize == DaisySize.ExtraSmall ? 0.80 : 0.85;
                 targetTranslateY = 0.0;  // At top of row (above the input border)
                 targetOpacity = 1.0;
                 transformDelay = TimeSpan.FromMilliseconds(50);
@@ -931,7 +918,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyInput),
-                new PropertyMetadata(DaisySize.Medium, OnAppearancePropertyChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearancePropertyChanged));
 
         public DaisySize Size
         {
@@ -1300,13 +1287,13 @@ namespace Flowery.Controls
 
         private void ApplySizing(ResourceDictionary? resources)
         {
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
-            var height = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "Height",
-                DaisyResourceLookup.GetDefaultHeight(Size));
-            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
-            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
-                DaisyResourceLookup.GetDefaultLineHeight(Size));
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
+            var height = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "Height",
+                DaisyResourceLookup.GetDefaultHeight(ResolvedSize));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(ResolvedSize));
             var labelFontSize = fontSize * 0.85;
             var effectiveMinHeight = Math.Max(height, MinHeight);
             var hasFloatingLabel = LabelPosition == DaisyLabelPosition.Floating && !string.IsNullOrEmpty(Label);
@@ -1365,12 +1352,12 @@ namespace Flowery.Controls
                     // Floating labels have taller height - just need +1 for all sizes
                     topPadding = verticalPadding + 1;
                 }
-                else if (Size <= DaisySize.Small)
+                else if (ResolvedSize <= DaisySize.Small)
                 {
                     // XS, S need +2 adjustment (tight height)
                     topPadding = verticalPadding + 2;
                 }
-                else if (Size == DaisySize.Medium)
+                else if (ResolvedSize == DaisySize.Medium)
                 {
                     // M needs +1 adjustment
                     topPadding = verticalPadding + 1;
@@ -1383,7 +1370,7 @@ namespace Flowery.Controls
                 var bottomPadding = verticalPadding;
 
                 var hasLocalPadding = ReadLocalValue(Control.PaddingProperty) != DependencyProperty.UnsetValue;
-                var defaultPadding = DaisyResourceLookup.GetDefaultPadding(Size);
+                var defaultPadding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize);
                 var tokenPadding = resources != null
                     ? DaisyResourceLookup.GetThickness(resources, $"DaisyInput{sizeKey}Padding", defaultPadding)
                     : defaultPadding;
@@ -1463,7 +1450,7 @@ namespace Flowery.Controls
             }
 
             // Icon sizes based on Size
-            var iconSize = Size switch
+            var iconSize = ResolvedSize switch
             {
                 DaisySize.ExtraSmall => 12.0,
                 DaisySize.Small => 14.0,
@@ -1508,6 +1495,9 @@ namespace Flowery.Controls
             var baseContent = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentBrush", new SolidColorBrush(Colors.Black));
             var neutral = DaisyResourceLookup.GetBrush(resources, "DaisyNeutralBrush", base300);
             var error = DaisyResourceLookup.GetBrush(resources, "DaisyErrorBrush", new SolidColorBrush(Colors.IndianRed));
+            var muted = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentMutedBrush", baseContent);
+            var subtle = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentSubtleBrush", baseContent);
+            var disabled = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentDisabledBrush", baseContent);
 
             // Get variant name for resource lookup
             var variantName = Variant switch
@@ -1620,18 +1610,10 @@ namespace Flowery.Controls
                 // Override internal TextBox states to prevent them from using system highlight colors
                 _textBox.Resources["TextControlForegroundPointerOver"] = textForeground;
                 _textBox.Resources["TextControlForegroundFocused"] = textForeground;
-                _textBox.Resources["TextControlForegroundDisabled"] = textForeground;
+                _textBox.Resources["TextControlForegroundDisabled"] = disabled;
 
                 // Set placeholder color
-                if (placeholderOverride != null)
-                {
-                    _textBox.PlaceholderForeground = placeholderOverride;
-                }
-                else if (textForeground is SolidColorBrush scb)
-                {
-                    var placeholderColor = Color.FromArgb(153, scb.Color.R, scb.Color.G, scb.Color.B); // ~60% opacity
-                    _textBox.PlaceholderForeground = new SolidColorBrush(placeholderColor);
-                }
+                _textBox.PlaceholderForeground = placeholderOverride ?? subtle;
             }
 
             if (_labelText != null)
@@ -1646,17 +1628,17 @@ namespace Flowery.Controls
 
             if (_optionalText != null)
             {
-                _optionalText.Foreground = textForeground;
+                _optionalText.Foreground = muted;
             }
 
             if (_hintTextBlock != null)
             {
-                _hintTextBlock.Foreground = textForeground;
+                _hintTextBlock.Foreground = muted;
             }
 
             if (_helperTextBlock != null)
             {
-                _helperTextBlock.Foreground = textForeground;
+                _helperTextBlock.Foreground = muted;
             }
 
             if (_startIconPath != null)

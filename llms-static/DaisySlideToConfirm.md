@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the effective tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisySlideToConfirm is a "slide to confirm" control that requires the user to drag a handle across a track to confirm an action. This pattern prevents accidental triggers for destructive or important operations like power-off, delete, or payment confirmation.
 
 Key features:
@@ -19,7 +21,7 @@ Key features:
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | **Variant** | `DaisySlideToConfirmVariant` | `Default` | Color variant (Primary, Success, Error, etc.). |
-| **Size** | `DaisySize` | `Medium` | Control size (ExtraSmall to ExtraLarge). |
+| **Size** | `DaisySize` | `Auto` | Control size (ExtraSmall to ExtraLarge). |
 | **Text** | `string` | `"SLIDE TO CONFIRM"` | Label text displayed on the track. |
 | **ConfirmingText** | `string` | `"CONFIRMING..."` | Text displayed after the slide is completed. |
 | **SlideColor** | `Color` | (from Variant) | Color the track transitions to as the user slides. |

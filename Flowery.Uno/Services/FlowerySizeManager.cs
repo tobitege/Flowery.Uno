@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Flowery.Theming;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -32,6 +30,12 @@ namespace Flowery.Controls
         Header
     }
 
+    internal interface IDaisySizeScope
+    {
+        DaisySize? ChildSizeOverride { get; }
+        DaisySize? ChildSizeFallback { get; }
+    }
+
     /// <summary>
     /// Centralized size manager for DaisyUI controls (Uno/WinUI).
     /// </summary>
@@ -39,21 +43,114 @@ namespace Flowery.Controls
     {
         private static DaisySize _currentSize = DaisySize.Medium;
 
-        // Cache for SizeProperty DependencyProperty by type
-        private static readonly Dictionary<Type, DependencyProperty?> _sizeDPCache = [];
+        private static readonly HashSet<SizeRegistration> LoadedControls = [];
+        private static bool _useGlobalSizeByDefault = true;
+        private static bool _enableGlobalAutoSize = true;
 
         public static readonly DependencyProperty IgnoreGlobalSizeProperty =
             DependencyProperty.RegisterAttached(
                 "IgnoreGlobalSize",
                 typeof(bool),
                 typeof(FlowerySizeManager),
-                new PropertyMetadata(false));
+                new PropertyMetadata(false, OnIgnoreGlobalSizeChanged));
 
         public static bool GetIgnoreGlobalSize(DependencyObject control) =>
             (bool)control.GetValue(IgnoreGlobalSizeProperty);
 
-        public static void SetIgnoreGlobalSize(DependencyObject control, bool value) =>
+        public static void SetIgnoreGlobalSize(DependencyObject control, bool value)
+        {
+            var changesInheritedPolicy = GetIgnoreGlobalSize(control) == value && ShouldIgnoreGlobalSize(control) != value;
             control.SetValue(IgnoreGlobalSizeProperty, value);
+            // A new local false changes inherited policy even when the native effective value stays false.
+            if (changesInheritedPolicy)
+                RefreshAllSizes();
+        }
+
+        private static void OnIgnoreGlobalSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            // A parent setting can change the effective policy of any loaded descendant.
+            RefreshAllSizes();
+        }
+
+        /// <summary>
+        /// Resolves an authored Size without changing its dependency-property value.
+        /// Auto uses a composite override, the enabled global size, or the nearest composite/control fallback.
+        /// </summary>
+        public static DaisySize ResolveSize(FrameworkElement owner, DaisySize requested, DaisySize fallback = DaisySize.Medium)
+        {
+            if (requested != DaisySize.Auto)
+                return requested;
+
+            DaisySize? scopeFallback = null;
+            var parent = VisualTreeHelper.GetParent(owner) ?? owner.Parent;
+            while (parent != null)
+            {
+                if (parent is IDaisySizeScope scope)
+                {
+                    if (scope.ChildSizeOverride is { } inheritedSize)
+                        return inheritedSize;
+                    scopeFallback ??= scope.ChildSizeFallback;
+                }
+                parent = VisualTreeHelper.GetParent(parent) ?? (parent as FrameworkElement)?.Parent;
+            }
+
+            return UseGlobalSizeByDefault && !ShouldIgnoreGlobalSize(owner) ? _currentSize : scopeFallback ?? fallback;
+        }
+
+        internal static void RefreshSizeScope(FrameworkElement scope)
+        {
+            foreach (var registration in new List<SizeRegistration>(LoadedControls))
+            {
+                if (!LoadedControls.Contains(registration))
+                    continue;
+
+                var parent = VisualTreeHelper.GetParent(registration.Owner) ?? registration.Owner.Parent;
+                while (parent != null)
+                {
+                    if (ReferenceEquals(parent, scope))
+                    {
+                        registration.Refresh();
+                        break;
+                    }
+                    parent = VisualTreeHelper.GetParent(parent) ?? (parent as FrameworkElement)?.Parent;
+                }
+            }
+        }
+
+        internal static void Register(FrameworkElement owner, Action refresh, Func<DaisySize> getResolvedSize)
+        {
+            // The element owns these event handlers. Only loaded registrations are held statically.
+            _ = new SizeRegistration(owner, refresh, getResolvedSize);
+        }
+
+        private sealed class SizeRegistration
+        {
+            private readonly Action _refresh;
+            private readonly Func<DaisySize> _getResolvedSize;
+
+            public SizeRegistration(FrameworkElement owner, Action refresh, Func<DaisySize> getResolvedSize)
+            {
+                Owner = owner;
+                _refresh = refresh;
+                _getResolvedSize = getResolvedSize;
+                owner.Loaded += OnLoaded;
+                owner.Unloaded += OnUnloaded;
+            }
+
+            private void OnLoaded(object sender, RoutedEventArgs args)
+            {
+                LoadedControls.Add(this);
+                Refresh();
+            }
+
+            private void OnUnloaded(object sender, RoutedEventArgs args) => LoadedControls.Remove(this);
+
+            public FrameworkElement Owner { get; }
+
+            public DaisySize ResolvedSize => _getResolvedSize();
+
+            public void Refresh() => _refresh();
+        }
 
         /// <summary>
         /// Checks if this control or any of its ancestors has IgnoreGlobalSize explicitly set.
@@ -74,7 +171,7 @@ namespace Flowery.Controls
                     if (localValue != DependencyProperty.UnsetValue)
                     {
                         // Property is explicitly set - return its value and stop walking
-                        return (bool)localValue;
+                        return GetIgnoreGlobalSize(current);
                     }
 
                     // Fallback: Check if it's a FrameworkElement's Parent property if VisualTreeHelper fails
@@ -136,14 +233,35 @@ namespace Flowery.Controls
         /// Gets or sets whether controls should use the global size by default.
         /// Default is true (opt-out behavior).
         /// </summary>
-        public static bool UseGlobalSizeByDefault { get; set; } = true;
+        public static bool UseGlobalSizeByDefault
+        {
+            get => _useGlobalSizeByDefault;
+            set
+            {
+                if (_useGlobalSizeByDefault == value)
+                    return;
+                _useGlobalSizeByDefault = value;
+                RefreshAllSizes();
+            }
+        }
 
         /// <summary>
-        /// When true (default), ApplySize() automatically propagates to all controls
-        /// with a Size property of type DaisySize in the visual tree.
-        /// Use IgnoreGlobalSize="True" on individual controls to opt-out.
+        /// When true (default), ApplySize automatically refreshes loaded controls.
+        /// When false, call RefreshAllSizes to apply the current size explicitly.
+        /// This does not change how Auto resolves or how newly loaded controls initialize.
         /// </summary>
-        public static bool EnableGlobalAutoSize { get; set; } = true;
+        public static bool EnableGlobalAutoSize
+        {
+            get => _enableGlobalAutoSize;
+            set
+            {
+                if (_enableGlobalAutoSize == value)
+                    return;
+                _enableGlobalAutoSize = value;
+                if (value)
+                    RefreshAllSizes();
+            }
+        }
 
         public static ResponsiveFontTier GetResponsiveFont(DependencyObject control) =>
             (ResponsiveFontTier)control.GetValue(ResponsiveFontProperty);
@@ -161,13 +279,16 @@ namespace Flowery.Controls
 
             if (newTier != ResponsiveFontTier.None && oldTier == ResponsiveFontTier.None)
             {
-                ResponsiveTextBlocks.Add(textBlock);
+                textBlock.Loaded += OnResponsiveTextBlockLoaded;
                 textBlock.Unloaded += OnResponsiveTextBlockUnloaded;
+                if (textBlock.IsLoaded)
+                    ResponsiveTextBlocks.Add(textBlock);
                 ApplyFontSizeToControl(textBlock, newTier, _currentSize);
             }
             else if (newTier == ResponsiveFontTier.None && oldTier != ResponsiveFontTier.None)
             {
                 ResponsiveTextBlocks.Remove(textBlock);
+                textBlock.Loaded -= OnResponsiveTextBlockLoaded;
                 textBlock.Unloaded -= OnResponsiveTextBlockUnloaded;
             }
             else if (newTier != ResponsiveFontTier.None)
@@ -176,169 +297,74 @@ namespace Flowery.Controls
             }
         }
 
+        private static void OnResponsiveTextBlockLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBlock textBlock)
+            {
+                ResponsiveTextBlocks.Add(textBlock);
+                if (!ShouldIgnoreGlobalSize(textBlock))
+                    ApplyFontSizeToControl(textBlock, GetResponsiveFont(textBlock), _currentSize);
+            }
+        }
+
         private static void OnResponsiveTextBlockUnloaded(object sender, RoutedEventArgs e)
         {
             if (sender is TextBlock tb)
             {
                 ResponsiveTextBlocks.Remove(tb);
-                tb.Unloaded -= OnResponsiveTextBlockUnloaded;
             }
         }
 
         /// <summary>
-        /// Apply a global size to all subscribing controls.
-        /// When EnableGlobalAutoSize is true, also propagates to all controls
-        /// with a Size property in the visual tree.
+        /// Selects a concrete global size and optionally refreshes loaded controls.
+        /// Authored Size values, styles and bindings are never replaced.
         /// </summary>
         public static void ApplySize(DaisySize size)
         {
+            if (size < DaisySize.ExtraSmall || size > DaisySize.ExtraLarge)
+                throw new ArgumentOutOfRangeException(nameof(size), size, "A global size must be a concrete size.");
+
             if (_currentSize == size)
                 return;
 
-            _currentSize = size;
-            UpdateResponsiveTextBlocks(size);
-            SizeChanged?.Invoke(null, size);
-
+            // Read the old resolution now: authored Size callbacks may have changed it since the last global update.
+            List<(SizeRegistration Registration, DaisySize Size)> previousSizes = [];
             if (EnableGlobalAutoSize)
             {
-                PropagateToVisualTree();
+                foreach (var registration in LoadedControls)
+                    previousSizes.Add((registration, registration.ResolvedSize));
             }
+
+            _currentSize = size;
+            if (EnableGlobalAutoSize)
+            {
+                foreach (var (registration, previousSize) in previousSizes)
+                {
+                    if (LoadedControls.Contains(registration) && registration.ResolvedSize != previousSize)
+                        registration.Refresh();
+                }
+                UpdateResponsiveTextBlocks(size);
+            }
+            SizeChanged?.Invoke(null, size);
         }
 
         /// <summary>
-        /// The main window reference for visual tree propagation.
-        /// Set this in your App.xaml.cs after creating the window.
+        /// Gets or sets the application's main window reference.
+        /// Size registration also covers controls in other windows and popup roots.
         /// </summary>
         public static Microsoft.UI.Xaml.Window? MainWindow { get; set; }
 
         /// <summary>
-        /// Forces propagation of the current size to all controls in the visual tree.
-        /// Call this after the visual tree is fully loaded (e.g., in Window.Loaded).
+        /// Refreshes the sizing of all loaded controls, even when automatic refresh is disabled.
         /// </summary>
         public static void RefreshAllSizes()
         {
-            if (EnableGlobalAutoSize)
+            foreach (var registration in new List<SizeRegistration>(LoadedControls))
             {
-                PropagateToVisualTree();
+                if (LoadedControls.Contains(registration))
+                    registration.Refresh();
             }
-        }
-
-        /// <summary>
-        /// Propagates the current size to all controls with a Size property
-        /// in the visual tree.
-        /// </summary>
-        private static void PropagateToVisualTree()
-        {
-            try
-            {
-                if (MainWindow?.Content is FrameworkElement root)
-                {
-                    PropagateSize(root, _currentSize);
-                }
-            }
-            catch
-            {
-                // Silently ignore errors during propagation
-            }
-        }
-
-        // Cache property lookups for performance
-        private static readonly Dictionary<Type, PropertyInfo?> _sizePropertyCache = [];
-
-        /// <summary>
-        /// Iteratively propagates size to all controls in the visual tree to avoid StackOverflow.
-        /// </summary>
-        private static void PropagateSize(DependencyObject root, DaisySize size)
-        {
-            var queue = new Queue<DependencyObject>();
-            queue.Enqueue(root);
-
-            while (queue.Count > 0)
-            {
-                var element = queue.Dequeue();
-
-                if (element is FrameworkElement fe && ShouldIgnoreGlobalSize(fe))
-                {
-                    // This branch has opted out - stop propagation for this branch
-                    continue;
-                }
-
-                if (element is FrameworkElement currentFe)
-                {
-                    TrySetSizeProperty(currentFe, size);
-                }
-
-                // Add children to queue
-                int count = VisualTreeHelper.GetChildrenCount(element);
-                for (int i = 0; i < count; i++)
-                {
-                    var child = VisualTreeHelper.GetChild(element, i);
-                    if (child != null)
-                    {
-                        queue.Enqueue(child);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Attempts to set the Size property on a control if it exists and is DaisySize.
-        /// Respects explicitly-set local values (from XAML or code) by not overwriting them.
-        /// Uses reflection with caching for performance.
-        /// </summary>
-        [UnconditionalSuppressMessage("Trimming", "IL2075:DynamicallyAccessedMembers",
-            Justification = "DaisyUI controls that support Size property are always preserved. The cache handles missing members gracefully.")]
-        private static void TrySetSizeProperty(FrameworkElement element, DaisySize size)
-        {
-            var type = element.GetType();
-
-            if (!_sizePropertyCache.TryGetValue(type, out var sizeProp))
-            {
-                // Cache the property lookup (null if not found)
-                sizeProp = type.GetProperty("Size", BindingFlags.Public | BindingFlags.Instance);
-                if (sizeProp?.PropertyType != typeof(DaisySize) || !sizeProp.CanWrite)
-                {
-                    sizeProp = null;
-                }
-                _sizePropertyCache[type] = sizeProp;
-            }
-
-            if (sizeProp == null)
-                return;
-
-            try
-            {
-                // Check if the control has an explicit SizeProperty DependencyProperty
-                // If so, check if a local value was set (in XAML or code) and respect it
-                if (!_sizeDPCache.TryGetValue(type, out var dp))
-                {
-                    var sizeField = type.GetField("SizeProperty", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                    dp = sizeField?.GetValue(null) as DependencyProperty;
-                    _sizeDPCache[type] = dp;
-                }
-
-                if (dp != null)
-                {
-                    var localValue = element.ReadLocalValue(dp);
-                    if (localValue != DependencyProperty.UnsetValue)
-                    {
-                        // Control has an explicit Size set - don't override
-                        return;
-                    }
-
-                    // Use SetValue(dp, value) as it's more reliable for DPs than reflection set
-                    element.SetValue(dp, size);
-                }
-                else
-                {
-                    // Fallback to reflection for non-DP properties (rare)
-                    sizeProp.SetValue(element, size);
-                }
-            }
-            catch
-            {
-                // Silently ignore errors setting property
-            }
+            UpdateResponsiveTextBlocks(_currentSize);
         }
 
         private static void UpdateResponsiveTextBlocks(DaisySize size)
@@ -415,7 +441,7 @@ namespace Flowery.Controls
         }
 
         /// <summary>
-        /// Resets the global size to Small (the default).
+        /// Resets the global size to Small.
         /// </summary>
         public static void Reset()
         {

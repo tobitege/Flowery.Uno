@@ -23,14 +23,14 @@ namespace Flowery.Controls
     /// <para><b>Benefits of inheriting from this class:</b></para>
     /// <list type="bullet">
     ///   <item>Automatic theme change subscription/unsubscription</item>
-    ///   <item>Automatic global size change subscription/unsubscription</item>
+    ///   <item>Loaded-control registration for resolved size refreshes</item>
     ///   <item>Optional neumorphic effects via Composition API (no XAML)</item>
     ///   <item>Reduced boilerplate in derived controls</item>
     /// </list>
     /// <para><b>Migration:</b> Change <c>: ContentControl</c> to <c>: DaisyBaseContentControl</c>
     /// and remove manual Loaded/Unloaded event wiring for theme/size changes.</para>
     /// </remarks>
-    public abstract partial class DaisyBaseContentControl : ContentControl, IDaisyNeumorphicTarget
+    public abstract partial class DaisyBaseContentControl : ContentControl, IDaisyNeumorphicTarget, IDaisySizeScope
     {
         private const string LogCategory = "Controls";
         private static bool _globalNeumorphicEnabled;
@@ -354,7 +354,6 @@ namespace Flowery.Controls
 
         private bool _isLoaded;
         private bool _themeSubscribed;
-        private bool _sizeSubscribed;
         private readonly DaisyNeumorphicSurfaceSet _neumorphicSurfaces;
         private DaisyNeumorphicResolution? _neumorphicResolution;
         private bool _neumorphicTransparencyApplied;
@@ -381,6 +380,7 @@ namespace Flowery.Controls
             Loaded += OnBaseLoaded;
             Unloaded += OnBaseUnloaded;
             SizeChanged += OnBaseSizeChanged;
+            FlowerySizeManager.Register(this, RefreshResolvedSize, GetResolvedSize);
 
             // Basic interaction logic for button-like behavior
             PointerPressed += (s, e) => { if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) _isBasePressed = true; };
@@ -413,17 +413,6 @@ namespace Flowery.Controls
                 _themeSubscribed = true;
             }
 
-            if (!_sizeSubscribed && !FlowerySizeManager.ShouldIgnoreGlobalSize(this))
-            {
-                FlowerySizeManager.SizeChanged += OnBaseGlobalSizeChanged;
-                _sizeSubscribed = true;
-
-                if (FlowerySizeManager.UseGlobalSizeByDefault)
-                {
-                    ApplyGlobalSizeIfNotExplicit();
-                }
-            }
-
             OnLoaded();
 
             // The neumorphic effect is applied after the first layout pass by DaisyNeumorphicLifecycle.
@@ -437,12 +426,6 @@ namespace Flowery.Controls
             {
                 DaisyThemeManager.ThemeChanged -= OnBaseThemeChanged;
                 _themeSubscribed = false;
-            }
-
-            if (_sizeSubscribed)
-            {
-                FlowerySizeManager.SizeChanged -= OnBaseGlobalSizeChanged;
-                _sizeSubscribed = false;
             }
 
             RestoreNeumorphicHostBackground();
@@ -462,24 +445,13 @@ namespace Flowery.Controls
             OnThemeChanged(themeName);
         }
 
-        private void OnBaseGlobalSizeChanged(object? sender, DaisySize size)
-        {
-            if (FlowerySizeManager.ShouldIgnoreGlobalSize(this))
-                return;
-
-            if (FlowerySizeManager.UseGlobalSizeByDefault)
-            {
-                OnGlobalSizeChanged(size);
-            }
-        }
-
         #endregion
 
         #region Virtual Hooks for Derived Classes
 
         /// <summary>
         /// Called when the control is loaded. Override to perform initialization.
-        /// Theme and size subscriptions are already set up at this point.
+        /// Theme subscriptions are already set up. ResolvedSize reflects the current sizing policy.
         /// </summary>
         protected virtual void OnLoaded()
         {
@@ -488,7 +460,7 @@ namespace Flowery.Controls
 
         /// <summary>
         /// Called when the control is unloaded. Override to perform cleanup.
-        /// Theme and size subscriptions are already torn down at this point.
+        /// Theme subscriptions are already torn down. Size registration ends with the Unloaded event.
         /// </summary>
         protected virtual void OnUnloaded()
         {
@@ -519,31 +491,37 @@ namespace Flowery.Controls
         }
 
         /// <summary>
-        /// Called when the global size changes.
+        /// Called when the manager refreshes the effective size.
         /// Override to update control dimensions.
         /// </summary>
-        /// <param name="size">The new global size.</param>
-        protected virtual void OnGlobalSizeChanged(DaisySize size)
+        protected virtual void OnResolvedSizeChanged()
         {
+            RequestNeumorphicRefresh();
         }
 
         /// <summary>
         /// Gets the control's current Size property value, if it has one.
         /// Override in derived classes to return the control's Size.
-        /// Used for global size synchronization.
+        /// The authored value remains unchanged when the global size changes.
         /// </summary>
         /// <returns>The current size, or null if the control doesn't have a Size property.</returns>
         protected virtual DaisySize? GetControlSize() => null;
 
         /// <summary>
-        /// Sets the control's Size property value, if it has one.
-        /// Override in derived classes to set the control's Size.
-        /// Used for global size synchronization.
+        /// Gets the fallback size when Auto is opted out of global sizing.
         /// </summary>
-        /// <param name="size">The size to set.</param>
-        protected virtual void SetControlSize(DaisySize size)
-        {
-        }
+        protected virtual DaisySize DefaultSize => DaisySize.Medium;
+
+        // Composite controls can supply a default without assigning their children's Size.
+        internal virtual DaisySize? ChildSizeOverride => null;
+
+        DaisySize? IDaisySizeScope.ChildSizeOverride => ChildSizeOverride;
+
+        internal virtual DaisySize? ChildSizeFallback => null;
+
+        DaisySize? IDaisySizeScope.ChildSizeFallback => ChildSizeFallback;
+
+        internal void RefreshResolvedSize() => OnResolvedSizeChanged();
 
         #endregion
 
@@ -734,46 +712,12 @@ namespace Flowery.Controls
         #region Size System Integration
 
         /// <summary>
-        /// Applies the global size to this control if no explicit Size was set via XAML.
-        /// </summary>
-        private void ApplyGlobalSizeIfNotExplicit()
-        {
-            var currentSize = GetControlSize();
-            if (currentSize == null)
-                return;
-
-            var sizeProperty = TryGetSizeProperty();
-            if (sizeProperty != null && ReadLocalValue(sizeProperty) != DependencyProperty.UnsetValue)
-                return;
-
-            SetControlSize(FlowerySizeManager.CurrentSize);
-        }
-
-        /// <summary>
-        /// Gets the resolved size for this control, respecting the IgnoreGlobalSize attached property.
+        /// Gets the effective size without changing the authored Size property.
         /// </summary>
         public DaisySize ResolvedSize => GetResolvedSize();
 
-        protected DaisySize GetResolvedSize()
-        {
-            var controlSize = GetControlSize();
-            return controlSize ?? FlowerySizeManager.CurrentSize;
-        }
-
-        /// <summary>
-        /// Attempts to get the SizeProperty DependencyProperty from the derived type.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage(
-            "Trimming",
-            "IL2075",
-            Justification = "SizeProperty lookup is optional and guarded; controls without it fallback safely.")]
-        private DependencyProperty? TryGetSizeProperty()
-        {
-            return GetType().GetField(
-                    "SizeProperty",
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy)
-                ?.GetValue(null) as DependencyProperty;
-        }
+        protected DaisySize GetResolvedSize() =>
+            FlowerySizeManager.ResolveSize(this, GetControlSize() ?? DaisySize.Auto, DefaultSize);
 
         #endregion
 

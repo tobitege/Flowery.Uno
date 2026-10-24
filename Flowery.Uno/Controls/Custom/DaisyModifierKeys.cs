@@ -41,7 +41,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyModifierKeys),
-                new PropertyMetadata(DaisySize.Small, OnLayoutChanged));
+                new PropertyMetadata(DaisySize.Auto, OnLayoutChanged));
 
         /// <summary>
         /// The size of the modifier key display.
@@ -217,9 +217,6 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
-            if (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-                Size = FlowerySizeManager.CurrentSize;
-
             RebuildVisual();
             SyncFromOS();
             UpdateKeyStyles();
@@ -239,18 +236,15 @@ namespace Flowery.Controls
             UpdateKeyStyles();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            RebuildVisual();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
+        protected override DaisySize DefaultSize => DaisySize.Small;
 
         private void RebuildVisual()
         {
@@ -332,9 +326,7 @@ namespace Flowery.Controls
 
         private void ApplySizing(ModifierKeyVisual key)
         {
-            var effectiveSize = FlowerySizeManager.ShouldIgnoreGlobalSize(this)
-                ? Size
-                : (FlowerySizeManager.UseGlobalSizeByDefault ? FlowerySizeManager.CurrentSize : Size);
+            var effectiveSize = ResolvedSize;
 
             key.Key.Size = effectiveSize;
             key.Key.KbdStyle = KbdStyle;

@@ -37,7 +37,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             await LoadAsync(control);
 
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, control.Size);
+            Assert.AreEqual(DaisySize.Auto, control.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, control.ResolvedSize);
             Assert.AreEqual(Visibility.Collapsed, Previous(control).Visibility);
             Assert.AreEqual(Visibility.Collapsed, Next(control).Visibility);
             Assert.AreEqual(Visibility.Collapsed, ViewMenuButton(control).Visibility);
@@ -45,7 +46,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             {
                 Assert.AreEqual(DaisyButtonVariant.Default, button.Variant);
                 Assert.AreEqual(DaisyButtonShape.Square, button.Shape);
-                Assert.AreEqual(control.Size, button.Size);
+                Assert.AreEqual(control.ResolvedSize, button.ResolvedSize);
             }
         }
 
@@ -342,6 +343,9 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             foreach (var size in Enum.GetValues<DaisySize>())
             {
+                if (size == DaisySize.Auto)
+                    continue;
+
                 control.Size = size;
                 foreach (var button in FindDescendants<DaisyButton>(control))
                 {

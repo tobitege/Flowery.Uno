@@ -74,8 +74,9 @@ namespace Flowery.Controls
 
         private SizePreviewInfo[]? _instanceSizes;
         private bool _isSyncing;
+        private bool _isSubscribed;
 
-        public DaisySizeDropdown() : base(subscribeSizeChanges: false)
+        public DaisySizeDropdown()
         {
             SelectionChanged += OnSelectionChanged;
             UpdateDisplayMemberPath();
@@ -101,6 +102,10 @@ namespace Flowery.Controls
 
         protected override void OnBeforeLoaded()
         {
+            if (_isSubscribed)
+                return;
+
+            _isSubscribed = true;
             FlowerySizeManager.SizeChanged += OnSizeChanged;
             FloweryLocalization.CultureChanged += OnCultureChanged;
         }
@@ -114,6 +119,7 @@ namespace Flowery.Controls
         {
             FlowerySizeManager.SizeChanged -= OnSizeChanged;
             FloweryLocalization.CultureChanged -= OnCultureChanged;
+            _isSubscribed = false;
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -136,12 +142,6 @@ namespace Flowery.Controls
 
         private void OnSizeChanged(object? sender, DaisySize size)
         {
-            // Use ShouldIgnoreGlobalSize to check this control AND ancestors
-            if (FlowerySizeManager.ShouldIgnoreGlobalSize(this))
-                return;
-
-            Size = size;
-            ApplyAll();
             SyncWithCurrentSize();
         }
 
@@ -281,7 +281,7 @@ namespace Flowery.Controls
             var visibleCount = 0;
             foreach (var option in options)
             {
-                if (option.IsVisible)
+                if (IsVisibleConcreteSize(option))
                     visibleCount++;
             }
 
@@ -292,12 +292,15 @@ namespace Flowery.Controls
             var index = 0;
             foreach (var option in options)
             {
-                if (option.IsVisible)
+                if (IsVisibleConcreteSize(option))
                     visible[index++] = option;
             }
 
             return visible;
         }
+
+        private static bool IsVisibleConcreteSize(SizePreviewInfo option) => option.IsVisible &&
+            option.Size is DaisySize.ExtraSmall or DaisySize.Small or DaisySize.Medium or DaisySize.Large or DaisySize.ExtraLarge;
 
         private SizePreviewInfo[] GetVisibleSizeInfos()
         {

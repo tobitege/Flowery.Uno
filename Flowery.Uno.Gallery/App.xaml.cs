@@ -2,6 +2,7 @@
 // #define GENERATE_PRODUCT_PALETTES
 
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using IOPath = System.IO.Path;
@@ -72,10 +73,21 @@ namespace Flowery.Uno.Gallery
         {
 #if WINDOWS || (__SKIA__ && !__WASM__)
             RuntimeArguments ??= Environment.GetCommandLineArgs();
+            var isRuntimeTests = RuntimeTestArguments.TryGetRuntimeTestsPath(args.Arguments, RuntimeArguments, out _);
+            if (isRuntimeTests)
+            {
+                // Configure test language before resources or controls can observe user preferences.
+                FloweryLocalization.SetCulture("en");
+                var culture = CultureInfo.GetCultureInfo("en");
+                // SetCulture can return early when localization already uses English.
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
+                CultureInfo.DefaultThreadCurrentCulture = culture;
+                CultureInfo.DefaultThreadCurrentUICulture = culture;
+            }
 #endif
 
 #if WINDOWS
-            var isRuntimeTests = RuntimeTestArguments.TryGetRuntimeTestsPath(args.Arguments, RuntimeArguments, out _);
             EnsureGalleryResources(isRuntimeTests);
             if (isRuntimeTests)
             {
@@ -85,7 +97,6 @@ namespace Flowery.Uno.Gallery
                 return;
             }
 #elif __SKIA__ && !__WASM__
-            var isRuntimeTests = RuntimeTestArguments.TryGetRuntimeTestsPath(args.Arguments, RuntimeArguments, out _);
             EnsureGalleryResources();
 #else
             EnsureGalleryResources();
@@ -106,7 +117,11 @@ namespace Flowery.Uno.Gallery
 
             // Apply language BEFORE creating MainWindow so FloweryLocalization.CurrentCultureName
             // is already set when the sidebar reads it during construction.
+#if WINDOWS || (__SKIA__ && !__WASM__)
+            var savedLanguage = isRuntimeTests ? null : GallerySettings.LoadLanguage();
+#else
             var savedLanguage = GallerySettings.LoadLanguage();
+#endif
             if (!string.IsNullOrWhiteSpace(savedLanguage))
             {
                 FloweryLocalization.SetCulture(savedLanguage);

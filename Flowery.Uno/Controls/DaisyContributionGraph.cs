@@ -56,18 +56,14 @@ namespace Flowery.Controls
             Rebuild();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplySizing();
+            Rebuild();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #region Computed Sizes
 
@@ -264,7 +260,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyContributionGraph),
-                new PropertyMetadata(DaisySize.Medium, OnSizeChanged));
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
 
         public DaisySize Size
         {
@@ -289,7 +285,7 @@ namespace Flowery.Controls
             try
             {
                 // Map DaisySize to CellSize and related properties
-                var newCellSize = Size switch
+                var newCellSize = ResolvedSize switch
                 {
                     DaisySize.ExtraSmall => 8.0,
                     DaisySize.Small => 10.0,
@@ -299,7 +295,7 @@ namespace Flowery.Controls
                     _ => 12.0
                 };
 
-                var cellMargin = Size switch
+                var cellMargin = ResolvedSize switch
                 {
                     DaisySize.ExtraSmall => 1.0,  // Use whole pixels to avoid cumulative rounding drift
                     DaisySize.Small => 1.0,
@@ -309,7 +305,7 @@ namespace Flowery.Controls
                     _ => 1.0
                 };
 
-                var cornerRadius = Size switch
+                var cornerRadius = ResolvedSize switch
                 {
                     DaisySize.ExtraSmall => 1.0,
                     DaisySize.Small => 2.0,
@@ -520,7 +516,7 @@ namespace Flowery.Controls
             if (_monthHeadersGrid == null || _dayLabelsPanel == null || _cellsGrid == null || _legendPanel == null)
                 return;
 
-            var fontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+            var fontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
             var monthHeaderHeight = fontSize + 8; // Extra padding to prevent descender clipping
 
             _monthHeadersGrid.Children.Clear();

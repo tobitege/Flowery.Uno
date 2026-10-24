@@ -189,7 +189,7 @@ namespace Flowery.Controls
 
         public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyLoading),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -251,18 +251,14 @@ namespace Flowery.Controls
             RebuildVisual();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            RebuildVisual();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         private void RebuildVisual()
         {
@@ -272,7 +268,7 @@ namespace Flowery.Controls
             var pixelSize = PixelSize;
             var size = !double.IsNaN(pixelSize) && pixelSize > 0
                 ? pixelSize
-                : DaisyResourceLookup.GetSizeValue(Size);
+                : DaisyResourceLookup.GetSizeValue(ResolvedSize);
 
             _rootGrid = new Grid
             {

@@ -52,7 +52,7 @@ When using `DividerStyle="Ornament"`, set the `Ornament` property:
 | Property | Description |
 | --- | --- |
 | `Thickness` | Line thickness in pixels. Default is 2. |
-| `Size` | Controls font size, text padding, and margins. Follows `FlowerySizeManager.CurrentSize` by default. |
+| `Size` | Defaults to `Auto` and controls font size, text padding, and margins. `ResolvedSize` exposes the concrete tier from [global sizing](FlowerySizeManager.md). With global sizing disabled or ignored, the legacy fallback is `Small`. |
 | `DividerText` | Text displayed in the center (or at placement position) of the divider. |
 | `TextBackground` | Background brush for the text container. Set this to match parent container backgrounds (e.g., `DaisyBase200Brush` inside cards). Defaults to `DaisyBase100Brush`. |
 

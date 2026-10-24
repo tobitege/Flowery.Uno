@@ -24,13 +24,15 @@ DaisyPasswordBox is a specialized password input field that manages its own reve
 
 ## Size Options
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier used to render the control. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyPasswordBox uses **fixed heights** for each size to match DaisyUI's design.
 
 | Size | Height | Font Size | Floating Height | Use Case |
 | --- | --- | --- | --- | --- |
 | ExtraSmall | 24 | 10 | 40 | Dense tables/toolbars. |
 | Small | 32 | 12 | 48 | Compact forms. |
-| Medium (default) | 48 | 14 | 56 | General usage. |
+| Medium | 48 | 14 | 56 | General usage. |
 | Large | 64 | 18 | 64 | Prominent inputs/hero sections. |
 
 ## Properties
@@ -44,7 +46,7 @@ DaisyPasswordBox uses **fixed heights** for each size to match DaisyUI's design.
 | `PasswordChar` | `string` | `●` | The character used to mask the password. |
 | `IsPasswordRevealButtonEnabled` | `bool` | `true` | Whether the reveal button eye icon is shown. |
 | `Variant` | `DaisyInputVariant` | `Bordered` | Visual style variant (see table above). |
-| `Size` | `DaisySize` | `Medium` | Size preset (see table above). |
+| `Size` | `DaisySize` | `Auto` | Requested size preset; `ResolvedSize` provides the concrete tier. |
 | `Label` | `string` | `""` | Label text shown above the input. |
 | `LabelPosition` | `DaisyLabelPosition` | `Top` | Position of the label (`Top`, `Floating`, `None`). |
 | `IsRequired` | `bool` | `false` | Shows a red asterisk (*) next to the label. |

@@ -32,11 +32,6 @@ namespace Flowery.Controls
             DefaultStyleKey = typeof(DaisyNumericUpDown);
             IsTabStop = false;
 
-            // Apply global size early if allowed and not explicitly ignored.
-            if (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-            {
-                Size = FlowerySizeManager.CurrentSize;
-            }
         }
 
         #region Dependency Properties
@@ -175,7 +170,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyNumericUpDown),
-                new PropertyMetadata(DaisySize.Medium, OnStyleOrValueConfigChanged));
+                new PropertyMetadata(DaisySize.Auto, OnStyleOrValueConfigChanged));
 
         public DaisySize Size
         {
@@ -436,18 +431,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         public void FocusInput(bool selectAll = false)
         {
@@ -759,14 +749,14 @@ namespace Flowery.Controls
 
             // NumericUpDown uses standard heights to match DaisySelect and other controls.
             // Chevrons are compact and centered (via StackPanel), requiring no extra height.
-            var controlHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "Height",
-                DaisyResourceLookup.GetDefaultHeight(Size));
-            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
-            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "LineHeight",
-                DaisyResourceLookup.GetDefaultLineHeight(Size));
-            var padding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyButton", Size, "Padding",
-                DaisyResourceLookup.GetDefaultPadding(Size));
+            var controlHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "Height",
+                DaisyResourceLookup.GetDefaultHeight(ResolvedSize));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
+            var lineHeight = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "LineHeight",
+                DaisyResourceLookup.GetDefaultLineHeight(ResolvedSize));
+            var padding = DaisyResourceLookup.GetSizeThickness(resources, "DaisyButton", ResolvedSize, "Padding",
+                DaisyResourceLookup.GetDefaultPadding(ResolvedSize));
 
             Height = controlHeight;
             FontSize = fontSize;
@@ -791,7 +781,7 @@ namespace Flowery.Controls
             var needsAdjustment = !PlatformCompatibility.IsSkiaBackend
                 && !PlatformCompatibility.IsWasmBackend
                 && !PlatformCompatibility.IsAndroid
-                && Size <= DaisySize.Medium;
+                && ResolvedSize <= DaisySize.Medium;
             var topPadding = needsAdjustment ? Math.Max(0, verticalPadding - 1) : verticalPadding;
             var bottomPadding = verticalPadding;
 
@@ -837,8 +827,8 @@ namespace Flowery.Controls
             // Size the up/down button icons based on Size.
             // Use spinner-specific icon size (smaller since two are stacked compactly).
             // Recreate icons with proportional stroke thickness for crisp rendering.
-            double iconSize = DaisyResourceLookup.GetDefaultSpinnerIconSize(Size);
-            double strokeThickness = Size switch
+            double iconSize = DaisyResourceLookup.GetDefaultSpinnerIconSize(ResolvedSize);
+            double strokeThickness = ResolvedSize switch
             {
                 DaisySize.ExtraSmall => 1.4,
                 DaisySize.Small => 1.5,
@@ -865,7 +855,7 @@ namespace Flowery.Controls
             // Buttons panel width
             if (_buttonsPanel != null)
             {
-                _buttonsPanel.Width = DaisyResourceLookup.GetDefaultSpinnerGridWidth(Size);
+                _buttonsPanel.Width = DaisyResourceLookup.GetDefaultSpinnerGridWidth(ResolvedSize);
             }
         }
 

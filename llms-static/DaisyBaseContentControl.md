@@ -21,9 +21,11 @@ Subscribes to `DaisyThemeManager.ThemeChanged` automatically. Derived controls c
 
 Integrates with `FlowerySizeManager` to support global sizing tiers (XS to XL).
 
-- Automatically applies the global size if no local `Size` is set.
+- Resolves `Size="Auto"` through the current global or composite default without writing a local Size value.
+- Exposes the effective concrete tier through the read-only `ResolvedSize` property.
 - Respects the `IgnoreGlobalSize` attached property.
-- Provides `OnGlobalSizeChanged()` for derived controls to react to layout changes.
+- Provides `OnResolvedSizeChanged()` for derived controls to refresh layout.
+- Registers while loaded and catches up after reattachment. Explicit sizes, styles and bindings retain their precedence.
 
 ### 4. Visual Effects (Neumorphism)
 
@@ -154,12 +156,19 @@ To participate in the theme and sizing systems, implement these hooks:
 ```csharp
 protected override void OnThemeChanged(string themeName) => ApplyAll();
 
-protected override void OnGlobalSizeChanged(DaisySize size) => Size = size;
+protected override void OnResolvedSizeChanged()
+{
+    base.OnResolvedSizeChanged();
+    ApplyAll();
+}
 
 protected override DaisySize? GetControlSize() => Size;
-
-protected override void SetControlSize(DaisySize size) => Size = size;
 ```
+
+Register the control's Size dependency property with `DaisySize.Auto` metadata. Use `ResolvedSize`
+for layout and token lookups. The Size property callback must also refresh layout. Override
+`DefaultSize` only for a fallback other than Medium. Do not write Size from the refresh hook.
+See [FlowerySizeManager](FlowerySizeManager.md) for the complete precedence and migration contract.
 
 ### Neumorphic Surfaces
 

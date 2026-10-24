@@ -5,6 +5,10 @@
 
 DaisyCalendarDatePicker provides a themed CalendarDatePicker that matches Daisy input surfaces while keeping the native calendar flyout behavior.
 
+The placeholder uses `DaisyBaseContentMutedBrush`; a selected date uses `DaisyBaseContentBrush`.
+Override `DaisyCalendarDatePickerPlaceholderForeground` in resources to change only the placeholder, including a transparent brush.
+`DaisyCalendarDatePickerForeground` overrides both unless a separate placeholder override is present.
+
 ## Variant Options
 
 | Variant | Description |
@@ -22,11 +26,13 @@ DaisyCalendarDatePicker provides a themed CalendarDatePicker that matches Daisy 
 
 ## Size Options
 
+`Size` defaults to `Auto`. `ResolvedSize` exposes the concrete tier selected by [global sizing](FlowerySizeManager.md); an explicit tier remains unchanged.
+
 | Size | Use Case |
 | --- | --- |
 | ExtraSmall | Compact toolbars or dense forms. |
 | Small | Tight layouts. |
-| Medium | Default sizing. |
+| Medium | General-purpose sizing. |
 | Large | Touch-friendly inputs. |
 | ExtraLarge | Prominent date entry surfaces. |
 

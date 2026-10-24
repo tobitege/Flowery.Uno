@@ -274,7 +274,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyCountdown),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -440,18 +440,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #endregion
 
@@ -697,12 +692,12 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
 
             double fontSize = resources == null
-                ? DaisyResourceLookup.GetDefaultHeaderFontSize(Size)
+                ? DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize)
                 : DaisyResourceLookup.GetDouble(resources, $"DaisySize{sizeKey}HeaderFontSize",
-                    DaisyResourceLookup.GetDefaultHeaderFontSize(Size));
+                    DaisyResourceLookup.GetDefaultHeaderFontSize(ResolvedSize));
             _valueTextBlock.FontSize = fontSize;
         }
 

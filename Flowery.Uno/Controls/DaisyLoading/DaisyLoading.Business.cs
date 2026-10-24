@@ -207,21 +207,21 @@ namespace Flowery.Controls
 
             var brush = GetColorBrush();
             var usesFixedPixelSize = !double.IsNaN(PixelSize) && PixelSize > 0;
-            var baseSize = DaisyResourceLookup.GetSizeValue(Size);
+            var baseSize = DaisyResourceLookup.GetSizeValue(ResolvedSize);
             var targetBodyHeight = usesFixedPixelSize ? size * 0.5 : size;
             var widthScale = baseSize > 0 ? size / baseSize : 1.0;
             var heightScale = baseSize > 0 ? targetBodyHeight / baseSize : 1.0;
             var strokeScale = Math.Min(widthScale, heightScale);
 
-            var barWidth = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarWidth(Size) * widthScale));
-            var barGap = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarGap(Size) * widthScale));
-            var stroke = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryStroke(Size) * strokeScale));
-            var barCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarCornerRadius(Size) * strokeScale));
-            var shellCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryShellCornerRadius(Size) * strokeScale));
-            var tipWidth = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryTipWidth(Size) * widthScale));
-            var tipCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryTipCornerRadius(Size) * strokeScale));
-            var paddingX = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryInternalPadding(Size) * widthScale)) + 1;
-            var paddingY = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryInternalPadding(Size) * heightScale)) + 1;
+            var barWidth = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarWidth(ResolvedSize) * widthScale));
+            var barGap = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarGap(ResolvedSize) * widthScale));
+            var stroke = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryStroke(ResolvedSize) * strokeScale));
+            var barCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryBarCornerRadius(ResolvedSize) * strokeScale));
+            var shellCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryShellCornerRadius(ResolvedSize) * strokeScale));
+            var tipWidth = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryTipWidth(ResolvedSize) * widthScale));
+            var tipCorner = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryTipCornerRadius(ResolvedSize) * strokeScale));
+            var paddingX = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryInternalPadding(ResolvedSize) * widthScale)) + 1;
+            var paddingY = Math.Max(1, (int)Math.Round(DaisyResourceLookup.GetBatteryInternalPadding(ResolvedSize) * heightScale)) + 1;
 
             const int barCount = 4;
             var tipOverlap = tipWidth > 0 ? stroke : 0;

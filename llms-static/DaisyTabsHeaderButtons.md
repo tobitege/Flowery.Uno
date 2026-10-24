@@ -17,7 +17,7 @@ Ported from Flowery.NET 3.4.0.
 | Views | null | Supplies an `IList<DaisyTabView>` for the menu |
 | ActiveViewId | null | Identifies the checked view through object equality |
 | ShowManageViewsEntry | true | Adds the localized management entry after the views |
-| Size | Small | Sets the size of the three buttons and icons; follows the global size once loaded |
+| Size | Auto | Sets the size of the three buttons and icons; Auto follows the global size, with Small as the opt-out fallback |
 
 Each `DaisyTabView` has a required `object Id` and a required `string Name`.
 Use unique identifiers. The control reads the list and active identifier each time the menu opens.
@@ -157,9 +157,11 @@ Collection changes and property assignments must occur on the UI thread.
 
 ## Size and Scaling
 
-`Size` supports ExtraSmall, Small, Medium, Large, and ExtraLarge.
-Small is the default. With global sizing enabled, the group follows `FlowerySizeManager` once loaded; `FlowerySizeManager.IgnoreGlobalSize` opts out.
-The icons use the Daisy icon size for the current `Size` (`DaisyResourceLookup.GetDefaultIconSize`).
+Read `ResolvedSize` for the effective tier; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
+`Size` supports Auto (default), ExtraSmall, Small, Medium, Large, and ExtraLarge.
+Auto follows the global size; the opt-out fallback is Small. Explicit sizes are preserved.
+The icons use the Daisy icon size for the current `ResolvedSize` (`DaisyResourceLookup.GetDefaultIconSize`).
 The group implements `IScalableControl`: `ApplyScaleFactor` scales the icon size. Button dimensions follow the normal button size resources.
 
 ## Localization and Accessibility

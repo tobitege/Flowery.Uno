@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the effective tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyTagPicker is an organized tag selection component inspired by "Animated Tags". It separates selected tags into a distinct, bordered area with "remove" icons, while keeping available tags in a separate list with "add" icons.
 
 ## Features
@@ -21,7 +23,7 @@ DaisyTagPicker is an organized tag selection component inspired by "Animated Tag
 | `SelectedTags` (`IList<string>?`) | Currently selected tags. When null, managed internally. |
 | `Mode` (`DaisyTagPickerMode`) | Tag interaction mode: `Selection` (default) or `Library`. |
 | `Title` (`string`) | Header text for the selected tags box (default: "Selected Tags"). |
-| `Size` (`DaisySize`) | Size preset for the tag chips (default `Small`). |
+| `Size` (`DaisySize`) | Size preset for the tag chips (default `Auto`; fallback `Small`). |
 
 ## Events
 

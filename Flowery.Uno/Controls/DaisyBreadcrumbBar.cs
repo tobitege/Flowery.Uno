@@ -30,10 +30,6 @@ namespace Flowery.Controls
             DefaultStyleKey = typeof(DaisyBreadcrumbBar);
             IsTabStop = false;
 
-            if (FlowerySizeManager.UseGlobalSizeByDefault && !FlowerySizeManager.GetIgnoreGlobalSize(this))
-            {
-                Size = FlowerySizeManager.CurrentSize;
-            }
         }
 
         #region Dependency Properties
@@ -84,7 +80,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyBreadcrumbBar),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of the breadcrumb bar.
@@ -169,18 +165,13 @@ namespace Flowery.Controls
             ApplyTheme(Application.Current?.Resources);
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -275,9 +266,7 @@ namespace Flowery.Controls
             if (_breadcrumbBar == null || _rootBorder == null)
                 return;
 
-            var effectiveSize = FlowerySizeManager.ShouldIgnoreGlobalSize(this)
-                ? Size
-                : FlowerySizeManager.CurrentSize;
+            var effectiveSize = ResolvedSize;
 
             var fontSize = DaisyResourceLookup.GetSizeDouble(
                 resources,

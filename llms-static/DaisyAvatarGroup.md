@@ -9,9 +9,11 @@ DaisyAvatarGroup arranges multiple `DaisyAvatar` items in an overlapping row. It
 
 | Property | Description |
 | --- | --- |
-| `Size` (`DaisySize`, default `Medium`) | Controls the group sizing behavior used by the theme (currently: overlap presets) and the built-in overflow avatar (`+N`). Note: this does **not** automatically set the `Size` of child `DaisyAvatar` items. |
+| `Size` (`DaisySize`, default `Auto`) | Sets the default tier for automatic child avatars and the built-in overflow avatar (`+N`). Explicit child tiers, including styles and bindings, remain unchanged. |
 | `Overlap` (double, default 24) | How much each avatar overlaps the previous one. Higher values create tighter stacks; lower values show more of each avatar. |
 | `MaxVisible` (int) | Maximum number of avatars to show before collapsing. If the group has more items than this limit, the last visible slot becomes a placeholder showing the remaining count (e.g., "+5"). Default is 0 (show all). |
+
+`ResolvedSize` exposes the group's concrete tier. Clear the group `Size` or set it to `Auto` to resume [global sizing](FlowerySizeManager.md).
 
 ## Quick Examples
 

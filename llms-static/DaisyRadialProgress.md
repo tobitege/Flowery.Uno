@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the effective tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyRadialProgress is a circular progress indicator with **8 color variants**, **5 size presets**, **optional shimmer animation**, and configurable stroke thickness. It converts the `Minimum`–`Maximum` range to a 0–360° sweep. Shows a percentage label by default with **auto-sizing** to ensure text fits within the circle.
 
 ## Variant Options
@@ -17,7 +19,7 @@ The control uses design tokens for size-dependent dimensions. When `ShowValue="T
 | --- | --- | --- | --- |
 | ExtraSmall | 24 | 2 | 7 |
 | Small | 32 | 3 | 9 |
-| Medium (default) | 48 | 4 | 12 |
+| Medium | 48 | 4 | 12 |
 | Large | 96 | 6 | 20 |
 | ExtraLarge | 128 | 8 | 28 |
 
@@ -29,7 +31,7 @@ The control uses design tokens for size-dependent dimensions. When `ShowValue="T
 | `Minimum` | `double` | `0` | Minimum value of the range. |
 | `Maximum` | `double` | `100` | Maximum value of the range. |
 | `Variant` | `DaisyProgressVariant` | `Default` | Color variant for the progress arc. |
-| `Size` | `DaisySize` | `Medium` | Size preset (acts as minimum when `ShowValue` is true). |
+| `Size` | `DaisySize` | `Auto` | Size preset (acts as minimum when `ShowValue` is true). |
 | `Thickness` | `double?` | `null` | Stroke thickness (derived from Size if null). |
 | `ShowValue` | `bool` | `true` | Whether to display the percentage label. |
 | `Shimmer` | `bool` | `false` | Enables a subtle breathing opacity animation on the arc. |

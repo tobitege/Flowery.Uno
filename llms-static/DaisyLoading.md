@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the effective tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyLoading provides animated loading indicators with **27 different animation styles**, **5 size options**, and **9 color variants**. The control includes standard DaisyUI animations, creative terminal-inspired variants, Matrix/retro variants, and unique special effect variants. All animations scale properly across all sizes using Viewbox-based rendering.
 
 ![Loading Animations](images/loading_animations.gif)
@@ -280,7 +282,7 @@ Use the `Color` property to apply theme colors. All variants support coloring.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `Variant` | `DaisyLoadingVariant` | `Spinner` | Animation style (27 options) |
-| `Size` | `DaisySize` | `Medium` | Control dimensions (5 options). Uses shared enum. |
+| `Size` | `DaisySize` | `Auto` | Control dimensions (5 options). Uses shared enum. |
 | `Color` | `DaisyColor` | `Default` | Theme color (9 options). Uses shared enum. |
 | `AccessibleText` | `string` | `"Loading"` | Screen reader announcement |
 

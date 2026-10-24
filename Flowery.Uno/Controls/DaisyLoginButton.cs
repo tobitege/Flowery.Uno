@@ -129,6 +129,12 @@ namespace Flowery.Controls
             UpdateBrandPresentation();
         }
 
+        internal override void RefreshResolvedSize()
+        {
+            base.RefreshResolvedSize();
+            BuildContent();
+        }
+
         private static void OnBrandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DaisyLoginButton button)
@@ -282,7 +288,7 @@ namespace Flowery.Controls
             if (!double.IsNaN(IconSize))
                 return IconSize;
 
-            return DaisyResourceLookup.GetDefaultIconSize(Size);
+            return DaisyResourceLookup.GetDefaultIconSize(ResolvedSize);
         }
 
         private double GetEffectiveIconSpacing()
@@ -290,7 +296,7 @@ namespace Flowery.Controls
             if (!double.IsNaN(IconSpacing))
                 return IconSpacing;
 
-            return DaisyResourceLookup.GetDefaultIconSpacing(Size);
+            return DaisyResourceLookup.GetDefaultIconSpacing(ResolvedSize);
         }
 
         private Brush GetEffectiveForegroundBrush(BrandDefinition definition)

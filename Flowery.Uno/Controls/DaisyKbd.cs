@@ -76,7 +76,7 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
 
             // Use specialized KBD font sizes if available
             var fontSize = DaisyResourceLookup.GetDouble($"DaisyKbd{sizeKey}FontSize", EffectiveFontSize);
@@ -87,7 +87,7 @@ namespace Flowery.Controls
 
             // Height is controlled by the DaisyKbd Style/Template in DaisyControls.xaml
             // but we can ensure the internal Well reflects the token height
-            var height = DaisyResourceLookup.GetDouble($"DaisyKbd{sizeKey}Height", DaisyResourceLookup.GetDefaultHeight(Size));
+            var height = DaisyResourceLookup.GetDouble($"DaisyKbd{sizeKey}Height", DaisyResourceLookup.GetDefaultHeight(ResolvedSize));
             Height = height;
             MinHeight = height;
             

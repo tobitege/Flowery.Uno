@@ -118,8 +118,13 @@ The control shows an accent border when focused via keyboard (`:focus-visible`).
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `ShowDigitBoxes` | bool | False | Displays styled boxes behind each digit |
+| `DigitForeground` | Brush? | null | Overrides the brush for digits and formatting characters |
 
 When `ShowDigitBoxes="True"`, each digit gets a rounded box with an inset shadow, creating a dashboard/counter aesthetic similar to SmoothUI's NumberFlow component.
+
+`DigitForeground` applies to digits, decimal separators, signs, and other characters produced by `FormatString`. Prefix, suffix, and button icons keep their existing theme brushes.
+
+The default `null` uses `DaisyBaseContentBrush` without digit boxes and the existing palette-aware content brush with boxes. Digit boxes refresh `DaisyNeutralBrush` when the theme changes. Local values, styles, and bindings retain normal precedence; setting `null` restores automatic coloring, while `ClearValue` can reveal a style value.
 
 ## Design Tokens
 

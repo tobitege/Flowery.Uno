@@ -3,7 +3,7 @@
 
 # Overview
 
-DaisyBadge is a compact label for counts, statuses, or tags. It supports **10 color variants**, **4 size presets**, and an **outline** mode for low-emphasis contexts. Works standalone or nested inside other controls (e.g., buttons, lists) to highlight small bits of information without overwhelming the layout.
+DaisyBadge is a compact label for counts, statuses, or tags. It supports **10 color variants**, **5 size presets**, and an **outline** mode. Use it alone or inside buttons and lists.
 
 ## Variant Options
 
@@ -22,13 +22,17 @@ DaisyBadge is a compact label for counts, statuses, or tags. It supports **10 co
 
 ## Size Options
 
-| Size | Approx. Dimensions | Use Case |
-| --- | --- | --- |
-| ExtraSmall | 12px height, 4px horizontal padding, 8px text | Tiny dots/counts inline with text |
-| Small | 16px height, 6px padding, 10px text | Compact chips for dense lists |
-| Medium (default) | 20px height, 8px padding, 12px text | General-purpose badges |
-| Large | 24px height, 12px padding, 14px text | Emphasized tags or hero labels |
-| ExtraLarge | Falls back to medium metrics | No additional styling in theme |
+`Size` defaults to `Auto`. `ResolvedSize` exposes the concrete tier selected by [global sizing](FlowerySizeManager.md); an explicit tier remains unchanged.
+
+The table lists the default token values in logical units.
+
+| Size | Minimum Height | Horizontal Padding | Font Size |
+| --- | --- | --- | --- |
+| ExtraSmall | 16 | 4 | 10 |
+| Small | 20 | 6 | 12 |
+| Medium | 24 | 8 | 14 |
+| Large | 28 | 12 | 18 |
+| ExtraLarge | 32 | 16 | 20 |
 
 ## Outline Mode
 
@@ -57,11 +61,15 @@ DaisyBadge is a compact label for counts, statuses, or tags. It supports **10 co
     <controls:DaisyBadge Content="Small" Size="Small" />
     <controls:DaisyBadge Content="Medium" Size="Medium" />
     <controls:DaisyBadge Content="Large" Size="Large" />
+    <controls:DaisyBadge Content="XL" Size="ExtraLarge" />
 </StackPanel>
 
 <!-- Inside a button -->
-<controls:DaisyButton Variant="Ghost" Content="Messages">
-    <controls:DaisyBadge Content="5" Variant="Error" Size="Small" />
+<controls:DaisyButton Variant="Ghost">
+    <StackPanel Orientation="Horizontal" Spacing="6">
+        <TextBlock Text="Messages" VerticalAlignment="Center" />
+        <controls:DaisyBadge Content="5" Variant="Error" Size="Small" />
+    </StackPanel>
 </controls:DaisyButton>
 
 <!-- Circular status dot (explicit sizing) -->
@@ -83,4 +91,4 @@ When you set **explicit sizing properties** (`Width`, `Height`, `MinWidth`, `Min
 - **Circular status dots**: Set `Width="12" Height="12" MinWidth="12" MinHeight="12" CornerRadius="6" Padding="0"` for a perfect 12px circle.
 - **Custom dimensions**: Override the size preset's default height when you need non-standard sizing.
 
-Without explicit `MinHeight`, the badge uses the Size preset's token value (e.g., 20px for Medium), which may be larger than your explicit `Height`.
+Without explicit `MinHeight`, the badge uses the size preset's token value: 24 for Medium. This minimum can exceed your explicit `Height`.

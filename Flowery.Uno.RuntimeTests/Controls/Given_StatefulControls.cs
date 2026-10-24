@@ -28,7 +28,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await RuntimeTestHelpers.EnsureLoadedAsync(tabs);
 
             Assert.AreEqual(DaisyTabVariant.Boxed, tabs.Variant);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, tabs.Size);
+            Assert.AreEqual(DaisySize.Auto, tabs.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, tabs.ResolvedSize);
             Assert.AreEqual(0, tabs.SelectedIndex);
             Assert.HasCount(2, tabs.Items);
 
@@ -75,7 +76,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             Assert.IsFalse(collapse.IsExpanded);
             Assert.AreEqual(DaisyCollapseVariant.Arrow, collapse.Variant);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, collapse.Size);
+            Assert.AreEqual(DaisySize.Auto, collapse.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, collapse.ResolvedSize);
 
             collapse.IsExpanded = true;
             Assert.IsTrue(collapse.IsExpanded);
@@ -95,7 +97,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsFalse(dropdown.IsOpen);
             Assert.IsTrue(dropdown.CloseOnSelection);
             Assert.AreEqual("Select", dropdown.PlaceholderText);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, dropdown.Size);
+            Assert.AreEqual(DaisySize.Auto, dropdown.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, dropdown.ResolvedSize);
             Assert.AreEqual(DaisyColor.Default, dropdown.Variant);
 
             dropdown.SelectedItem = "Beta";
@@ -139,7 +142,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             RuntimeTestHelpers.AttachToHost(rating);
             await RuntimeTestHelpers.EnsureLoadedAsync(rating);
 
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, rating.Size);
+            Assert.AreEqual(DaisySize.Auto, rating.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, rating.ResolvedSize);
             Assert.AreEqual(0.0, rating.Value);
             Assert.AreEqual(5, rating.Maximum);
             Assert.IsFalse(rating.IsReadOnly);
@@ -159,7 +163,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await RuntimeTestHelpers.EnsureLoadedAsync(range);
 
             Assert.AreEqual(DaisyRangeVariant.Default, range.Variant);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, range.Size);
+            Assert.AreEqual(DaisySize.Auto, range.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, range.ResolvedSize);
             Assert.AreEqual(0.0, range.Value);
             Assert.AreEqual(0.0, range.Minimum);
             Assert.AreEqual(100.0, range.Maximum);
@@ -186,7 +191,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsTrue(otp.AutoSelectOnFocus);
             Assert.AreEqual(0, otp.SeparatorInterval);
             Assert.AreEqual(string.Empty, otp.SeparatorText);
-            Assert.AreEqual(FlowerySizeManager.CurrentSize, otp.Size);
+            Assert.AreEqual(DaisySize.Auto, otp.Size);
+            Assert.AreEqual(FlowerySizeManager.CurrentSize, otp.ResolvedSize);
             Assert.IsTrue(otp.IsJoined);
         }
     }

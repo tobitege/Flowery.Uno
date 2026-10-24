@@ -26,7 +26,7 @@ Flowery.Uno implements design tokens in C#:
 
 ### How It Works
 
-1. Controls call `DaisyTokenDefaults.EnsureDefaults(resources)` on load
+1. Controls initialize defaults through the internal `DaisyTokenDefaults` implementation
 2. This populates `Application.Current.Resources` with default token values
 3. Controls use `DaisyResourceLookup.GetDouble()`, `GetThickness()`, etc. to read tokens
 4. If a token is missing, centralized `GetDefault*()` methods provide fallbacks
@@ -49,32 +49,33 @@ For custom controls or code-behind, use `DaisyResourceLookup` helper methods:
 
 ```csharp
 using Flowery.Theming;
-using Flowery.Controls;
+using Flowery.Enums;
+using Microsoft.UI.Xaml;
 
 // Get default values based on DaisySize
-double height = DaisyResourceLookup.GetDefaultHeight(DaisySize.Medium);        // 28
+double height = DaisyResourceLookup.GetDefaultHeight(DaisySize.Medium);        // 32 on desktop, 44 on mobile
 double fontSize = DaisyResourceLookup.GetDefaultFontSize(DaisySize.Medium);    // 14
-Thickness padding = DaisyResourceLookup.GetDefaultPadding(DaisySize.Medium);   // 10,0,10,0
+Thickness padding = DaisyResourceLookup.GetDefaultPadding(DaisySize.Medium);   // 12,0,12,0
 CornerRadius radius = DaisyResourceLookup.GetDefaultCornerRadius(DaisySize.Medium); // 8
 
 // Read from ResourceDictionary with fallback
 var resources = Application.Current?.Resources;
-double actualHeight = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", 28);
+double actualHeight = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", height);
 ```
 
 ### Available Helper Methods
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `GetDefaultHeight(size)` | double | Standard control height (22-36) |
-| `GetDefaultFloatingInputHeight(size)` | double | Taller input height (36-50) |
+| `GetDefaultHeight(size)` | double | Standard height: desktop 24-40, mobile 36-56 |
+| `GetDefaultFloatingInputHeight(size)` | double | Floating input height: desktop 36-50, mobile 44-64 |
 | `GetDefaultFontSize(size)` | double | Primary font size (10-20) |
 | `GetDefaultLineHeight(size)` | double | Primary line height (14-28) |
-| `GetDefaultHeaderFontSize(size)` | double | Large display font size (12-24) |
+| `GetDefaultHeaderFontSize(size)` | double | Large display font size (14-28) |
 | `GetDefaultPadding(size)` | Thickness | Horizontal button padding |
 | `GetDefaultCornerRadius(size)` | CornerRadius | Rounded corners (4-12) |
-| `GetDefaultIconSize(size)` | double | Icon dimensions (10-18) |
-| `GetDefaultIconSpacing(size)` | double | Gap between icon and text (3-8) |
+| `GetDefaultIconSize(size)` | double | Icon dimensions (8-24) |
+| `GetDefaultIconSpacing(size)` | double | Gap between icon and text (4-8) |
 | `GetDefaultMenuPadding(size)` | Thickness | Menu/list item padding |
 | `GetDefaultTagPadding(size)` | Thickness | Tag/chip padding |
 | `GetDefaultRangeTrackHeight(size)` | double | Range slider track (4-16) |
@@ -82,10 +83,10 @@ double actualHeight = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumH
 | `GetDefaultRatingStarSize(size)` | double | Rating star dimensions (16-40) |
 | `GetDefaultRatingSpacing(size)` | double | Rating star gap (2-8) |
 | `GetDefaultRadialProgressSize(size)` | double | Radial progress dimensions (24-128) |
-| `GetDefaultOtpSlotSize(size)` | double | OTP input slot size (32-56) |
+| `GetDefaultOtpSlotSize(size)` | double | OTP input fallback size (32-64); token values can differ |
 | `GetDefaultOtpSpacing(size)` | double | OTP slot spacing (4-10) |
 | `GetDefaultSwatchSize(size)` | double | Color swatch/dot size for theme pickers (6-14) |
-| `GetAvatarSize(size)` | double | Avatar dimensions (20-80) |
+| `GetAvatarSize(size)` | double | Reads avatar tokens (20-80); fallback range 22-80 |
 | `GetAvatarStatusSize(size)` | double | Status indicator size (5-16) |
 | `GetAvatarFontSize(size)` | double | Avatar placeholder font (7-20) |
 | `GetAvatarIconSize(size)` | double | Avatar icon size (10-34) |
@@ -98,7 +99,11 @@ Used for buttons, inputs, selects, and other fixed-height controls.
 
 | Token | XS | S | M | L | XL | Used By |
 | ----- | -- | -- | -- | -- | --- | ------- |
-| `DaisySize{Size}Height` | 22 | 24 | 28 | 32 | 36 | DaisyButton, DaisyInput, DaisySelect |
+| `DaisySize{Size}Height` desktop | 24 | 28 | 32 | 36 | 40 | DaisyButton, DaisyInput, DaisySelect |
+| `DaisySize{Size}Height` mobile | 36 | 40 | 44 | 48 | 56 | Larger touch targets |
+
+`{Size}` denotes the full tier name: ExtraSmall, Small, Medium, Large or ExtraLarge.
+For automatically sized controls, resolve `Size` before token lookup. See [Size ownership](FlowerySizeManager.md#size-ownership-and-precedence).
 
 ### Floating Input Heights
 
@@ -108,9 +113,11 @@ Specific heights for taller input controls like `DaisyNumericUpDown` and `DaisyF
 | ----- | -- | -- | -- | -- | --- |
 | `DaisyInputFloating{Size}Height` | 36 | 40 | 44 | 48 | 50 |
 
+The mobile profile uses 44/48/52/56/64 for this family.
+
 ### Font Sizes
 
-The font ladders match Flowery.NET.
+The primary font ladder matches Flowery.NET. Other heading tiers can differ by platform.
 
 #### Primary Font Sizes
 
@@ -159,7 +166,7 @@ Rounded corners for controls.
 
 | Token | XS | S | M | L | XL |
 | ----- | -- | -- | -- | -- | --- |
-| `DaisySize{Size}CornerRadius` | 4 | 6 | 8 | 10 | 12 |
+| `DaisySize{Size}CornerRadius` | 4 | 4 | 8 | 8 | 12 |
 
 ### Button Padding
 
@@ -167,7 +174,7 @@ Horizontal-only padding (vertical is controlled by Height).
 
 | Token | XS | S | M | L | XL |
 | ----- | -- | -- | -- | -- | --- |
-| `DaisyButton{Size}Padding` | 8,0 | 12,0 | 14,0 | 16,0 | 16,0 |
+| `DaisyButton{Size}Padding` | 8,0 | 12,0 | 12,0 | 16,0 | 16,0 |
 
 ### Input Padding
 
@@ -175,7 +182,7 @@ Full padding for text inputs.
 
 | Token | XS | S | M | L | XL |
 | ----- | -- | -- | -- | -- | --- |
-| `DaisyInput{Size}Padding` | 8,4 | 12,5 | 12,6 | 14,6 | 14,7 |
+| `DaisyInput{Size}Padding` | 8,4 | 12,4 | 12,8 | 16,8 | 16,8 |
 
 ### Tab Padding
 
@@ -183,7 +190,7 @@ Both horizontal and vertical padding (tabs don't use fixed height).
 
 | Token | XS | S | M | L | XL |
 | ----- | -- | -- | -- | -- | --- |
-| `DaisyTab{Size}Padding` | 10,2 | 12,4 | 12,5 | 12,5 | 12,5 |
+| `DaisyTab{Size}Padding` | 8,4 | 12,4 | 12,4 | 12,4 | 12,4 |
 
 ### Badge Tokens
 
@@ -200,7 +207,7 @@ Badge text uses the primary font ladder.
 | Token | Value |
 | --- | --- |
 | `DaisyCardLargePadding` | 24 |
-| `DaisyCardMediumPadding` | 18 |
+| `DaisyCardMediumPadding` | 20 |
 | `DaisyCardSmallPadding` | 12 |
 | `DaisyCardCompactPadding` | 8 |
 
@@ -211,10 +218,10 @@ General spacing values for layouts.
 | Token | Value |
 | --- | --- |
 | `DaisySpacingXL` | 20 |
-| `DaisySpacingLarge` | 14 |
-| `DaisySpacingMedium` | 10 |
-| `DaisySpacingSmall` | 6 |
-| `DaisySpacingXS` | 3 |
+| `DaisySpacingLarge` | 16 |
+| `DaisySpacingMedium` | 12 |
+| `DaisySpacingSmall` | 8 |
+| `DaisySpacingXS` | 4 |
 
 ### Border Thickness
 
@@ -444,26 +451,20 @@ Used by `DaisyNumberFlow` and similar large-format controls.
 
 ### Pattern 1: Use DaisyResourceLookup (Recommended)
 
-For custom controls, use `DaisyResourceLookup` methods instead of hardcoded values:
+Use the public `DaisyResourceLookup.EnsureTokens()` helper; `DaisyTokenDefaults` is internal.
+For a `DaisyBaseContentControl` subclass, apply the concrete `ResolvedSize`:
 
 ```csharp
-public class MyCustomControl : ContentControl
+private void ApplySizing()
 {
-    public DaisySize Size { get; set; } = DaisySize.Medium;
-
-    private void ApplySizing()
-    {
-        var resources = Application.Current?.Resources;
-        if (resources != null)
-            DaisyTokenDefaults.EnsureDefaults(resources);
-
-        // Use centralized defaults - single source of truth
-        Height = DaisyResourceLookup.GetDefaultHeight(Size);
-        FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
-        Padding = DaisyResourceLookup.GetDefaultPadding(Size);
-    }
+    Height = DaisyResourceLookup.GetDefaultHeight(ResolvedSize);
+    FontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
+    Padding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize);
 }
 ```
+
+Register the authored Size with Auto metadata and refresh generated visuals through the existing lifecycle.
+See the [custom-control contract](FlowerySizeManager.md#custom-controls); do not replace an authored Size from a global callback.
 
 ### Pattern 2: Read from ResourceDictionary with Fallback
 
@@ -473,16 +474,16 @@ For maximum flexibility (allows token overrides):
 private void ApplySizing()
 {
     var resources = Application.Current?.Resources;
-    if (resources != null)
-        DaisyTokenDefaults.EnsureDefaults(resources);
+    DaisyResourceLookup.EnsureTokens(resources);
 
-    string sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size); // "Medium", "Large", etc.
+    var size = ResolvedSize;
+    string sizeKey = DaisyResourceLookup.GetSizeKeyFull(size);
 
     // Try resource dictionary first, fallback to centralized default
     Height = DaisyResourceLookup.GetDouble(resources, $"DaisySize{sizeKey}Height",
-        DaisyResourceLookup.GetDefaultHeight(Size));
+        DaisyResourceLookup.GetDefaultHeight(size));
     FontSize = DaisyResourceLookup.GetDouble(resources, $"DaisySize{sizeKey}FontSize",
-        DaisyResourceLookup.GetDefaultFontSize(Size));
+        DaisyResourceLookup.GetDefaultFontSize(size));
 }
 ```
 

@@ -72,11 +72,13 @@ Configure which parts of each date item are shown using the `DisplayElements` fl
 
 ## Size Options
 
+`Size` defaults to `Auto`. `ResolvedSize` exposes the concrete tier selected by [global sizing](FlowerySizeManager.md); an explicit tier remains unchanged.
+
 | Size | Item Height | Use Case |
 | --- | --- | --- |
 | ExtraSmall | ~56px | Compact toolbars, embedded widgets |
 | Small | ~68px | Secondary pickers, limited space |
-| Medium | ~80px | Default, general purpose |
+| Medium | ~80px | General purpose |
 | Large | ~96px | Primary date selection, emphasis |
 | ExtraLarge | ~112px | Hero sections, full-width pickers |
 
@@ -148,7 +150,7 @@ Configure which parts of each date item are shown using the `DisplayElements` fl
 | `HeaderType` | `DateTimelineHeaderType` | MonthYear | Header display style |
 | `Locale` | `CultureInfo` | CurrentCulture | Culture for date formatting |
 | `ShowTodayHighlight` | `bool` | true | Whether to highlight today's date |
-| `Size` | `DaisySize` | Medium | Overall size of date items |
+| `Size` | `DaisySize` | Auto | Overall size of date items; rendering uses `ResolvedSize` |
 | `ItemLayout` | `DateItemLayout` | Vertical | Layout orientation (Vertical or Horizontal) |
 | `MarkedDates` | `IList<DateMarker>?` | null | Collection of dates to highlight with tooltips |
 | `ScrollBarVisibility` | `ScrollBarVisibility` | Hidden | Scrollbar display mode (Hidden still allows mouse wheel/drag) |

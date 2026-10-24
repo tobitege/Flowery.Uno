@@ -35,11 +35,13 @@ namespace Flowery.Enums
     /// </summary>
     public enum DaisySize
     {
+        /// <summary>Use the global size, or the control's default when global sizing is disabled.</summary>
+        Auto = -1,
         /// <summary>Extra small size</summary>
-        ExtraSmall,
+        ExtraSmall = 0,
         /// <summary>Small size</summary>
         Small,
-        /// <summary>Medium size (default)</summary>
+        /// <summary>Medium size</summary>
         Medium,
         /// <summary>Large size</summary>
         Large,

@@ -121,8 +121,8 @@ namespace Flowery.Controls
 
         private ThemePreviewInfo[] CloneThemeInfos(ThemePreviewInfo[] source)
         {
-            var swatchSize = DaisyResourceLookup.GetDefaultSwatchSize(Size);
-            var textMargin = new Thickness(Size == DaisySize.ExtraSmall ? 4 : 8, 0, 0, 0);
+            var swatchSize = DaisyResourceLookup.GetDefaultSwatchSize(ResolvedSize);
+            var textMargin = new Thickness(ResolvedSize == DaisySize.ExtraSmall ? 4 : 8, 0, 0, 0);
             var result = new ThemePreviewInfo[source.Length];
             for (var i = 0; i < source.Length; i++)
             {

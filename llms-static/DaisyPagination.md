@@ -3,7 +3,7 @@
 
 # Overview
 
-DaisyPagination renders joined page navigation buttons using `DaisyJoin` internally. It automatically generates page buttons based on `TotalPages`, handles prev/next navigation, and highlights the current page. The control responds to global size changes via `FlowerySizeManager`.
+DaisyPagination renders joined page navigation buttons using `DaisyJoin` internally. It automatically generates page buttons based on `TotalPages`, handles prev/next navigation, and highlights the current page. `Size` defaults to `Auto`; `ResolvedSize` provides the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
 
 **Key Features:**
 
@@ -19,7 +19,7 @@ DaisyPagination renders joined page navigation buttons using `DaisyJoin` interna
 | `CurrentPage` | `int` | `1` | The currently selected page (1-based, auto-clamped to valid range). |
 | `TotalPages` | `int` | `1` | Total number of pages to display. |
 | `MaxVisiblePages` | `int` | `7` | Maximum page buttons to display (minimum 5). When `TotalPages` exceeds this, ellipsis is shown. |
-| `Size` | `DaisySize` | `Medium` | Button size preset (ExtraSmall, Small, Medium, Large, ExtraLarge). |
+| `Size` | `DaisySize` | `Auto` | Automatic sizing, or an explicit button size preset (ExtraSmall, Small, Medium, Large, ExtraLarge). |
 | `Orientation` | `Orientation` | `Horizontal` | Layout direction (Horizontal or Vertical). |
 | `ShowPrevNext` | `bool` | `True` | Whether to show single-chevron prev/next buttons (‹ ›). |
 | `ShowFirstLast` | `bool` | `False` | Whether to show first/last page buttons (⏮ ⏭). |
@@ -181,7 +181,7 @@ Each button is a `DaisyPaginationItem` (extends `Button`) with:
 - **For 50+ pages**, consider enabling `ShowJumpButtons="True"` with `JumpStep="10"`.
 - **Reduce `MaxVisiblePages`** to 5 for very compact layouts.
 - **Use `Size`** for consistent sizing; buttons are square with symmetric padding.
-- The control responds to `FlowerySizeManager.CurrentSize` for global sizing.
+- With `Size="Auto"`, the control follows the sizing rules in `FlowerySizeManager`.
 - `CurrentPage` is automatically clamped to valid range (1 to TotalPages).
 
 ## Related Icons

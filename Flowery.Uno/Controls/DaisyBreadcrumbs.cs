@@ -63,16 +63,35 @@ namespace Flowery.Controls
         }
         #endregion
 
+        #region SeparatorBrush
+        public static readonly DependencyProperty SeparatorBrushProperty =
+            DependencyProperty.Register(
+                nameof(SeparatorBrush),
+                typeof(Brush),
+                typeof(DaisyBreadcrumbs),
+                new PropertyMetadata(null, OnAppearanceChanged));
+
+        /// <summary>
+        /// Gets or sets the default separator brush for items without their own brush.
+        /// Null uses each item's separator resource or theme foreground.
+        /// </summary>
+        public Brush? SeparatorBrush
+        {
+            get => (Brush?)GetValue(SeparatorBrushProperty);
+            set => SetValue(SeparatorBrushProperty, value);
+        }
+        #endregion
+
         #region SeparatorOpacity
         public static readonly DependencyProperty SeparatorOpacityProperty =
             DependencyProperty.Register(
                 nameof(SeparatorOpacity),
                 typeof(double),
                 typeof(DaisyBreadcrumbs),
-                new PropertyMetadata(0.5, OnAppearanceChanged));
+                new PropertyMetadata(1.0, OnAppearanceChanged));
 
         /// <summary>
-        /// Gets or sets the opacity of the separator.
+        /// Gets or sets the separator's additional opacity multiplier. Default is 1.
         /// </summary>
         public double SeparatorOpacity
         {
@@ -87,7 +106,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyBreadcrumbs),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of the breadcrumbs.
@@ -105,18 +124,13 @@ namespace Flowery.Controls
                 breadcrumbs.SyncItemProperties();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            SyncItemProperties();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         private void CollectAndDisplay()
         {
@@ -159,7 +173,7 @@ namespace Flowery.Controls
                         item.IsLast = index == count - 1;
                         item.Separator = Separator;
                         item.SeparatorOpacity = SeparatorOpacity;
-                        item.Size = Size;
+                        item.Size = ResolvedSize;
                         _breadcrumbItems.Add(item);
                         _itemsPanel.Children.Add(item);
                         index++;
@@ -177,7 +191,7 @@ namespace Flowery.Controls
             {
                 item.Separator = Separator;
                 item.SeparatorOpacity = SeparatorOpacity;
-                item.Size = Size;
+                item.Size = ResolvedSize;
                 item.RebuildVisual();
             }
         }
@@ -206,7 +220,7 @@ namespace Flowery.Controls
         internal int Index { get; set; }
         internal bool IsFirst { get; set; }
         internal bool IsLast { get; set; }
-        internal double SeparatorOpacity { get; set; } = 0.5;
+        internal double SeparatorOpacity { get; set; } = 1;
         internal DaisySize Size { get; set; } = DaisySize.Medium;
 
         public DaisyBreadcrumbItem()
@@ -249,6 +263,25 @@ namespace Flowery.Controls
         {
             get => (string)GetValue(SeparatorProperty);
             set => SetValue(SeparatorProperty, value);
+        }
+        #endregion
+
+        #region SeparatorBrush
+        public static readonly DependencyProperty SeparatorBrushProperty =
+            DependencyProperty.Register(
+                nameof(SeparatorBrush),
+                typeof(Brush),
+                typeof(DaisyBreadcrumbItem),
+                new PropertyMetadata(null, OnAppearanceChanged));
+
+        /// <summary>
+        /// Gets or sets this item's separator brush. Null uses the containing breadcrumbs' brush,
+        /// then the separator resource or theme foreground.
+        /// </summary>
+        public Brush? SeparatorBrush
+        {
+            get => (Brush?)GetValue(SeparatorBrushProperty);
+            set => SetValue(SeparatorBrushProperty, value);
         }
         #endregion
 
@@ -368,6 +401,18 @@ namespace Flowery.Controls
             DaisyAccessibility.TryHandleEnterOrSpace(e, OnBaseClick);
         }
 
+        private Brush? GetParentSeparatorBrush()
+        {
+            var parent = VisualTreeHelper.GetParent(this) ?? Parent;
+            while (parent != null)
+            {
+                if (parent is DaisyBreadcrumbs breadcrumbs)
+                    return breadcrumbs.SeparatorBrush;
+                parent = VisualTreeHelper.GetParent(parent) ?? (parent as FrameworkElement)?.Parent;
+            }
+            return null;
+        }
+
         internal void RebuildVisual()
         {
             if (_rootGrid == null)
@@ -383,6 +428,7 @@ namespace Flowery.Controls
             var separatorFgOverride = DaisyResourceLookup.TryGetControlBrush(this, "DaisyBreadcrumbItem", "SeparatorForeground");
 
             var baseContentBrush = fgOverride ?? DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentBrush");
+            var mutedBrush = fgOverride ?? DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentMutedBrush");
             var primaryBrush = linkFgOverride ?? DaisyResourceLookup.GetBrush(resources, "DaisyPrimaryBrush");
 
             // Get font size based on size
@@ -394,7 +440,8 @@ namespace Flowery.Controls
             if (_separatorText != null)
             {
                 _separatorText.Text = Separator;
-                _separatorText.Foreground = separatorFgOverride ?? baseContentBrush;
+                _separatorText.Foreground = SeparatorBrush ?? GetParentSeparatorBrush() ?? separatorFgOverride
+                    ?? DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentSubtleBrush");
                 _separatorText.Opacity = SeparatorOpacity;
                 _separatorText.FontSize = fontSize;
                 _separatorText.Visibility = IsFirst ? Visibility.Collapsed : Visibility.Visible;
@@ -404,7 +451,7 @@ namespace Flowery.Controls
             if (_iconPath != null)
             {
                 _iconPath.Data = Icon;
-                _iconPath.Fill = IsLast ? baseContentBrush : primaryBrush;
+                _iconPath.Fill = IsLast ? mutedBrush : primaryBrush;
                 _iconPath.Width = iconSize;
                 _iconPath.Height = iconSize;
                 _iconPath.Visibility = Icon != null ? Visibility.Visible : Visibility.Collapsed;
@@ -412,8 +459,7 @@ namespace Flowery.Controls
 
             // Content
             bool isClickable = IsClickable && !IsLast;
-            var contentBrush = isClickable ? primaryBrush : baseContentBrush;
-            double contentOpacity = IsLast ? 0.7 : 1.0;
+            var contentBrush = isClickable ? primaryBrush : IsLast ? mutedBrush : baseContentBrush;
             IsTabStop = isClickable;
 
             if (_userContent is string text)
@@ -423,7 +469,6 @@ namespace Flowery.Controls
                     _contentText.Text = text;
                     _contentText.FontSize = fontSize;
                     _contentText.Foreground = contentBrush;
-                    _contentText.Opacity = contentOpacity;
                     _contentText.Visibility = Visibility.Visible;
                 }
                 if (_contentPresenter != null)
@@ -440,7 +485,7 @@ namespace Flowery.Controls
                 if (_contentPresenter != null)
                 {
                     _contentPresenter.Content = _userContent;
-                    _contentPresenter.Opacity = contentOpacity;
+                    _contentPresenter.Foreground = contentBrush;
                     _contentPresenter.Visibility = Visibility.Visible;
                 }
             }

@@ -1,5 +1,7 @@
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
+
 DaisyWeatherCard is a flexible container that combines multiple weather display components. You can show/hide sections as needed and either bind data manually or provide an `IWeatherService` implementation for automatic fetching.
 
 ## Properties
@@ -43,7 +45,7 @@ DaisyWeatherCard is a flexible container that combines multiple weather display 
 | `ShowMetrics` | `bool` | `true` | Show metrics section |
 | `ShowSunTimes` | `bool` | `true` | Show sunrise/sunset times |
 | `DateFormat` | `string` | `"dddd, d MMMM"` | Date display format (e.g., "ddd, d MMM" for short) |
-| `Size` | `DaisySize` | `Medium` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
+| `Size` | `DaisySize` | `Auto` | Control size (ExtraSmall, Small, Medium, Large, ExtraLarge) |
 
 ### Service Integration
 

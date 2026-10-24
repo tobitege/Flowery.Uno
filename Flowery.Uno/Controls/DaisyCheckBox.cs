@@ -35,7 +35,7 @@ namespace Flowery.Controls
         public DaisyCheckBox()
         {
             DefaultStyleKey = typeof(DaisyCheckBox);
-            _neumorphic = DaisyNeumorphicParticipant.Create(this, GetNeumorphicSurfaces, () => Size);
+            _neumorphic = DaisyNeumorphicParticipant.Create(this, GetNeumorphicSurfaces, () => ResolvedSize);
             // Override base CheckBox template to prevent conflicts with our code-driven visual tree
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Center;
@@ -45,10 +45,8 @@ namespace Flowery.Controls
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 ApplyAll,
-                () => Size,
-                s => Size = s,
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
+            FlowerySizeManager.Register(this, ApplyAll, () => ResolvedSize);
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
@@ -76,13 +74,15 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyCheckBox),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
             get => (DaisySize)GetValue(SizeProperty);
             set => SetValue(SizeProperty, value);
         }
+
+        public DaisySize ResolvedSize => FlowerySizeManager.ResolveSize(this, Size);
 
         #endregion
 
@@ -258,7 +258,7 @@ namespace Flowery.Controls
                 return;
 
             // Get sizing from tokens (guaranteed by EnsureDefaults)
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             double boxSize = DaisyResourceLookup.GetDouble($"DaisyCheckbox{sizeKey}Size", 20);
             double checkmarkSize = DaisyResourceLookup.GetDouble($"DaisyCheckmark{sizeKey}Size", 12);
 
@@ -273,7 +273,7 @@ namespace Flowery.Controls
             if (!_hasFontSizeOverride)
             {
                 SetFontSize(DaisyResourceLookup.GetDouble($"DaisyCheckbox{sizeKey}FontSize",
-                    DaisyResourceLookup.GetDefaultFontSize(Size)));
+                    DaisyResourceLookup.GetDefaultFontSize(ResolvedSize)));
             }
         }
 

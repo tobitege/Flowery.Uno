@@ -11,8 +11,7 @@
         <!-- Starts closed; MainView opens the pane once the window has rendered and is wide enough. -->
         <SplitView x:Name="MainSplitView"
                    IsPaneOpen="False"
-                   DisplayMode="Overlay"
-                   OpenPaneLength="250">
+                   DisplayMode="Overlay">
             <SplitView.Pane>
                 <!-- On mobile, GallerySafeAreaPadding keeps the sidebar out of the status bar, cutout and gesture bar;
                      MainView widens the pane by that padding so the sidebar keeps its full width -->
@@ -20,7 +19,6 @@
                         Background="{ThemeResource DaisyBase200Brush}">
                     <gallery:GallerySidebar
                         x:Name="ComponentSidebar"
-                        SidebarWidth="250"
                         daisy:DaisyBaseContentControl.NeumorphicScopeEnabled="False"
                         ItemSelected="ComponentSidebar_ItemSelected" />
                 </Border>

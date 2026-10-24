@@ -56,7 +56,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyCollapse),
-                new PropertyMetadata(DaisySize.Medium, OnStylePropertyChanged));
+                new PropertyMetadata(DaisySize.Auto, OnStylePropertyChanged));
 
         public DaisySize Size
         {
@@ -149,9 +149,9 @@ namespace Flowery.Controls
                 Variant = DaisyButtonVariant.Ghost,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                Padding = new Thickness(0),
+                ContentPadding = new Thickness(0),
                 IsTabStop = false,
-                Size = Size // Sync with our Size property
+                Size = ResolvedSize // Sync with our rendered size
             };
 
             var headerGrid = new Grid
@@ -245,18 +245,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -434,21 +429,21 @@ namespace Flowery.Controls
                 DaisyTokenDefaults.EnsureDefaults(resources);
             }
 
-            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", Size, "FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
+            var fontSize = DaisyResourceLookup.GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize",
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
             
             FontSize = fontSize;
             
             // Sync header button size (DaisyButton handles its own sizing)
             if (_headerButton != null)
             {
-                _headerButton.Size = Size;
+                _headerButton.Size = ResolvedSize;
             }
 
             // Adjust icon size based on control size
             if (_iconViewbox != null)
             {
-                var iconSize = Size switch
+                var iconSize = ResolvedSize switch
                 {
                     DaisySize.ExtraSmall => 10.0,
                     DaisySize.Small => 12.0,
@@ -464,7 +459,7 @@ namespace Flowery.Controls
             // Adjust padding based on size
             if (_outerBorder != null)
             {
-                var (hPadding, vPadding) = Size switch
+                var (hPadding, vPadding) = ResolvedSize switch
                 {
                     DaisySize.ExtraSmall => (8.0, 4.0),
                     DaisySize.Small => (10.0, 6.0),

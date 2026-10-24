@@ -51,18 +51,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #region Title
         public static readonly DependencyProperty TitleProperty =
@@ -194,7 +189,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyStat),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// The size of the stat display.
@@ -203,6 +198,36 @@ namespace Flowery.Controls
         {
             get => (DaisySize)GetValue(SizeProperty);
             set => SetValue(SizeProperty, value);
+        }
+        #endregion
+
+        #region Typography
+        public static readonly DependencyProperty ValueFontSizeProperty =
+            DependencyProperty.Register(
+                nameof(ValueFontSize), typeof(double), typeof(DaisyStat),
+                new PropertyMetadata(double.NaN, OnAppearanceChanged));
+
+        /// <summary>
+        /// Gets or sets the value text font size. NaN (default) follows the resolved size tier.
+        /// </summary>
+        public double ValueFontSize
+        {
+            get => (double)GetValue(ValueFontSizeProperty);
+            set => SetValue(ValueFontSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty LabelFontSizeProperty =
+            DependencyProperty.Register(
+                nameof(LabelFontSize), typeof(double), typeof(DaisyStat),
+                new PropertyMetadata(double.NaN, OnAppearanceChanged));
+
+        /// <summary>
+        /// Gets or sets the title and description font size. NaN (default) follows the resolved secondary tier.
+        /// </summary>
+        public double LabelFontSize
+        {
+            get => (double)GetValue(LabelFontSizeProperty);
+            set => SetValue(LabelFontSizeProperty, value);
         }
         #endregion
 
@@ -233,7 +258,6 @@ namespace Flowery.Controls
             // Title
             _titleBlock = new TextBlock
             {
-                Opacity = 0.6,
                 Margin = new Thickness(0, 0, 0, 4)
             };
             _contentPanel.Children.Add(_titleBlock);
@@ -241,7 +265,6 @@ namespace Flowery.Controls
             // Value
             _valueBlock = new TextBlock
             {
-                FontSize = 24,
                 FontWeight = Microsoft.UI.Text.FontWeights.Bold
             };
             _contentPanel.Children.Add(_valueBlock);
@@ -249,7 +272,6 @@ namespace Flowery.Controls
             // Description
             _descriptionBlock = new TextBlock
             {
-                Opacity = 0.6,
                 Margin = new Thickness(0, 4, 0, 0)
             };
             _contentPanel.Children.Add(_descriptionBlock);
@@ -345,30 +367,42 @@ namespace Flowery.Controls
             var descFgOverride = DaisyResourceLookup.TryGetControlBrush(this, "DaisyStat", "DescriptionForeground");
 
             var baseContent = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentBrush");
-            var secondaryFontSize = GetDouble(resources, "DaisySizeMediumSecondaryFontSize", 12);
+            var mutedContent = DaisyResourceLookup.GetBrush(resources, "DaisyBaseContentMutedBrush");
+            var size = ResolvedSize;
+            var labelFontSize = double.IsNaN(LabelFontSize)
+                ? FlowerySizeManager.GetFontSizeForTier(ResponsiveFontTier.Secondary, size)
+                : LabelFontSize;
 
             // Title styling
             if (_titleBlock != null)
             {
-                _titleBlock.Foreground = titleFgOverride ?? baseContent;
-                _titleBlock.FontSize = secondaryFontSize;
+                _titleBlock.Foreground = titleFgOverride ?? mutedContent;
+                _titleBlock.FontSize = labelFontSize;
             }
 
             // Value styling with variant
             if (_valueBlock != null)
             {
                 _valueBlock.Foreground = valueFgOverride ?? GetVariantBrush(resources, Variant, baseContent);
+                var defaultValueFontSize = size switch
+                {
+                    DaisySize.ExtraSmall => 18d,
+                    DaisySize.Small => 20d,
+                    DaisySize.Large => 28d,
+                    DaisySize.ExtraLarge => 32d,
+                    _ => 24d
+                };
+                _valueBlock.FontSize = double.IsNaN(ValueFontSize)
+                    ? DaisyResourceLookup.GetSizeDouble(resources, "DaisyStat", size, "ValueFontSize", defaultValueFontSize)
+                    : ValueFontSize;
             }
 
             // Description styling with variant
             if (_descriptionBlock != null)
             {
-                var descBrush = descFgOverride ?? GetVariantBrush(resources, DescriptionVariant, baseContent);
+                var descBrush = descFgOverride ?? GetVariantBrush(resources, DescriptionVariant, mutedContent);
                 _descriptionBlock.Foreground = descBrush;
-                _descriptionBlock.FontSize = secondaryFontSize;
-
-                // Full opacity for non-default description variant
-                _descriptionBlock.Opacity = DescriptionVariant == DaisyStatVariant.Default ? 0.6 : 1.0;
+                _descriptionBlock.FontSize = labelFontSize;
             }
         }
 
@@ -387,14 +421,6 @@ namespace Flowery.Controls
             };
         }
 
-        #region Resource Helpers
-        private static double GetDouble(ResourceDictionary? resources, string key, double fallback)
-        {
-            if (resources == null)
-                return fallback;
-            return DaisyResourceLookup.GetDouble(resources, key, fallback);
-        }
-        #endregion
     }
 
     /// <summary>

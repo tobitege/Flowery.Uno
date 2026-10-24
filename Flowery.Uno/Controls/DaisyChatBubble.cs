@@ -133,7 +133,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyChatBubble),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -181,18 +181,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -326,9 +321,9 @@ namespace Flowery.Controls
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
             // Get sizing from tokens (guaranteed by EnsureDefaults)
-            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
             FontSize = DaisyResourceLookup.GetDouble($"DaisySize{sizeKey}FontSize",
-                DaisyResourceLookup.GetDefaultFontSize(Size));
+                DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
             double tertiaryFontSize = DaisyResourceLookup.GetDouble($"DaisySize{sizeKey}TertiaryFontSize", 9);
 
             // Chat padding uses spacing tokens

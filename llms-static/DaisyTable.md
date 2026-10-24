@@ -3,6 +3,8 @@
 
 # Overview
 
+`Size` defaults to `Auto`. Read `ResolvedSize` for the concrete tier. Explicit sizes and bindings are preserved; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence). An automatic row uses the table's explicit size; an explicit row size wins.
+
 DaisyTable provides a styled table layout with header, body, and footer sections plus row/cell primitives. It supports **zebra striping**, **pinned headers/columns** (via the template), **row active/hover states**, and **size presets** that adjust padding and font size. Use `DaisyTableHead`, `DaisyTableBody`, and `DaisyTableFoot` to structure content; rows/cells handle layout and styling.
 
 ## Structure
@@ -16,7 +18,7 @@ DaisyTable provides a styled table layout with header, body, and footer sections
 
 | Property | Description |
 | --- | --- |
-| `Size` | ExtraSmall, Small, Medium (default), Large, ExtraLarge; adjusts padding/font via converters. |
+| `Size` | Auto (default), ExtraSmall, Small, Medium, Large, ExtraLarge; adjusts padding/font via converters. |
 | `Zebra` (bool) | Applies alternate row backgrounds in `DaisyTableBody`. |
 | `PinRows` / `PinCols` (bool) | Exposed for sticky headers/columns; template groundwork present. |
 

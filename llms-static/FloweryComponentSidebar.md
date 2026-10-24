@@ -21,9 +21,10 @@ FloweryComponentSidebar is a high-performance, navigational sidebar designed for
 | `Categories` (`ObservableCollection<SidebarCategory>`) | The source data. Add categories containing list of items. |
 | `SelectedItem` (`SidebarItem?`) | Highlighted item. Selected state uses `DaisyPrimaryBrush` variant. |
 | `SidebarWidth` (double) | The width of the sidebar. Default ~254. |
-| `AutoSizeSidebarWidth` (bool) | If true, sidebar width scales automatically with the global `DaisySize`. |
+| `AutoSizeSidebarWidth` (bool) | If true, sidebar width follows `ResolvedSize`. |
 | `SearchText` (string) | Live filtering query. Syncs automatically with the internal search input. |
-| `Size` (`DaisySize`) | The manual sizing override. Typically synced with the global scale. |
+| `Size` (`DaisySize`) | Defaults to `Auto`; an explicit size remains in effect when the global size changes. |
+| `ResolvedSize` (`DaisySize`) | The concrete tier used for layout; see [size precedence](FlowerySizeManager.md#size-ownership-and-precedence). |
 | `ItemSelected` (event) | Fired when an item is clicked. Includes the item and its parent category. |
 | `FavoriteToggled` (event) | Fired when an item's favorite/star icon is toggled. |
 

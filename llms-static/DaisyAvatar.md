@@ -7,11 +7,13 @@ DaisyAvatar renders user/profile images or initials with **5 sizes**, **3 shapes
 
 ## Size Options
 
+`Size` defaults to `Auto`. `ResolvedSize` exposes the concrete tier selected by [global sizing](FlowerySizeManager.md); an explicit tier remains unchanged.
+
 | Size | Approx. Dimensions | Use Case |
 | --- | --- | --- |
 | ExtraSmall | 24×24 | Very tight UIs, inline with text |
 | Small | 32×32 | Toolbars, compact cards |
-| Medium (default) | 48×48 | General-purpose avatar lists |
+| Medium | 48×48 | General-purpose avatar lists |
 | Large | 96×96 | Profile headers, spotlight cards |
 | ExtraLarge | 128×128 | Hero/profile pages |
 
@@ -35,7 +37,7 @@ DaisyAvatar renders user/profile images or initials with **5 sizes**, **3 shapes
 ## Quick Examples
 
 ```xml
-<!-- Image avatar (default circle, medium) -->
+<!-- Image avatar (default circle, automatic size) -->
 <controls:DaisyAvatar>
     <Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/logo.png" />
 </controls:DaisyAvatar>

@@ -625,7 +625,10 @@ namespace Flowery.Theming
                 palette = Palettes["Dark"]; // Fallback to Dark
             }
 
-            return CreateFromPalette(palette);
+            var resources = CreateFromPalette(palette);
+            if (string.Equals(themeName, "Business", StringComparison.OrdinalIgnoreCase))
+                AddColorAndBrush(resources, "DaisyButtonPrimarySoft", WithOpacity(FloweryColorHelpers.ColorFromHex(palette.Primary), 0.12));
+            return resources;
         }
 
         /// <summary>
@@ -688,8 +691,51 @@ namespace Flowery.Theming
             if (p.ButtonPrimaryDisabled != null)
                 AddColorAndBrush(dict, "DaisyButtonPrimaryDisabled", FloweryColorHelpers.ColorFromHex(p.ButtonPrimaryDisabled));
 
+            EnsureSemanticBrushes(dict);
             return dict;
         }
+
+        internal static void EnsureSemanticBrushes(ResourceDictionary palette, ResourceDictionary? fallbackResources = null)
+        {
+            EnsureSemanticBrush(palette, "DaisyBaseContentMuted", "DaisyBaseContent", 0.7, fallbackResources);
+            EnsureSemanticBrush(palette, "DaisyBaseContentSubtle", "DaisyBaseContent", 0.5, fallbackResources);
+            EnsureSemanticBrush(palette, "DaisyBaseContentDisabled", "DaisyBaseContent", 0.5, fallbackResources);
+            foreach (var variant in new[] { "Primary", "Secondary", "Accent", "Info", "Success", "Warning", "Error" })
+            {
+                var source = "Daisy" + variant;
+                var prefix = "DaisyButton" + variant;
+                EnsureSemanticBrush(palette, prefix + "Soft", source, 0.15, fallbackResources);
+                EnsureSemanticBrush(palette, prefix + "SoftHover", source, 0.3, fallbackResources);
+                EnsureSemanticBrush(palette, prefix + "SoftBorder", source, 0.45, fallbackResources);
+            }
+        }
+
+        private static void EnsureSemanticBrush(ResourceDictionary palette, string prefix, string source, double opacity, ResourceDictionary? fallbackResources)
+        {
+            if (GetPaletteColor(palette, prefix) is { } explicitColor)
+            {
+                AddColorAndBrush(palette, prefix, explicitColor);
+                return;
+            }
+            if (DaisyResourceLookup.TryGetResource(palette, prefix + "Color", out _)
+                || DaisyResourceLookup.TryGetResource(palette, prefix + "Brush", out _))
+                return;
+            if ((GetPaletteColor(palette, source) ?? GetPaletteColor(fallbackResources, source)) is { } sourceColor)
+                AddColorAndBrush(palette, prefix, WithOpacity(sourceColor, opacity));
+        }
+
+        private static Color? GetPaletteColor(ResourceDictionary? palette, string prefix)
+        {
+            if (DaisyResourceLookup.TryGetResource(palette, prefix + "Color", out var value) && value is Color color)
+                return color;
+            if (DaisyResourceLookup.TryGetResource(palette, prefix + "Brush", out value) && value is SolidColorBrush brush)
+                return WithOpacity(brush.Color, brush.Opacity);
+            return null;
+        }
+
+        // Store alpha in Color so the existing stable-brush publication preserves it.
+        private static Color WithOpacity(Color color, double opacity) =>
+            Color.FromArgb((byte)Math.Round(color.A * opacity), color.R, color.G, color.B);
 
         private static void AddColorAndBrush(ResourceDictionary dict, string keyPrefix, Color color)
         {

@@ -65,7 +65,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyThemeRadio),
-                new PropertyMetadata(DaisySize.Medium, OnSizeChanged));
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
 
         /// <summary>
         /// The size of the radio button.
@@ -75,6 +75,8 @@ namespace Flowery.Controls
             get => (DaisySize)GetValue(SizeProperty);
             set => SetValue(SizeProperty, value);
         }
+
+        public DaisySize ResolvedSize => FlowerySizeManager.ResolveSize(this, Size);
         #endregion
 
         public DaisyThemeRadio()
@@ -82,10 +84,8 @@ namespace Flowery.Controls
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 OnThemeUpdated,
-                () => Size,
-                s => Size = s,
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
+            FlowerySizeManager.Register(this, ApplyAll, () => ResolvedSize);
 
             Checked += OnCheckedChanged;
             Unchecked += OnCheckedChanged;
@@ -196,7 +196,7 @@ namespace Flowery.Controls
             // - Button mode: Small/Large alter padding & font size.
             if (Mode == ThemeRadioMode.Button)
             {
-                switch (Size)
+                switch (ResolvedSize)
                 {
                     case DaisySize.Small:
                         Padding = new Thickness(12, 6, 12, 6);
@@ -216,7 +216,7 @@ namespace Flowery.Controls
             {
                 FontSize = 14;
                 // Indicator sizing is controlled by template parts; for Small we keep parity by shrinking padding.
-                if (Size == DaisySize.Small)
+                if (ResolvedSize == DaisySize.Small)
                 {
                     Padding = new Thickness(6, 0, 0, 0);
                 }
@@ -227,7 +227,7 @@ namespace Flowery.Controls
 
                 if (_radioIndicatorBorder != null && _radioCheckMark != null)
                 {
-                    if (Size == DaisySize.Small)
+                    if (ResolvedSize == DaisySize.Small)
                     {
                         _radioIndicatorBorder.Width = 16;
                         _radioIndicatorBorder.Height = 16;

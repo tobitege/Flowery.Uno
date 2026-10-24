@@ -99,7 +99,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyRadialProgress),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         /// <summary>
         /// Gets or sets the size of the control.
@@ -216,18 +216,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #endregion
 
@@ -287,13 +282,13 @@ namespace Flowery.Controls
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
             // Get base size from design tokens (this is the minimum size)
-            double baseSize = DaisyResourceLookup.GetDefaultRadialProgressSize(Size);
+            double baseSize = DaisyResourceLookup.GetDefaultRadialProgressSize(ResolvedSize);
 
             // Get font size from design tokens
-            double fontSize = DaisyResourceLookup.GetDefaultRadialProgressFontSize(Size);
+            double fontSize = DaisyResourceLookup.GetDefaultRadialProgressFontSize(ResolvedSize);
 
             // Get stroke thickness from explicit property or design tokens
-            double strokeThickness = Thickness ?? DaisyResourceLookup.GetDefaultRadialProgressThickness(Size);
+            double strokeThickness = Thickness ?? DaisyResourceLookup.GetDefaultRadialProgressThickness(ResolvedSize);
 
             // Set font properties first so we can measure
             _valueTextBlock.FontSize = fontSize;

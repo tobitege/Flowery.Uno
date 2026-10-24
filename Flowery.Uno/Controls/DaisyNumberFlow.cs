@@ -168,6 +168,23 @@ namespace Flowery.Controls
             set => SetValue(CultureProperty, value);
         }
 
+        public static readonly DependencyProperty DigitForegroundProperty =
+            DependencyProperty.Register(
+                nameof(DigitForeground),
+                typeof(Brush),
+                typeof(DaisyNumberFlow),
+                new PropertyMetadata(null, OnLayoutOrValueConfigChanged));
+
+        /// <summary>
+        /// Gets or sets the brush for digits and formatting characters.
+        /// Null uses the theme foreground or the content brush for visible digit boxes.
+        /// </summary>
+        public Brush? DigitForeground
+        {
+            get => (Brush?)GetValue(DigitForegroundProperty);
+            set => SetValue(DigitForegroundProperty, value);
+        }
+
         public static readonly DependencyProperty ShowDigitBoxesProperty =
             DependencyProperty.Register(
                 nameof(ShowDigitBoxes),
@@ -1113,7 +1130,6 @@ namespace Flowery.Controls
 
                 _digitBox = new Border
                 {
-                    Background = DaisyResourceLookup.GetBrush("DaisyNeutralBrush"),
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Opacity = 1
@@ -1212,6 +1228,7 @@ namespace Flowery.Controls
             public void ApplyTypography()
             {
                 var fg = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush");
+                _digitBox.Background = DaisyResourceLookup.GetBrush("DaisyNeutralBrush");
                 if (_owner.ShowDigitBoxes)
                 {
                     if (_digitBox.Background is SolidColorBrush boxBrush)
@@ -1227,6 +1244,7 @@ namespace Flowery.Controls
                         fg = DaisyResourceLookup.GetBrush("DaisyNeutralContentBrush");
                     }
                 }
+                fg = _owner.DigitForeground ?? fg;
                 foreach (var tb in new[] { _prevText, _currentText })
                 {
                     tb.FontSize = _owner.FontSize;

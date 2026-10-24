@@ -19,11 +19,13 @@ DaisyInput is a styled TextBox with **10 variants** and **4 size presets**. It s
 
 DaisyInput uses **fixed heights** for each size to match DaisyUI's design.
 
+`Size` defaults to `Auto`. `ResolvedSize` exposes the concrete tier selected by [global sizing](FlowerySizeManager.md); an explicit tier remains unchanged.
+
 | Size | Height | Font Size | Floating Height | Use Case |
 | --- | --- | --- | --- | --- |
 | ExtraSmall | 24 | 10 | 40 | Dense tables/toolbars. |
 | Small | 32 | 12 | 48 | Compact forms. |
-| Medium (default) | 48 | 14 | 56 | General usage. |
+| Medium | 48 | 14 | 56 | General usage. |
 | Large | 64 | 18 | 64 | Prominent inputs/hero sections. |
 
 > [!TIP]
@@ -41,7 +43,7 @@ DaisyInput wraps an inner `TextBox` and forwards common TextBox properties (`Tex
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `Variant` | `DaisyInputVariant` | `Bordered` | Visual style variant (see table above). |
-| `Size` | `DaisySize` | `Medium` | Size preset (see table above). |
+| `Size` | `DaisySize` | `Auto` | Size preset; rendering uses `ResolvedSize` (see table above). |
 | `Label` | `string?` | `null` | Label text displayed above the input. |
 | `LabelPosition` | `DaisyLabelPosition` | `Top` | Label positioning mode (None, Top, Floating, Inset). **Floating** mode features a high-fidelity "identity clone" animation. |
 | `IsRequired` | `bool` | `false` | Shows asterisk (*) indicator next to label. |

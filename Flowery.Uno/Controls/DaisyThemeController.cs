@@ -8,6 +8,29 @@ namespace Flowery.Controls
         private bool _isSyncing;
         private readonly DaisyControlLifecycle _lifecycle;
 
+        #region Size
+        public static readonly DependencyProperty SizeProperty =
+            DependencyProperty.Register(
+                nameof(Size),
+                typeof(DaisySize),
+                typeof(DaisyThemeController),
+                new PropertyMetadata(DaisySize.Auto, OnSizeChanged));
+
+        /// <summary>
+        /// Gets or sets the checkbox size tier. Auto follows the current size scope or global size.
+        /// </summary>
+        public DaisySize Size
+        {
+            get => (DaisySize)GetValue(SizeProperty);
+            set => SetValue(SizeProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the effective checkbox size without replacing the authored Size value.
+        /// </summary>
+        public DaisySize ResolvedSize => FlowerySizeManager.ResolveSize(this, Size);
+        #endregion
+
         #region Mode
         public static readonly DependencyProperty ModeProperty =
             DependencyProperty.Register(
@@ -103,10 +126,9 @@ namespace Flowery.Controls
             _lifecycle = new DaisyControlLifecycle(
                 this,
                 OnThemeUpdated,
-                () => DaisySize.Medium,
-                _ => { },
-                handleLifecycleEvents: false,
-                subscribeSizeChanges: false);
+                handleLifecycleEvents: false);
+
+            FlowerySizeManager.Register(this, ApplySizing, () => ResolvedSize);
 
             Checked += OnCheckedChanged;
             Unchecked += OnCheckedChanged;
@@ -120,6 +142,13 @@ namespace Flowery.Controls
             SyncWithCurrentTheme();
             UpdateAlternateTheme(DaisyThemeManager.CurrentThemeName ?? "");
             RefreshThemeBrushes();
+            ApplySizing();
+        }
+
+        private static void OnSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DaisyThemeController controller)
+                controller.ApplySizing();
         }
 
         private static void OnModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -147,6 +176,32 @@ namespace Flowery.Controls
             base.OnApplyTemplate();
             EnsureTemplate();
             RefreshThemeBrushes();
+            ApplySizing();
+            UpdateVisualState(false);
+        }
+
+        private void ApplySizing()
+        {
+            var size = ResolvedSize;
+            var sizeKey = DaisyResourceLookup.GetSizeKeyFull(size);
+            if (GetTemplateChild("CheckboxRoot") is Grid root)
+            {
+                var hitSize = DaisyResourceLookup.GetDouble($"DaisySize{sizeKey}Height", FlowerySizeManager.GetControlHeight(size));
+                root.MinWidth = hitSize;
+                root.MinHeight = hitSize;
+            }
+            if (GetTemplateChild("CheckboxMode") is Border indicator)
+            {
+                var indicatorSize = DaisyResourceLookup.GetDouble($"DaisyCheckbox{sizeKey}Size", 20);
+                indicator.Width = indicatorSize;
+                indicator.Height = indicatorSize;
+            }
+            if (GetTemplateChild("CheckMark") is Path checkMark)
+            {
+                var checkmarkSize = DaisyResourceLookup.GetDouble($"DaisyCheckmark{sizeKey}Size", 12);
+                checkMark.Width = checkmarkSize;
+                checkMark.Height = checkmarkSize;
+            }
         }
 
         private void EnsureTemplate()

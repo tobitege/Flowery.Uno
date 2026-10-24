@@ -31,7 +31,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyList),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -48,6 +48,8 @@ namespace Flowery.Controls
             if (d is DaisyList list)
             {
                 list.ApplyAll();
+                if (e.Property == SizeProperty)
+                    FlowerySizeManager.RefreshSizeScope(list);
             }
         }
 
@@ -71,18 +73,15 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
+        internal override DaisySize? ChildSizeOverride => Size == DaisySize.Auto ? null : Size;
 
         protected override FrameworkElement? GetNeumorphicHostElement()
         {
@@ -130,6 +129,11 @@ namespace Flowery.Controls
                     }
                 }
             }
+            else if (userContent is DaisyListRow singleRow)
+            {
+                _rows.Add(singleRow);
+                _itemsPanel.Children.Add(singleRow);
+            }
             else if (userContent != null)
             {
                 _itemsPanel.Children.Add(userContent as UIElement);
@@ -156,7 +160,7 @@ namespace Flowery.Controls
             // Propagate size to rows
             foreach (var row in _rows)
             {
-                row.Size = Size;
+                row.RefreshResolvedSize();
             }
         }
 
@@ -189,7 +193,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyListRow),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -282,18 +286,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         /// <summary>
         /// Rows are flat parts of the list surface; only the list draws the neumorphic effect.
@@ -406,13 +405,13 @@ namespace Flowery.Controls
             if (resources != null)
                 DaisyTokenDefaults.EnsureDefaults(resources);
 
-            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+            string sizeKey = DaisyResourceLookup.GetSizeKeyFull(ResolvedSize);
 
             // List rows use menu-style padding
             Thickness padding = resources == null
-                ? DaisyResourceLookup.GetDefaultMenuPadding(Size)
+                ? DaisyResourceLookup.GetDefaultMenuPadding(ResolvedSize)
                 : DaisyResourceLookup.GetThickness(resources, $"DaisyMenu{sizeKey}Padding",
-                    DaisyResourceLookup.GetDefaultMenuPadding(Size));
+                    DaisyResourceLookup.GetDefaultMenuPadding(ResolvedSize));
             _rootBorder.Padding = padding;
         }
 

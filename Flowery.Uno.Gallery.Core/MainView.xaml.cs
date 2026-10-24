@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +25,6 @@ namespace Flowery.Uno.Gallery
     public sealed partial class MainView : UserControl
     {
         private const string HomeTabHeader = "Sidebar_Home";
-        private const double SidebarWidth = 250;
         private const double MinContentWidth = 400;
         private const double MaxSidebarWidthPercent = 0.35;
         private const double HeaderCollapseScrollThreshold = 20;
@@ -150,8 +147,6 @@ namespace Flowery.Uno.Gallery
                 ComponentSidebar.AvailableLanguages = GallerySidebarData.CreateLanguages();
             }
 
-            FlowerySizeManager.SizeChanged += OnGlobalSizeChanged;
-
             // Always render Home first for fast first content, then restore last selection after first UI pass.
             NavigateToCategory(HomeTabHeader);
         }
@@ -172,6 +167,7 @@ namespace Flowery.Uno.Gallery
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             DaisyThemeManager.ThemeChanged += OnThemeChanged;
+            FlowerySizeManager.SizeChanged += OnGlobalSizeChanged;
             ApplyTheme();
 
 #if __WASM__
@@ -198,8 +194,6 @@ namespace Flowery.Uno.Gallery
                 SplitView.DisplayModeProperty, OnPaneStateChanged);
             UpdateCarouselOverlaySuspension();
 #endif
-            UpdateResponsiveLayout(ActualWidth);
-
             if (_isMobilePlatform)
             {
                 _isLandscape = ActualWidth > ActualHeight;
@@ -211,13 +205,14 @@ namespace Flowery.Uno.Gallery
                     AttachScrollHandler(_activeCategoryContent);
             }
 
-            ApplyGlobalSizeToControls(this, FlowerySizeManager.CurrentSize);
+            ApplySizeToGalleryElements(FlowerySizeManager.CurrentSize);
             QueueDeferredInitialNavigation();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             DaisyThemeManager.ThemeChanged -= OnThemeChanged;
+            FlowerySizeManager.SizeChanged -= OnGlobalSizeChanged;
 #if __WASM__
             MainSplitView.UnregisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, _paneOpenCallbackToken);
             MainSplitView.UnregisterPropertyChangedCallback(SplitView.DisplayModeProperty, _paneDisplayModeCallbackToken);
@@ -378,14 +373,16 @@ namespace Flowery.Uno.Gallery
         }
 
         // GallerySafeAreaPadding pads the pane on mobile (e.g. the camera cutout on the left in landscape). Widen the pane by that
-        // padding so the fixed-width sidebar is not clipped on the right.
-        private void OnSidebarPanePaddingChanged(DependencyObject sender, DependencyProperty dp)
+        // padding so the size-dependent sidebar is not clipped on the right.
+        private void OnSidebarPanePaddingChanged(DependencyObject sender, DependencyProperty dp) => UpdateSidebarPaneWidth();
+
+        private void UpdateSidebarPaneWidth()
         {
             if (MainSplitView == null || SidebarPaneBorder == null)
                 return;
 
             var padding = SidebarPaneBorder.Padding;
-            MainSplitView.OpenPaneLength = SidebarWidth + padding.Left + padding.Right;
+            MainSplitView.OpenPaneLength = ComponentSidebar.SidebarWidth + padding.Left + padding.Right;
 
             if (ActualWidth > 0)
                 UpdateResponsiveLayout(ActualWidth);
@@ -619,26 +616,6 @@ namespace Flowery.Uno.Gallery
                 DispatcherQueue.TryEnqueue(() => AttachScrollHandler(newContent));
             }
 
-            if (contentChanged)
-            {
-                // Hook into Loaded event to ensure visual tree is fully realized
-                // before applying global size (DispatcherQueue timing is unreliable)
-                void OnContentLoaded(object s, RoutedEventArgs args)
-                {
-                    newContent.Loaded -= OnContentLoaded;
-                    ApplyGlobalSizeToControls(newContent, FlowerySizeManager.CurrentSize);
-                }
-
-                if (newContent.IsLoaded)
-                {
-                    // Already loaded (cached view), apply immediately
-                    ApplyGlobalSizeToControls(newContent, FlowerySizeManager.CurrentSize);
-                }
-                else
-                {
-                    newContent.Loaded += OnContentLoaded;
-                }
-            }
         }
 
         private FrameworkElement GetOrCreateCategoryContent(string tabHeader)
@@ -923,12 +900,14 @@ namespace Flowery.Uno.Gallery
         private void OnGlobalSizeChanged(object? sender, DaisySize newSize)
         {
             SuppressScrollEvents();
-            ApplyGlobalSizeToControls(this, newSize);
             ApplySizeToGalleryElements(newSize);
         }
 
         private void ApplySizeToGalleryElements(DaisySize size)
         {
+            ComponentSidebar.SidebarWidth = FlowerySizeManager.GetSidebarWidth(size);
+            UpdateSidebarPaneWidth();
+
             if (CategoryTitle != null)
             {
                 CategoryTitle.FontSize = size switch
@@ -970,52 +949,6 @@ namespace Flowery.Uno.Gallery
                 CategoryChevrons.Width = chevronSize.Width;
                 CategoryChevrons.Height = chevronSize.Height;
             }
-        }
-
-        [UnconditionalSuppressMessage("Trimming", "IL2075:DynamicallyAccessedMembers",
-            Justification = "DaisyUI controls that support Size property are always preserved. Method handles missing properties gracefully.")]
-        private static void ApplyGlobalSizeToControls(DependencyObject root, DaisySize size)
-        {
-            foreach (var element in EnumerateVisualTree(root))
-            {
-                if (element is Control control)
-                {
-                    if (ShouldIgnoreGlobalSize(control))
-                        continue;
-
-                    var sizeProperty = control.GetType().GetProperty("Size", BindingFlags.Public | BindingFlags.Instance);
-                    if (sizeProperty != null && sizeProperty.PropertyType == typeof(DaisySize) && sizeProperty.CanWrite)
-                    {
-                        try
-                        {
-                            sizeProperty.SetValue(control, size);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                }
-            }
-        }
-
-        private static bool ShouldIgnoreGlobalSize(DependencyObject control)
-        {
-            DependencyObject? current = control;
-            while (current != null)
-            {
-                if (FlowerySizeManager.GetIgnoreGlobalSize(current))
-                    return true;
-
-                // Fallback: Check if it's a FrameworkElement's Parent property if VisualTreeHelper fails
-                var next = VisualTreeHelper.GetParent(current);
-                if (next == null && current is FrameworkElement fe)
-                {
-                    next = fe.Parent;
-                }
-                current = next;
-            }
-
-            return false;
         }
 
         /// <summary>

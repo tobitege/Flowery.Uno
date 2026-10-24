@@ -4,7 +4,7 @@ A dropdown control for selecting a global size (`DaisySize`) that affects (almos
 
 ## Overview
 
-`DaisySizeDropdown` provides a user-friendly way to let users choose their preferred UI size. When the user selects a size, it's applied globally via `FlowerySizeManager`. All Daisy controls with a `Size` property automatically update.
+`DaisySizeDropdown` lets users choose their preferred UI size. The selection is applied globally via `FlowerySizeManager`. Controls using automatic sizing update; explicit sizes and bindings are preserved. See [size precedence](FlowerySizeManager.md#size-ownership-and-precedence).
 
 ## Basic Usage
 
@@ -21,9 +21,9 @@ This displays a dropdown with all five sizes (ExtraSmall, Small, Medium, Large, 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `SelectedSize` | `DaisySize` | `Medium` | The currently selected size |
-| `Size` | `DaisySize` | `Medium` | The size of the dropdown control itself |
+| `Size` | `DaisySize` | `Auto` | Requested size of the dropdown itself; `ResolvedSize` provides the concrete tier |
 | `ShowAbbreviations` | `bool` | `false` | Show abbreviations (XS, S, M, L, XL) instead of full names |
-| `SizeOptions` | `IList<SizePreviewInfo>` | `null` | Custom size options to display |
+| `SizeOptions` | `System.Collections.IEnumerable?` | `null` | Custom options containing `SizePreviewInfo` objects |
 
 ---
 
@@ -31,47 +31,47 @@ This displays a dropdown with all five sizes (ExtraSmall, Small, Medium, Large, 
 
 By default, all five sizes are shown. You can customize which sizes appear and what they're called using the `SizeOptions` property.
 
+Only the five concrete sizes can be selected as a global size. Options with `Auto` or an undefined enum value are excluded.
+An empty collection or a collection without visible concrete sizes uses the five built-in options.
+
 ### SizePreviewInfo Properties
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Size` | `DaisySize` | - | The enum value (required) |
-| `Name` | `string` | - | Internal name for localization lookup (e.g., "Small") |
+| `Size` | `DaisySize` | `ExtraSmall` | Set the concrete tier for this option |
+| `Name` | `string` | `""` | Internal name for localization lookup (e.g., "Small") |
 | `IsVisible` | `bool` | `true` | Set to `false` to hide this size from the dropdown |
 | `DisplayNameOverride` | `string?` | `null` | Custom label that overrides localized text |
-| `Abbreviation` | `string` | - | Short form for compact display (XS, S, M, L, XL) |
+| `Abbreviation` | `string` | `""` | Short form for compact display (XS, S, M, L, XL) |
 
 ### Example: Show Only 3 Sizes with Custom Names
 
-```xml
-<controls:DaisySizeDropdown>
-    <controls:DaisySizeDropdown.SizeOptions>
-        <x:Array Type="{x:Type controls:SizePreviewInfo}">
-            <controls:SizePreviewInfo Size="Small" Name="Small" 
-                                      DisplayNameOverride="Compact" Abbreviation="C" />
-            <controls:SizePreviewInfo Size="Medium" Name="Medium" 
-                                      DisplayNameOverride="Normal" Abbreviation="N" />
-            <controls:SizePreviewInfo Size="Large" Name="Large" 
-                                      DisplayNameOverride="Large" Abbreviation="L" />
-        </x:Array>
-    </controls:DaisySizeDropdown.SizeOptions>
-</controls:DaisySizeDropdown>
+```csharp
+using Flowery.Controls;
+using Flowery.Enums;
+
+var sizePicker = new DaisySizeDropdown
+{
+    SizeOptions = new SizePreviewInfo[]
+    {
+        new() { Size = DaisySize.Small, Name = "Small", DisplayNameOverride = "Compact", Abbreviation = "C" },
+        new() { Size = DaisySize.Medium, Name = "Medium", DisplayNameOverride = "Normal", Abbreviation = "N" },
+        new() { Size = DaisySize.Large, Name = "Large", DisplayNameOverride = "Large", Abbreviation = "L" }
+    }
+};
 ```
 
 ### Example: Hide ExtraSmall and ExtraLarge
 
-```xml
-<controls:DaisySizeDropdown>
-    <controls:DaisySizeDropdown.SizeOptions>
-        <x:Array Type="{x:Type controls:SizePreviewInfo}">
-            <controls:SizePreviewInfo Size="ExtraSmall" Name="ExtraSmall" IsVisible="False" />
-            <controls:SizePreviewInfo Size="Small" Name="Small" />
-            <controls:SizePreviewInfo Size="Medium" Name="Medium" />
-            <controls:SizePreviewInfo Size="Large" Name="Large" />
-            <controls:SizePreviewInfo Size="ExtraLarge" Name="ExtraLarge" IsVisible="False" />
-        </x:Array>
-    </controls:DaisySizeDropdown.SizeOptions>
-</controls:DaisySizeDropdown>
+```csharp
+sizePicker.SizeOptions = new SizePreviewInfo[]
+{
+    new() { Size = DaisySize.ExtraSmall, Name = "ExtraSmall", IsVisible = false },
+    new() { Size = DaisySize.Small, Name = "Small", Abbreviation = "S" },
+    new() { Size = DaisySize.Medium, Name = "Medium", Abbreviation = "M" },
+    new() { Size = DaisySize.Large, Name = "Large", Abbreviation = "L" },
+    new() { Size = DaisySize.ExtraLarge, Name = "ExtraLarge", IsVisible = false }
+};
 ```
 
 ---
@@ -110,7 +110,7 @@ If you need to override the built-in translations, add these keys to your locali
 
 ## Styling
 
-The dropdown respects global size changes. When a new size is selected, the dropdown itself also updates its appearance.
+The selected option follows the global size. The dropdown's appearance follows global changes when its own `Size` is `Auto`; an explicit size remains in effect.
 
 ### Size Variants
 
@@ -122,26 +122,10 @@ The dropdown respects global size changes. When a new size is selected, the drop
 
 ### Automatic MinWidth
 
-The control automatically calculates a `MinWidth` based on the current `Size` to ensure:
-
-1. The size name text fits without clipping
-2. The dropdown arrow/glyph is fully visible (requires ~26px)
-
-This is particularly important at smaller sizes (ExtraSmall, Small) where the WinUI ComboBox template expects more space than the control height provides.
-
-**Calculated MinWidth**: approximately `116px` (text area + dropdown glyph margin)
-
-If you need a narrower dropdown, consider:
-
-- Using `ShowAbbreviations="True"` to display shorter labels (XS, S, M, L, XL)
-- Providing custom `SizeOptions` with shorter `DisplayNameOverride` values
-
-```xml
-<!-- Compact dropdown with abbreviations -->
-<controls:DaisySizeDropdown ShowAbbreviations="True" Width="80" />
-```
-
-> **Note:** Setting `Width` below `MinWidth` will be overridden. To force a smaller width, you must also set `MinWidth` explicitly, but this may cause visual clipping.
+Sizing sets `MinWidth` to `116` at every tier: 90 for text and 26 for the dropdown glyph.
+Shorter labels and `ShowAbbreviations` do not reduce this minimum.
+Setting `Width` below `116` does not make the control narrower.
+Later size or theme updates also restore `MinWidth` to `116`.
 
 ---
 
@@ -151,18 +135,17 @@ If you need to change the size without the UI:
 
 ```csharp
 using Flowery.Controls;
+using Flowery.Enums;
 
 // Apply a size globally
 FlowerySizeManager.ApplySize(DaisySize.Large);
-
-// Or by name
-FlowerySizeManager.ApplySize("Large");
 
 // Check current size
 DaisySize current = FlowerySizeManager.CurrentSize;
 ```
 
-The dropdown automatically syncs with `FlowerySizeManager.CurrentSize`.
+The dropdown selects the visible option that matches `FlowerySizeManager.CurrentSize`.
+If no option matches, the existing selection remains unchanged.
 
 ---
 

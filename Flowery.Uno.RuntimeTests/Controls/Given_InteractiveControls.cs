@@ -141,6 +141,23 @@ namespace Flowery.Uno.RuntimeTests.Controls
             tooltip.Tip = "Hello";
             tooltip.IsOpen = true;
             Assert.AreEqual("Hello", tooltip.Tip);
+            var native = (ToolTip)ToolTipService.GetToolTip(tooltip);
+            Assert.IsTrue(native.IsOpen);
+
+            // The native tooltip is a separate popup; removing its owner must close it.
+            var host = RuntimeTestHelpers.GetHostPanel();
+            var unloaded = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            tooltip.Unloaded += (_, _) => unloaded.TrySetResult(null);
+            host.Children.Remove(tooltip);
+            await unloaded.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.IsFalse(native.IsOpen, "An unloaded tooltip must not stay on screen.");
+            Assert.IsTrue(tooltip.IsOpen);
+
+            RuntimeTestHelpers.AttachToHost(tooltip);
+            await RuntimeTestHelpers.EnsureLoadedAsync(tooltip).WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.IsTrue(native.IsOpen, "A tooltip that is still requested opens again when it loads.");
+            tooltip.IsOpen = false;
+            Assert.IsFalse(native.IsOpen);
         }
     }
 }

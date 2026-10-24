@@ -26,11 +26,11 @@ DaisyFab is a Floating Action Button container with a trigger button and expanda
 
 | Property | Description |
 | --- | --- |
-| `Size` | Controls the size of both the trigger and all action buttons (`ExtraSmall` through `ExtraLarge`). |
+| `Size` | Defaults to `Auto`. Controls the trigger and supplies the default tier for automatic action buttons; explicit child tiers remain unchanged. |
 
-The FAB automatically propagates its `Size` to all child action buttons. You don't need to set `Size` on individual action buttons—they inherit from the parent FAB.
+An explicit FAB tier supplies the size for action buttons whose `Size` is `Auto`. Local values, styles, and bindings on action buttons retain their own tiers.
 
-**Global Size Support:** DaisyFab responds to `FlowerySizeManager.CurrentSize` changes. When the global size changes, the FAB and all its action buttons update automatically (unless `FlowerySizeManager.IgnoreGlobalSize` is set).
+`ResolvedSize` exposes the concrete tier from [global sizing](FlowerySizeManager.md). With global sizing disabled or ignored, an automatic FAB and its automatic action buttons use the legacy `Large` fallback. A child with `IgnoreGlobalSize="False"` can opt back into enabled global defaults. Concrete child sizes still take precedence. Clear an explicit FAB `Size` or set it to `Auto` to resume the global policy.
 
 ## Quick Examples
 

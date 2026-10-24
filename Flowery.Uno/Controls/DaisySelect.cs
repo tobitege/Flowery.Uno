@@ -56,7 +56,7 @@ namespace Flowery.Controls
         public event EventHandler<object?>? ManualSelectionChanged;
         private INotifyPropertyChanged? _localizationNotifier;
 
-        public DaisySelect() : base(true)
+        public DaisySelect()
         {
             // Constructor
             SelectionChanged += (s, e) =>
@@ -184,7 +184,7 @@ namespace Flowery.Controls
         {
             base.ApplySizing(resources);
 
-             FontSize = GetSizeDouble(resources, "DaisySize", Size, "FontSize", DaisyResourceLookup.GetDefaultFontSize(Size));
+             FontSize = GetSizeDouble(resources, "DaisySize", ResolvedSize, "FontSize", DaisyResourceLookup.GetDefaultFontSize(ResolvedSize));
         }
 
         protected override void OnAfterApplyAll(ResourceDictionary? resources)

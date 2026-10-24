@@ -78,7 +78,7 @@ namespace Flowery.Controls
 
         public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register(nameof(Size), typeof(DaisySize), typeof(DaisyTabs),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -317,10 +317,10 @@ namespace Flowery.Controls
             UpdateAppearance();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            UpdateAppearance();
         }
 
         protected override void OnKeyDown(KeyRoutedEventArgs e)
@@ -361,10 +361,6 @@ namespace Flowery.Controls
 
         protected override DaisySize? GetControlSize() => Size;
 
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         private void CollectItemsFromContent()
         {
@@ -609,7 +605,7 @@ namespace Flowery.Controls
             {
                 Content = headerText,
                 Tag = index,
-                Padding = DaisyResourceLookup.GetDefaultPadding(Size),
+                Padding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize),
                 CornerRadius = new CornerRadius(8),
                 Background = new SolidColorBrush(Colors.Transparent),
                 BorderThickness = new Thickness(0),
@@ -793,7 +789,7 @@ namespace Flowery.Controls
                     button.BorderThickness = new Thickness(1, 1, 1, 0);
                     button.BorderBrush = accentBrush ?? baseBorder;
                 }
-                button.CornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(Size);
+                button.CornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(ResolvedSize);
                 button.Margin = new Thickness(0, 0, 0, -baselineThickness);
                 SyncButtonStateResources(button);
                 return;
@@ -801,7 +797,7 @@ namespace Flowery.Controls
 
             if (Variant == DaisyTabVariant.Boxed)
             {
-                button.CornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(Size);
+                button.CornerRadius = DaisyResourceLookup.GetDefaultCornerRadius(ResolvedSize);
                 button.Margin = new Thickness(0);
                 if (isSelected)
                 {
@@ -948,7 +944,7 @@ namespace Flowery.Controls
                 var borderBrushOverride = DaisyResourceLookup.TryGetControlBrush(this, "DaisyTabs", "BorderBrush");
 
                 // Sync FontSize to the control for propagation
-                FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+                FontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
 
                 // Update tab strip background based on variant
                 switch (Variant)
@@ -992,10 +988,10 @@ namespace Flowery.Controls
                 }
 
                 // Update tab button visual sizing based on Size property
-                var padding = DaisyResourceLookup.GetDefaultPadding(Size);
-                var fontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+                var padding = DaisyResourceLookup.GetDefaultPadding(ResolvedSize);
+                var fontSize = DaisyResourceLookup.GetDefaultFontSize(ResolvedSize);
                 // Proportional height increase using spacing token
-                var height = DaisyResourceLookup.GetDefaultHeight(Size) + DaisyResourceLookup.GetSpacing(Size) * 0.8;
+                var height = DaisyResourceLookup.GetDefaultHeight(ResolvedSize) + DaisyResourceLookup.GetSpacing(ResolvedSize) * 0.8;
 
                 foreach (var child in _tabStrip.Children)
                 {

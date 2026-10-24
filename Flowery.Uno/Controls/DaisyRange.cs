@@ -53,7 +53,7 @@ namespace Flowery.Controls
                 nameof(Size),
                 typeof(DaisySize),
                 typeof(DaisyRange),
-                new PropertyMetadata(DaisySize.Medium, OnAppearanceChanged));
+                new PropertyMetadata(DaisySize.Auto, OnAppearanceChanged));
 
         public DaisySize Size
         {
@@ -205,18 +205,13 @@ namespace Flowery.Controls
             ApplyAll();
         }
 
-        protected override void OnGlobalSizeChanged(DaisySize size)
+        protected override void OnResolvedSizeChanged()
         {
-            base.OnGlobalSizeChanged(size);
-            SetControlSize(size);
+            base.OnResolvedSizeChanged();
+            ApplyAll();
         }
 
         protected override DaisySize? GetControlSize() => Size;
-
-        protected override void SetControlSize(DaisySize size)
-        {
-            Size = size;
-        }
 
         #endregion
 
@@ -359,8 +354,8 @@ namespace Flowery.Controls
             if (_trackBorder == null || _fillBorder == null || _thumb == null)
                 return;
 
-            double trackHeight = DaisyResourceLookup.GetDefaultRangeTrackHeight(Size);
-            double thumbSize = DaisyResourceLookup.GetDefaultRangeThumbSize(Size);
+            double trackHeight = DaisyResourceLookup.GetDefaultRangeTrackHeight(ResolvedSize);
+            double thumbSize = DaisyResourceLookup.GetDefaultRangeThumbSize(ResolvedSize);
 
             _trackBorder.Height = trackHeight;
             _trackBorder.CornerRadius = new CornerRadius(trackHeight / 2);

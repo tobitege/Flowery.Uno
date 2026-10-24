@@ -102,13 +102,19 @@ namespace Flowery.Uno.Gallery
             if (string.IsNullOrWhiteSpace(line))
                 return null;
 
-            return Enum.TryParse(line.Trim(), ignoreCase: true, out DaisySize size) ? size : null;
+            return Enum.TryParse(line.Trim(), ignoreCase: true, out DaisySize size) && IsConcreteSize(size) ? size : null;
         }
 
         public static void SaveGlobalSize(DaisySize size)
         {
+            if (!IsConcreteSize(size))
+                throw new ArgumentOutOfRangeException(nameof(size), size, "A global size must be a concrete size.");
+
             StateStorageProvider.Instance.SaveLines(SizeKey, [size.ToString()]);
         }
+
+        private static bool IsConcreteSize(DaisySize size) =>
+            size is DaisySize.ExtraSmall or DaisySize.Small or DaisySize.Medium or DaisySize.Large or DaisySize.ExtraLarge;
 
         /// <summary>
         /// Loads saved window bounds (position and size) from persistent storage.

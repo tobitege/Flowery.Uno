@@ -162,3 +162,5 @@ The 216 colors that display consistently across all browsers and systems (6×6×
 - The `Find` method with tolerance is useful when colors might have slight variations.
 - Subscribe to `CollectionChanged` to refresh UI when custom colors are modified.
 - Reuse `ColorCollection` instances across dialog sessions to persist custom colors.
+
+<!-- CI test: documentation-only change, do not merge -->

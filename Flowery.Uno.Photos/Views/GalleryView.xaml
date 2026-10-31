@@ -1,0 +1,253 @@
+<UserControl
+    x:Class="Flowery.Uno.Photos.Views.GalleryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:views="using:Flowery.Uno.Photos.Views">
+
+    <Grid x:Name="RootGrid"
+          RowDefinitions="Auto,Auto,*"
+          KeyDown="RootGrid_KeyDown"
+          DataContext="{x:Bind Localization, Mode=OneWay}">
+
+        <!-- Header -->
+        <Grid x:Name="HeaderGrid"
+              SizeChanged="HeaderGrid_SizeChanged"
+              Padding="28,18,20,10"
+              ColumnDefinitions="Auto,*,Auto"
+              ColumnSpacing="12">
+            <StackPanel x:Name="HeaderLeft" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <daisy:DaisyButton x:Name="BackButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="Back"
+                                   Visibility="Collapsed"
+                                   VerticalAlignment="Center"
+                                   Click="BackButton_Click" />
+                <TextBlock x:Name="TitleText" Style="{StaticResource PhotosPageTitleTextStyle}" MaxWidth="520" />
+                <Border x:Name="DateChip"
+                        CornerRadius="18"
+                        Padding="14,6"
+                        VerticalAlignment="Center"
+                        Background="{ThemeResource DaisyBase200Brush}"
+                        BorderBrush="{ThemeResource DaisyBase300Brush}"
+                        BorderThickness="1"
+                        Visibility="Collapsed">
+                    <TextBlock x:Name="DateChipText"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}"
+                               daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                </Border>
+                <TextBlock x:Name="CountText"
+                           Opacity="0.6"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}"
+                           daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+            </StackPanel>
+
+            <StackPanel x:Name="HeaderRight"
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        VerticalAlignment="Center">
+                <daisy:DaisyButton x:Name="CollectionMenuButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="More"
+                                   Visibility="Collapsed">
+                    <daisy:DaisyButton.Flyout>
+                        <MenuFlyout x:Name="CollectionMenu" Placement="BottomEdgeAlignedRight" />
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <daisy:DaisyButton x:Name="SlideshowButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconSlideshow}"
+                                   Click="SlideshowButton_Click" />
+                <daisy:DaisyButton x:Name="FilterButton"
+                                   Variant="Primary"
+                                   IconSymbol="Filter"
+                                   Content="{Binding [Photos_Filter]}">
+                    <daisy:DaisyButton.Flyout>
+                        <Flyout x:Name="FilterFlyout" Placement="BottomEdgeAlignedRight">
+                            <StackPanel x:Name="FilterPanel" Width="270" Spacing="10" />
+                        </Flyout>
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <daisy:DaisyButton x:Name="ViewOptionsButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconTune}">
+                    <daisy:DaisyButton.Flyout>
+                        <Flyout x:Name="ViewOptionsFlyout" Placement="BottomEdgeAlignedRight">
+                            <StackPanel x:Name="ViewOptionsPanel" Width="280" Spacing="10" />
+                        </Flyout>
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <daisy:DaisyButton x:Name="ImportButton"
+                                   Variant="Primary"
+                                   IconSymbol="Add"
+                                   Content="{Binding [Photos_Import]}">
+                    <daisy:DaisyButton.Flyout>
+                        <MenuFlyout x:Name="ImportMenu" Placement="BottomEdgeAlignedRight" />
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+            </StackPanel>
+        </Grid>
+
+        <!-- Selection bar -->
+        <Border x:Name="SelectionBar"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                Margin="24,0,20,8"
+                Padding="8,4"
+                CornerRadius="12"
+                Background="{ThemeResource DaisyBase200Brush}"
+                BorderBrush="{ThemeResource DaisyBase300Brush}"
+                BorderThickness="1">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <daisy:DaisyButton x:Name="ClearSelectionButton"
+                                       Variant="Ghost"
+                                       Shape="Square"
+                                       Size="Small"
+                                       IconSymbol="Cancel"
+                                       Click="ClearSelectionButton_Click" />
+                    <TextBlock x:Name="SelectionText"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </StackPanel>
+                <StackPanel x:Name="SelectionActions" Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                    <daisy:DaisyButton x:Name="SelectAllButton"
+                                       Variant="Primary"
+                                       Size="Small"
+                                       IconSymbol="SelectAll"
+                                       Content="{Binding [Photos_SelectAll]}"
+                                       Click="SelectAllButton_Click" />
+                    <daisy:DaisyButton x:Name="SelectionFavoriteButton"
+                                       Variant="Primary"
+                                       Size="Small"
+                                       IconData="{StaticResource PhotosIconHeartOutline}"
+                                       Content="{Binding [Photos_Favorite]}"
+                                       Click="SelectionFavoriteButton_Click" />
+                    <daisy:DaisyButton x:Name="SelectionAlbumButton"
+                                       Variant="Primary"
+                                       Size="Small"
+                                       IconData="{StaticResource PhotosIconAlbum}"
+                                       Content="{Binding [Photos_AddToAlbum]}">
+                        <daisy:DaisyButton.Flyout>
+                            <MenuFlyout x:Name="SelectionAlbumMenu" Opening="SelectionAlbumMenu_Opening" />
+                        </daisy:DaisyButton.Flyout>
+                    </daisy:DaisyButton>
+                    <daisy:DaisyButton x:Name="SelectionRemoveFromAlbumButton"
+                                       Variant="Primary"
+                                       Size="Small"
+                                       IconSymbol="Remove"
+                                       Content="{Binding [Photos_RemoveFromAlbum]}"
+                                       Visibility="Collapsed"
+                                       Click="SelectionRemoveFromAlbumButton_Click" />
+                    <daisy:DaisyButton x:Name="SelectionCopyButton"
+                                       Variant="Primary"
+                                       Size="Small"
+                                       IconSymbol="Copy"
+                                       Content="{Binding [Photos_Copy]}"
+                                       Click="SelectionCopyButton_Click" />
+                    <daisy:DaisyButton x:Name="SelectionDeleteButton"
+                                       Variant="Error"
+                                       ButtonStyle="Soft"
+                                       Size="Small"
+                                       IconSymbol="Delete"
+                                       Content="{Binding [Photos_Delete]}"
+                                       Click="SelectionDeleteButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+            <ScrollViewer x:Name="Scroller"
+                          Padding="24,0,8,24"
+                          HorizontalScrollMode="Disabled"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          ViewChanged="Scroller_ViewChanged"
+                          SizeChanged="Scroller_SizeChanged">
+                <ItemsRepeater x:Name="Repeater"
+                               ElementPrepared="Repeater_ElementPrepared"
+                               ElementClearing="Repeater_ElementClearing">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Orientation="Vertical" Spacing="0" />
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <views:GalleryRowPresenter />
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+
+            <!-- Year timeline scrubber -->
+            <Grid x:Name="Timeline"
+                  Grid.Column="1"
+                  Width="{StaticResource PhotosTimelineWidth}"
+                  Margin="0,4,6,16"
+                  Background="Transparent"
+                  PointerPressed="Timeline_PointerPressed"
+                  PointerMoved="Timeline_PointerMoved"
+                  PointerReleased="Timeline_PointerReleased"
+                  PointerCaptureLost="Timeline_PointerCaptureLost"
+                  PointerExited="Timeline_PointerExited"
+                  SizeChanged="Timeline_SizeChanged">
+                <Border Width="2"
+                        HorizontalAlignment="Center"
+                        CornerRadius="1"
+                        Opacity="0.25"
+                        Background="{ThemeResource DaisyBaseContentBrush}" />
+                <Canvas x:Name="TimelineCanvas" />
+            </Grid>
+
+            <daisy:DaisyProgress x:Name="ScanProgressBar"
+                                 Grid.ColumnSpan="2"
+                                 VerticalAlignment="Top"
+                                 Margin="24,0,24,0"
+                                 Size="ExtraSmall"
+                                 Variant="Primary"
+                                 Visibility="Collapsed" />
+
+            <!-- Empty state -->
+            <StackPanel x:Name="EmptyState"
+                        Grid.ColumnSpan="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="12"
+                        Margin="24"
+                        Visibility="Collapsed">
+                <Viewbox Width="72" Height="72" HorizontalAlignment="Center">
+                    <Path Data="{StaticResource PhotosIconGallery}" Fill="{ThemeResource DaisyPrimaryBrush}" Opacity="0.85" />
+                </Viewbox>
+                <TextBlock x:Name="EmptyTitle"
+                           MaxWidth="440"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock x:Name="EmptyText"
+                           MaxWidth="440"
+                           Opacity="0.7"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <StackPanel x:Name="EmptyActions"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            HorizontalAlignment="Center"
+                            Margin="0,8,0,0" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

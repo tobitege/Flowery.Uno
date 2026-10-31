@@ -1,0 +1,50 @@
+<Project Sdk="Uno.Sdk/6.7.30">
+
+  <PropertyGroup>
+    <!-- Skia: the only head for now (Windows, macOS and Linux). Browser, Android and iOS come later, so shared code
+         must not depend on desktop-only APIs; see Services/Platform. -->
+    <TargetFrameworks>net10.0-desktop</TargetFrameworks>
+    <UnoVersion>6.7.135</UnoVersion>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <OutputType>WinExe</OutputType>
+    <ApplicationTitle>Flowery Photos</ApplicationTitle>
+    <ApplicationId>com.uno.flowery.photos</ApplicationId>
+    <RootNamespace>Flowery.Uno.Photos</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
+    <UnoDisableMCPSupport>true</UnoDisableMCPSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\*.json" LogicalName="$(AssemblyName).Localization.%(Filename)%(Extension)" />
+    <UnoIcon Include="Assets\app_icon.svg" Color="#0A0F1F" />
+  </ItemGroup>
+
+  <!-- Fonts and sample photos come from the Gallery assets (no copy), at ms-appx:///Assets/... as in the Gallery. -->
+  <ItemGroup>
+    <!-- StaticFonts-OFL.txt: one license file covers the five Noto fonts (Flowery.WinUI c1d9cbd). -->
+    <Content Include="..\Flowery.Uno.Gallery.Core\Assets\Fonts\*-Regular.ttf;..\Flowery.Uno.Gallery.Core\Assets\Fonts\*-Regular.otf;..\Flowery.Uno.Gallery.Core\Assets\Fonts\StaticFonts-OFL.txt">
+      <Link>Assets\Fonts\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\Flowery.Uno.Gallery.Core\Assets\wallpaper_*.jpg;..\Flowery.Uno.Gallery.Core\Assets\tile_*.jpg;..\Flowery.Uno.Gallery.Core\Assets\placeholder1.jpg">
+      <Link>Assets\Samples\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

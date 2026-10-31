@@ -1,4 +1,4 @@
-namespace Flowery.Controls
+﻿namespace Flowery.Controls
 {
     /// <summary>
     /// Dot animation implementations (Pulse, Blink, Bounce, Heartbeat, etc.)
@@ -407,6 +407,12 @@ namespace Flowery.Controls
             PlatformCompatibility.StopRotationAnimation(_dotElement, dotVisual, null);
             _dotElement = null;
 
+            foreach (var element in _manualRotationElements)
+            {
+                PlatformCompatibility.StopRotationAnimation(element, null, null);
+            }
+            _manualRotationElements.Clear();
+
             foreach (var visual in _activeVisuals)
             {
                 visual.StopAnimation("Opacity");
@@ -622,8 +628,9 @@ namespace Flowery.Controls
 
             if (PlatformCompatibility.IsSkiaBackend || PlatformCompatibility.IsWasmBackend)
             {
-                var storyboard = PlatformCompatibility.StartRotationAnimation(element, visual, durationMs / 1000.0);
-                TrackStoryboard(storyboard);
+                // Rotates per frame through CompositionTarget.Rendering there, without a storyboard to stop.
+                PlatformCompatibility.StartRotationAnimation(element, visual, durationMs / 1000.0);
+                _manualRotationElements.Add(element);
                 return;
             }
 

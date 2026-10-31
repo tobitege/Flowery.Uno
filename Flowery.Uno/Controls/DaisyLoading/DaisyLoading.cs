@@ -1,4 +1,4 @@
-namespace Flowery.Controls
+﻿namespace Flowery.Controls
 {
     /// <summary>
     /// Loading animation variant styles.
@@ -163,6 +163,8 @@ namespace Flowery.Controls
         private Visual? _spinnerVisual;
         private UIElement? _spinnerElement;
         private bool _isAnimating;
+        private static readonly string[] AnimatedProperties = ["Opacity", "Scale", "Scale.X", "Scale.Y", "Offset", "Offset.X", "Offset.Y", "RotationAngle"];
+        private static readonly string[] TranslationProperties = ["Translation", "Translation.X", "Translation.Y"];
         private readonly List<Visual> _activeVisuals = [];
         private readonly List<Visual> _activeTranslationVisuals = [];
         private readonly List<Storyboard> _activeStoryboards = [];
@@ -514,19 +516,20 @@ namespace Flowery.Controls
             _spinnerVisual = null;
             _spinnerElement = null;
 
+            // A visual tracks its animations by the full property name, so "Scale" does not stop "Scale.Y". An animation
+            // left running keeps the compositor animating and the removed visual tree alive.
             foreach (var visual in _activeVisuals)
             {
-                visual.StopAnimation("Opacity");
-                visual.StopAnimation("Scale");
-                visual.StopAnimation("Offset");
-                visual.StopAnimation("RotationAngle");
+                foreach (var property in AnimatedProperties)
+                    visual.StopAnimation(property);
             }
 
             foreach (var visual in _activeTranslationVisuals)
             {
                 try
                 {
-                    visual.StopAnimation("Translation");
+                    foreach (var property in TranslationProperties)
+                        visual.StopAnimation(property);
                 }
                 catch
                 {

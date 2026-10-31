@@ -1,4 +1,4 @@
-namespace Flowery.Controls
+﻿namespace Flowery.Controls
 {
     /// <summary>
     /// Animation variant styles for the status indicator.
@@ -84,6 +84,7 @@ namespace Flowery.Controls
         private bool _isAnimating;
         private readonly List<Visual> _activeVisuals = [];
         private readonly List<Storyboard> _activeStoryboards = [];
+        private readonly List<UIElement> _manualRotationElements = [];
 
         // Track animated elements for restart support
         private readonly List<RingAnimationData> _ringAnimations = [];

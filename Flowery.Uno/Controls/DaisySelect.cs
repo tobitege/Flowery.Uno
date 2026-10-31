@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic; // Added for IList
 using System.Collections.ObjectModel; // Added for ObservableCollection
 using System.Collections.Specialized; // Added for INotifyCollectionChanged
@@ -84,7 +84,8 @@ namespace Flowery.Controls
         {
             if (d is DaisySelect select)
             {
-                select.HookLocalizationSource(e.OldValue, e.NewValue);
+                select.HookLocalizationSource(e.NewValue);
+                select.ApplyLocalizationToItems();
             }
         }
 
@@ -96,7 +97,14 @@ namespace Flowery.Controls
         protected override void OnAfterLoaded()
         {
             base.OnAfterLoaded();
+            HookLocalizationSource(LocalizationSource);
             ApplyLocalizationToItems();
+        }
+
+        protected override void OnAfterUnloaded()
+        {
+            base.OnAfterUnloaded();
+            UnhookLocalizationSource();
         }
 
         protected override void ApplyTheme(ResourceDictionary? resources)
@@ -200,24 +208,25 @@ namespace Flowery.Controls
             ApplyLocalizationToItems();
         }
 
-        private void HookLocalizationSource(object? oldValue, object? newValue)
+        // Subscribed only while loaded: an app-wide localization source outlives the select, and its handler list
+        // would keep every select, and the page around it, alive. OnAfterLoaded reapplies what changed meanwhile.
+        private void HookLocalizationSource(object? source)
         {
-            if (oldValue is INotifyPropertyChanged oldNotifier)
+            UnhookLocalizationSource();
+            if (IsLoaded && source is INotifyPropertyChanged notifier)
             {
-                oldNotifier.PropertyChanged -= OnLocalizationSourcePropertyChanged;
+                notifier.PropertyChanged += OnLocalizationSourcePropertyChanged;
+                _localizationNotifier = notifier;
             }
+        }
 
-            if (newValue is INotifyPropertyChanged newNotifier)
+        private void UnhookLocalizationSource()
+        {
+            if (_localizationNotifier is { } notifier)
             {
-                newNotifier.PropertyChanged += OnLocalizationSourcePropertyChanged;
-                _localizationNotifier = newNotifier;
-            }
-            else
-            {
+                notifier.PropertyChanged -= OnLocalizationSourcePropertyChanged;
                 _localizationNotifier = null;
             }
-
-            ApplyLocalizationToItems();
         }
 
         private void OnLocalizationSourcePropertyChanged(object? sender, PropertyChangedEventArgs e)

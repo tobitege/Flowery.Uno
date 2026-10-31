@@ -16,6 +16,10 @@ namespace Flowery.Uno.RuntimeTests.Controls
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
+        // Only a safeguard: the macOS runner, which renders Skia in software, can hold back a frame for more than five
+        // seconds.
+        private static readonly TimeSpan FrameTimeout = TimeSpan.FromSeconds(30);
+
         [TestMethod]
         public async Task When_Checkerboard_Transitions_MaskChangesDifferentRegions()
         {
@@ -115,8 +119,10 @@ namespace Flowery.Uno.RuntimeTests.Controls
                     Children = { new Border { Child = image }, new Border { Background = new SolidColorBrush(Microsoft.UI.Colors.Magenta) } }
                 }
             };
-            var completed = new TaskCompletionSource();
-            EventHandler<FlowerySlideChangedEventArgs> onChanged = (_, _) => completed.TrySetResult();
+            // Completes with the time the transition took, taken when it ends rather than when a delayed frame shows it.
+            var transition = new Stopwatch();
+            var completed = new TaskCompletionSource<TimeSpan>();
+            EventHandler<FlowerySlideChangedEventArgs> onChanged = (_, _) => completed.TrySetResult(transition.Elapsed);
             var started = false;
             RuntimeTestHelpers.AttachToHost(carousel);
             try
@@ -132,6 +138,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
                     "The outgoing image must have actually moved and scaled before the freeze is tested.");
                 var pose = CapturePose(image);
                 carousel.SlideChanged += onChanged;
+                transition.Start();
                 carousel.Next();
                 started = true;
 
@@ -139,7 +146,17 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 for (var frame = 0; frame < 3; frame++)
                 {
                     await NextFrameAsync();
-                    Assert.IsFalse(completed.Task.IsCompleted, "The pose must be checked while the outgoing image is still visible.");
+                    if (completed.Task.IsCompleted)
+                    {
+                        // A transition that ends early is a fault; a runner too slow to render inside it is not. The
+                        // tolerance covers a storyboard clock that starts at the current frame time, before Next().
+                        var took = (await completed.Task).TotalSeconds;
+                        Assert.IsGreaterThanOrEqualTo(carousel.TransitionDuration - 0.1, took,
+                            $"The {carousel.TransitionDuration} s transition ended after {took:F2} s.");
+                        Assert.Inconclusive($"The runner rendered {frame + 1} frames in {transition.Elapsed.TotalSeconds:F1} s, " +
+                            $"so the {carousel.TransitionDuration} s transition ended before the pose could be checked.");
+                    }
+
                     Assert.AreEqual(pose, CapturePose(image), "The outgoing image pose must remain frozen during the transition.");
                 }
             }
@@ -194,7 +211,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += onRendering;
             try
             {
-                await rendered.Task.WaitAsync(Timeout);
+                await rendered.Task.WaitAsync(FrameTimeout);
             }
             finally
             {

@@ -95,8 +95,7 @@ public class Given_SchedulerUnoAdaptations
             var ppm = lane.Width / (5 * 1440);
             var x = edge switch { "start" => 2, "end" => frame.ActualWidth - 2, _ => frame.ActualWidth / 2 };
             // Hours fit their start times, so a long bar can be wider than the viewport: show the grabbed point.
-            frame.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false, TargetRect = new Rect(x - 1, 0, 2, frame.ActualHeight) });
-            await scope.LayoutAsync();
+            await scope.BringIntoViewAsync(frame, new Rect(x - 1, 0, 2, frame.ActualHeight));
             var origin = scope.Point(frame, x, frame.ActualHeight / 2);
             await scope.DragAsync(origin, new(origin.X + minutes * ppm, origin.Y));
             Assert.AreEqual(expectedStart, start, label);

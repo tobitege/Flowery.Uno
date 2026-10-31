@@ -109,8 +109,7 @@ public class Given_SchedulerFeatures
         AppointmentMoveArgs? move = null;
         scope.Scheduler.AppointmentMoveRequested += (_, args) => move = args;
         var frame = scope.Frame(friday);
-        frame.StartBringIntoView(new Microsoft.UI.Xaml.BringIntoViewOptions { AnimationDesired = false });
-        await scope.LayoutAsync();
+        await scope.BringIntoViewAsync(frame);
         var origin = scope.Center(frame);
         await scope.DragAsync(origin, new(origin.X + 60 * ppm, origin.Y));
         Assert.IsNotNull(move);
@@ -120,8 +119,7 @@ public class Given_SchedulerFeatures
         AppointmentCreateArgs? create = null;
         scope.Scheduler.AppointmentCreateRequested += (_, args) => create = args;
         var slotX = (4 * 1440 + 14 * 60 + 1) * ppm;
-        lane.StartBringIntoView(new Microsoft.UI.Xaml.BringIntoViewOptions { AnimationDesired = false, TargetRect = new Windows.Foundation.Rect(slotX - 4, 0, 8, lane.Height) });
-        await scope.LayoutAsync();
+        await scope.BringIntoViewAsync(lane, new Windows.Foundation.Rect(slotX - 4, 0, 8, lane.Height));
         var slot = scope.Point(lane, slotX, lane.ActualHeight - 2);
         scope.MouseDown(slot);
         scope.MouseUp(slot);
@@ -265,8 +263,7 @@ public class Given_SchedulerFeatures
         Assert.AreEqual(2, scope.Frames(scope.Appointment).Count());
         var frame = scope.Frames(scope.Appointment).First();
         // Hours fit their start times, so the appointment can lie beyond the viewport.
-        frame.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false });
-        await scope.LayoutAsync();
+        await scope.BringIntoViewAsync(frame);
         await scope.ClickAsync(frame);
         Assert.AreSame(scope.Appointment, scope.Scheduler.SelectedAppointment);
         scope.Scheduler.Navigate(1);

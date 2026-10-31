@@ -141,13 +141,28 @@ internal sealed class SchedulerScope : IDisposable
 
     public Point Center(FrameworkElement element) => Point(element, element.ActualWidth / 2, element.ActualHeight / 2);
 
+    /// <summary>Scrolls <paramref name="target"/> of <paramref name="element"/> (all of it by default) into view and
+    /// waits until the scroll offsets hold still. WinUI applies the offset when it renders, so a point taken right after
+    /// the layout pass can still lie outside the viewport, and a press there hits nothing.</summary>
+    public async Task BringIntoViewAsync(UIElement element, Rect? target = null)
+    {
+        var options = new BringIntoViewOptions { AnimationDesired = false };
+        if (target is { } rect)
+            options.TargetRect = rect;
+        element.StartBringIntoView(options);
+        await LayoutAsync();
+        await SettleScrollAsync();
+    }
+
     /// <param name="elapsedMicroseconds">Time since the previous press; the default never forms a double-click.</param>
+    /// <returns>Whether the scheduler handled the press; a press it rejects is still a press.</returns>
     public bool MouseDown(Point point, bool right = false, VirtualKeyModifiers modifiers = VirtualKeyModifiers.None,
         ulong elapsedMicroseconds = 1_000_000)
     {
         _timestamp += elapsedMicroseconds;
-        var hit = HitTest(Scheduler, point);
-        return hit is not null && Scheduler.RoutePointerPressed(hit, Input(point, !right, right, modifiers));
+        // A press that hits nothing would only show up later as a missing gesture.
+        var hit = HitTest(Scheduler, point) ?? throw new InvalidOperationException("Nothing to press at " + point);
+        return Scheduler.RoutePointerPressed(hit, Input(point, !right, right, modifiers));
     }
 
     // VisualTreeHelper.FindElementsInHostCoordinates returns only the scheduler itself on Skia, so walk the tree:

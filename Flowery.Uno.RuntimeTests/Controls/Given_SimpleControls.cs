@@ -1310,7 +1310,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             var date = new DateTime(2026, 3, 15);
             var locale = CultureInfo.GetCultureInfo("fr-FR");
             var expected = date.ToString("MMMM yyyy", locale);
-            Assert.AreNotEqual(date.ToString("MMMM yyyy", CultureInfo.CurrentCulture), expected,
+            Assert.AreNotEqual(expected, date.ToString("MMMM yyyy", CultureInfo.CurrentCulture),
                 "The test needs a locale that formats differently from the current culture.");
 
             // Set before load, as from XAML: the header text is public and must not wait for Loaded.

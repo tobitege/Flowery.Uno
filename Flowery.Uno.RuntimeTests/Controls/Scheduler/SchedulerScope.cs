@@ -146,16 +146,13 @@ internal sealed class SchedulerScope : IDisposable
     /// the layout pass can still lie outside the viewport, and a press there hits nothing.</summary>
     public async Task BringIntoViewAsync(UIElement element, Rect? target = null)
     {
-        var options = new BringIntoViewOptions { AnimationDesired = false };
-        if (target is { } rect)
-            options.TargetRect = rect;
-        element.StartBringIntoView(options);
+        element.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false, TargetRect = target });
         await LayoutAsync();
         await SettleScrollAsync();
     }
 
     /// <param name="elapsedMicroseconds">Time since the previous press; the default never forms a double-click.</param>
-    /// <returns>Whether the scheduler handled the press; a press it rejects is still a press.</returns>
+    /// <returns>Whether the scheduler handled the press.</returns>
     public bool MouseDown(Point point, bool right = false, VirtualKeyModifiers modifiers = VirtualKeyModifiers.None,
         ulong elapsedMicroseconds = 1_000_000)
     {

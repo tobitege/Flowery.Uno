@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTabs</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTabs</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyTabs.png" alt="DaisyTabs" class="doc-image">
+
+<p>DaisyTabs is a styled <code>TabControl</code> with four header variants (None, Bordered, Lifted, Boxed) and size presets. It uses a WrapPanel for tab headers and supports standard tab behaviors (<code>SelectedIndex</code>, <code>Items</code>, <code>TabItem</code> content).</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>Text-only tabs; selected text is bold; no underline/box.</td>
+</tr>
+<tr>
+<td>Bordered (default)</td>
+<td>Underline on hover/selected.</td>
+</tr>
+<tr>
+<td>Lifted</td>
+<td>Folder-tab style with top/sides border; selected tab has background.</td>
+</tr>
+<tr>
+<td>Boxed</td>
+<td>Rounded pills with visible borders; selected uses primary border.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Padding</th>
+<th>Font Size</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>8,4</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>12,6</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>16,8</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>20,12</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Tab Width Options</h2>
+
+<p>Control tab sizing behavior to prevent layout shifts or create uniform navigation.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>TabWidthMode</td>
+<td>Enum</td>
+<td>Auto</td>
+<td><code>Auto</code>, <code>Equal</code>, or <code>Fixed</code></td>
+</tr>
+<tr>
+<td>TabWidth</td>
+<td>double</td>
+<td>NaN</td>
+<td>Fixed width when mode is <code>Fixed</code></td>
+</tr>
+<tr>
+<td>TabMinWidth</td>
+<td>double</td>
+<td>0</td>
+<td>Minimum width for each tab</td>
+</tr>
+<tr>
+<td>TabMaxWidth</td>
+<td>double</td>
+<td>∞</td>
+<td>Maximum width for each tab</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Behavior</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Auto</td>
+<td>Each tab sizes to fit its content (default)</td>
+</tr>
+<tr>
+<td>Equal</td>
+<td>All tabs use the width of the widest tab</td>
+</tr>
+<tr>
+<td>Fixed</td>
+<td>All tabs use the specified <code>TabWidth</code> value</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Bordered (default) --&gt;
+&lt;controls:DaisyTabs&gt;
+    &lt;TabItem Header="Tab 1"&gt;&lt;TextBlock Text="Content 1" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Tab 2"&gt;&lt;TextBlock Text="Content 2" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Boxed --&gt;
+&lt;controls:DaisyTabs Variant="Boxed"&gt;
+    &lt;TabItem Header="Tab 1"&gt;&lt;TextBlock Text="Content 1" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Tab 2"&gt;&lt;TextBlock Text="Content 2" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Lifted, small --&gt;
+&lt;controls:DaisyTabs Variant="Lifted" Size="Small"&gt;
+    &lt;TabItem Header="Tab 1"&gt;&lt;TextBlock Text="Content 1" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Tab 2"&gt;&lt;TextBlock Text="Content 2" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Equal width tabs (prevents layout shift) --&gt;
+&lt;controls:DaisyTabs Variant="Boxed" TabWidthMode="Equal"&gt;
+    &lt;TabItem Header="Short"&gt;&lt;TextBlock Text="Content 1" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Much Longer Tab"&gt;&lt;TextBlock Text="Content 2" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Med"&gt;&lt;TextBlock Text="Content 3" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Fixed width tabs --&gt;
+&lt;controls:DaisyTabs Variant="Boxed" TabWidthMode="Fixed" TabWidth="120"&gt;
+    &lt;TabItem Header="Tab 1"&gt;&lt;TextBlock Text="Content 1" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Tab 2"&gt;&lt;TextBlock Text="Content 2" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Auto with max width constraint --&gt;
+&lt;controls:DaisyTabs TabMaxWidth="150"&gt;
+    &lt;TabItem Header="This is a very long tab header"&gt;&lt;TextBlock Text="Content" Margin="8" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Short"&gt;&lt;TextBlock Text="Content" Margin="8" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;</code></pre>
+
+<h2>Tab Colors</h2>
+
+<p>DaisyTabs supports two different tab-color systems:</p>
+
+<ul><li><strong>Palette colors (recommended)</strong>: end-user friendly, <strong>theme-independent</strong>, fixed colors. Use <code>DaisyTabs.TabPaletteColor</code>.</li>
+<li><strong>Semantic colors</strong>: theme-aware (Primary/Success/…), matches DaisyUI semantics. Use <code>DaisyTabs.TabColor</code> if you want colors to change with themes.</li>
+</ul>
+<h3>Palette Colors (Theme-Independent, Recommended)</h3>
+
+<p>Assign a palette color to individual tabs using the <code>DaisyTabs.TabPaletteColor</code> attached property. Palette colors are fixed and do not change with themes.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Palette Value</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>No custom color</td>
+</tr>
+<tr>
+<td>Purple</td>
+<td>Purple</td>
+</tr>
+<tr>
+<td>Indigo</td>
+<td>Indigo</td>
+</tr>
+<tr>
+<td>Pink</td>
+<td>Pink</td>
+</tr>
+<tr>
+<td>SkyBlue</td>
+<td>Light blue / sky blue</td>
+</tr>
+<tr>
+<td>Blue</td>
+<td>Blue</td>
+</tr>
+<tr>
+<td>Lime</td>
+<td>Lime (highlighter green)</td>
+</tr>
+<tr>
+<td>Green</td>
+<td>Green</td>
+</tr>
+<tr>
+<td>Yellow</td>
+<td>Yellow</td>
+</tr>
+<tr>
+<td>Orange</td>
+<td>Orange</td>
+</tr>
+<tr>
+<td>Red</td>
+<td>Red</td>
+</tr>
+<tr>
+<td>Gray</td>
+<td>Gray</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Resetting Palette Color to Default</h4>
+
+<p>To reset a tab's palette color, set <code>TabPaletteColor</code> to <code>Default</code>:</p>
+
+<pre><code class="language-csharp">// Reset programmatically
+DaisyTabs.SetTabPaletteColor(tabItem, DaisyTabPaletteColor.Default);</code></pre>
+
+<pre><code class="language-xml">&lt;!-- Reset in XAML --&gt;
+&lt;TabItem Header="My Tab" controls:DaisyTabs.TabPaletteColor="Default" /&gt;</code></pre>
+
+<p>When using the context menu, clicking the hollow dot ("Default") resets the tab color.</p>
+
+<h4>Palette Color Examples</h4>
+
+<pre><code class="language-xml">&lt;!-- Direct TabItem usage with palette colors --&gt;
+&lt;controls:DaisyTabs Variant="Boxed"&gt;
+    &lt;TabItem Header="Home" controls:DaisyTabs.TabPaletteColor="Blue"&gt;
+        &lt;TextBlock Text="Home content" Margin="8" /&gt;
+    &lt;/TabItem&gt;
+    &lt;TabItem Header="Settings" controls:DaisyTabs.TabPaletteColor="Purple"&gt;
+        &lt;TextBlock Text="Settings content" Margin="8" /&gt;
+    &lt;/TabItem&gt;
+    &lt;TabItem Header="Errors" controls:DaisyTabs.TabPaletteColor="Red"&gt;
+        &lt;TextBlock Text="Error log" Margin="8" /&gt;
+    &lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- ItemsSource with palette colors via ItemContainerTheme --&gt;
+&lt;controls:DaisyTabs ItemsSource="{Binding Tabs}" Variant="Bordered"&gt;
+    &lt;controls:DaisyTabs.ItemContainerTheme&gt;
+        &lt;ControlTheme TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}"&gt;
+            &lt;Setter Property="(controls:DaisyTabs.TabPaletteColor)" 
+                    Value="{Binding Color}" /&gt;
+        &lt;/ControlTheme&gt;
+    &lt;/controls:DaisyTabs.ItemContainerTheme&gt;
+&lt;/controls:DaisyTabs&gt;</code></pre>
+
+<h3>Semantic Colors (Theme-Aware)</h3>
+
+<p>If you want tab colors to follow the active theme, use <code>DaisyTabs.TabColor</code> with <code>DaisyColor</code> values:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>DaisyColor</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>No semantic color</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td>Theme primary</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td>Theme secondary</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td>Theme accent</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>Theme neutral</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>Theme info</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Theme success</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>Theme warning</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>Theme error</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Context Menu</h2>
+
+<p>Enable a right-click context menu on tabs with close actions and color selection. The menu is <strong>off by default</strong> and only raises events/callbacks - your app handles the actual tab manipulation.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>EnableTabContextMenu</td>
+<td>bool</td>
+<td>false</td>
+<td>Shows context menu on right-click</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Context Menu Items</h3>
+
+<p>When enabled, right-clicking a tab shows:</p>
+
+<ul><li><strong>Close Tab</strong> – Requests closing the clicked tab</li>
+<li><strong>Close Other Tabs</strong> – Requests closing all tabs except the clicked one</li>
+<li><strong>Close Tabs to the Right</strong> – Requests closing tabs after the clicked one</li>
+<li><strong>Tab Color</strong> – Inline color dots (palette). Click a dot to apply it; click the hollow dot to reset.</li>
+</ul>
+<h3>Events & Callbacks</h3>
+
+<p>DaisyTabs raises events and supports optional callbacks for each action. Use events for standard .NET patterns or callbacks for simpler inline wiring.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Callback Property</th>
+<th>EventArgs</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>CloseTabRequested</td>
+<td>CloseTabCallback</td>
+<td>DaisyTabEventArgs</td>
+<td>User requested closing a tab</td>
+</tr>
+<tr>
+<td>CloseOtherTabsRequested</td>
+<td>CloseOtherTabsCallback</td>
+<td>DaisyTabEventArgs</td>
+<td>User requested closing other tabs</td>
+</tr>
+<tr>
+<td>CloseTabsToRightRequested</td>
+<td>CloseTabsToRightCallback</td>
+<td>DaisyTabEventArgs</td>
+<td>User requested closing tabs to the right</td>
+</tr>
+<tr>
+<td>TabPaletteColorChangeRequested</td>
+<td>TabPaletteColorChangeCallback</td>
+<td>DaisyTabPaletteColorChangedEventArgs</td>
+<td>User selected a new palette color</td>
+</tr>
+<tr>
+<td>TabColorChangeRequested</td>
+<td>TabColorChangeCallback</td>
+<td>DaisyTabColorChangedEventArgs</td>
+<td>User selected a new semantic color (theme-aware)</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>DaisyTabEventArgs</strong> properties:
+
+<ul><li><code>TabItem</code> – The TabItem control</li>
+<li><code>TabIndex</code> – Index in the Items collection</li>
+<li><code>DataItem</code> – The bound data item (if using ItemsSource)</li>
+</ul>
+<strong>DaisyTabPaletteColorChangedEventArgs</strong> adds:
+
+<ul><li><code>NewColor</code> – The selected <code>DaisyTabPaletteColor</code> value</li>
+</ul>
+<strong>DaisyTabColorChangedEventArgs</strong> adds (semantic):
+
+<ul><li><code>NewColor</code> – The selected DaisyColor value</li>
+</ul>
+<h3>Context Menu Example</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyTabs x:Name="DocumentTabs"
+                    Variant="Boxed"
+                    EnableTabContextMenu="True"
+                    CloseTabRequested="OnCloseTab"
+                    CloseOtherTabsRequested="OnCloseOtherTabs"
+                    TabPaletteColorChangeRequested="OnTabPaletteColorChange"&gt;
+    &lt;TabItem Header="Document 1"&gt;&lt;TextBlock Text="Content 1" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Document 2"&gt;&lt;TextBlock Text="Content 2" /&gt;&lt;/TabItem&gt;
+    &lt;TabItem Header="Document 3"&gt;&lt;TextBlock Text="Content 3" /&gt;&lt;/TabItem&gt;
+&lt;/controls:DaisyTabs&gt;
+
+&lt;!-- Toast for feedback --&gt;
+&lt;controls:DaisyToast x:Name="TabToast" 
+                     HorizontalAlignment="Center" 
+                     VerticalAlignment="Bottom" /&gt;
+
+&lt;!-- Modal for confirmations --&gt;
+&lt;controls:DaisyModal x:Name="ConfirmModal" IsOpen="False"&gt;
+    &lt;StackPanel Spacing="16"&gt;
+        &lt;TextBlock x:Name="ConfirmText" FontWeight="SemiBold" /&gt;
+        &lt;StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"&gt;
+            &lt;controls:DaisyButton Content="Cancel" Click="OnCancelConfirm" /&gt;
+            &lt;controls:DaisyButton Content="Close Tabs" Variant="Error" Click="OnConfirmClose" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyModal&gt;</code></pre>
+
+<pre><code class="language-csharp">// Code-behind example
+private void OnCloseTab(object? sender, DaisyTabEventArgs e)
+{
+    // Remove the tab from Items
+    DocumentTabs.Items.Remove(e.TabItem);
+
+    // Show feedback via DaisyToast
+    TabToast.Items.Add(new DaisyAlert 
+    { 
+        Content = $"Closed '{e.TabItem.Header}'",
+        Variant = DaisyAlertVariant.Info 
+    });
+}
+
+private DaisyTabEventArgs? _pendingCloseArgs;
+
+private void OnCloseOtherTabs(object? sender, DaisyTabEventArgs e)
+{
+    // Show confirmation via DaisyModal
+    _pendingCloseArgs = e;
+    var otherCount = DocumentTabs.Items.Count - 1;
+    ConfirmText.Text = $"Close {otherCount} other tab(s)?";
+    ConfirmModal.IsOpen = true;
+}
+
+private void OnConfirmClose(object? sender, RoutedEventArgs e)
+{
+    if (_pendingCloseArgs != null)
+    {
+        var keepTab = _pendingCloseArgs.TabItem;
+        var toRemove = DocumentTabs.Items.OfType&lt;TabItem&gt;()
+            .Where(t =&gt; t != keepTab).ToList();
+
+        foreach (var tab in toRemove)
+            DocumentTabs.Items.Remove(tab);
+
+        DocumentTabs.SelectedItem = keepTab;
+    }
+    ConfirmModal.IsOpen = false;
+    _pendingCloseArgs = null;
+}
+
+private void OnCancelConfirm(object? sender, RoutedEventArgs e)
+{
+    ConfirmModal.IsOpen = false;
+    _pendingCloseArgs = null;
+}
+
+private void OnTabPaletteColorChange(object? sender, DaisyTabPaletteColorChangedEventArgs e)
+{
+    // Color is already applied to the attached property.
+    // Optionally persist it:
+    // _settings.SaveTabColor(GetTabKey(e.TabItem), e.NewColor);
+}</code></pre>
+
+<h2>Persistence Hooks</h2>
+
+<p>DaisyTabs does <strong>not</strong> persist tab state itself. Instead, use the callbacks to save/load tab colors or other state via your app's settings or DI services.</p>
+
+<h3>Persistence Recipe</h3>
+
+<pre><code class="language-csharp">// In your App or ViewModel startup:
+public void InitializeTabs(DaisyTabs tabs, ITabStateService stateService)
+{
+    // Load saved colors when tabs are created
+    foreach (var tab in tabs.Items.OfType&lt;TabItem&gt;())
+    {
+        var key = GetTabKey(tab);
+        var savedColor = stateService.GetTabColor(key);
+        if (savedColor.HasValue)
+            DaisyTabs.SetTabPaletteColor(tab, savedColor.Value);
+    }
+
+    // Save colors when changed
+    tabs.TabPaletteColorChangeRequested += (_, e) =&gt;
+    {
+        var key = GetTabKey(e.TabItem);
+        stateService.SaveTabColor(key, e.NewColor);
+    };
+}
+
+private string GetTabKey(TabItem tab)
+{
+    // Use tab header, data context ID, or other unique identifier
+    return tab.Header?.ToString() ?? tab.GetHashCode().ToString();
+}</code></pre>
+
+<h2>Trailing Header Content</h2>
+
+<code>HeaderTrailingContent</code> places custom content to the right of the tab headers, inside the header container. <code>HeaderTrailingContentTemplate</code> supports data objects and bindings.
+<p>The header reserves space for this content; the tab strip uses the remaining width.</p>
+<p>An empty slot has no margin or layout effect.</p>
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabs Variant="Bordered"&gt;
+    &lt;daisy:DaisyTabs.HeaderTrailingContent&gt;
+        &lt;daisy:DaisyButton Content="Refresh" Variant="Ghost" Size="Small" Click="OnRefresh" /&gt;
+    &lt;/daisy:DaisyTabs.HeaderTrailingContent&gt;
+    &lt;StackPanel&gt;
+        &lt;TabViewItem Header="Summary"&gt;&lt;TextBlock Text="Summary content" /&gt;&lt;/TabViewItem&gt;
+        &lt;TabViewItem Header="Details"&gt;&lt;TextBlock Text="Details content" /&gt;&lt;/TabViewItem&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyTabs&gt;</code></pre>
+
+<code>DaisyTabHeaderTrailingMargin</code> sets the space before the slot. Its default is <code>8,0,0,0</code>.
+<code>TabWidthMode</code>, <code>TabMinWidth</code> and <code>TabMaxWidth</code> keep their behavior. Headers wider than the available area are clipped before the slot; the slot does not add overflow scrolling.
+<p>The header Border is named <code>PART_HeaderContainer</code> and the slot <code>PART_HeaderTrailingContent</code> (a <code>ContentPresenter</code>).</p>
+
+<h2>Built-in Header Buttons</h2>
+
+<p>If <code>ShowHeaderButtons</code> is true and <code>HeaderTrailingContent</code> is null, DaisyTabs creates a <code>DaisyTabsHeaderButtons</code> instance and shows it in the slot.</p>
+<code>HeaderButtons</code> exposes this instance immediately. Both button types start hidden. Configure the instance to show navigation, the view menu, or both.
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabs x:Name="RecordTabs" Variant="Boxed" ShowHeaderButtons="True"&gt;
+    &lt;StackPanel&gt;
+        &lt;TabViewItem Header="Records"&gt;&lt;TextBlock Text="Record content" /&gt;&lt;/TabViewItem&gt;
+        &lt;TabViewItem Header="Notes"&gt;&lt;TextBlock Text="Notes content" /&gt;&lt;/TabViewItem&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyTabs&gt;</code></pre>
+
+<pre><code class="language-csharp">var buttons = RecordTabs.HeaderButtons!;
+buttons.ShowNavigationButtons = true;
+buttons.ShowViewMenuButton = true;
+buttons.Views = new List&lt;DaisyTabView&gt;
+{
+    new() { Id = "summary", Name = "Summary" },
+    new() { Id = "details", Name = "Details" }
+};
+buttons.ActiveViewId = "summary";
+buttons.ViewSelected += OnViewSelected;
+
+void OnViewSelected(object? sender, DaisyTabViewEventArgs e)
+{
+    if (sender is DaisyTabsHeaderButtons source)
+        source.ActiveViewId = e.Id;
+}</code></pre>
+
+<p>Custom trailing content takes precedence. If the slot contains custom content, <code>ShowHeaderButtons</code> leaves it in place.</p>
+<code>HeaderButtons</code> remains null until DaisyTabs creates the built-in instance.
+<p>Once created, the instance retains its settings and subscriptions while hidden or replaced by custom content.</p>
+<p>Setting <code>ShowHeaderButtons</code> to false removes only the built-in instance from the slot.</p>
+
+<p>Unlike Flowery.NET, <code>HeaderTrailingContent</code> stays null while the built-in group is shown: WinUI has no <code>SetCurrentValue</code>, and writing the property would replace a binding on it.</p>
+
+<p>The group also works directly in <code>HeaderTrailingContent</code> or in a toolbar.</p>
+<p>See <a href="DaisyTabsHeaderButtons.html">DaisyTabsHeaderButtons</a> for commands, events, collection updates, and scaling.</p>
+
+<h2>Keyboard Mnemonics</h2>
+
+<p>Tab headers show WinForms-style mnemonics: <code>&</code> underlines the access character and <code>&&</code> is a literal <code>&</code>. <code>Header</code> keeps the markers, and the header button's automation name is the display text. It is display only, so select the tab from your own Alt+key handling. See <a href="DaisyMnemonicText.html">DaisyMnemonicText</a>.</p>
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabs Variant="Boxed"&gt;
+    &lt;StackPanel&gt;
+        &lt;TabViewItem Header="&amp;amp;Texte" /&gt;
+        &lt;TabViewItem Header="Save &amp;amp;&amp;amp; Exit" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyTabs&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Lifted</strong> for app-like tabs over panels; <strong>Boxed</strong> for pill-style segmented navigation.</li>
+<li>Use <strong>TabWidthMode="Equal"</strong> to prevent layout shifts when tab selection causes font weight changes.</li>
+<li>Keep headers short; WrapPanel allows wrapping but concise labels prevent clutter.</li>
+<li>Adjust <code>Size</code> to match surrounding controls; Small/XS for toolbars, Large for hero sections.</li>
+<li>For tab content padding, set <code>Padding</code> on DaisyTabs or inside each TabItem as needed.</li>
+<li><strong>Context menu</strong> is opt-in via <code>EnableTabContextMenu="True"</code>. Wire events to handle actions in your app.</li>
+<li>Use <strong>DaisyModal</strong> for destructive confirmations (close multiple tabs) and <strong>DaisyToast</strong> for feedback.</li>
+<li>Tab colors can be set declaratively via XAML or programmatically via <code>DaisyTabs.SetTabPaletteColor()</code> (palette) or <code>DaisyTabs.SetTabColor()</code> (semantic/theme-aware).</li>
+</ul>
+<h2>Architecture Notes</h2>
+
+<p>DaisyTabs is designed as a <strong>styling + callback</strong> control, not a document manager. It:</p>
+
+<ul><li><strong>Does</strong>: Style tabs, expose tab colors, provide a context menu, raise events</li>
+<li><strong>Does not</strong>: Manage tab lifecycle, close tabs automatically, persist state, handle drag-reorder</li>
+</ul>
+<p>For richer "document tabs" behavior (close buttons on each tab, dirty indicators, drag-to-reorder, overflow handling), consider creating a dedicated <code>DaisyDocumentTabs</code> control that wraps TabControl and owns document-specific behaviors.</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTable.html">← Table</a></div>
+    <div class="nav-right"><a href="DaisyTabsHeaderButtons.html">TabsHeaderButtons →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

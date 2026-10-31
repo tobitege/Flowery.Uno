@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyColorSlider</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyColorSlider</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyColorSlider.png" alt="DaisyColorSlider" class="doc-image">
+
+<p>DaisyColorSlider is a slider control for selecting individual color channel values. It supports <strong>7 color channels</strong> (RGB + Alpha + HSL) with automatic gradient rendering and a draggable thumb indicator. The slider displays a visual gradient representing the channel's range and supports both horizontal and vertical orientations.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Channel</code></td>
+<td><code>ColorSliderChannel</code></td>
+<td><code>Hue</code></td>
+<td>The color channel this slider controls</td>
+</tr>
+<tr>
+<td><code>Color</code></td>
+<td><code>Color</code></td>
+<td><code>Red</code></td>
+<td>The current color value</td>
+</tr>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Orientation</code></td>
+<td><code>Horizontal</code></td>
+<td>Slider orientation (Horizontal/Vertical)</td>
+</tr>
+<tr>
+<td><code>NubSize</code></td>
+<td><code>double</code></td>
+<td><code>8</code></td>
+<td>Size of the thumb/nub indicator</td>
+</tr>
+<tr>
+<td><code>ShowCheckerboard</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to show checkerboard pattern for alpha channel</td>
+</tr>
+<tr>
+<td><code>OnColorChanged</code></td>
+<td><code>Action<Color>?</code></td>
+<td><code>null</code></td>
+<td>Optional callback invoked when color changes</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Channel Options</h2>
+
+<p>The <code>ColorSliderChannel</code> enum defines which color component the slider controls:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Channel</th>
+<th>Range</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Red</code></td>
+<td>0-255</td>
+<td>Red component (RGB)</td>
+</tr>
+<tr>
+<td><code>Green</code></td>
+<td>0-255</td>
+<td>Green component (RGB)</td>
+</tr>
+<tr>
+<td><code>Blue</code></td>
+<td>0-255</td>
+<td>Blue component (RGB)</td>
+</tr>
+<tr>
+<td><code>Alpha</code></td>
+<td>0-255</td>
+<td>Alpha/transparency component</td>
+</tr>
+<tr>
+<td><code>Hue</code></td>
+<td>0-359</td>
+<td>Hue angle in degrees (HSL)</td>
+</tr>
+<tr>
+<td><code>Saturation</code></td>
+<td>0-1</td>
+<td>Saturation percentage (HSL)</td>
+</tr>
+<tr>
+<td><code>Lightness</code></td>
+<td>0-1</td>
+<td>Lightness percentage (HSL)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events and Callbacks</h2>
+
+<p>DaisyColorSlider provides two ways to respond to color changes:</p>
+
+<h3>Event-Based (Multiple Subscribers)</h3>
+
+<pre><code class="language-csharp">slider.ColorChanged += (sender, e) =&gt; 
+{
+    Console.WriteLine($"Color changed to: {e.Color}");
+};</code></pre>
+
+<h3>Callback-Based (Direct Delegate)</h3>
+
+<pre><code class="language-xml">&lt;colorpicker:DaisyColorSlider 
+    Channel="Hue" 
+    OnColorChanged="{Binding HandleColorChanged}" /&gt;</code></pre>
+
+<pre><code class="language-csharp">// In ViewModel or code-behind
+public void HandleColorChanged(Color newColor)
+{
+    Debug.WriteLine($"New color: {newColor}");
+}
+
+// Or inline
+var slider = new DaisyColorSlider
+{
+    Channel = ColorSliderChannel.Hue,
+    OnColorChanged = color =&gt; Debug.WriteLine($"Color: {color}")
+};</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic hue slider --&gt;
+&lt;colorpicker:DaisyColorSlider Channel="Hue" Color="Red" /&gt;
+
+&lt;!-- RGB sliders with labels --&gt;
+&lt;StackPanel Spacing="8"&gt;
+    &lt;TextBlock Text="Red" /&gt;
+    &lt;colorpicker:DaisyColorSlider Channel="Red" Color="{Binding SelectedColor}" /&gt;
+
+    &lt;TextBlock Text="Green" /&gt;
+    &lt;colorpicker:DaisyColorSlider Channel="Green" Color="{Binding SelectedColor}" /&gt;
+
+    &lt;TextBlock Text="Blue" /&gt;
+    &lt;colorpicker:DaisyColorSlider Channel="Blue" Color="{Binding SelectedColor}" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Vertical saturation slider --&gt;
+&lt;colorpicker:DaisyColorSlider 
+    Channel="Saturation" 
+    Orientation="Vertical"
+    Height="200" /&gt;
+
+&lt;!-- Alpha slider with checkerboard background --&gt;
+&lt;colorpicker:DaisyColorSlider 
+    Channel="Alpha" 
+    ShowCheckerboard="True"
+    Color="{Binding SelectedColor}" /&gt;
+
+&lt;!-- With callback --&gt;
+&lt;colorpicker:DaisyColorSlider 
+    Channel="Lightness"
+    OnColorChanged="{Binding OnLightnessChanged}" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Hue</strong> slider for quick color selection across the spectrum.</li>
+<li>Combine RGB sliders for precise color mixing.</li>
+<li>Use <strong>Saturation</strong> and <strong>Lightness</strong> sliders for adjusting color intensity.</li>
+<li>Enable <code>ShowCheckerboard</code> for the Alpha channel to visualize transparency.</li>
+<li>Use the <code>OnColorChanged</code> callback for simple one-off handlers; use the <code>ColorChanged</code> event when multiple subscribers are needed.</li>
+<li>Vertical orientation works well in side panels or toolbars.</li>
+</ul>
+<h2>Acknowledgments</h2>
+
+<p>This control is part of the Flowery.Uno color picker suite, inspired by the <a href="https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker" target="_blank" rel="noopener">Cyotek ColorPicker</a> library (MIT License).</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyColorPickerDialog.html">← ColorPickerDialog</a></div>
+    <div class="nav-right"><a href="DaisyColorWheel.html">ColorWheel →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

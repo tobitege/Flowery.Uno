@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyBreadcrumbs</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyBreadcrumbs</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyBreadcrumbs.png" alt="DaisyBreadcrumbs" class="doc-image">
+
+<p>DaisyBreadcrumbs shows a horizontal trail of navigation steps. Provide a <code>Panel</code> (typically a horizontal <code>StackPanel</code>) as <code>Content</code> containing <code>DaisyBreadcrumbItem</code> children; the control re-parents those items into its internal layout, applies separators between items, and marks only the trailing item as non-clickable. Supports custom separators, icons, and command execution on intermediate items.</p>
+
+<h2>Breadcrumb Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Separator</code> (string, default "/")</td>
+<td>Text used between items. Accepts any string (e.g., <code>›</code>, <code>»</code>, <code>></code>).</td>
+</tr>
+<tr>
+<td><code>SeparatorOpacity</code> (double, default 0.5)</td>
+<td>Controls the visual weight of the separator glyph.</td>
+</tr>
+<tr>
+<td><code>Size</code> (DaisySize)</td>
+<td>Controls text/icon sizing for the breadcrumb items.</td>
+</tr>
+<tr>
+<td><code>Content</code> (Panel)</td>
+<td>Provide a <code>Panel</code> (e.g., <code>StackPanel</code> with <code>Orientation="Horizontal"</code>) containing <code>DaisyBreadcrumbItem</code> children; items are re-parented into the control layout.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Item Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Content</code></td>
+<td>The label text; supports templated content.</td>
+</tr>
+<tr>
+<td><code>Icon</code> (Geometry)</td>
+<td>Optional leading icon; hidden when not set.</td>
+</tr>
+<tr>
+<td><code>Command</code> / <code>CommandParameter</code></td>
+<td>Invoked on click for non-last items when <code>IsClickable=True</code>.</td>
+</tr>
+<tr>
+<td><code>IsClickable</code> (bool)</td>
+<td>Toggle interactivity; still respects <code>IsLast</code> (last item never executes commands).</td>
+</tr>
+<tr>
+<td><code>IsFirst</code> / <code>IsLast</code> / <code>Index</code></td>
+<td>Set by the parent for styling and interaction; not usually set manually.</td>
+</tr>
+<tr>
+<td><code>Separator</code> / <code>SeparatorOpacity</code></td>
+<td>Inherited from the parent; override per item if needed.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>When to Use (vs DaisyBreadcrumbBar)</h2>
+
+<ul><li>Use <code>DaisyBreadcrumbs</code> when you want manual control over per-item content, separators, and click behavior.</li>
+<li>Use <code>DaisyBreadcrumbBar</code> when you have an <code>ItemsSource</code> + <code>ItemTemplate</code> and want built-in overflow ellipsis.</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic trail --&gt;
+&lt;controls:DaisyBreadcrumbs&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Home" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Documents" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Add Document" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyBreadcrumbs&gt;
+
+&lt;!-- Custom separators and opacity --&gt;
+&lt;controls:DaisyBreadcrumbs Separator="›" SeparatorOpacity="0.7"&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Root" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Folder" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="File" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyBreadcrumbs&gt;
+
+&lt;!-- With icons --&gt;
+&lt;controls:DaisyBreadcrumbs&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Home" Icon="{StaticResource DaisyIconHome}" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Library" Icon="{StaticResource DaisyIconFolder}" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Report.pdf" Icon="{StaticResource DaisyIconDocument}" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyBreadcrumbs&gt;
+
+&lt;!-- Constrained width (wrap in ScrollViewer for horizontal scroll) --&gt;
+&lt;ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto"&gt;
+    &lt;controls:DaisyBreadcrumbs MaxWidth="220"&gt;
+        &lt;StackPanel Orientation="Horizontal"&gt;
+            &lt;controls:DaisyBreadcrumbItem Content="Long text 1" /&gt;
+            &lt;controls:DaisyBreadcrumbItem Content="Long text 2" /&gt;
+            &lt;controls:DaisyBreadcrumbItem Content="Long text 3" /&gt;
+            &lt;controls:DaisyBreadcrumbItem Content="Long text 4" /&gt;
+            &lt;controls:DaisyBreadcrumbItem Content="Long text 5" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyBreadcrumbs&gt;
+&lt;/ScrollViewer&gt;
+
+&lt;!-- Command-driven navigation --&gt;
+&lt;controls:DaisyBreadcrumbs Separator="&gt;"&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Home"
+                                      Command="{Binding NavigateCommand}"
+                                      CommandParameter="Home" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Projects"
+                                      Command="{Binding NavigateCommand}"
+                                      CommandParameter="Projects" /&gt;
+        &lt;controls:DaisyBreadcrumbItem Content="Current Project" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyBreadcrumbs&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep labels short to avoid truncation; wrap in a <code>ScrollViewer</code> if you need horizontal scrolling for long paths.</li>
+<li>Use a distinctive separator (e.g., <code>›</code> or <code>»</code>) to improve scanability on dark backgrounds.</li>
+<li>Bind <code>Command</code> on intermediate items for navigation; the last item is intentionally non-interactive to indicate the current page.</li>
+<li>Provide icons for top-level nodes (e.g., Home, Folder) to aid recognition, especially on narrow layouts.</li>
+<li>Provide <code>DaisyBreadcrumbItem</code> children inside a <code>Panel</code>; the control re-parents them and assigns <code>IsFirst</code>/<code>IsLast</code> and separators automatically.</li>
+<li>For <code>ItemsSource</code> + <code>ItemTemplate</code> scenarios and built-in overflow behavior, use <code>DaisyBreadcrumbBar</code>.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyBreadcrumbBar.html">← BreadcrumbBar</a></div>
+    <div class="nav-right"><a href="DaisyButton.html">Button →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

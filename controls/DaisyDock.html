@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDock</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDock</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyDock.png" alt="DaisyDock" class="doc-image">
+
+<p>DaisyDock arranges items in a pill-shaped bar, similar to a macOS dock. It supports <strong>5 sizes</strong> via the standard <code>DaisySize</code> enum, responds to global size changes via <code>FlowerySizeManager</code>, and raises an <code>ItemSelected</code> event when an item is clicked. Commonly used for app bars or compact nav strips.</p>
+
+<h2>Properties & Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>: <code>ExtraSmall</code>, <code>Small</code>, <code>Medium</code>, <code>Large</code>, <code>ExtraLarge</code>)</td>
+<td>Adjusts dock item size and spacing. Responds to global size changes via <code>FlowerySizeManager</code>.</td>
+</tr>
+<tr>
+<td><code>AutoSelect</code> (bool, default <code>True</code>)</td>
+<td>When true, clicking an item highlights it with the Primary color and deselects siblings.</td>
+</tr>
+<tr>
+<td><code>SelectedIndex</code> (int, default <code>-1</code>)</td>
+<td>Gets or sets the index of the currently selected item.</td>
+</tr>
+<tr>
+<td><code>ItemSelected</code> event</td>
+<td>Raised with <code>DockItemSelectedEventArgs</code> containing the clicked <code>UIElement</code> and its index.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Default dock with DaisyIconText for proper scaling --&gt;
+&lt;daisy:DaisyDock Size="Medium" AutoSelect="True" ItemSelected="Dock_ItemSelected"&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;daisy:DaisyIconText IconData="{StaticResource DaisyIconHome}" /&gt;
+        &lt;daisy:DaisyIconText IconData="{StaticResource DaisyIconUser}" /&gt;
+        &lt;daisy:DaisyIconText IconData="{StaticResource DaisyIconSettings}" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyDock&gt;
+
+&lt;!-- Small dock --&gt;
+&lt;daisy:DaisyDock Size="Small"&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;daisy:DaisyIconText IconData="{StaticResource DaisyIconHome}" /&gt;
+        &lt;daisy:DaisyIconText IconData="{StaticResource DaisyIconSettings}" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyDock&gt;
+
+&lt;!-- Manual selection with SelectedIndex --&gt;
+&lt;daisy:DaisyDock AutoSelect="False" SelectedIndex="{Binding CurrentTab}"&gt;
+    &lt;StackPanel Orientation="Horizontal"&gt;
+        &lt;daisy:DaisyIconText IconSymbol="Home" /&gt;
+        &lt;daisy:DaisyIconText IconSymbol="Document" /&gt;
+        &lt;daisy:DaisyIconText IconSymbol="Setting" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyDock&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Use <code>DaisyIconText</code> for dock items.</strong> It uses Viewbox internally which ensures icons scale correctly when the dock size changes.</li>
+<li>The dock responds to <code>FlowerySizeManager.CurrentSize</code> changes automatically, so icons will scale with global size.</li>
+<li>Use <code>ItemSelected</code> event or bind <code>SelectedIndex</code> to route clicks and update navigation state.</li>
+<li>For manual selection control, set <code>AutoSelect="False"</code> and manage <code>SelectedIndex</code> yourself.</li>
+<li>Center the dock via parent layout; it ships with rounded corners, border, and neutral background by default.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyDivider.html">← Divider</a></div>
+    <div class="nav-right"><a href="DaisyDrawer.html">Drawer →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

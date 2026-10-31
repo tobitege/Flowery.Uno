@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyJoin</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyJoin</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyJoin.png" alt="DaisyJoin" class="doc-image">
+
+<p>DaisyJoin groups adjacent controls into a seamless, connected set by trimming internal corners and overlapping borders. It works horizontally by default and supports vertical orientation. Ideal for segmented buttons, grouped inputs, pagination, or stacked radio/button groups.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Orientation</code></td>
+<td><code>Horizontal</code></td>
+<td>Layout direction. Set to <code>Vertical</code> to stack items.</td>
+</tr>
+<tr>
+<td><code>ActiveIndex</code></td>
+<td><code>int</code></td>
+<td><code>-1</code></td>
+<td>Index of the active/selected item (0-based). When set, applies <code>ActiveBackground</code> and <code>ActiveForeground</code> to that item. Set to <code>-1</code> for no selection.</td>
+</tr>
+<tr>
+<td><code>ActiveBackground</code></td>
+<td><code>Brush</code></td>
+<td><code>DaisyPrimaryBrush</code></td>
+<td>Background brush applied to the active item.</td>
+</tr>
+<tr>
+<td><code>ActiveForeground</code></td>
+<td><code>Brush</code></td>
+<td><code>DaisyPrimaryContentBrush</code></td>
+<td>Foreground brush applied to the active item.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Methods</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>RefreshItems()</code></td>
+<td>Re-collects children and re-applies join styling. Call this after dynamically adding or removing children.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Supported Control Types</h2>
+
+<p>DaisyJoin applies corner radius adjustments only to these specific control types:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Control Type</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Button</code></td>
+<td>Including <code>DaisyButton</code>. DaisyButtons with Default/Soft styles get visible borders added.</td>
+</tr>
+<tr>
+<td><code>ToggleButton</code></td>
+<td>Including derived types like <code>DaisySwap</code>.</td>
+</tr>
+<tr>
+<td><code>TextBox</code></td>
+<td>Including <code>DaisyInput</code>.</td>
+</tr>
+<tr>
+<td><code>ComboBox</code></td>
+<td>Including <code>DaisySelect</code>.</td>
+</tr>
+<tr>
+<td><code>Border</code></td>
+<td>Useful for wrapping other content.</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>Other control types will be positioned correctly (margins applied) but won't have their corner radius adjusted.</div>
+<h2>Behavior & Styling</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>CornerRadius</td>
+<td>First/last children keep outer rounding (8px); middle items have square corners (0px).</td>
+</tr>
+<tr>
+<td>Margins</td>
+<td>Negative margins (-1px) collapse borders between items, avoiding double-thick dividers.</td>
+</tr>
+<tr>
+<td>Active highlight</td>
+<td>When <code>ActiveIndex >= 0</code>, the item at that index receives <code>ActiveBackground</code>/<code>ActiveForeground</code> while others get Base200/BaseContent colors.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Segmented buttons --&gt;
+&lt;daisy:DaisyJoin&gt;
+    &lt;daisy:DaisyButton Content="Left" /&gt;
+    &lt;daisy:DaisyButton Content="Middle" /&gt;
+    &lt;daisy:DaisyButton Content="Right" /&gt;
+&lt;/daisy:DaisyJoin&gt;
+
+&lt;!-- Input with dropdown and action button --&gt;
+&lt;daisy:DaisyJoin&gt;
+    &lt;daisy:DaisyInput Watermark="Search" /&gt;
+    &lt;daisy:DaisySelect PlaceholderText="All"&gt;
+        &lt;ComboBoxItem&gt;All&lt;/ComboBoxItem&gt;
+        &lt;ComboBoxItem&gt;Posts&lt;/ComboBoxItem&gt;
+    &lt;/daisy:DaisySelect&gt;
+    &lt;daisy:DaisyButton Content="Go" Variant="Primary" /&gt;
+&lt;/daisy:DaisyJoin&gt;
+
+&lt;!-- Vertical join --&gt;
+&lt;daisy:DaisyJoin Orientation="Vertical"&gt;
+    &lt;daisy:DaisyButton Content="Top" /&gt;
+    &lt;daisy:DaisyButton Content="Middle" /&gt;
+    &lt;daisy:DaisyButton Content="Bottom" /&gt;
+&lt;/daisy:DaisyJoin&gt;
+
+&lt;!-- Join with active selection (e.g., for tabs or pagination) --&gt;
+&lt;daisy:DaisyJoin ActiveIndex="1"&gt;
+    &lt;daisy:DaisyButton Content="Tab 1" /&gt;
+    &lt;daisy:DaisyButton Content="Tab 2" /&gt;  &lt;!-- This will be highlighted --&gt;
+    &lt;daisy:DaisyButton Content="Tab 3" /&gt;
+&lt;/daisy:DaisyJoin&gt;
+
+&lt;!-- Custom active colors --&gt;
+&lt;daisy:DaisyJoin ActiveIndex="0"
+                 ActiveBackground="{DynamicResource DaisySuccessBrush}"
+                 ActiveForeground="{DynamicResource DaisySuccessContentBrush}"&gt;
+    &lt;daisy:DaisyButton Content="Option A" /&gt;
+    &lt;daisy:DaisyButton Content="Option B" /&gt;
+&lt;/daisy:DaisyJoin&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Ensure children use consistent heights/paddings for a clean seam.</li>
+<li>Place semantic variants on endpoints to emphasize actions (e.g., Primary on the rightmost button).</li>
+<li>For form combos (input + button), keep the input first so borders align naturally.</li>
+<li>When stacking vertically, use equal widths to avoid staggered edges.</li>
+<li>Use <code>ActiveIndex</code> for pagination, tabs, or any segmented control that needs selection state.</li>
+<li>Call <code>RefreshItems()</code> after dynamically modifying children at runtime.</li>
+<li>Wrap unsupported controls in a <code>Border</code> if you need join styling on them.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyInput.html">← Input</a></div>
+    <div class="nav-right"><a href="DaisyKbd.html">Kbd →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyHoverGallery</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyHoverGallery</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyHoverGallery.png" alt="DaisyHoverGallery" class="doc-image">
+
+<p>DaisyHoverGallery displays one item at a time from an item collection, switching the visible item based on horizontal pointer position. It optionally renders vertical divider lines to hint at each region. Great for “hover to preview” galleries or swatches without clicks.</p>
+
+<h2>Behavior</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Hover-based selection</td>
+<td>Pointer movement updates <code>VisibleIndex</code> according to the pointer's X position across equal segments.</td>
+</tr>
+<tr>
+<td>Reset on exit</td>
+<td>Pointer exit resets <code>VisibleIndex</code> to 0 (first item).</td>
+</tr>
+<tr>
+<td>Dividers</td>
+<td>Optional vertical lines between segments controlled by <code>ShowDividers</code>, <code>DividerBrush</code>, and <code>DividerThickness</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>VisibleIndex</code> (int)</td>
+<td>Currently shown item index (0-based). Automatically set on hover; you can set it manually.</td>
+</tr>
+<tr>
+<td><code>ShowDividers</code> (bool)</td>
+<td>Toggles divider rendering.</td>
+</tr>
+<tr>
+<td><code>DividerBrush</code> / <code>DividerThickness</code></td>
+<td>Customize divider look (default semi-transparent white, 1px).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic hover gallery --&gt;
+&lt;controls:DaisyHoverGallery Height="160" Width="200" CornerRadius="12"&gt;
+    &lt;Border Background="#FF5F56" /&gt;
+    &lt;Border Background="#FFBD2E" /&gt;
+    &lt;Border Background="#27C93F" /&gt;
+    &lt;Border Background="#007BFF" /&gt;
+&lt;/controls:DaisyHoverGallery&gt;
+
+&lt;!-- With custom dividers and start index --&gt;
+&lt;controls:DaisyHoverGallery Height="160" Width="240"
+                            VisibleIndex="1"
+                            DividerBrush="#66FFFFFF"
+                            DividerThickness="2"&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo1.jpg" Stretch="UniformToFill" /&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo2.jpg" Stretch="UniformToFill" /&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo3.jpg" Stretch="UniformToFill" /&gt;
+&lt;/controls:DaisyHoverGallery&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep item count modest (3–6) so hover regions remain wide enough to hit accurately.</li>
+<li>Set explicit <code>Width</code>/<code>Height</code> and <code>CornerRadius</code> for clean clipping of media content.</li>
+<li>If you need click selection or keyboard control, pair this with additional UI or set <code>VisibleIndex</code> programmatically.</li>
+<li>Turn off <code>ShowDividers</code> for a minimalist look; increase thickness/contrast on dark backgrounds.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyHero.html">← Hero</a></div>
+    <div class="nav-right"><a href="DaisyIconText.html">IconText →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

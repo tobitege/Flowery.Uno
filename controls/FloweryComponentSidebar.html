@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloweryComponentSidebar</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>FloweryComponentSidebar</h1>
+
+<h2>Overview</h2>
+
+<p>FloweryComponentSidebar is a high-performance, navigational sidebar designed for the Gallery and complex app layouts. It features collapsible categories, clickable items with selection persistence, live search filtering, and deep integration with the project's global sizing and localization systems.</p>
+
+<strong>Key Features:</strong>
+
+<ul><li><strong>Collapsible Categories:</strong> Sections can be expanded/collapsed and current state is persisted.</li>
+<li><strong>Dynamic Sizing:</strong> Automatically scales all visual metrics (icons, fonts, margins) via <code>FlowerySizeManager</code>.</li>
+<li><strong>Uniform Selector Widths:</strong> Theme/Language/Size dropdowns use a consistent fixed width inside the sidebar to keep alignment stable across themes.</li>
+<li><strong>Theme/Language Integration:</strong> Special items for quick switching of UI settings.</li>
+<li><strong>Search Filtering:</strong> Integrated search bar that filters categories and items in real-time.</li>
+<li><strong>Platform Optimized:</strong> Uses <code>DaisyExpander</code> to bypass typical Uno/XAML performance issues on Skia/WASM.</li>
+</ul>
+<h2>Key Properties & Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Categories</code> (<code>ObservableCollection<SidebarCategory></code>)</td>
+<td>The source data. Add categories containing list of items.</td>
+</tr>
+<tr>
+<td><code>SelectedItem</code> (<code>SidebarItem?</code>)</td>
+<td>Highlighted item. Selected state uses <code>DaisyPrimaryBrush</code> variant.</td>
+</tr>
+<tr>
+<td><code>SidebarWidth</code> (double)</td>
+<td>The width of the sidebar. Default ~254.</td>
+</tr>
+<tr>
+<td><code>AutoSizeSidebarWidth</code> (bool)</td>
+<td>If true, sidebar width scales automatically with the global <code>DaisySize</code>.</td>
+</tr>
+<tr>
+<td><code>SearchText</code> (string)</td>
+<td>Live filtering query. Syncs automatically with the internal search input.</td>
+</tr>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>)</td>
+<td>The manual sizing override. Typically synced with the global scale.</td>
+</tr>
+<tr>
+<td><code>ItemSelected</code> (event)</td>
+<td>Fired when an item is clicked. Includes the item and its parent category.</td>
+</tr>
+<tr>
+<td><code>FavoriteToggled</code> (event)</td>
+<td>Fired when an item's favorite/star icon is toggled.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Data Models</h2>
+
+<p>The sidebar uses a hierarchy of model classes that support localizable display names via <code>FloweryLocalization</code>:</p>
+
+<ul><li><strong><code>SidebarCategory</code></strong>: Contains <code>Name</code> (key), <code>IconKey</code>, <code>IsExpanded</code>, and <code>Items</code>.</li>
+<li><strong><code>SidebarItem</code></strong>: Basic clickable item. Includes <code>Id</code>, <code>Name</code> (key), <code>TabHeader</code>, <code>Badge</code>, <code>IsFavorite</code>, and an optional <code>ControlName</code> (control class such as <code>DaisyTagPicker</code>; the search matches it in addition to the translated name, ignoring case, spaces and punctuation).</li>
+<li><strong>Special Items</strong>:</li>
+</ul>  - <code>SidebarLanguageSelectorItem</code>: Renders a localized language dropdown.
+<p>- <code>SidebarThemeSelectorItem</code>: Renders a themed color/theme dropdown.</p>
+<p>- <code>SidebarSizeSelectorItem</code>: Renders the DaisyUI global size selector.</p>
+
+<h3>Localizable Strings</h3>
+
+<code>SidebarCategory.DisplayName</code> and <code>SidebarItem.DisplayName</code> automatically resolve via <code>FloweryLocalization.GetString(Name)</code>. Setting <code>Name="Actions"</code> will display "Actions" in English or "Aktionen" in German if the translation exists.
+
+<h2>Usage Example</h2>
+
+<h3>XAML Configuration</h3>
+
+<pre><code class="language-xml">&lt;controls:FloweryComponentSidebar 
+    x:Name="Sidebar"
+    AutoSizeSidebarWidth="True"
+    ItemSelected="OnSidebarItemSelected" /&gt;</code></pre>
+
+<h3>Populating Data (C#)</h3>
+
+<pre><code class="language-csharp">var general = new SidebarCategory { Name = "General", IconKey = "DaisyIconHome" };
+general.Items.Add(new SidebarItem { Id = "welcome", Name = "Welcome", TabHeader = "Home" });
+general.Items.Add(new SidebarItem { Id = "settings", Name = "Settings", TabHeader = "Home", ShowFavoriteIcon = true });
+
+// Add a special selector item
+general.Items.Add(new SidebarSizeSelectorItem { Id = "size_picker", Name = "Global Size" });
+
+Sidebar.Categories = new ObservableCollection&lt;SidebarCategory&gt; { general };</code></pre>
+
+<h2>Internal Sizing Metrics</h2>
+
+<p>The sidebar uses a sophisticated internal metrics system (<code>SidebarMetrics</code>) to ensure a balanced look across all 5 standard sizes (<code>ExtraSmall</code> to <code>ExtraLarge</code>).</p>
+
+<ul><li><strong>Header Font Size:</strong> Targets specific section header tokens (<code>DaisySize*SectionHeaderFontSize</code>).</li>
+<li><strong>Item Font Size:</strong> Matches the primary font tokens used by other DaisyUI controls.</li>
+<li><strong>Margins & Padding:</strong> Every size has a custom-tuned set of paddings, icon sizes (e.g., 24px in XL vs 12px in XS), and spacing.</li>
+<li><strong>Vertical Spacing:</strong> Section headers include a 4px left margin for the icon and a 2px top buffer for the sub-items for a premium, spacious look.</li>
+</ul>
+<h2>Selection States</h2>
+
+<p>Selected items are visually distinct, using the project's <strong>Primary</strong> color palette:</p>
+
+<ul><li><strong>Background:</strong> <code>{DynamicResource DaisyPrimaryBrush}</code></li>
+<li><strong>Foreground:</strong> <code>{DynamicResource DaisyPrimaryContentBrush}</code> (white/contrast text)</li>
+<li><strong>Icons:</strong> Favorite star outline syncs to the content brush color.</li>
+</ul>
+<h2>State Management</h2>
+
+<p>The sidebar automatically persists its state via <code>StateStorageProvider</code>:</p>
+
+<p>1. <strong>Selection:</strong> Re-selects the last item on app restart.</p>
+<p>2. <strong>Expansion:</strong> Remembers which categories were collapsed or expanded.</p>
+<p>3. <strong>Scroll Position:</strong> Attempts to scroll the selected item into view on load if it's deep in a long list.</p>
+
+<h2>Tips for AI Agents</h2>
+
+<ul><li>Always use <code>SidebarCategory</code> for the root and <code>SidebarItem</code> (or derivatives) for the children.</li>
+<li>If an item doesn't appear, check the <code>SearchText</code> property or verify <code>IsExpanded</code> on the parent.</li>
+<li>To programmatically trigger a selection effect, set <code>sidebar.SelectedItem = myItem</code>.</li>
+<li><code>FloweryComponentSidebar</code> manually manages its internal visual tree; avoid adding children directly via XAML <code>Children</code> property.</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTextRotate</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTextRotate</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyTextRotate.png" alt="DaisyTextRotate" class="doc-image">
+
+<p>DaisyTextRotate cycles through its items with fade transitions, auto-advancing on a timer. It supports custom duration, per-transition timing, easing, pause-on-hover, and manual pausing. Ideal for rotating taglines or small sets of text snippets.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Duration</code> (ms)</td>
+<td>Total loop duration across all items (default 10000).</td>
+</tr>
+<tr>
+<td><code>TransitionDuration</code> (ms)</td>
+<td>Fade time between items (default 500).</td>
+</tr>
+<tr>
+<td><code>CurrentIndex</code></td>
+<td>0-based index of the visible item; wraps automatically.</td>
+</tr>
+<tr>
+<td><code>IsPaused</code></td>
+<td>Halts rotation when true.</td>
+</tr>
+<tr>
+<td><code>PauseOnHover</code></td>
+<td>Stops rotation while pointer is over the control (default true).</td>
+</tr>
+<tr>
+<td><code>Easing</code></td>
+<td>Easing for fade transitions (default CubicEaseInOut).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Rotating headline --&gt;
+&lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+    &lt;TextBlock Text="We build for" VerticalAlignment="Center" FontSize="16"/&gt;
+    &lt;controls:DaisyTextRotate FontSize="16" FontWeight="Bold" Duration="4000"&gt;
+        &lt;TextBlock Text="Designers" Foreground="{ThemeResource DaisyAccentBrush}"/&gt;
+        &lt;TextBlock Text="Developers" Foreground="{ThemeResource DaisySecondaryBrush}"/&gt;
+        &lt;TextBlock Text="Everyone" Foreground="{ThemeResource DaisySuccessBrush}"/&gt;
+    &lt;/controls:DaisyTextRotate&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Fast cycle --&gt;
+&lt;controls:DaisyTextRotate FontSize="20" Duration="2000" TransitionDuration="250"&gt;
+    &lt;TextBlock Text="Art" /&gt;
+    &lt;TextBlock Text="Code" /&gt;
+    &lt;TextBlock Text="Ship" /&gt;
+&lt;/controls:DaisyTextRotate&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep item count small (3–6) to avoid overly long loops or tiny intervals.</li>
+<li>For stronger contrast, set <code>PauseOnHover=True</code> (default) so users can read hovered text.</li>
+<li>Adjust <code>Duration</code>/<code>TransitionDuration</code> together to balance time visible vs. time fading.</li>
+<li>Bind <code>IsPaused</code> to external state (e.g., when the control is offscreen) to avoid unnecessary animation work.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTextArea.html">← TextArea</a></div>
+    <div class="nav-right"><a href="DaisyThemeController.html">ThemeController →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

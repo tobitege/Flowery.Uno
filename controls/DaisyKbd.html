@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyKbd</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyKbd</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyKbd.png" alt="DaisyKbd" class="doc-image">
+
+<p>DaisyKbd renders keyboard keycaps for inline hints (e.g., shortcuts). It provides <strong>5 size presets</strong>, monospace text, a subtle 3D border, and centered content. Use it to display keys like <code>Ctrl</code>, <code>Shift</code>, or <code>Cmd</code> in docs and tooltips.</p>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>Padding</th>
+<th>Font Size</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>16</td>
+<td>2,0</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>20</td>
+<td>3,0</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>24</td>
+<td>4,0</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>32</td>
+<td>6,0</td>
+<td>14</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>40</td>
+<td>8,0</td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>DaisyKbd uses <strong>fixed heights</strong> for each size to match DaisyUI's keycap design.</div>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;TextBlock&gt;
+    Press &lt;controls:DaisyKbd Content="Ctrl" /&gt; + &lt;controls:DaisyKbd Content="S" /&gt; to save.
+&lt;/TextBlock&gt;
+
+&lt;controls:DaisyKbd Size="Small" Content="Esc" /&gt;
+&lt;controls:DaisyKbd Size="Large" Content="Shift" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep content short (1–5 characters) for a key-like appearance.</li>
+<li>Use consistent sizes within a sentence to avoid visual jitter.</li>
+<li>Combine with instructions in tooltips or docs to clarify keyboard interactions.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyJoin.html">← Join</a></div>
+    <div class="nav-right"><a href="DaisyList.html">List →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

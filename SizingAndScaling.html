@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SizingAndScaling</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div><h1>Sizing and Scaling</h1>
+
+<p>Flowery.Uno provides <strong>two distinct sizing systems</strong>. Understanding when to use each is essential:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>System</th>
+<th>Purpose</th>
+<th>Scope</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Global Size</strong> (<code>FlowerySizeManager</code>)</td>
+<td>User preference / accessibility</td>
+<td>Entire app – all controls respond</td>
+</tr>
+<tr>
+<td><strong>Auto Scaling</strong> (<code>FloweryScaleManager</code>)</td>
+<td>Responsive window-based sizing</td>
+<td>Per-container opt-in only</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>💡 <strong>Most apps should just use Global Size.</strong> Auto Scaling is an advanced feature for specific responsive-layout scenarios like data forms.</div>
+<h2>Uno Platform Implementation</h2>
+
+<p>Flowery.Uno uses a code-based token system instead of XAML resource dictionaries:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTokenDefaults.cs</code></td>
+<td>Single source of truth for all token values</td>
+</tr>
+<tr>
+<td><code>DaisyResourceLookup.cs</code></td>
+<td>Centralized helper methods for sizing calculations</td>
+</tr>
+<tr>
+<td><code>FlowerySizeManager</code></td>
+<td>Global size management and event broadcasting</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>All controls read sizing from <code>DaisyResourceLookup.GetDefault*()</code> methods, ensuring consistency across the entire UI.</p>
+<hr>
+<h2>Global Size (FlowerySizeManager)</h2>
+
+<p>The <code>FlowerySizeManager</code> is a static service that:</p>
+
+<ul><li>Broadcasts size changes to all subscribing controls</li>
+<li>Maintains the current global size setting</li>
+<li>Provides localized size names in 11 languages</li>
+</ul>
+<h2>Quick Start</h2>
+
+<p>Apply a global size to all controls:</p>
+
+<pre><code class="language-csharp">using Flowery.Controls;
+
+// Apply a size by enum
+FlowerySizeManager.ApplySize(DaisySize.Small);
+
+// Or by name (case-insensitive)
+FlowerySizeManager.ApplySize("Large");</code></pre>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Typical Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ExtraSmall</code></td>
+<td>High-density UIs, data tables, compact toolbars</td>
+</tr>
+<tr>
+<td><code>Small</code></td>
+<td><strong>Default</strong> - Good balance for desktop apps</td>
+</tr>
+<tr>
+<td><code>Medium</code></td>
+<td>Touch-friendly, accessibility</td>
+</tr>
+<tr>
+<td><code>Large</code></td>
+<td>Larger screens, presentations</td>
+</tr>
+<tr>
+<td><code>ExtraLarge</code></td>
+<td>Maximum readability, kiosk mode</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>API Reference</h2>
+
+<h3>Properties</h3>
+
+<pre><code class="language-csharp">// Get the current global size
+DaisySize currentSize = FlowerySizeManager.CurrentSize;
+
+// Check/set if new controls should auto-use global size
+FlowerySizeManager.UseGlobalSizeByDefault = true;</code></pre>
+
+<h3>Methods</h3>
+
+<pre><code class="language-csharp">// Apply a size by enum
+FlowerySizeManager.ApplySize(DaisySize.Medium);
+
+// Apply a size by name (returns true if successful)
+bool success = FlowerySizeManager.ApplySize("ExtraLarge");
+
+// Reset to default (Small)
+FlowerySizeManager.Reset();</code></pre>
+
+<h3>Events</h3>
+
+<pre><code class="language-csharp">// Subscribe to size changes
+FlowerySizeManager.SizeChanged += (sender, size) =&gt;
+{
+    Console.WriteLine($"Size changed to: {size}");
+    // Update your custom controls here
+};</code></pre>
+
+<h2>Built-in UI Controls</h2>
+
+<p>Flowery.Uno provides ready-to-use controls for size selection:</p>
+
+<h3>DaisySizeDropdown</h3>
+
+<p>A ComboBox-style dropdown that shows all available sizes with localized names:</p>
+
+<pre><code class="language-xml">&lt;controls:DaisySizeDropdown /&gt;</code></pre>
+
+<p>The dropdown:</p>
+
+<ul><li>Shows the current size with an abbreviation (XS, S, M, L, XL)</li>
+<li>Displays localized size names (e.g., "Klein" in German, "小" in Japanese)</li>
+<li>Automatically updates all controls when selection changes</li>
+</ul>
+<strong>Advanced customization</strong>: You can control which sizes appear and customize their display names. See <a href="DaisySizeDropdown.html">DaisySizeDropdown</a> for details on the <code>SizeOptions</code> property.
+
+<h3>Which Controls Respond?</h3>
+
+<p>All DaisyUI controls with a <code>Size</code> property respond to global size changes:</p>
+
+<ul><li><code>DaisyButton</code></li>
+<li><code>DaisyInput</code> / <code>DaisyTextArea</code></li>
+<li><code>DaisySelect</code></li>
+<li><code>DaisyCheckBox</code> / <code>DaisyRadio</code> / <code>DaisyToggle</code></li>
+<li><code>DaisyBadge</code></li>
+<li><code>DaisyProgress</code> / <code>DaisyRadialProgress</code></li>
+<li><code>DaisyTabs</code></li>
+<li><code>DaisyMenu</code></li>
+<li><code>DaisyKbd</code></li>
+<li><code>DaisyAvatar</code></li>
+<li><code>DaisyLoading</code></li>
+<li><code>DaisyFileInput</code></li>
+<li><code>DaisyNumericUpDown</code></li>
+<li><code>DaisyDateTimeline</code></li>
+<li><code>DaisyDivider</code></li>
+<li>And more...</li>
+</ul>
+<h2>Responsive Font for TextBlocks</h2>
+
+<p>For regular <code>TextBlock</code> elements that should scale with the global size, use the <code>ResponsiveFont</code> attached property:</p>
+
+<pre><code class="language-xml">&lt;TextBlock Text="Description text" 
+           controls:FlowerySizeManager.ResponsiveFont="Primary" /&gt;</code></pre>
+
+<h3>Available Tiers</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Tier</th>
+<th>Description</th>
+<th>XS/S/M/L/XL Font Sizes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Primary</code></td>
+<td>Body text, descriptions</td>
+<td>10/12/14/18/20</td>
+</tr>
+<tr>
+<td><code>Secondary</code></td>
+<td>Hints, captions, labels</td>
+<td>9/10/12/14/16</td>
+</tr>
+<tr>
+<td><code>Tertiary</code></td>
+<td>Very small text, counters</td>
+<td>8/9/11/12/14</td>
+</tr>
+<tr>
+<td><code>Header</code></td>
+<td>Section titles, headings</td>
+<td>14/16/20/24/28</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Body text --&gt;
+&lt;TextBlock Text="This is a description that scales with global size."
+           controls:FlowerySizeManager.ResponsiveFont="Primary" /&gt;
+
+&lt;!-- Hint/caption text --&gt;
+&lt;TextBlock Text="Optional field" Opacity="0.7"
+           controls:FlowerySizeManager.ResponsiveFont="Secondary" /&gt;
+
+&lt;!-- Section header --&gt;
+&lt;TextBlock Text="Settings" FontWeight="Bold"
+           controls:FlowerySizeManager.ResponsiveFont="Header" /&gt;</code></pre>
+
+<h3>How It Works</h3>
+
+<p>The attached property:</p>
+
+<p>1. Subscribes the TextBlock to <code>FlowerySizeManager.SizeChanged</code></p>
+<p>2. Immediately applies the font size for the current global size</p>
+<p>3. Updates automatically when the global size changes</p>
+<p>4. Cleans up the subscription when the control is unloaded</p>
+
+<p>> <strong>Note:</strong> The <code>ResponsiveFont</code> attached property is the recommended approach for text that should scale with global size, as it handles subscription and cleanup automatically.</p>
+
+<h2>Making Custom Controls Size-Aware</h2>
+
+<p>To make your own controls respond to global size changes:</p>
+
+<h3>Option 1: Use DaisyResourceLookup (Recommended)</h3>
+
+<p>Use centralized helper methods instead of inline switch expressions:</p>
+
+<pre><code class="language-csharp">using Flowery.Theming;
+using Flowery.Controls;
+
+public class MyCustomControl : ContentControl
+{
+    public DaisySize Size { get; set; } = DaisySize.Medium;
+
+    public MyCustomControl()
+    {
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        FlowerySizeManager.SizeChanged += OnSizeChanged;
+        ApplySize(FlowerySizeManager.CurrentSize);
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        FlowerySizeManager.SizeChanged -= OnSizeChanged;
+    }
+
+    private void OnSizeChanged(object? sender, DaisySize size)
+    {
+        if (!FlowerySizeManager.GetIgnoreGlobalSize(this))
+            ApplySize(size);
+    }
+
+    private void ApplySize(DaisySize size)
+    {
+        var resources = Application.Current?.Resources;
+        if (resources != null)
+            DaisyTokenDefaults.EnsureDefaults(resources);
+
+        // Use centralized defaults - no inline switch needed!
+        Height = DaisyResourceLookup.GetDefaultHeight(size);
+        FontSize = DaisyResourceLookup.GetDefaultFontSize(size);
+        Padding = DaisyResourceLookup.GetDefaultPadding(size);
+    }
+}</code></pre>
+
+<h3>Option 2: Subscribe in Constructor (Simple)</h3>
+
+<p>For simpler cases without full token integration:</p>
+
+<pre><code class="language-csharp">public class MyCustomControl : UserControl
+{
+    public MyCustomControl()
+    {
+        InitializeComponent();
+
+        // Subscribe to global size changes
+        FlowerySizeManager.SizeChanged += OnSizeChanged;
+
+        // Apply initial size
+        ApplySize(FlowerySizeManager.CurrentSize);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+        // Clean up subscription
+        FlowerySizeManager.SizeChanged -= OnSizeChanged;
+    }
+
+    private void OnSizeChanged(object? sender, DaisySize size)
+    {
+        ApplySize(size);
+    }
+
+    private void ApplySize(DaisySize size)
+    {
+        // Use centralized defaults instead of inline switches
+        MyTextBlock.FontSize = DaisyResourceLookup.GetDefaultFontSize(size);
+    }
+}</code></pre>
+
+<h3>Option 2: Add a Size Property</h3>
+
+<p>For DaisyUI-style controls, add a <code>Size</code> styled property:</p>
+
+<pre><code class="language-csharp">public class MyDaisyControl : Control
+{
+    public static readonly DependencyProperty SizeProperty =
+        DependencyProperty.Register(
+            nameof(Size), typeof(DaisySize), typeof(MyDaisyControl),
+            new PropertyMetadata(DaisySize.Small));
+
+    public DaisySize Size
+    {
+        get =&gt; (DaisySize)GetValue(SizeProperty);
+        set =&gt; SetValue(SizeProperty, value);
+    }
+}</code></pre>
+
+<p>Then apply sizing in your control's code or use a style:</p>
+
+<pre><code class="language-xml">&lt;!-- In your control's resources or App.xaml --&gt;
+&lt;Style TargetType="local:MyDaisyControl"&gt;
+    &lt;Setter Property="FontSize" Value="{ThemeResource DaisySizeMediumFontSize}" /&gt;
+    &lt;Setter Property="Height" Value="{ThemeResource DaisySizeMediumHeight}" /&gt;
+&lt;/Style&gt;</code></pre>
+
+<p>> <strong>Note:</strong> In Uno/WinUI, conditional styling based on property values is typically done in code-behind or using VisualStateManager rather than selector-based styles.</p>
+
+<h2>Bulk-Applying Size via Reflection</h2>
+
+<p>For host applications like the Gallery, you can automatically apply sizes to all DaisyUI controls in the visual tree:</p>
+
+<pre><code class="language-csharp">private static void ApplyGlobalSizeToControls(Control root, DaisySize size)
+{
+    foreach (var control in root.GetVisualDescendants().OfType&lt;Control&gt;())
+    {
+        var sizeProperty = control.GetType().GetProperty("Size");
+        if (sizeProperty != null &amp;&amp; 
+            sizeProperty.PropertyType == typeof(DaisySize) &amp;&amp; 
+            sizeProperty.CanWrite)
+        {
+            sizeProperty.SetValue(control, size);
+        }
+    }
+}</code></pre>
+
+<h2>Opting Out of Global Sizing</h2>
+
+<p>Sometimes you have controls that should <strong>not</strong> respond to global size changes - for example, demonstration controls showing all five size variants. Use the <code>IgnoreGlobalSize</code> attached property:</p>
+
+<h3>On Individual Controls</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyButton controls:FlowerySizeManager.IgnoreGlobalSize="True" 
+                      Size="Large" Content="I stay Large!" /&gt;</code></pre>
+
+<h3>On Parent Containers (Recommended)</h3>
+
+<p>Mark a parent container to protect all descendant controls:</p>
+
+<pre><code class="language-xml">&lt;StackPanel controls:FlowerySizeManager.IgnoreGlobalSize="True"&gt;
+    &lt;!-- All size example controls inside are protected --&gt;
+    &lt;controls:DaisyAvatar Size="ExtraSmall" /&gt;
+    &lt;controls:DaisyAvatar Size="Small" /&gt;
+    &lt;controls:DaisyAvatar Size="Medium" /&gt;
+    &lt;controls:DaisyAvatar Size="Large" /&gt;
+    &lt;controls:DaisyAvatar Size="ExtraLarge" /&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<h3>How Inheritance Works</h3>
+
+<p>The <code>IgnoreGlobalSize</code> property uses visual tree traversal with "first explicit setting wins" semantics:</p>
+
+<p>1. When a control receives a global size change event, it calls <code>FlowerySizeManager.ShouldIgnoreGlobalSize(this)</code></p>
+<p>2. The method walks up the visual tree from the control to the root</p>
+<p>3. It stops at the <strong>first ancestor</strong> with an explicitly set <code>IgnoreGlobalSize</code> value (either <code>True</code> or <code>False</code>)</p>
+<p>4. If no explicit setting is found anywhere in the tree, the control responds to global size changes (returns <code>false</code>)</p>
+
+<p>This design enables both <strong>opting out</strong> and <strong>opting back in</strong>:</p>
+
+<pre><code class="language-xml">&lt;!-- Outer container opts OUT of global sizing --&gt;
+&lt;StackPanel controls:FlowerySizeManager.IgnoreGlobalSize="True"&gt;
+    &lt;controls:DaisyButton Size="Small" Content="Stays Small" /&gt;
+    &lt;controls:DaisyButton Size="Large" Content="Stays Large" /&gt;
+
+    &lt;!-- Inner container opts BACK IN to global sizing --&gt;
+    &lt;Border controls:FlowerySizeManager.IgnoreGlobalSize="False"&gt;
+        &lt;controls:DaisyButton Content="Responds to global size!" /&gt;
+    &lt;/Border&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<p>> <strong>Note:</strong> Only explicitly set values are considered. The default (unset) value does not stop the traversal.</p>
+
+<h2>Localization</h2>
+
+<p>Size names are fully localized. Add translations to your language files:</p>
+
+<pre><code class="language-json">{
+  "Size_ExtraSmall": "Extra Small",
+  "Size_Small": "Small",
+  "Size_Medium": "Medium",
+  "Size_Large": "Large",
+  "Size_ExtraLarge": "Extra Large"
+}</code></pre>
+
+<p>Supported languages: English, German, French, Spanish, Italian, Japanese, Korean, Arabic, Turkish, Ukrainian, Chinese (Simplified).</p>
+
+<h2>Design Tokens Integration</h2>
+
+<p>The sizing system works with <a href="DesignTokens.html">Design Tokens</a>. Each size tier maps to specific tokens:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height Token</th>
+<th>Font Size Token</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td><code>DaisySizeExtraSmallHeight</code> (20)</td>
+<td><code>DaisySizeExtraSmallFontSize</code> (9)</td>
+</tr>
+<tr>
+<td>Small</td>
+<td><code>DaisySizeSmallHeight</code> (24)</td>
+<td><code>DaisySizeSmallFontSize</code> (10)</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>DaisySizeMediumHeight</code> (28)</td>
+<td><code>DaisySizeMediumFontSize</code> (12)</td>
+</tr>
+<tr>
+<td>Large</td>
+<td><code>DaisySizeLargeHeight</code> (32)</td>
+<td><code>DaisySizeLargeFontSize</code> (14)</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td><code>DaisySizeExtraLargeHeight</code> (36)</td>
+<td><code>DaisySizeExtraLargeFontSize</code> (16)</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> Token values can be accessed programmatically via <code>DaisyResourceLookup.GetDefaultHeight(size)</code> and <code>DaisyResourceLookup.GetDefaultFontSize(size)</code>. See <a href="DesignTokens.html">Design Tokens</a> for full reference.</p>
+
+<h2>Best Practices</h2>
+
+<p>1. <strong>Start with Small</strong> - The default size of <code>Small</code> works well for most desktop applications.</p>
+
+<p>2. <strong>Provide a size picker</strong> - Give users control over the size preference, especially for accessibility.</p>
+
+<p>3. <strong>Test all sizes</strong> - Ensure your layouts don't break at <code>ExtraSmall</code> (compact) or <code>ExtraLarge</code> (spacious).</p>
+
+<p>4. <strong>Use tokens, not hardcoded values</strong> - This ensures your custom controls scale properly.</p>
+
+<p>5. <strong>Unsubscribe from events</strong> - Always clean up <code>SizeChanged</code> subscriptions in <code>OnUnloaded</code> to prevent memory leaks.</p>
+
+<h2>Example: Settings Panel</h2>
+
+<p>A complete example of a settings panel with size selection:</p>
+
+<pre><code class="language-xml">&lt;StackPanel Spacing="16"&gt;
+    &lt;TextBlock Text="Display Size" FontWeight="Bold" /&gt;
+
+    &lt;controls:DaisySizeDropdown Width="180" /&gt;
+
+    &lt;TextBlock Text="This text will resize when you change the size above."
+               controls:FlowerySizeManager.ResponsiveFont="Primary" /&gt;
+
+    &lt;controls:DaisyButton Content="Sample Button" /&gt;
+    &lt;controls:DaisyInput Watermark="Sample Input" /&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<p>All controls in the panel will automatically resize when the dropdown selection changes.</p>
+<hr>
+<h2>Continuous Font Scaling (FloweryScaleManager)</h2>
+
+<p>While <code>FlowerySizeManager</code> provides <strong>discrete size tiers</strong> (Small, Medium, Large), Flowery.Uno also offers <strong>continuous font scaling</strong> based on window size through <code>FloweryScaleManager</code>.</p>
+
+<p>> <strong>⚠️ Important:</strong> These are <strong>two separate, independent systems</strong>. Auto Scaling ONLY affects controls within a container marked with <code>EnableScaling="True"</code>. It does NOT affect the rest of your app (sidebar, navigation, etc.).</p>
+
+<h3>Quick Comparison</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>Global Size</th>
+<th>Auto Scaling</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Service</strong></td>
+<td><code>FlowerySizeManager</code></td>
+<td><code>FloweryScaleManager</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Entire app (global)</td>
+<td>Only containers with <code>EnableScaling="True"</code></td>
+</tr>
+<tr>
+<td><strong>Scaling Type</strong></td>
+<td>Discrete tiers (xs, s, m, l, xl)</td>
+<td>Continuous (0.5× to 1.0×)</td>
+</tr>
+<tr>
+<td><strong>Trigger</strong></td>
+<td>User selection via dropdown</td>
+<td>Automatic based on window size</td>
+</tr>
+<tr>
+<td><strong>What Changes</strong></td>
+<td>Height, padding, font size</td>
+<td>Font size and scaled properties only</td>
+</tr>
+<tr>
+<td><strong>Best For</strong></td>
+<td>User preference, accessibility</td>
+<td>Responsive data forms, dashboards</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Scoped Usage</h3>
+
+<p>Auto Scaling is <strong>opt-in and scoped</strong>. Only controls inside a container with <code>EnableScaling="True"</code> are affected:</p>
+
+<pre><code class="language-xml">xmlns:services="using:Flowery.Services"
+
+&lt;Window&gt;
+    &lt;!-- Sidebar: NOT affected by Auto Scaling (uses Global Size) --&gt;
+    &lt;controls:FloweryComponentSidebar /&gt;
+
+    &lt;!-- Content area: ONLY this panel uses Auto Scaling --&gt;
+    &lt;UserControl services:FloweryScaleManager.EnableScaling="True"&gt;
+        &lt;!-- These controls scale with window size --&gt;
+        &lt;controls:DaisyInput Label="Name" /&gt;
+        &lt;controls:DaisyButton Content="Submit" /&gt;
+    &lt;/UserControl&gt;
+&lt;/Window&gt;</code></pre>
+
+<h3>Scoped Usage: How It Works</h3>
+
+<p>1. Set <code>EnableScaling="True"</code> on a container (UserControl, Window, Panel, etc.)</p>
+<p>2. The manager tracks the parent <strong>TopLevel</strong> size (desktop <code>Window</code> or browser root)</p>
+<p>3. Calculates a scale factor:</p>
+<p>- Downscaling: <code>min(width/1920, height/1080)</code></p>
+<p>- If <code>MaxScaleFactor > 1.0</code>, scale-up is allowed based on the available dimension</p>
+<p>- Clamped to <code>MinScaleFactor</code> … <code>MaxScaleFactor</code></p>
+<p>4. <strong>ONLY</strong> child controls inside that container adjust their font sizes</p>
+<p>5. Controls outside the <code>EnableScaling</code> region are NOT affected</p>
+
+<h3>Scaling Up (4K / High-DPI Desktops)</h3>
+
+<p>By default, Auto Scaling only scales <em>down</em> (max is <code>1.0</code>). On large 4K windows (especially at 100% Windows scaling) you may want the UI to scale <em>up</em> as well.</p>
+
+<p>To allow scaling above 1.0, set <code>FloweryScaleManager.MaxScaleFactor</code> to your desired <strong>physical</strong> maximum (for example <code>1.5</code> to match 150% Windows scaling):</p>
+
+<pre><code class="language-csharp">FloweryScaleManager.MaxScaleFactor = 1.5;</code></pre>
+
+<p>When <code>MaxScaleFactor > 1.0</code>, Flowery compensates for OS DPI scaling using <code>TopLevel.RenderScaling</code>, so you <strong>don't double-scale</strong> on systems already set to 125% / 150% Windows scaling.</p>
+
+<strong>Safety</strong>: <code>MaxScaleFactor</code> (and internal scale factors) are sanity-capped at <strong>5.0 (500%)</strong> to prevent extreme values.
+
+<h3>Toggling at Runtime</h3>
+
+<p>You can enable/disable Auto Scaling programmatically:</p>
+
+<pre><code class="language-csharp">// Disable Auto Scaling globally (scale factor becomes 1.0)
+FloweryScaleManager.IsEnabled = false;
+
+// Re-enable
+FloweryScaleManager.IsEnabled = true;</code></pre>
+
+<p>When <code>IsEnabled = false</code>, all scale factors reset to 1.0 (no scaling).</p>
+
+<h3>Supported Controls</h3>
+
+<p>Controls implementing <code>IScalableControl</code> auto-scale when inside an enabled container:</p>
+
+<ul><li><code>DaisyInput</code> / <code>DaisyTextArea</code> (label + text font)</li>
+<li><code>DaisyButton</code> (content font)</li>
+<li><code>DaisySelect</code> (font)</li>
+<li><code>DaisyBadge</code> (content font)</li>
+<li>And many more...</li>
+</ul>
+<h3>Common Patterns</h3>
+
+<h4>Pattern 1: Global Size Only (Most Apps)</h4>
+
+<p>Most desktop apps should just use <strong>Global Size</strong>:</p>
+
+<pre><code class="language-xml">&lt;!-- In sidebar or settings --&gt;
+&lt;controls:DaisySizeDropdown /&gt;
+
+&lt;!-- All controls across the app respond to the user's size preference --&gt;</code></pre>
+
+<h4>Pattern 2: Auto Scaling for a Specific Page</h4>
+
+<p>Use Auto Scaling for a data-dense page that benefits from window-responsive sizing:</p>
+
+<strong>XAML:</strong>
+
+<pre><code class="language-xml">xmlns:services="using:Flowery.Services"
+
+&lt;UserControl services:FloweryScaleManager.EnableScaling="True"&gt;
+    &lt;!-- Customer details form that scales with window --&gt;
+    &lt;controls:DaisyCard x:Name="CustomerCard"&gt;
+        &lt;TextBlock x:Name="TitleText" Text="Customer" /&gt;
+        &lt;controls:DaisyInput Label="Name" /&gt;
+        &lt;controls:DaisyInput Label="Email" /&gt;
+    &lt;/controls:DaisyCard&gt;
+&lt;/UserControl&gt;</code></pre>
+
+<strong>Code-Behind:</strong>
+
+<pre><code class="language-csharp">using Flowery.Services;
+
+public MyPage()
+{
+    InitializeComponent();
+
+    // Subscribe to scale factor changes
+    FloweryScaleManager.ScaleFactorChanged += OnScaleFactorChanged;
+}
+
+private void OnScaleFactorChanged(object? sender, ScaleChangedEventArgs e)
+{
+    ApplyScaling(e.ScaleFactor);
+}
+
+private void ApplyScaling(double scaleFactor)
+{
+    // Use ScaleHelper for preset-based scaling
+    TitleText.FontSize = ScaleHelper.FontTitle(scaleFactor);
+    CustomerCard.Padding = ScaleHelper.GetScaledThickness(FloweryScalePreset.SpacingMedium, scaleFactor);
+}</code></pre>
+
+<p>> <strong>Note:</strong> WinUI/Uno requires code-behind for dynamic property scaling. Flowery controls implementing <code>IScalableControl</code> will automatically scale their text when inside an <code>EnableScaling</code> container.</p>
+
+<h4>Pattern 3: Override Auto Scaling with Global Size</h4>
+
+<p>If Auto Scaling is on, but you want specific controls to use the fixed Global Size instead, mark them to opt out:</p>
+
+<pre><code class="language-xml">&lt;UserControl services:FloweryScaleManager.EnableScaling="True"&gt;
+    &lt;!-- These scale with window --&gt;
+    &lt;controls:DaisyInput Label="Name" /&gt;
+
+    &lt;!-- These buttons stay at Global Size --&gt;
+    &lt;StackPanel controls:FlowerySizeManager.IgnoreGlobalSize="True"&gt;
+        &lt;controls:DaisyButton Size="Small" Content="Cancel" /&gt;
+        &lt;controls:DaisyButton Size="Small" Content="Save" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/UserControl&gt;</code></pre>
+
+<h3>When to Use Which?</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Scenario</th>
+<th>Recommended Approach</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Standard desktop app</td>
+<td><strong>Global Size only</strong> – simple, user-controlled</td>
+</tr>
+<tr>
+<td>Accessibility needs</td>
+<td><strong>Global Size</strong> – discrete tiers are clearer</td>
+</tr>
+<tr>
+<td>Data-dense responsive form</td>
+<td><strong>Auto Scaling</strong> on that specific page</td>
+</tr>
+<tr>
+<td>Dashboard with charts/data</td>
+<td><strong>Auto Scaling</strong> for continuous responsiveness</td>
+</tr>
+<tr>
+<td>Navigation/sidebar/toolbar</td>
+<td><strong>Global Size only</strong> – never use Auto Scaling</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Learn More</h3>
+
+<p>For comprehensive documentation on <code>FloweryScaleManager</code>, including configuration, custom control support, and helper methods, see <a href="https://tobitege.github.io/Flowery.Uno/#FloweryScaleManager" target="_blank" rel="noopener">FloweryScaleManager</a>.</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

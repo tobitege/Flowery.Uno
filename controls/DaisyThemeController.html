@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyThemeController</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyThemeController</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyThemeController.png" alt="DaisyThemeController" class="doc-image">
+
+<p>DaisyThemeController is a toggle-based switch for applying Daisy themes via <code>DaisyThemeManager</code>. It supports multiple display modes (toggle, checkbox, swap, text/icon variants) and syncs <code>IsChecked</code> with the current theme. Switching updates <code>CheckedTheme</code>/<code>UncheckedTheme</code> and can auto-adopt new themes.</p>
+
+<h2>How Theming Works</h2>
+
+<p>This control uses <code>DaisyThemeManager</code> internally, which manages the application's theme resources:</p>
+
+<ul><li>Each of the 35+ built-in DaisyUI themes provides a unique color palette</li>
+<li>96 additional industry-specific product themes are available via <code>DaisyProductThemeDropdown</code></li>
+<li>Theme changes are applied through resource dictionary updates</li>
+<li>For custom themes beyond the built-in set, use <code>DaisyThemeLoader.ApplyThemeToApplication()</code> instead</li>
+</ul>
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Mode</code></td>
+<td>Visual mode: Toggle, Checkbox, Swap, ToggleWithText, ToggleWithIcons.</td>
+</tr>
+<tr>
+<td><code>UncheckedLabel</code> / <code>CheckedLabel</code></td>
+<td>Labels for light/dark (or custom) modes.</td>
+</tr>
+<tr>
+<td><code>UncheckedTheme</code> / <code>CheckedTheme</code></td>
+<td>Theme names to apply on off/on states (defaults: Light/Dark).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Behavior</h2>
+
+<ul><li>Toggling applies the target theme via <code>DaisyThemeManager.ApplyTheme(...)</code>.</li>
+<li>Subscribes to <code>DaisyThemeManager.ThemeChanged</code> to sync <code>IsChecked</code> when theme changes externally.</li>
+<li>When a new theme is applied that isn't the unchecked theme, <code>CheckedTheme</code>/<code>CheckedLabel</code> update to that theme name.</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<p>In your <code>.xaml</code> file (e.g., <code>MainWindow.xaml</code>), add the namespace and control:</p>
+
+<pre><code class="language-xml">&lt;!-- Add at top of file --&gt;
+xmlns:controls="using:Flowery.Controls"
+
+&lt;!-- Simple toggle - just drop it in, defaults to Light/Dark --&gt;
+&lt;controls:DaisyThemeController Mode="Toggle" /&gt;
+
+&lt;!-- Animated sun/moon swap (as used in Gallery) --&gt;
+&lt;controls:DaisyThemeController Mode="Swap" /&gt;
+
+&lt;!-- Custom theme pairing --&gt;
+&lt;controls:DaisyThemeController Mode="ToggleWithText"
+    UncheckedTheme="Light" CheckedTheme="Synthwave"
+    UncheckedLabel="Light" CheckedLabel="Synthwave" /&gt;</code></pre>
+
+<strong>Prerequisite</strong>: Your <code>App.xaml</code> must include Flowery.Uno's theme resources in <code>Application.Resources.MergedDictionaries</code>:
+
+<pre><code class="language-xml">&lt;ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/Generic.xaml" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep <code>UncheckedTheme</code> aligned with your base theme so <code>IsChecked=False</code> reflects the default look.</li>
+<li>If you dynamically load themes, let the controller auto-update <code>CheckedTheme</code> to the latest applied theme.</li>
+<li>Choose Mode to match UI density: Swap/ToggleWithIcons for compact, ToggleWithText for clarity.</li>
+<li>Bind <code>IsChecked</code> if you need to track theme state elsewhere; the controller will still apply themes.</li>
+<li>For selection from all themes, pair with <code>DaisyThemeDropdown</code> (DaisyUI themes) or <code>DaisyProductThemeDropdown</code> (96 industry themes).</li>
+</ul>
+<h2>Related Controls</h2>
+
+<ul><li><a href="DaisyThemeDropdown.html">DaisyThemeDropdown</a> - Dropdown for all 35+ DaisyUI themes</li>
+<li><a href="DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a> - Dropdown for 96 industry-specific product themes</li>
+<li><a href="DaisyThemeRadio.html">DaisyThemeRadio</a> - Radio button theme selection</li>
+<li><a href="DaisyThemeSwap.html">DaisyThemeSwap</a> - Icon swap theme toggle</li>
+<li><a href="DaisyThemeManager.html">DaisyThemeManager</a> - Central theme management</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTextRotate.html">← TextRotate</a></div>
+    <div class="nav-right"><a href="DaisyThemeDropdown.html">ThemeDropdown →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyNumericUpDown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyNumericUpDown</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyNumericUpDown.png" alt="DaisyNumericUpDown" class="doc-image">
+
+<code>DaisyNumericUpDown</code> is a numeric input control that extends WinUI's <code>NumberBox</code> with DaisyUI styling. It provides increment/decrement buttons (spin buttons) for adjusting numeric values, along with direct text entry support. The control follows the same visual style and variant system as <code>DaisyInput</code>.
+
+<h2>Key Features</h2>
+
+<ul><li>Increment/decrement buttons with chevron icons</li>
+<li>Up/Down arrow keys to increment/decrement values</li>
+<li>Direct text entry with real-time input filtering (blocks invalid characters)</li>
+<li><strong>Multiple number bases</strong>: Decimal, Hexadecimal (0xFF), Binary (0b1010), Octal (0o755), ColorHex (#FF5733), IPAddress (192.168.1.1)</li>
+<li><strong>Paste validation</strong>: Pasted text is filtered to remove invalid characters</li>
+<li><strong>Max length enforcement</strong>: ColorHex (7 chars), IPAddress (15 chars)</li>
+<li><strong>Thousand separators</strong>: Display with locale-aware separators (e.g., <code>1,234,567</code>)</li>
+<li>Supports exponential notation in decimal mode (e.g., <code>1e5</code>, <code>2.5E-3</code>)</li>
+<li>Culture-aware decimal separator and sign handling</li>
+<li>Configurable min/max/increment values</li>
+<li>Format string support (currency, percentage, etc.)</li>
+<li>Optional button visibility</li>
+<li>Same variant and size system as DaisyInput</li>
+</ul>
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Bordered</strong></td>
+<td>Default style with neutral border</td>
+</tr>
+<tr>
+<td><strong>Ghost</strong></td>
+<td>Transparent background, shows on focus</td>
+</tr>
+<tr>
+<td><strong>Primary</strong></td>
+<td>Primary color border</td>
+</tr>
+<tr>
+<td><strong>Secondary</strong></td>
+<td>Secondary color border</td>
+</tr>
+<tr>
+<td><strong>Accent</strong></td>
+<td>Accent color border</td>
+</tr>
+<tr>
+<td><strong>Info</strong></td>
+<td>Info color border</td>
+</tr>
+<tr>
+<td><strong>Success</strong></td>
+<td>Success/green color border</td>
+</tr>
+<tr>
+<td><strong>Warning</strong></td>
+<td>Warning/yellow color border</td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td>Error/red color border</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>24px</td>
+<td>Compact tables, dense UIs</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>32px</td>
+<td>Secondary inputs</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>48px</td>
+<td>General purpose (default)</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>64px</td>
+<td>Primary inputs, touch targets</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>DaisyNumericUpDown uses <strong>fixed heights</strong> for each size to match DaisyUI's design.</div>
+<h2>Quick Examples</h2>
+
+<p>> <strong>Note:</strong> <code>Value</code> is always specified in decimal in XAML. The control displays the value in the selected notation (hex, binary, etc.) at runtime. For example, <code>Value="255"</code> with <code>NumberBase="Hexadecimal"</code> displays as <code>0xFF</code>.</p>
+
+<pre><code class="language-xml">&lt;!-- Basic usage --&gt;
+&lt;controls:DaisyNumericUpDown Value="42" /&gt;
+
+&lt;!-- With constraints --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Minimum="0" 
+    Maximum="100" 
+    Increment="5" 
+    Value="50" /&gt;
+
+&lt;!-- Currency formatting --&gt;
+&lt;controls:DaisyNumericUpDown 
+    FormatString="C2" 
+    Value="19.99" /&gt;
+
+&lt;!-- Percentage formatting --&gt;
+&lt;controls:DaisyNumericUpDown 
+    FormatString="P0" 
+    Value="0.75" 
+    Increment="0.05" /&gt;
+
+&lt;!-- Without spin buttons --&gt;
+&lt;controls:DaisyNumericUpDown 
+    ShowButtons="False" 
+    Value="100" /&gt;
+
+&lt;!-- With variant and size --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Variant="Primary" 
+    Size="Large" 
+    Value="999" /&gt;
+
+&lt;!-- With clear button (appears on focus, resets to 0) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    ShowClearButton="True" 
+    Value="123" /&gt;
+
+&lt;!-- Thousand separators (displays "1,234,567") --&gt;
+&lt;controls:DaisyNumericUpDown 
+    ShowThousandSeparators="True" 
+    Value="1234567" /&gt;
+
+&lt;!-- Hexadecimal (displays "0xFF") --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="Hexadecimal" 
+    Value="255" /&gt;
+
+&lt;!-- Binary (displays "0b1010") --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="Binary" 
+    Value="10" /&gt;
+
+&lt;!-- Hex without prefix --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="Hexadecimal" 
+    ShowBasePrefix="False" 
+    Value="255" /&gt;
+
+&lt;!-- Hex lowercase (displays "0xab", auto-cases input) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="Hexadecimal" 
+    HexCase="Lower" 
+    Value="171" /&gt;
+
+&lt;!-- Octal (displays "0o755" - Unix permissions!) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="Octal" 
+    Value="493" /&gt;
+
+&lt;!-- Color hex (displays "#FF5733", padded to 6 digits) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="ColorHex" 
+    Value="16734003" /&gt;
+
+&lt;!-- IPv4 address (displays "192.168.1.1", validates octets) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    NumberBase="IPAddress" 
+    Value="3232235777" /&gt;
+
+&lt;!-- Currency with fixed prefix (doesn't interfere with editing) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Prefix="$" 
+    FormatString="N2" 
+    Value="19.99" /&gt;
+
+&lt;!-- Percentage with fixed suffix --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Suffix="%" 
+    Minimum="0" 
+    Maximum="100" 
+    Value="75" /&gt;
+
+&lt;!-- Weight with unit suffix --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Suffix="kg" 
+    FormatString="N1" 
+    Value="72.5" /&gt;
+
+&lt;!-- Currency with limited decimal places (max 2) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    Prefix="$" 
+    MaxDecimalPlaces="2" 
+    FormatString="N2" 
+    Value="19.99" /&gt;
+
+&lt;!-- Phone/PIN input (max 4 digits, no decimals) --&gt;
+&lt;controls:DaisyNumericUpDown 
+    MaxIntegerDigits="4" 
+    MaxDecimalPlaces="0" 
+    Value="1234" /&gt;</code></pre>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Value</code></td>
+<td>decimal?</td>
+<td>null</td>
+<td>The current numeric value</td>
+</tr>
+<tr>
+<td><code>Minimum</code></td>
+<td>decimal</td>
+<td>decimal.MinValue</td>
+<td>Minimum allowed value</td>
+</tr>
+<tr>
+<td><code>Maximum</code></td>
+<td>decimal</td>
+<td>decimal.MaxValue</td>
+<td>Maximum allowed value</td>
+</tr>
+<tr>
+<td><code>Increment</code></td>
+<td>decimal</td>
+<td>1</td>
+<td>Step value for increment/decrement</td>
+</tr>
+<tr>
+<td><code>FormatString</code></td>
+<td>string</td>
+<td>"0"</td>
+<td>.NET format string (e.g., "C2", "P0", "N2"). Default shows integers.</td>
+</tr>
+<tr>
+<td><code>NumberBase</code></td>
+<td>DaisyNumberBase</td>
+<td>Decimal</td>
+<td>Number base: <code>Decimal</code>, <code>Hexadecimal</code>, <code>Binary</code>, <code>Octal</code>, or <code>ColorHex</code></td>
+</tr>
+<tr>
+<td><code>ShowThousandSeparators</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Display thousand separators (locale-aware, e.g., <code>1,234,567</code>)</td>
+</tr>
+<tr>
+<td><code>ShowBasePrefix</code></td>
+<td>bool</td>
+<td>true</td>
+<td>Show <code>0x</code> for hex, <code>0b</code> for binary</td>
+</tr>
+<tr>
+<td><code>HexCase</code></td>
+<td>DaisyHexCase</td>
+<td>Upper</td>
+<td>Letter case for hex digits: <code>Upper</code> (0xFF) or <code>Lower</code> (0xff). Auto-cases input.</td>
+</tr>
+<tr>
+<td><code>MaxDecimalPlaces</code></td>
+<td>int</td>
+<td>-1</td>
+<td>Max decimal places for Decimal mode. -1 = default (6 places).</td>
+</tr>
+<tr>
+<td><code>MaxIntegerDigits</code></td>
+<td>int</td>
+<td>-1</td>
+<td>Max integer digits for Decimal mode. -1 = default (15 digits).</td>
+</tr>
+<tr>
+<td><code>ShowInputError</code></td>
+<td>bool</td>
+<td>true</td>
+<td>Show visual error flash on invalid input.</td>
+</tr>
+<tr>
+<td><code>InputErrorDuration</code></td>
+<td>int</td>
+<td>150</td>
+<td>Duration in ms for the error flash.</td>
+</tr>
+<tr>
+<td><code>Prefix</code></td>
+<td>string</td>
+<td>null</td>
+<td>Fixed text displayed on the left (e.g., <code>"$"</code>, <code>"€"</code>)</td>
+</tr>
+<tr>
+<td><code>Suffix</code></td>
+<td>string</td>
+<td>null</td>
+<td>Fixed text displayed on the right (e.g., <code>"%"</code>, <code>"kg"</code>)</td>
+</tr>
+<tr>
+<td><code>Watermark</code></td>
+<td>string</td>
+<td>null</td>
+<td>Placeholder text when empty</td>
+</tr>
+<tr>
+<td><code>Variant</code></td>
+<td>DaisyInputVariant</td>
+<td>Bordered</td>
+<td>Visual style variant</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>DaisySize</td>
+<td>Medium</td>
+<td>Control size</td>
+</tr>
+<tr>
+<td><code>ShowButtons</code></td>
+<td>bool</td>
+<td>true</td>
+<td>Show/hide spin buttons</td>
+</tr>
+<tr>
+<td><code>ShowClearButton</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Show clear button on left when focused (resets to 0)</td>
+</tr>
+<tr>
+<td><code>IsReadOnly</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Prevent editing</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Value Conversion Methods</h2>
+
+<p>The control provides helper methods to get the value in different notations at runtime:</p>
+
+<pre><code class="language-csharp">// Get value as hex string
+string? hex = myInput.ToHexString();                 // "0xFF"
+string? hexNoPrefix = myInput.ToHexString(false);    // "FF"
+
+// Get value as binary string
+string? bin = myInput.ToBinaryString();              // "0b11111111"
+string? binNoPrefix = myInput.ToBinaryString(false); // "11111111"
+
+// Get value as octal string
+string? oct = myInput.ToOctalString();               // "0o755"
+string? octNoPrefix = myInput.ToOctalString(false);  // "755"
+
+// Get value as color hex string (6-digit padded)
+string? color = myInput.ToColorHexString();          // "#FF5733"
+string? colorNoPrefix = myInput.ToColorHexString(false); // "FF5733"
+
+// Get value as IPv4 address string
+string? ip = myInput.ToIPAddressString();             // "192.168.1.1"
+
+// Get value formatted according to current NumberBase setting
+string? formatted = myInput.ToFormattedString();      // Uses current NumberBase</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ToHexString(includePrefix)</code></td>
+<td>Hex string respecting <code>HexCase</code></td>
+<td><code>"0xFF"</code> or <code>"0xff"</code></td>
+</tr>
+<tr>
+<td><code>ToBinaryString(includePrefix)</code></td>
+<td>Binary string</td>
+<td><code>"0b1010"</code></td>
+</tr>
+<tr>
+<td><code>ToIPAddressString()</code></td>
+<td>IPv4 address string</td>
+<td><code>"192.168.1.1"</code></td>
+</tr>
+<tr>
+<td><code>ToOctalString(includePrefix)</code></td>
+<td>Octal string</td>
+<td><code>"0o755"</code></td>
+</tr>
+<tr>
+<td><code>ToColorHexString(includePrefix)</code></td>
+<td>6-digit padded color hex</td>
+<td><code>"#FF5733"</code></td>
+</tr>
+<tr>
+<td><code>ToFormattedString(includePrefix)</code></td>
+<td>String based on current <code>NumberBase</code></td>
+<td>Varies</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Static Extension Methods (for ViewModels)</h2>
+
+<p>For scenarios where you need to convert values in a ViewModel without access to the control instance, use <code>DecimalExtensions</code>:</p>
+
+<pre><code class="language-csharp">using Flowery.Extensions;
+
+// Convert decimal to various notations
+decimal value = 255m;
+string hex = value.ToHexString();             // "0xFF"
+string binary = value.ToBinaryString();       // "0b11111111"
+string octal = value.ToOctalString();         // "0o377"
+
+decimal colorValue = 16734003m;
+string color = colorValue.ToColorHexString(); // "#FF5733"
+
+decimal ipValue = 3232235777m;
+string ip = ipValue.ToIPAddressString();      // "192.168.1.1"
+
+// Parse strings back to decimal
+decimal fromHex = DecimalExtensions.FromHexString("0xFF");              // 255
+decimal fromBinary = DecimalExtensions.FromBinaryString("0b1010");      // 10
+decimal fromOctal = DecimalExtensions.FromOctalString("0o755");         // 493
+decimal fromColor = DecimalExtensions.FromColorHexString("#FF5733");  // 16734003
+decimal fromIp = DecimalExtensions.FromIPAddressString("192.168.1.1");  // 3232235777
+
+// Safe parsing with TryFrom* variants
+if (DecimalExtensions.TryFromColorHexString("#ABC", out decimal parsed))
+{
+    // parsed = 11189196 (#AABBCC expanded from #ABC)
+}</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Direction</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>value.ToHexString(includePrefix, uppercase)</code></td>
+<td>decimal → string</td>
+<td><code>255m.ToHexString()</code> → <code>"0xFF"</code></td>
+</tr>
+<tr>
+<td><code>value.ToBinaryString(includePrefix)</code></td>
+<td>decimal → string</td>
+<td><code>10m.ToBinaryString()</code> → <code>"0b1010"</code></td>
+</tr>
+<tr>
+<td><code>value.ToOctalString(includePrefix)</code></td>
+<td>decimal → string</td>
+<td><code>493m.ToOctalString()</code> → <code>"0o755"</code></td>
+</tr>
+<tr>
+<td><code>value.ToColorHexString(includePrefix, uppercase)</code></td>
+<td>decimal → string</td>
+<td><code>16734003m.ToColorHexString()</code> → <code>"#FF5733"</code></td>
+</tr>
+<tr>
+<td><code>value.ToIPAddressString()</code></td>
+<td>decimal → string</td>
+<td><code>3232235777m.ToIPAddressString()</code> → <code>"192.168.1.1"</code></td>
+</tr>
+<tr>
+<td><code>DecimalExtensions.FromHexString(hex)</code></td>
+<td>string → decimal</td>
+<td><code>FromHexString("0xFF")</code> → <code>255</code></td>
+</tr>
+<tr>
+<td><code>DecimalExtensions.FromBinaryString(bin)</code></td>
+<td>string → decimal</td>
+<td><code>FromBinaryString("0b1010")</code> → <code>10</code></td>
+</tr>
+<tr>
+<td><code>DecimalExtensions.FromOctalString(oct)</code></td>
+<td>string → decimal</td>
+<td><code>FromOctalString("0o755")</code> → <code>493</code></td>
+</tr>
+<tr>
+<td><code>DecimalExtensions.FromColorHexString(color)</code></td>
+<td>string → decimal</td>
+<td><code>FromColorHexString("#FF5733")</code> → <code>16734003</code></td>
+</tr>
+<tr>
+<td><code>DecimalExtensions.FromIPAddressString(ip)</code></td>
+<td>string → decimal</td>
+<td><code>FromIPAddressString("192.168.1.1")</code> → <code>3232235777</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> All <code>From<em></code> methods have corresponding <code>TryFrom</em></code> variants that return <code>bool</code> and use an <code>out</code> parameter for safe parsing.</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Use <code>Prefix</code>/<code>Suffix</code> for currency and units</strong> instead of <code>FormatString="C2"</code>. The prefix/suffix stay fixed and don't interfere with editing.</li>
+<li>Default <code>FormatString="0"</code> displays integers (42 instead of 42.00). Override for decimals: <code>"N2"</code>, <code>"C2"</code>, <code>"P0"</code>, etc.</li>
+<li>Use <code>FormatString</code> to display values in user-friendly formats (currency, percentage)</li>
+<li>Set <code>Minimum</code> and <code>Maximum</code> to constrain valid input ranges</li>
+<li>Choose <code>Increment</code> values that make sense for your use case (e.g., 0.01 for currency, 5 for percentages)</li>
+<li>Use <code>ShowButtons="False"</code> when you want a simple numeric text input without spinners</li>
+<li>The control inherits all keyboard shortcuts from WinUI's NumberBox (Up/Down arrows, Page Up/Down)</li>
+<li><strong>Visual feedback</strong>: Invalid keystrokes flash the border red briefly (<code>ShowInputError=True</code> by default, <code>InputErrorDuration=150ms</code>)</li>
+</ul>
+<h2>Input Filtering</h2>
+
+<p>The control filters keystrokes in real-time based on <code>NumberBase</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Allowed Characters</th>
+<th>Max Length</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Decimal</strong></td>
+<td><code>0-9</code>, decimal sep, <code>-</code>, <code>e</code>/<code>E</code>, <code>+</code>/<code>-</code></td>
+<td>~27 chars</td>
+<td>15 integer + 6 decimal digits by default (prevents overflow)</td>
+</tr>
+<tr>
+<td><strong>Hexadecimal</strong></td>
+<td><code>0-9</code>, <code>A-F</code>, <code>a-f</code>, <code>0x</code></td>
+<td>18</td>
+<td><code>0x</code> + 16 hex digits (long.MaxValue)</td>
+</tr>
+<tr>
+<td><strong>Binary</strong></td>
+<td><code>0</code>, <code>1</code>, <code>0b</code></td>
+<td>66</td>
+<td><code>0b</code> + 64 binary digits</td>
+</tr>
+<tr>
+<td><strong>Octal</strong></td>
+<td><code>0-7</code>, <code>0o</code></td>
+<td>24</td>
+<td><code>0o</code> + 22 octal digits</td>
+</tr>
+<tr>
+<td><strong>ColorHex</strong></td>
+<td><code>0-9</code>, <code>A-F</code>, <code>a-f</code>, <code>#</code></td>
+<td>7</td>
+<td><code>#RRGGBB</code></td>
+</tr>
+<tr>
+<td><strong>IPAddress</strong></td>
+<td><code>0-9</code>, <code>.</code></td>
+<td>15</td>
+<td><code>255.255.255.255</code>, octets 0-255, <strong>per-octet increment</strong></td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note</strong>: All modes have safe max lengths to prevent overflow exceptions. Values exceeding these limits are silently rejected during input.</p>
+
+<h3>Paste Validation</h3>
+
+<p>When pasting text, the control:</p>
+
+<p>1. Filters out invalid characters based on <code>NumberBase</code></p>
+<p>2. Applies <code>HexCase</code> transformation for hex modes</p>
+<p>3. Enforces max length constraints</p>
+<p>4. Truncates if the result exceeds max length</p>
+
+<h2>Comparison with DaisyInput</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>DaisyInput</th>
+<th>DaisyNumericUpDown</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Text entry</td>
+<td>Any text</td>
+<td>Numbers only (filtered)</td>
+</tr>
+<tr>
+<td>Spin buttons</td>
+<td>No</td>
+<td>Yes (optional)</td>
+</tr>
+<tr>
+<td>Min/Max constraints</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Format strings</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Increment support</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Number bases</td>
+<td>No</td>
+<td>Decimal, Hex, Binary, Octal, ColorHex, IPAddress</td>
+</tr>
+<tr>
+<td>Thousand separators</td>
+<td>No</td>
+<td>Yes (locale-aware)</td>
+</tr>
+</tbody>
+</table></div>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyNumberFlow.html">← NumberFlow</a></div>
+    <div class="nav-right"><a href="DaisyOtpInput.html">OtpInput →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyWeatherIcon</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyWeatherIcon</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyWeatherIcon.png" alt="DaisyWeatherIcon" class="doc-image">
+
+<p>Animated weather condition icon with unique animations per weather type. Supports 21 weather conditions with condition-appropriate animations that can be toggled on/off.</p>
+
+<p>DaisyWeatherIcon displays weather condition icons with optional animations. Each condition type has a tailored animation:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Condition Type</th>
+<th>Animation</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>☀️ Sunny/Clear</td>
+<td>Slow rotation (20s cycle)</td>
+</tr>
+<tr>
+<td>☁️ Cloudy/PartlyCloudy/Overcast</td>
+<td>Gentle horizontal drift</td>
+</tr>
+<tr>
+<td>🌧️ Rain/Drizzle/Showers/LightRain/HeavyRain</td>
+<td>Vertical bob with opacity pulse</td>
+</tr>
+<tr>
+<td>❄️ Snow/LightSnow/HeavySnow/Sleet/FreezingRain/Hail</td>
+<td>Floating side-to-side motion</td>
+</tr>
+<tr>
+<td>⛈️ Thunderstorm</td>
+<td>Lightning flash effect with overlay</td>
+</tr>
+<tr>
+<td>💨 Windy</td>
+<td>Wave-like horizontal motion with skew</td>
+</tr>
+<tr>
+<td>🌫️ Fog/Mist</td>
+<td>Subtle opacity fade in/out</td>
+</tr>
+<tr>
+<td>❓ Unknown</td>
+<td>No animation</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Condition</code></td>
+<td><code>WeatherCondition</code></td>
+<td><code>Unknown</code></td>
+<td>The weather condition to display</td>
+</tr>
+<tr>
+<td><code>IconSize</code></td>
+<td><code>double</code></td>
+<td><code>64</code></td>
+<td>Size of the icon in pixels</td>
+</tr>
+<tr>
+<td><code>IsAnimated</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to animate the icon</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>WeatherCondition Enum</h2>
+
+<p>The following conditions are supported:</p>
+
+<code>Unknown</code>, <code>Sunny</code>, <code>Clear</code>, <code>PartlyCloudy</code>, <code>Cloudy</code>, <code>Overcast</code>, <code>Mist</code>, <code>Fog</code>, <code>LightRain</code>, <code>Rain</code>, <code>HeavyRain</code>, <code>Drizzle</code>, <code>Showers</code>, <code>Thunderstorm</code>, <code>LightSnow</code>, <code>Snow</code>, <code>HeavySnow</code>, <code>Sleet</code>, <code>FreezingRain</code>, <code>Hail</code>, <code>Windy</code>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic sunny icon --&gt;
+&lt;controls:DaisyWeatherIcon Condition="Sunny" /&gt;
+
+&lt;!-- Different conditions --&gt;
+&lt;controls:DaisyWeatherIcon Condition="Rain" IconSize="48" /&gt;
+&lt;controls:DaisyWeatherIcon Condition="Thunderstorm" IconSize="64" /&gt;
+&lt;controls:DaisyWeatherIcon Condition="Snow" IconSize="40" /&gt;
+
+&lt;!-- With custom colors --&gt;
+&lt;controls:DaisyWeatherIcon Condition="Sunny" Foreground="{ThemeResource DaisyWarningBrush}" /&gt;
+&lt;controls:DaisyWeatherIcon Condition="Rain" Foreground="{ThemeResource DaisyInfoBrush}" /&gt;
+
+&lt;!-- Static (no animation) --&gt;
+&lt;controls:DaisyWeatherIcon Condition="Cloudy" IsAnimated="False" /&gt;
+
+&lt;!-- Large hero icon --&gt;
+&lt;controls:DaisyWeatherIcon Condition="PartlyCloudy" IconSize="128" /&gt;</code></pre>
+
+<h2>Recommended Colors</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Condition</th>
+<th>Suggested Brush</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Sunny, Clear</td>
+<td><code>DaisyWarningBrush</code> (yellow/orange)</td>
+</tr>
+<tr>
+<td>PartlyCloudy</td>
+<td><code>DaisyInfoBrush</code></td>
+</tr>
+<tr>
+<td>Cloudy, Overcast, Fog, Mist</td>
+<td><code>DaisyBaseContentBrush</code></td>
+</tr>
+<tr>
+<td>Rain, Drizzle, Showers, LightRain, HeavyRain</td>
+<td><code>DaisyInfoBrush</code> (blue)</td>
+</tr>
+<tr>
+<td>Thunderstorm</td>
+<td><code>DaisyErrorBrush</code> (red)</td>
+</tr>
+<tr>
+<td>Snow, LightSnow, HeavySnow, Sleet, FreezingRain, Hail</td>
+<td><code>DaisySecondaryBrush</code></td>
+</tr>
+<tr>
+<td>Windy</td>
+<td><code>DaisyAccentBrush</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Animation Details</h2>
+
+<p>All animations use the WinUI Composition API with smooth easing. Animations are designed to be subtle and non-distracting while still conveying the weather condition effectively.</p>
+
+<ul><li><strong>Rotation</strong> (Sunny/Clear): Continuous 360° rotation over 20 seconds</li>
+<li><strong>Drift</strong> (Cloud types): 10px horizontal translation over 3 seconds, reversing</li>
+<li><strong>Bob</strong> (Rain types): 4px vertical translation with 0.3 opacity pulse over 1.5 seconds</li>
+<li><strong>Float</strong> (Snow types): 6px horizontal sway over 2.5 seconds</li>
+<li><strong>Flash</strong> (Thunderstorm): Opacity pulse from 0 to 0.8 over 0.3 seconds with delays</li>
+<li><strong>Sway</strong> (Windy): 5px translation with 3° skew over 2 seconds</li>
+<li><strong>Fade</strong> (Fog/Mist): Opacity oscillation between 0.5 and 1.0 over 2 seconds</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyWeatherForecastItem.html">← WeatherForecastItem</a></div>
+    <div class="nav-right"><a href="DaisyWeatherMetrics.html">WeatherMetrics →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

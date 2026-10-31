@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyThemeManager</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyThemeManager</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyThemeManager.png" alt="DaisyThemeManager" class="doc-image">
+
+<p>DaisyThemeManager is the central theme loader/applicator for the <strong>35+ built-in DaisyUI themes</strong>. It tracks available themes, applies palette ResourceDictionaries, and notifies listeners via <code>ThemeChanged</code>. Helpers expose current/alternate theme names and light/dark metadata.</p>
+
+<h2>When to Use</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Scenario</th>
+<th>Recommended API</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Switch between built-in themes (Light, Dark, Dracula, etc.)</td>
+<td><code>DaisyThemeManager.ApplyTheme()</code> ✓</td>
+</tr>
+<tr>
+<td>Industry-specific product themes (96 palettes)</td>
+<td><code>DaisyProductThemeDropdown</code> or <code>ProductPalettes</code> ✓</td>
+</tr>
+<tr>
+<td>Custom theme application strategy (in-place updates, persistence)</td>
+<td>Set <code>DaisyThemeManager.CustomThemeApplicator</code></td>
+</tr>
+<tr>
+<td>Load custom themes from CSS at runtime</td>
+<td><code>DaisyThemeLoader.ApplyThemeToApplication()</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Product Themes (96 Industry Palettes)</h2>
+
+<p>In addition to the 35+ DaisyUI themes, Flowery.Uno includes <strong>96 industry-specific product palettes</strong> from the <a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener">UI UX Pro Max Skill</a> project. These are professionally crafted color schemes for specific industries:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Industry</th>
+<th>Example Themes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SaaS / Enterprise</td>
+<td>SaaS, Enterprise, StartupFresh</td>
+</tr>
+<tr>
+<td>Fintech / Crypto</td>
+<td>FintechTrust, FintechModern, CryptoNeon</td>
+</tr>
+<tr>
+<td>Healthcare</td>
+<td>HealthCalm, HealthPro, MedicalClean</td>
+</tr>
+<tr>
+<td>E-commerce</td>
+<td>EcommModern, EcommLuxury, EcommMinimal</td>
+</tr>
+<tr>
+<td>EdTech</td>
+<td>EduBright, EduPro, LearningFun</td>
+</tr>
+<tr>
+<td>And 7+ more...</td>
+<td>Travel, Food, Real Estate, Fitness, Gaming, Social, Productivity</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Use the <code>DaisyProductThemeDropdown</code> control for easy theme selection, or access programmatically via <code>ProductPalettes</code>:</p>
+
+<pre><code class="language-csharp">// Get all product theme names
+var allProductThemes = ProductPalettes.GetAllNames();
+
+// Apply a product theme
+var palette = ProductPalettes.Get("FintechTrust");
+DaisyThemeManager.RegisterTheme(
+    new DaisyThemeInfo("FintechTrust", FloweryColorHelpers.IsDark(palette.Base100)),
+    () =&gt; DaisyPaletteFactory.Create(palette));
+DaisyThemeManager.ApplyTheme("FintechTrust");</code></pre>
+
+<p>See <a href="DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a> for full documentation.</p>
+
+<strong>Key difference:</strong>
+
+<ul><li><code>DaisyThemeManager.ApplyTheme()</code> adds palette resources to <code>MergedDictionaries</code>. Best for switching between the 35 built-in themes.</li>
+<li><code>DaisyThemeLoader.ApplyThemeToApplication()</code> updates resources in-place within <code>ThemeDictionaries</code>. Use this for custom themes loaded from CSS files at runtime.</li>
+</ul>
+<h3>Quick Comparison (in code-behind or ViewModel)</h3>
+
+<pre><code class="language-csharp">using Flowery.Controls;
+using Flowery.Theming;
+
+// Built-in themes: use DaisyThemeManager
+DaisyThemeManager.ApplyTheme("Synthwave");
+
+// Custom CSS themes: use DaisyThemeLoader
+var theme = DaisyUiCssParser.ParseFile("mytheme.css");
+DaisyThemeLoader.ApplyThemeToApplication(theme);</code></pre>
+
+<strong>Prerequisite</strong>: Your <code>App.xaml</code> must include Flowery.Uno's <code>Generic.xaml</code> in <code>Application.Resources.MergedDictionaries</code>:
+
+<pre><code class="language-xml">&lt;Application.Resources&gt;
+    &lt;ResourceDictionary&gt;
+        &lt;ResourceDictionary.MergedDictionaries&gt;
+            &lt;ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/Generic.xaml" /&gt;
+        &lt;/ResourceDictionary.MergedDictionaries&gt;
+    &lt;/ResourceDictionary&gt;
+&lt;/Application.Resources&gt;</code></pre>
+
+<h2>Key Members</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AvailableThemes</code></td>
+<td>Read-only list of visible registered themes, ordered by preference and name or configured display text.</td>
+</tr>
+<tr>
+<td><code>AddTheme(originalName, displayName, preferred)</code></td>
+<td>Adds or updates global list entries for both dropdown types without applying a theme.</td>
+</tr>
+<tr>
+<td><code>RemoveThemeOverride(originalName)</code></td>
+<td>Removes a global display/order override without unregistering the theme.</td>
+</tr>
+<tr>
+<td><code>ExcludedThemes</code></td>
+<td>Assign a collection of hidden names. The getter returns a read-only snapshot.</td>
+</tr>
+<tr>
+<td><code>HideTheme(name)</code> / <code>ShowTheme(name)</code></td>
+<td>Add or remove an exclusion at runtime. Return true when the exclusion changes.</td>
+</tr>
+<tr>
+<td><code>IsThemeVisible(name)</code></td>
+<td>Checks whether a name is eligible for display, even before registration.</td>
+</tr>
+<tr>
+<td><code>PreferredThemes</code></td>
+<td>Default preferred names for entries without an explicit <code>AddTheme</code> flag. Assign <code>[]</code> to clear them.</td>
+</tr>
+<tr>
+<td><code>RegisterTheme(info, paletteFactory)</code></td>
+<td>Adds or replaces a theme. Raises <code>AvailableThemesChanged</code> for new names; built-in names only when <code>NotifyForInternalThemesChanged</code> is true.</td>
+</tr>
+<tr>
+<td><code>GetPaletteFactory(string name)</code></td>
+<td>Returns the factory passed to <code>RegisterTheme</code>, or null if the theme is unknown.</td>
+</tr>
+<tr>
+<td><code>TryCreatePalette(string name, out palette)</code></td>
+<td>Creates a palette from the registered factory. Returns false for unknown themes or when the factory throws. Used by theme previews.</td>
+</tr>
+<tr>
+<td><code>AvailableThemesChanged</code></td>
+<td>Event fired when <code>RegisterTheme</code> adds a new theme name (built-in themes only when <code>NotifyForInternalThemesChanged</code> is true), and whenever exclusions, preferred names or global overrides change.</td>
+</tr>
+<tr>
+<td><code>NotifyForInternalThemesChanged</code></td>
+<td>When true, <code>RegisterTheme</code> also raises <code>AvailableThemesChanged</code> for built-in themes. Default is false.</td>
+</tr>
+<tr>
+<td><code>ApplyTheme(string name)</code></td>
+<td>Creates a palette via <code>DaisyPaletteFactory</code>, applies it in-place to the stable palette dictionary, and raises <code>ThemeChanged</code>. Uses <code>CustomThemeApplicator</code> if set.</td>
+</tr>
+<tr>
+<td><code>SuppressThemeApplication</code></td>
+<td>When true, <code>ApplyTheme</code> only updates internal state without actually applying. Use during initialization.</td>
+</tr>
+<tr>
+<td><code>CustomThemeApplicator</code></td>
+<td>Optional <code>Func<string, bool></code> delegate. When set, called instead of the default MergedDictionaries approach.</td>
+</tr>
+<tr>
+<td><code>SetCurrentTheme(string name)</code></td>
+<td>Updates internal state and fires <code>ThemeChanged</code>. Used by custom applicators after applying a theme.</td>
+</tr>
+<tr>
+<td><code>CurrentThemeName</code></td>
+<td>Name of the currently applied theme.</td>
+</tr>
+<tr>
+<td><code>BaseThemeName</code></td>
+<td>Default/unchecked theme name (default "Light").</td>
+</tr>
+<tr>
+<td><code>AlternateThemeName</code></td>
+<td>Current theme if not the base; otherwise "Dark".</td>
+</tr>
+<tr>
+<td><code>ThemeChanged</code></td>
+<td>Event fired with the new theme name after successful application.</td>
+</tr>
+<tr>
+<td><code>IsDarkTheme(string name)</code></td>
+<td>Returns whether the theme is marked as dark.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Theme Visibility and Ordering</h2>
+
+<h3>Global Additions and Display Names</h3>
+
+<p>Use <code>AddTheme</code> to configure both dropdown types globally, without replacing their existing lists:</p>
+
+<pre><code class="language-csharp">DaisyThemeManager.AddTheme("Business", "MyBusiness", false);
+DaisyThemeManager.AddTheme("TheaterCinema", "DarkAndRed", true);
+DaisyThemeManager.AddTheme("Corporate", "Office", true);</code></pre>
+
+<p>The arguments are the original name, the display text, and the preferred flag. Standard, registered custom, and product theme names are supported; unknown names raise <code>ArgumentException</code>. Original names are case-insensitive, and repeated names update the entry without adding a duplicate. Product additions are registered globally, but <code>AddTheme</code> applies no palette.</p>
+
+<p>Preferred entries appear first, sorted by display text, followed by a separator line and the other entries. <code>PreferredThemes</code> supplies defaults for entries without an explicit <code>AddTheme</code> flag. Exclusions always take precedence.</p>
+
+<p>An individual dropdown can override a global entry. Local settings win for that original name only:</p>
+
+<pre><code class="language-csharp">themeDropdown.AddTheme("Business", "My local business", true);
+productThemeDropdown.AddTheme("TheaterCinema", "Local cinema", false);
+
+themeDropdown.RemoveThemeOverride("Business");          // back to the manager's entry
+DaisyThemeManager.RemoveThemeOverride("TheaterCinema"); // registered themes stay registered</code></pre>
+
+<p>Display text is UI text only. <code>SelectedTheme</code>, <code>ApplyTheme</code>, <code>HideTheme</code>, <code>ShowTheme</code>, <code>ExcludedThemes</code>, <code>PreferredThemes</code> and <code>RemoveThemeOverride</code> use the original name.</p>
+
+<h3>Hiding and Preferring Themes</h3>
+
+<pre><code class="language-csharp">// Before creating controls
+DaisyThemeManager.ExcludedThemes = ["Cyberpunk", "SaaS"];
+DaisyThemeManager.PreferredThemes = ["Business", "MicroSaaS"];
+
+// At runtime, on the UI thread; loaded dropdowns update automatically
+DaisyThemeManager.HideTheme("Cyberpunk");
+DaisyThemeManager.ShowTheme("Cyberpunk");
+
+// Restore the normal lists
+DaisyThemeManager.ExcludedThemes = [];
+DaisyThemeManager.PreferredThemes = [];</code></pre>
+
+<p>Both setters copy the names and replace the previous set; the getters return read-only snapshots. Names are case-insensitive and may refer to themes that are not registered yet. These settings neither select nor apply a theme. A hidden theme can still be applied with <code>ApplyTheme</code>.</p>
+
+<h2>Usage Notes</h2>
+
+<ul><li>Palettes are generated by <code>DaisyPaletteFactory</code> (code-based); ensure the theme name matches <code>AvailableThemes</code>.</li>
+<li>Applying the same theme twice short-circuits.</li>
+<li>On apply, keep the palette <code>ResourceDictionary</code> stable and update its brushes in-place. Removing/replacing the dictionary breaks <code>ThemeResource</code> bindings because controls keep references to the old brush instances.</li>
+</ul>
+<h2>Quick Example (code-behind)</h2>
+
+<pre><code class="language-csharp">// Apply Synthwave
+DaisyThemeManager.ApplyTheme("Synthwave");
+
+// Toggle between base/alternate themes
+var target = DaisyThemeManager.CurrentThemeName == DaisyThemeManager.BaseThemeName
+    ? DaisyThemeManager.AlternateThemeName
+    : DaisyThemeManager.BaseThemeName;
+DaisyThemeManager.ApplyTheme(target);</code></pre>
+
+<h2>Initialization & Theme Suppression</h2>
+
+<p>Theme controls like <code>DaisyThemeDropdown</code>, <code>DaisyThemeController</code>, and <code>DaisyThemeRadio</code> automatically sync to <code>CurrentThemeName</code> during construction. However, in complex scenarios with many controls or custom initialization order, you can use <code>SuppressThemeApplication</code> for explicit control:</p>
+
+<pre><code class="language-csharp">// In App.xaml.cs OnLaunched:
+var savedTheme = LoadThemeFromSettings() ?? "Dark";
+
+// Option 1: Simple apps - just apply the theme first
+// Theme controls will sync to it automatically
+DaisyThemeManager.ApplyTheme(savedTheme);
+
+// Option 2: Complex apps - suppress during UI construction
+DaisyThemeManager.SuppressThemeApplication = true;
+DaisyThemeManager.ApplyTheme(savedTheme); // Only updates internal state
+
+// Create window...
+// ...
+
+// After initialization - now actually apply
+DaisyThemeManager.SuppressThemeApplication = false;
+DaisyThemeManager.ApplyTheme(savedTheme); // Actually applies</code></pre>
+
+<h2>Custom Theme Applicator</h2>
+
+<p>> <strong><a href="../MigrationExample.html">Full Migration Example</a></strong> - Step-by-step guide for integrating Flowery.Uno into existing apps with custom resources.</p>
+
+<p>For apps that need custom theme application logic (e.g., in-place ThemeDictionary updates, persisting settings), set the <code>CustomThemeApplicator</code> delegate at startup:</p>
+
+<pre><code class="language-csharp">// In App.xaml.cs OnLaunched:
+DaisyThemeManager.CustomThemeApplicator = themeName =&gt;
+{
+    var themeInfo = DaisyThemeManager.GetThemeInfo(themeName);
+    if (themeInfo == null) return false;
+
+    // Get the palette from DaisyPaletteFactory
+    var palette = DaisyPaletteFactory.Create(themeInfo.Name);
+
+    var app = Application.Current;
+    if (app == null) return false;
+
+    // Keep palette dictionary stable; update or add it
+    var existingPalette = app.Resources.MergedDictionaries
+        .FirstOrDefault(d =&gt; d.ContainsKey("DaisyBase100Brush"));
+    if (existingPalette == null)
+    {
+        app.Resources.MergedDictionaries.Add(palette);
+    }
+    else
+    {
+        foreach (var key in palette.Keys)
+        {
+            existingPalette[key] = palette[key];
+        }
+    }
+
+    // Persist to settings
+    Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] = themeName;
+
+    // Notify listeners
+    DaisyThemeManager.SetCurrentTheme(themeName);
+
+    return true;
+};</code></pre>
+
+<p>All built-in theme controls (<code>DaisyThemeDropdown</code>, <code>DaisyThemeController</code>, <code>DaisyThemeRadio</code>, <code>DaisyThemeSwap</code>) automatically use the custom applicator when set.</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyThemeDropdown.html">← ThemeDropdown</a></div>
+    <div class="nav-right"><a href="DaisyThemeRadio.html">ThemeRadio →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

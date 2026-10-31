@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyStatusIndicator</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyStatusIndicator</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyStatusIndicator shows a status dot with <strong>27 animation variants</strong>. It supports <strong>9 colors</strong> and <strong>5 sizes</strong>, making it suitable for online/offline markers, alerts, or activity indicators.</p>
+
+<img src="../images/status_animations.gif" alt="Status Indicator Animations" class="doc-image">
+
+<h2>Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Variant</code></td>
+<td>Animation style: Default (static), Ping, Bounce, Pulse, Blink, Ripple, Heartbeat, Spin, Wave, Glow, Morph, Orbit, Radar, Sonar, Beacon, Shake, Wobble, Pop, Flicker, Breathe, Ring, Flash, Swing, Jiggle, Throb, Twinkle, Splash.</td>
+</tr>
+<tr>
+<td><code>Color</code></td>
+<td>Default, Neutral, Primary, Secondary, Accent, Info, Success, Warning, Error (sets dot fill). Uses shared <code>DaisyColor</code> enum.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>ExtraSmall, Small, Medium (default), Large, ExtraLarge (adjusts diameter). Uses shared <code>DaisySize</code> enum.</td>
+</tr>
+<tr>
+<td><code>AccessibleText</code></td>
+<td>Custom text for screen readers. When null, auto-derived from Color (see below).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Color Selection Guide</h2>
+
+<h3>Brand Colors vs State Colors</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Category</th>
+<th>Colors</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Brand Colors</strong></td>
+<td>Primary, Secondary, Accent, Neutral</td>
+<td>Your app's identity/branding. Customizable per theme.</td>
+</tr>
+<tr>
+<td><strong>State Colors</strong></td>
+<td>Info, Success, Warning, Error</td>
+<td>Universal semantic meanings for user feedback.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Brand Colors</h3>
+
+<ul><li><strong>Primary</strong> - Main brand color, used for primary actions or active states</li>
+<li><strong>Secondary</strong> - Supporting brand color for secondary elements</li>
+<li><strong>Accent</strong> - Highlight color for drawing attention</li>
+<li><strong>Neutral</strong> - Muted color for less prominent indicators</li>
+</ul>
+<h3>State Colors</h3>
+
+<ul><li><strong>Info</strong> - Informational messages (typically blue)</li>
+<li><strong>Success</strong> - Positive feedback, online status (typically green)</li>
+<li><strong>Warning</strong> - Caution/attention needed (typically yellow/orange)</li>
+<li><strong>Error</strong> - Problems/failures, offline status (typically red)</li>
+</ul>
+<h3>Recommendation</h3>
+
+<ul><li>Use <strong>State Colors</strong> (Success, Error, Warning, Info) for actual status meanings (online/offline, errors, alerts)</li>
+<li>Use <strong>Brand Colors</strong> (Primary, Secondary, Accent) for decorative purposes or to indicate selection/activity without semantic meaning</li>
+</ul>
+<h2>Animation Variants</h2>
+
+<h3>Classic Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Default</code></td>
+<td>Static dot with no animation</td>
+</tr>
+<tr>
+<td><code>Ping</code></td>
+<td>Expanding ring that fades out (classic online indicator)</td>
+</tr>
+<tr>
+<td><code>Bounce</code></td>
+<td>Dot bounces up and down</td>
+</tr>
+<tr>
+<td><code>Pulse</code></td>
+<td>Breathing/pulsing opacity effect</td>
+</tr>
+<tr>
+<td><code>Blink</code></td>
+<td>Simple on/off blinking</td>
+</tr>
+<tr>
+<td><code>Ripple</code></td>
+<td>Multiple expanding rings</td>
+</tr>
+<tr>
+<td><code>Heartbeat</code></td>
+<td>Double-pulse like a heartbeat</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Motion Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Spin</code></td>
+<td>Rotating dot indicator</td>
+</tr>
+<tr>
+<td><code>Wave</code></td>
+<td>Wave-like scale effect</td>
+</tr>
+<tr>
+<td><code>Glow</code></td>
+<td>Glowing halo effect</td>
+</tr>
+<tr>
+<td><code>Morph</code></td>
+<td>Shape morphing effect</td>
+</tr>
+<tr>
+<td><code>Orbit</code></td>
+<td>Small dot orbiting around</td>
+</tr>
+<tr>
+<td><code>Shake</code></td>
+<td>Horizontal shake effect</td>
+</tr>
+<tr>
+<td><code>Wobble</code></td>
+<td>Wobbling rotation effect</td>
+</tr>
+<tr>
+<td><code>Swing</code></td>
+<td>Pendulum swing effect</td>
+</tr>
+<tr>
+<td><code>Jiggle</code></td>
+<td>Jiggling effect</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Effect Variants</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Radar</code></td>
+<td>Radar sweep effect</td>
+</tr>
+<tr>
+<td><code>Sonar</code></td>
+<td>Sonar ping effect</td>
+</tr>
+<tr>
+<td><code>Beacon</code></td>
+<td>Lighthouse beacon sweep</td>
+</tr>
+<tr>
+<td><code>Pop</code></td>
+<td>Pop in/out scale effect</td>
+</tr>
+<tr>
+<td><code>Flicker</code></td>
+<td>Random flickering effect</td>
+</tr>
+<tr>
+<td><code>Breathe</code></td>
+<td>Slow breathing scale</td>
+</tr>
+<tr>
+<td><code>Ring</code></td>
+<td>Expanding ring outline</td>
+</tr>
+<tr>
+<td><code>Flash</code></td>
+<td>Quick flash effect</td>
+</tr>
+<tr>
+<td><code>Throb</code></td>
+<td>Throbbing intensity effect</td>
+</tr>
+<tr>
+<td><code>Twinkle</code></td>
+<td>Star-like twinkling</td>
+</tr>
+<tr>
+<td><code>Splash</code></td>
+<td>Splash ripple effect</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Accessibility Support</h2>
+
+<p>DaisyStatusIndicator includes built-in accessibility for screen readers. Since status indicators convey meaning purely through color, the control automatically provides semantic text based on the <code>Color</code> property.</p>
+
+<h3>Default Accessible Text by Color</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Color</th>
+<th>Default Text</th>
+<th>Typical Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Success</td>
+<td>"Online"</td>
+<td>User/service availability</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>"Error"</td>
+<td>Error states, offline</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>"Warning"</td>
+<td>Caution states</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>"Information"</td>
+<td>Informational markers</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td>"Active"</td>
+<td>Active/selected state</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td>"Secondary"</td>
+<td>Secondary state</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td>"Highlighted"</td>
+<td>Highlighted items</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>"Status"</td>
+<td>Generic status</td>
+</tr>
+<tr>
+<td>Default</td>
+<td>"Status"</td>
+<td>Generic status</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Custom Accessible Text</h3>
+
+<p>Override the automatic text with the <code>AccessibleText</code> property:</p>
+
+<pre><code class="language-xml">&lt;!-- Auto: announces "Online" --&gt;
+&lt;controls:DaisyStatusIndicator Color="Success" /&gt;
+
+&lt;!-- Custom: announces "User is available" --&gt;
+&lt;controls:DaisyStatusIndicator Color="Success" AccessibleText="User is available" /&gt;
+
+&lt;!-- Custom: announces "Server offline" --&gt;
+&lt;controls:DaisyStatusIndicator Color="Error" AccessibleText="Server offline" /&gt;
+
+&lt;!-- Custom: announces "3 unread messages" --&gt;
+&lt;controls:DaisyStatusIndicator Color="Primary" AccessibleText="3 unread messages" /&gt;</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic status colors --&gt;
+&lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+    &lt;controls:DaisyStatusIndicator Color="Neutral" /&gt;
+    &lt;controls:DaisyStatusIndicator Color="Success" /&gt;
+    &lt;controls:DaisyStatusIndicator Color="Warning" /&gt;
+    &lt;controls:DaisyStatusIndicator Color="Error" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Classic animations --&gt;
+&lt;controls:DaisyStatusIndicator Color="Error" Variant="Ping" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Info" Variant="Bounce" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Warning" Variant="Pulse" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Success" Variant="Heartbeat" /&gt;
+
+&lt;!-- Motion animations --&gt;
+&lt;controls:DaisyStatusIndicator Color="Primary" Variant="Orbit" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Accent" Variant="Wave" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Info" Variant="Glow" /&gt;
+
+&lt;!-- Effect animations --&gt;
+&lt;controls:DaisyStatusIndicator Color="Success" Variant="Sonar" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Warning" Variant="Beacon" /&gt;
+&lt;controls:DaisyStatusIndicator Color="Error" Variant="Flash" /&gt;
+
+&lt;!-- Compact sizing --&gt;
+&lt;controls:DaisyStatusIndicator Size="ExtraSmall" Color="Success" Variant="Ping" /&gt;
+&lt;controls:DaisyStatusIndicator Size="Large" Color="Primary" Variant="Ripple" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Ping</strong> or <strong>Ripple</strong> for attention-grabbing alerts.</li>
+<li>Use <strong>Pulse</strong> or <strong>Breathe</strong> for subtle activity cues.</li>
+<li>Use <strong>Heartbeat</strong> for health/vital status indicators.</li>
+<li>Use <strong>Sonar</strong> or <strong>Radar</strong> for scanning/searching states.</li>
+<li>Use <strong>Flash</strong> or <strong>Beacon</strong> for urgent notifications.</li>
+<li>Keep indicators small near text/icons (ExtraSmall/Small) and larger for standalone badges.</li>
+<li>Place inside <code>DaisyIndicator</code> when overlaying on other controls (avatars/cards).</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyStat.html">← Stat</a></div>
+    <div class="nav-right"><a href="DaisySteps.html">Steps →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

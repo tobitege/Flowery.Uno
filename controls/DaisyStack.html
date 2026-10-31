@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyStack</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyStack</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyStack.png" alt="DaisyStack" class="doc-image">
+
+<p>DaisyStack displays children in a stacked arrangement with optional navigation. It inherits from <code>ItemsControl</code> so children overlap in a Grid panel. In static mode (default), theme styles apply Z-index, translation, scale, and opacity per child order creating a deck-of-cards effect. When navigation is enabled, only one item is visible at a time with animated transitions.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ShowNavigation</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows prev/next arrows; only one item visible at a time</td>
+</tr>
+<tr>
+<td><code>NavigationPlacement</code></td>
+<td><code>DaisyStackNavigation</code></td>
+<td><code>Horizontal</code></td>
+<td>Arrow direction: <code>Horizontal</code> (left/right) or <code>Vertical</code> (up/down)</td>
+</tr>
+<tr>
+<td><code>NavigationColor</code></td>
+<td><code>DaisyColor</code></td>
+<td><code>Default</code></td>
+<td>Color for navigation buttons (Primary, Secondary, Accent, etc.)</td>
+</tr>
+<tr>
+<td><code>ShowCounter</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows "1 / 5" counter label</td>
+</tr>
+<tr>
+<td><code>CounterPlacement</code></td>
+<td><code>DaisyPlacement</code></td>
+<td><code>Bottom</code></td>
+<td>Counter position: <code>Top</code>, <code>Bottom</code>, <code>Start</code>, <code>End</code></td>
+</tr>
+<tr>
+<td><code>SelectedIndex</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Currently visible item index (0-based)</td>
+</tr>
+<tr>
+<td><code>TransitionDuration</code></td>
+<td><code>TimeSpan</code></td>
+<td><code>300ms</code></td>
+<td>Animation duration for navigation</td>
+</tr>
+<tr>
+<td><code>StackOpacity</code></td>
+<td><code>double</code></td>
+<td><code>0.6</code></td>
+<td>Opacity of background items in static mode</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Enums</h2>
+
+<h3>DaisyStackNavigation</h3>
+
+<ul><li><code>Horizontal</code> - Left/Right arrows</li>
+<li><code>Vertical</code> - Up/Down arrows</li>
+</ul>
+<h3>DaisyPlacement</h3>
+
+<ul><li><code>Top</code> - Counter above the stack</li>
+<li><code>Bottom</code> - Counter below the stack (default)</li>
+<li><code>Start</code> - Counter to the left</li>
+<li><code>End</code> - Counter to the right</li>
+</ul>
+<h2>Behavior</h2>
+
+<h3>Static Mode (ShowNavigation=false)</h3>
+
+<ul><li>All children are visible with layered offsets</li>
+<li>1st child: top-most, full opacity</li>
+<li>2nd child: slight offset/scale, reduced opacity</li>
+<li>3rd+ children: further offset/scale, lower opacity</li>
+<li>Supports unlimited children with progressive offsets</li>
+</ul>
+<h3>Navigation Mode (ShowNavigation=true)</h3>
+
+<ul><li>Only one item visible at a time</li>
+<li>Animated slide transitions between items</li>
+<li>Wraps around (last → first, first → last)</li>
+<li>Counter shows current position</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<h3>Basic Static Stack</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyStack Width="100" Height="100"&gt;
+    &lt;Border Background="#F87171" CornerRadius="8" /&gt;
+    &lt;Border Background="#34D399" CornerRadius="8" /&gt;
+    &lt;Border Background="#60A5FA" CornerRadius="8" /&gt;
+&lt;/controls:DaisyStack&gt;</code></pre>
+
+<h3>With Horizontal Navigation</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyStack Width="220" Height="140"
+                     ShowNavigation="True"
+                     ShowCounter="True"&gt;
+    &lt;Border Background="#F87171" CornerRadius="8"&gt;
+        &lt;TextBlock Text="Slide 1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/&gt;
+    &lt;/Border&gt;
+    &lt;Border Background="#34D399" CornerRadius="8"&gt;
+        &lt;TextBlock Text="Slide 2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/&gt;
+    &lt;/Border&gt;
+    &lt;Border Background="#60A5FA" CornerRadius="8"&gt;
+        &lt;TextBlock Text="Slide 3" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/&gt;
+    &lt;/Border&gt;
+&lt;/controls:DaisyStack&gt;</code></pre>
+
+<h3>With Vertical Navigation</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyStack Width="220" Height="160"
+                     ShowNavigation="True"
+                     ShowCounter="True"
+                     NavigationPlacement="Vertical"
+                     CounterPlacement="End"&gt;
+    &lt;Border Background="#A78BFA" CornerRadius="8"&gt;
+        &lt;TextBlock Text="Card A" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/&gt;
+    &lt;/Border&gt;
+    &lt;Border Background="#F472B6" CornerRadius="8"&gt;
+        &lt;TextBlock Text="Card B" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/&gt;
+    &lt;/Border&gt;
+&lt;/controls:DaisyStack&gt;</code></pre>
+
+<h3>Colored Navigation Buttons</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyStack Width="180" Height="100"
+                     ShowNavigation="True"
+                     NavigationColor="Primary"&gt;
+    &lt;Border Background="{ThemeResource DaisyBase300Brush}" CornerRadius="8"/&gt;
+    &lt;Border Background="{ThemeResource DaisyBase200Brush}" CornerRadius="8"/&gt;
+&lt;/controls:DaisyStack&gt;</code></pre>
+
+<h3>Programmatic Navigation</h3>
+
+<pre><code class="language-csharp">// Navigate to next/previous
+myStack.Next();
+myStack.Previous();
+
+// Jump to specific index
+myStack.SelectedIndex = 2;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep child sizes equal for a neat stacked appearance</li>
+<li>Use <code>ShowNavigation="True"</code> for interactive card browsing</li>
+<li>Combine with shadows on children to enhance depth</li>
+<li>Wrap in a container with padding to prevent clipped offsets in static mode</li>
+<li>Use <code>NavigationColor</code> to match your app's theme</li>
+<li>For image galleries, consider <code>DaisyCarousel</code> instead (has more carousel-specific features)</li>
+<li>The <code>SelectedIndex</code> property can be bound for MVVM scenarios</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisySlideToConfirm.html">← SlideToConfirm</a></div>
+    <div class="nav-right"><a href="DaisyStat.html">Stat →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

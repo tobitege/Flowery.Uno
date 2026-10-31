@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyFileInput</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyFileInput</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyFileInput.png" alt="DaisyFileInput" class="doc-image">
+
+<p>DaisyFileInput is a button-styled file selector that displays a “Choose File” affordance with the current file name beside it. It supports DaisyButton variants, size presets, and a customizable <code>FileName</code> placeholder. Use it when you need a themed file picker entry point; wire it up to your file dialog logic in code-behind.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FileName</code></td>
+<td>Text shown on the right side; default “No file chosen”. Update this after a file dialog completes.</td>
+</tr>
+<tr>
+<td><code>Variant</code></td>
+<td>DaisyButton variant for the choose-file segment (Default, Primary, Secondary, Accent).</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>Height/font scaling (ExtraSmall, Small, Medium, Large, ExtraLarge - theme styles defined for XS/Small/Medium/Large).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>BrowseClicked</code></td>
+<td>Raised when the choose-file button is clicked. Handle this to open your file picker.</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Note:</strong> DaisyFileInput does not open a file picker by itself. You must handle <code>BrowseClicked</code> and set <code>FileName</code> manually.
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic --&gt;
+&lt;controls:DaisyFileInput /&gt;
+
+&lt;!-- With variant and preset filename --&gt;
+&lt;controls:DaisyFileInput Variant="Primary" FileName="photo.jpg" /&gt;
+
+&lt;!-- Compact --&gt;
+&lt;controls:DaisyFileInput Variant="Accent" Size="Small" /&gt;</code></pre>
+
+<h2>Wiring a file dialog (code-behind)</h2>
+
+<pre><code class="language-csharp">private async void OnPickFile(object? sender, RoutedEventArgs e)
+{
+    var picker = new FileOpenPicker();
+    picker.FileTypeFilter.Add("*");
+
+    // Get the window handle for WinUI 3
+    var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+    WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+    var file = await picker.PickSingleFileAsync();
+    if (file != null)
+    {
+        FileInput.FileName = file.Name;
+    }
+}</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep <code>FileName</code> short; long paths should be truncated or replaced with the file's leaf name.</li>
+<li>Pair with validation text or <code>DaisyAlert</code> for upload constraints (size/type).</li>
+<li>Use <code>Variant="Primary"</code> for key upload actions; use Default/Accent for secondary forms.</li>
+<li>Remember to set focus/keyboard handling as you would with a standard button; this control is still a <code>Button</code>.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyFab.html">← Fab</a></div>
+    <div class="nav-right"><a href="DaisyGlass.html">Glass →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

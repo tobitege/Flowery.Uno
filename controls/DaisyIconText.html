@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyIconText</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyIconText</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyIconText is a <strong>single-purpose display control</strong> that combines an icon (path data or Symbol) with optional text, handling all the scaling mechanics under the hood. It wraps icons in a <code>Viewbox</code> for proper proportional scaling and applies size-based font sizes for text - eliminating the need to manually manage <code>Width</code>/<code>Height</code> or <code>FontSize</code> math.</p>
+
+<p>Use it directly in any UI, or as the <code>Content</code> of buttons, menu items, tabs, list items, and other containers.</p>
+
+<h2>When to Use</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Scenario</th>
+<th>Use DaisyIconText</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Icon-only label</td>
+<td><code><daisy:DaisyIconText IconSymbol="Home" Size="Large"/></code></td>
+</tr>
+<tr>
+<td>Icon + text pair</td>
+<td><code><daisy:DaisyIconText IconData="{StaticResource IconSave}" Text="Save" IconPlacement="Left"/></code></td>
+</tr>
+<tr>
+<td>Text-only with auto-sizing</td>
+<td><code><daisy:DaisyIconText Text="Settings" Size="Small"/></code></td>
+</tr>
+<tr>
+<td>Consistent scaling in zoomed layouts</td>
+<td>Place inside a <code>ScaleTransform</code> container - the Viewbox handles proportional icon scaling automatically</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IconData</code></td>
+<td><code>string</code></td>
+<td><code>null</code></td>
+<td>Path data string for a custom icon (24×24 coordinate system). Takes precedence over <code>IconSymbol</code>.</td>
+</tr>
+<tr>
+<td><code>IconSymbol</code></td>
+<td><code>Symbol?</code></td>
+<td><code>null</code></td>
+<td>A Windows Symbol enum value (e.g., <code>Symbol.Home</code>, <code>Symbol.Save</code>). Used when <code>IconData</code> is not set.</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td><code>string</code></td>
+<td><code>null</code></td>
+<td>Text to display alongside or instead of the icon. <code>&</code> underlines the access character and <code>&&</code> is a literal <code>&</code> (see <a href="DaisyMnemonicText.html">DaisyMnemonicText</a>).</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Controls both icon dimensions and font size. Follows global size if <code>FlowerySizeManager</code> is active.</td>
+</tr>
+<tr>
+<td><code>IconPlacement</code></td>
+<td><code>IconPlacement</code></td>
+<td><code>Left</code></td>
+<td>Position of the icon relative to text: <code>Left</code>, <code>Right</code>, <code>Top</code>, or <code>Bottom</code>.</td>
+</tr>
+<tr>
+<td><code>Spacing</code></td>
+<td><code>double</code></td>
+<td><code>NaN</code> (auto)</td>
+<td>Gap between icon and text. If <code>NaN</code>, auto-computed based on <code>Size</code>.</td>
+</tr>
+<tr>
+<td><code>IconSize</code></td>
+<td><code>double</code></td>
+<td><code>NaN</code> (auto)</td>
+<td>Explicit icon size override. If <code>NaN</code>, auto-computed based on <code>Size</code>.</td>
+</tr>
+<tr>
+<td><code>FontSizeOverride</code></td>
+<td><code>double</code></td>
+<td><code>NaN</code> (auto)</td>
+<td>Explicit font size override. If <code>NaN</code>, auto-computed based on <code>Size</code>.</td>
+</tr>
+<tr>
+<td><code>FontWeight</code></td>
+<td><code>FontWeight</code></td>
+<td><code>Normal</code></td>
+<td>Font weight for the text (e.g., <code>Normal</code>, <code>SemiBold</code>, <code>Bold</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Presets</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Icon Size</th>
+<th>Font Size</th>
+<th>Spacing</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>12px</td>
+<td>10px</td>
+<td>4px</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>14px</td>
+<td>12px</td>
+<td>6px</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>16px</td>
+<td>14px</td>
+<td>8px</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>20px</td>
+<td>16px</td>
+<td>10px</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>24px</td>
+<td>18px</td>
+<td>12px</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>These values come from <code>DaisyResourceLookup</code> and may vary slightly by theme. The control automatically responds to <code>FlowerySizeManager.SizeChanged</code> for global size changes, unless <code>IgnoreGlobalSize="True"</code> is set on the control or an ancestor.</div>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Icon only --&gt;
+&lt;controls:DaisyIconText IconSymbol="Home" Size="Medium"/&gt;
+
+&lt;!-- Icon from path data --&gt;
+&lt;controls:DaisyIconText IconData="{StaticResource DaisyIconSettings}" Size="Large"/&gt;
+
+&lt;!-- Text only --&gt;
+&lt;controls:DaisyIconText Text="Hello World" Size="Small"/&gt;
+
+&lt;!-- Icon + Text (icon on left) --&gt;
+&lt;controls:DaisyIconText IconSymbol="Save" Text="Save Document" IconPlacement="Left"/&gt;
+
+&lt;!-- Icon + Text (icon on right) --&gt;
+&lt;controls:DaisyIconText IconSymbol="ChevronRight" Text="Next" IconPlacement="Right"/&gt;
+
+&lt;!-- Icon above text --&gt;
+&lt;controls:DaisyIconText IconSymbol="Mail" Text="Inbox" IconPlacement="Top"/&gt;
+
+&lt;!-- Custom spacing --&gt;
+&lt;controls:DaisyIconText IconSymbol="Edit" Text="Edit" Spacing="16"/&gt;
+
+&lt;!-- Override icon size --&gt;
+&lt;controls:DaisyIconText IconData="{StaticResource BigLogo}" IconSize="48"/&gt;</code></pre>
+
+<h2>Using Inside Other Controls</h2>
+
+<p>DaisyIconText works seamlessly as content for buttons and other containers:</p>
+
+<pre><code class="language-xml">&lt;!-- As DaisyButton content --&gt;
+&lt;controls:DaisyButton Variant="Primary"&gt;
+    &lt;controls:DaisyIconText IconSymbol="Add" Text="New Item" IconPlacement="Left"/&gt;
+&lt;/controls:DaisyButton&gt;
+
+&lt;!-- In a menu item --&gt;
+&lt;MenuFlyoutItem&gt;
+    &lt;MenuFlyoutItem.Icon&gt;
+        &lt;controls:DaisyIconText IconSymbol="Settings"/&gt;
+    &lt;/MenuFlyoutItem.Icon&gt;
+    &lt;controls:DaisyIconText Text="Settings"/&gt;
+&lt;/MenuFlyoutItem&gt;
+
+&lt;!-- In a tab header --&gt;
+&lt;controls:DaisyTab&gt;
+    &lt;controls:DaisyTab.Header&gt;
+        &lt;controls:DaisyIconText IconSymbol="Document" Text="Documents" IconPlacement="Left"/&gt;
+    &lt;/controls:DaisyTab.Header&gt;
+&lt;/controls:DaisyTab&gt;</code></pre>
+
+<h2>Why Viewbox-Based Scaling?</h2>
+
+<p>Standard <code>PathIcon</code> and <code>SymbolIcon</code> controls don't scale their content proportionally when you constrain their <code>Width</code>/<code>Height</code> - the path data gets clipped instead. DaisyIconText wraps icons in a <code>Viewbox</code> which:</p>
+
+<p>1. <strong>Scales proportionally</strong> - The entire icon shrinks or grows uniformly</p>
+<p>2. <strong>Maintains aspect ratio</strong> - No distortion at any size</p>
+<p>3. <strong>Works with ScaleTransform</strong> - Nested scaling multiplies correctly</p>
+<p>4. <strong>Handles any path data</strong> - Whether designed for 24×24 or any other coordinate system</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Prefer <code>IconData</code> over <code>IconSymbol</code></strong> when you have custom SVG paths - it gives you more design flexibility.</li>
+<li><strong>Use <code>Size</code> for consistency</strong> - Rely on the size presets rather than overriding <code>IconSize</code>/<code>FontSizeOverride</code> unless you need precise control.</li>
+<li><strong>Combine with DaisyButton</strong> - For icon buttons, either use <code>DaisyButton.IconSymbol</code>/<code>IconData</code> properties directly, or place a <code>DaisyIconText</code> as content for complex layouts.</li>
+<li><strong>Inherit from theme</strong> - <code>DaisyIconText</code> inherits its <code>Foreground</code> from the parent, so it works with variant colors automatically.</li>
+<li><strong>Spacing matters</strong> - The default auto-spacing is tuned per size. Only override <code>Spacing</code> if you need tighter or looser layouts.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyHoverGallery.html">← HoverGallery</a></div>
+    <div class="nav-right"><a href="DaisyIndicator.html">Indicator →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

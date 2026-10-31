@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -11,6 +11,7 @@ using Flowery.Theming;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1257,6 +1258,86 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.AreEqual(DaisySize.Auto, timeline.Size);
             Assert.AreEqual(DaisySize.Medium, timeline.ResolvedSize);
             Assert.AreEqual(DateTime.Today.ToString("MMMM yyyy", CultureInfo.CurrentCulture), timeline.HeaderText);
+        }
+
+        [TestMethod]
+        public async Task When_DateTimeline_PropertiesSetBeforeLoad_LoadAppliesThem()
+        {
+            // The timeline builds its items once on Loaded instead of for each property set from XAML.
+            var first = DateTime.Today.AddDays(-3);
+            var timeline = new DaisyDateTimeline
+            {
+                FirstDate = first,
+                LastDate = first.AddDays(9),
+                HeaderType = DateTimelineHeaderType.None,
+                ItemWidth = 80
+            };
+            FlowerySizeManager.SetIgnoreGlobalSize(timeline, true);
+
+            RuntimeTestHelpers.AttachToHost(timeline);
+            await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
+
+            var items = FindDescendants<DaisyDateTimelineItem>(timeline).ToList();
+            CollectionAssert.AreEqual(
+                Enumerable.Range(0, 10).Select(day => first.AddDays(day)).ToList(),
+                items.Select(item => item.Date).ToList());
+            Assert.IsTrue(items.All(item => item.Width == 80), "The explicit item width must reach every item.");
+            Assert.AreEqual(80.0, timeline.ItemWidth);
+            var header = FindDescendants<TextBlock>(timeline).Single(text => text.Text == timeline.HeaderText);
+            Assert.AreEqual(Visibility.Collapsed, ((UIElement)VisualTreeHelper.GetParent(header)).Visibility,
+                "HeaderType None must hide the header.");
+        }
+
+        [TestMethod]
+        public async Task When_DateTimeline_ResolvesItemWidth_ItemsUseTheResolvedWidth()
+        {
+            // ApplySizing resolves the width while the items are built; the items must not keep the default width.
+            var timeline = new DaisyDateTimeline { Size = DaisySize.ExtraLarge };
+            FlowerySizeManager.SetIgnoreGlobalSize(timeline, true);
+
+            RuntimeTestHelpers.AttachToHost(timeline);
+            await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
+
+            Assert.AreNotEqual(64.0, timeline.ItemWidth, "ExtraLarge must resolve a width other than the default.");
+            var items = FindDescendants<DaisyDateTimelineItem>(timeline).ToList();
+            Assert.IsNotEmpty(items);
+            Assert.IsTrue(items.All(item => item.Width == timeline.ItemWidth), "Every item must use the resolved width.");
+        }
+
+        [TestMethod]
+        public async Task When_DateTimeline_LocaleChanges_HeaderFollows()
+        {
+            var date = new DateTime(2026, 3, 15);
+            var locale = CultureInfo.GetCultureInfo("fr-FR");
+            var expected = date.ToString("MMMM yyyy", locale);
+            Assert.AreNotEqual(date.ToString("MMMM yyyy", CultureInfo.CurrentCulture), expected,
+                "The test needs a locale that formats differently from the current culture.");
+
+            // Set before load, as from XAML: the header text is public and must not wait for Loaded.
+            var timeline = new DaisyDateTimeline { SelectedDate = date, Locale = locale };
+            Assert.AreEqual(expected, timeline.HeaderText);
+
+            RuntimeTestHelpers.AttachToHost(timeline);
+            await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
+
+            Assert.IsTrue(FindDescendants<TextBlock>(timeline).Any(text => text.Text == expected));
+            Assert.AreEqual(expected, AutomationProperties.GetName(timeline));
+
+            var english = CultureInfo.GetCultureInfo("en-US");
+            timeline.Locale = english;
+            Assert.AreEqual(date.ToString("MMMM yyyy", english), timeline.HeaderText);
+        }
+
+        private static IEnumerable<T> FindDescendants<T>(DependencyObject root) where T : DependencyObject
+        {
+            for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            {
+                var child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
+                    yield return match;
+                foreach (var descendant in FindDescendants<T>(child))
+                    yield return descendant;
+            }
         }
 
         [TestMethod]

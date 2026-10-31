@@ -1,4 +1,4 @@
-// CsWinRT1028: Generic collections implementing WinRT interfaces - inherent to Uno Platform, not fixable via code
+﻿// CsWinRT1028: Generic collections implementing WinRT interfaces - inherent to Uno Platform, not fixable via code
 #pragma warning disable CsWinRT1028
 
 using System;
@@ -63,13 +63,53 @@ namespace Flowery.Controls
             control.SetValue(IgnoreGlobalSizeProperty, value);
             // A new local false changes inherited policy even when the native effective value stays false.
             if (changesInheritedPolicy)
-                RefreshAllSizes();
+                RefreshIgnoreScope(control);
         }
 
         private static void OnIgnoreGlobalSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             // A parent setting can change the effective policy of any loaded descendant.
-            RefreshAllSizes();
+            RefreshIgnoreScope(sender);
+        }
+
+        // The policy is inherited, so only the element itself and its loaded descendants can change. Refreshing every
+        // loaded control instead made each element that gets the property before it loads pay for all loaded controls.
+        private static void RefreshIgnoreScope(DependencyObject scope)
+        {
+            foreach (var registration in new List<SizeRegistration>(LoadedControls))
+            {
+                if (LoadedControls.Contains(registration) && IsSelfOrDescendant(registration.Owner, scope))
+                    registration.Refresh();
+            }
+            UpdateResponsiveTextBlocks(_currentSize);
+        }
+
+        // Walks the same chain as ShouldIgnoreGlobalSize, so the refreshed controls are exactly those whose policy changed.
+        private static bool IsSelfOrDescendant(DependencyObject element, DependencyObject scope)
+        {
+            for (DependencyObject? current = element; current != null; current = GetPolicyParent(current))
+            {
+                if (ReferenceEquals(current, scope))
+                    return true;
+            }
+            return false;
+        }
+
+        // The visual parent, or the logical Parent where the visual tree ends (popup content).
+        private static DependencyObject? GetPolicyParent(DependencyObject element)
+        {
+            DependencyObject? parent = null;
+            try
+            {
+                parent = VisualTreeHelper.GetParent(element);
+            }
+            catch { }
+
+            if (parent == null && element is FrameworkElement fe)
+            {
+                try { parent = fe.Parent; } catch { }
+            }
+            return parent;
         }
 
         /// <summary>
@@ -174,19 +214,7 @@ namespace Flowery.Controls
                         return GetIgnoreGlobalSize(current);
                     }
 
-                    // Fallback: Check if it's a FrameworkElement's Parent property if VisualTreeHelper fails
-                    DependencyObject? next = null;
-                    try
-                    {
-                        next = VisualTreeHelper.GetParent(current);
-                    }
-                    catch { }
-
-                    if (next == null && current is FrameworkElement fe)
-                    {
-                        try { next = fe.Parent; } catch { }
-                    }
-                    current = next;
+                    current = GetPolicyParent(current);
                 }
             }
             catch

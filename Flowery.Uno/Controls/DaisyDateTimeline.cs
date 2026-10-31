@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Flowery.Services;
@@ -301,7 +301,7 @@ namespace Flowery.Controls
                 nameof(Locale),
                 typeof(CultureInfo),
                 typeof(DaisyDateTimeline),
-                new PropertyMetadata(CultureInfo.CurrentCulture, OnRebuildRequested));
+                new PropertyMetadata(CultureInfo.CurrentCulture, OnLocaleChanged));
 
         public CultureInfo Locale
         {
@@ -439,9 +439,16 @@ namespace Flowery.Controls
         private static void OnRebuildRequested(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DaisyDateTimeline timeline)
+                timeline.RebuildIfLoaded(scrollToSelectedDate: true);
+        }
+
+        private static void OnLocaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DaisyDateTimeline timeline)
             {
-                timeline.ApplyAll();
-                timeline.ScrollToSelectedDate(defer: true);
+                // HeaderText is public and formatted with the locale, so it follows even before the timeline loads.
+                timeline.UpdateHeaderText();
+                timeline.RebuildIfLoaded(scrollToSelectedDate: true);
             }
         }
 
@@ -449,11 +456,15 @@ namespace Flowery.Controls
         {
             if (d is DaisyDateTimeline timeline)
             {
-                if (!timeline._isItemWidthInternalUpdate)
-                    timeline._hasExplicitItemWidth = true;
+                // ApplySizing sets the resolved width while ApplyAll runs; that ApplyAll already uses the new width.
+                if (timeline._isItemWidthInternalUpdate)
+                {
+                    timeline.ScrollToSelectedDate(defer: true);
+                    return;
+                }
 
-                timeline.ApplyAll();
-                timeline.ScrollToSelectedDate(defer: true);
+                timeline._hasExplicitItemWidth = true;
+                timeline.RebuildIfLoaded(scrollToSelectedDate: true);
             }
         }
 
@@ -461,20 +472,34 @@ namespace Flowery.Controls
         {
             if (d is DaisyDateTimeline timeline)
             {
-                if (!timeline._isItemSpacingInternalUpdate)
-                    timeline._hasExplicitItemSpacing = true;
+                // ApplySizing sets the resolved spacing while ApplyAll runs; that ApplyAll already uses the new spacing.
+                if (timeline._isItemSpacingInternalUpdate)
+                {
+                    timeline.ScrollToSelectedDate(defer: true);
+                    return;
+                }
 
-                timeline.ApplyAll();
-                timeline.ScrollToSelectedDate(defer: true);
+                timeline._hasExplicitItemSpacing = true;
+                timeline.RebuildIfLoaded(scrollToSelectedDate: true);
             }
         }
 
         private static void OnHeaderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DaisyDateTimeline timeline)
-            {
-                timeline.ApplyAll();
-            }
+                timeline.RebuildIfLoaded(scrollToSelectedDate: false);
+        }
+
+        // OnLoaded builds the tree and all date items once. Before that, rebuilding for each property set from XAML
+        // would generate every item again.
+        private void RebuildIfLoaded(bool scrollToSelectedDate)
+        {
+            if (!IsLoaded)
+                return;
+
+            ApplyAll();
+            if (scrollToSelectedDate)
+                ScrollToSelectedDate(defer: true);
         }
 
         private static void OnSelectedDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

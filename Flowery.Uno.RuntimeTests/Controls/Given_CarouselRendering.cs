@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Flowery.Controls;
 using Flowery.Helpers;
@@ -107,7 +107,9 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 PanDistance = 80,
                 ZoomIntensity = 0.4,
                 SlideTransition = FlowerySlideTransition.Fade,
-                TransitionDuration = 1,
+                // Long enough that the three checked frames stay inside the transition on a slow CI runner, where a
+                // frame of a software-rendered Skia window can take longer than a second.
+                TransitionDuration = 4,
                 Content = new StackPanel
                 {
                     Children = { new Border { Child = image }, new Border { Background = new SolidColorBrush(Microsoft.UI.Colors.Magenta) } }
@@ -146,7 +148,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 try
                 {
                     if (started)
-                        await completed.Task.WaitAsync(Timeout);
+                        await completed.Task.WaitAsync(Timeout + TimeSpan.FromSeconds(carousel.TransitionDuration));
                 }
                 finally
                 {

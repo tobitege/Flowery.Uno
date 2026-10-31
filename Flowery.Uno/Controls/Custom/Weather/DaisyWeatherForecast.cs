@@ -1,4 +1,4 @@
-using Flowery.Controls.Weather.Models;
+﻿using Flowery.Controls.Weather.Models;
 using Flowery.Services;
 using Flowery.Theming;
 using Microsoft.UI.Xaml;
@@ -175,7 +175,10 @@ namespace Flowery.Controls.Weather
         private static void OnItemSpacingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DaisyWeatherForecast control)
+            {
+                control.ApplyItemSpacing();
                 control.ApplySizing();
+            }
         }
 
         #endregion
@@ -222,7 +225,15 @@ namespace Flowery.Controls.Weather
                 // Use visual state-based sizing
                 PropagrateSizeToItems(null, ResolvedSize);
             }
+            ApplyItemSpacing();
             UpdateScrollIndicators();
+        }
+
+        // The items panel takes its spacing from here: a binding in the items panel template cannot reach the strip.
+        private void ApplyItemSpacing()
+        {
+            if (ItemsPanelRoot is StackPanel panel)
+                panel.Spacing = ItemSpacing;
         }
 
         // Absolute minimums for readability - these can NEVER be violated

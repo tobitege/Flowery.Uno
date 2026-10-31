@@ -132,6 +132,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Before, every host stayed subscribed for good: a host that had left the UI, such as the one of a closed Kanban board,
   stayed in memory, ran on every layout pass of the window and could throw a `NullReferenceException` there, which also
   failed a Gallery runtime test on Linux now and then.
+- `DaisyWeatherForecast` spaces its days by `ItemSpacing`, as in Flowery.WinUI. The items panel bound its spacing to
+  `TemplatedParent`, which in an items panel template is not the forecast, so the spacing always stayed 0. The forecast
+  now sets the spacing of its panel itself.
+- `FlowKanbanData.Columns` raises `PropertyChanged` when it gets a new collection, as in Flowery.WinUI, so a board shows
+  the new columns: `FlowKanban` waits for that change to rebuild its columns, and before it kept showing the replaced
+  ones. A null collection becomes an empty one, as for `Lanes`.
 - Gallery: the Scheduler sample data fills the current month, and today has four appointments. Xaver (sales) and Sammy
   (communications) join with their own appointments and department groups, every sample has a description with made-up
   customers and suppliers, start times spread over the working day, and the second and fourth Sunday of the month stay

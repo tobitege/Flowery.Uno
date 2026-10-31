@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -777,6 +777,7 @@ namespace Flowery.Uno.Kanban.Controls
         private string _createdBy = string.Empty;
         private ObservableCollection<string> _tags = new();
         private ObservableCollection<FlowKanbanLane> _lanes = new();
+        private ObservableCollection<FlowKanbanColumnData> _columns = new();
         private FlowKanbanGroupBy _groupBy = FlowKanbanGroupBy.None;
         private string? _archiveColumnId;
         private bool _isArchiveColumnHidden;
@@ -904,7 +905,11 @@ namespace Flowery.Uno.Kanban.Controls
         }
 
         [JsonPropertyName("columns")]
-        public ObservableCollection<FlowKanbanColumnData> Columns { get; set; } = new();
+        public ObservableCollection<FlowKanbanColumnData> Columns
+        {
+            get => _columns;
+            set => SetProperty(ref _columns, value ?? new ObservableCollection<FlowKanbanColumnData>());
+        }
 
         /// <summary>Extensible fields for custom board data without schema changes.</summary>
         [JsonPropertyName("customFields")]

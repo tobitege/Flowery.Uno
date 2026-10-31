@@ -163,7 +163,8 @@
         private Visual? _spinnerVisual;
         private UIElement? _spinnerElement;
         private bool _isAnimating;
-        private static readonly string[] AnimatedProperties = ["Opacity", "Scale", "Scale.X", "Scale.Y", "Offset", "Offset.X", "Offset.Y", "RotationAngle"];
+        // The composition properties the variants animate (RotationAngle through StartRotationAnimationInDegrees).
+        private static readonly string[] AnimatedProperties = ["Opacity", "Scale", "Scale.Y", "RotationAngle"];
         private static readonly string[] TranslationProperties = ["Translation", "Translation.X", "Translation.Y"];
         private readonly List<Visual> _activeVisuals = [];
         private readonly List<Visual> _activeTranslationVisuals = [];

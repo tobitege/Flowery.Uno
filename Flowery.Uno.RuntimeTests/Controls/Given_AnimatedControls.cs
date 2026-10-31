@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Flowery.Controls;
 using Flowery.Enums;
+using Flowery.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
@@ -32,16 +33,27 @@ namespace Flowery.Uno.RuntimeTests.Controls
             panel.Children.Add(new DaisyRadialProgress { Value = 50, Shimmer = true });
             panel.Children.Add(new DaisyDivider { DividerStyle = DaisyDividerStyle.Glow });
 
-            // Earlier tests may leave animations that end while this one runs, so only new ones count.
+            // Only Uno's compositor lets the test see what still runs; native WinUI still loads and unloads every variant.
             var running = GetRunningAnimations(panel);
-            var animationsBefore = running.Keys.Cast<object>().ToHashSet();
-            var framesBefore = GetRenderingSubscribers();
+            var rendering = typeof(CompositionTarget).GetField("_rendering", BindingFlags.Static | BindingFlags.NonPublic);
+            if (PlatformCompatibility.IsSkiaBackend || PlatformCompatibility.IsWasmBackend)
+            {
+                Assert.IsNotNull(running, "Uno's Compositor no longer has _runningAnimations: update the test.");
+                Assert.IsNotNull(rendering, "Uno's CompositionTarget no longer has _rendering: update the test.");
+            }
+
+            // Earlier tests may leave animations that end while this one runs, so only new ones count.
+            var animationsBefore = running?.Keys.Cast<object>().ToHashSet() ?? [];
+            var framesBefore = GetRenderingSubscribers(rendering);
 
             RuntimeTestHelpers.AttachToHost(panel);
             await RuntimeTestHelpers.EnsureLoadedAsync(panel);
-            Assert.IsTrue(running.Keys.Cast<object>().Any(key => !animationsBefore.Contains(key)), "The loaded controls animate.");
-            Assert.IsTrue(GetRenderingSubscribers().Except(framesBefore).Any(),
-                "Storyboards and the manual rotation on Skia animate per frame.");
+            if (running != null && rendering != null)
+            {
+                Assert.IsTrue(running.Keys.Cast<object>().Any(key => !animationsBefore.Contains(key)), "The loaded controls animate.");
+                Assert.IsTrue(GetRenderingSubscribers(rendering).Except(framesBefore).Any(),
+                    "Storyboards and the manual rotation on Skia animate per frame.");
+            }
 
             // An animation that outlives its control keeps the compositor animating, and with it the control's
             // whole visual tree, for the rest of the app's life.
@@ -51,39 +63,30 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await unloaded.Task;
             await Task.Delay(StartDelaySettle);
 
+            if (running == null || rendering == null)
+            {
+                Assert.Inconclusive("Loaded and unloaded every variant; native WinUI does not expose its running animations.");
+            }
+
             var leaked = running.Keys.Cast<object>().Where(key => !animationsBefore.Contains(key)).Select(Describe).ToList();
             Assert.IsEmpty(leaked, $"Animations still running: {string.Join(", ", leaked)}");
 
             // Any handler on CompositionTarget.Rendering makes the app render every frame, even when nothing moves.
-            var frameHandlers = GetRenderingSubscribers().Except(framesBefore)
+            var frameHandlers = GetRenderingSubscribers(rendering).Except(framesBefore)
                 .Select(handler => $"{handler.Method.DeclaringType?.Name}.{handler.Method.Name}").ToList();
             Assert.IsEmpty(frameHandlers, $"Still called every frame: {string.Join(", ", frameHandlers)}");
         }
 
-        // Uno keeps the handlers in a private static field; the tests read it to see what still runs per frame.
-        private static Delegate[] GetRenderingSubscribers()
-        {
-            var field = typeof(CompositionTarget).GetField("_rendering", BindingFlags.Static | BindingFlags.NonPublic);
-            if (field is null)
-            {
-                Assert.Inconclusive("CompositionTarget does not expose its Rendering handlers on this platform.");
-            }
-
-            return (field!.GetValue(null) as Delegate)?.GetInvocationList() ?? [];
-        }
+        // Uno keeps the Rendering handlers in a private static field; the test reads it to see what still runs per frame.
+        private static Delegate[] GetRenderingSubscribers(FieldInfo? rendering) =>
+            (rendering?.GetValue(null) as Delegate)?.GetInvocationList() ?? [];
 
         // Uno's Compositor has no public list of its running animations, so the test reads the internal one.
-        private static IDictionary GetRunningAnimations(UIElement element)
+        private static IDictionary? GetRunningAnimations(UIElement element)
         {
             var compositor = ElementCompositionPreview.GetElementVisual(element).Compositor;
-            var field = compositor.GetType().GetField("_runningAnimations", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field?.GetValue(compositor) is not IDictionary running)
-            {
-                Assert.Inconclusive("The compositor does not expose its running animations on this platform.");
-                return new Hashtable();
-            }
-
-            return running;
+            return compositor.GetType().GetField("_runningAnimations", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.GetValue(compositor) as IDictionary;
         }
 
         private static string Describe(object animation)

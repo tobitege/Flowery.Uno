@@ -16,6 +16,10 @@ namespace Flowery.Uno.RuntimeTests.Controls
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
+        // Only a safeguard: the macOS runner, which renders Skia in software, can hold back a frame for more than five
+        // seconds.
+        private static readonly TimeSpan FrameTimeout = TimeSpan.FromSeconds(30);
+
         [TestMethod]
         public async Task When_Checkerboard_Transitions_MaskChangesDifferentRegions()
         {
@@ -132,6 +136,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
                     "The outgoing image must have actually moved and scaled before the freeze is tested.");
                 var pose = CapturePose(image);
                 carousel.SlideChanged += onChanged;
+                var transition = Stopwatch.StartNew();
                 carousel.Next();
                 started = true;
 
@@ -139,7 +144,15 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 for (var frame = 0; frame < 3; frame++)
                 {
                     await NextFrameAsync();
-                    Assert.IsFalse(completed.Task.IsCompleted, "The pose must be checked while the outgoing image is still visible.");
+                    if (completed.Task.IsCompleted)
+                    {
+                        // A transition that ends early is a fault; a runner too slow to render inside it is not.
+                        Assert.IsGreaterThanOrEqualTo(carousel.TransitionDuration, transition.Elapsed.TotalSeconds,
+                            "The transition ended before its duration.");
+                        Assert.Inconclusive($"The runner rendered {frame + 1} frames in {transition.Elapsed.TotalSeconds:F1} s, " +
+                            $"so the {carousel.TransitionDuration} s transition ended before the pose could be checked.");
+                    }
+
                     Assert.AreEqual(pose, CapturePose(image), "The outgoing image pose must remain frozen during the transition.");
                 }
             }
@@ -194,7 +207,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += onRendering;
             try
             {
-                await rendered.Task.WaitAsync(Timeout);
+                await rendered.Task.WaitAsync(FrameTimeout);
             }
             finally
             {

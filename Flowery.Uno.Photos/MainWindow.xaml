@@ -5,7 +5,6 @@
     xmlns:views="using:Flowery.Uno.Photos.Views">
 
     <Grid x:Name="RootGrid" Background="{ThemeResource DaisyBase200Brush}">
-        <!-- Phase 2 host; phase 3 brings the real shell with the title bar. -->
         <views:PhotosShell x:Name="Shell" />
     </Grid>
 </Window>

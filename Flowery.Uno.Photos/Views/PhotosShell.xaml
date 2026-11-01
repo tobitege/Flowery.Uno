@@ -1,0 +1,162 @@
+<UserControl
+    x:Class="Flowery.Uno.Photos.Views.PhotosShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:views="using:Flowery.Uno.Photos.Views">
+
+    <Grid x:Name="RootGrid"
+          RowDefinitions="Auto,*"
+          AllowDrop="True"
+          DragOver="RootGrid_DragOver"
+          DragLeave="RootGrid_DragLeave"
+          Drop="RootGrid_Drop"
+          DataContext="{x:Bind Localization, Mode=OneWay}"
+          daisy:DaisyBaseContentControl.NeumorphicScopeEnabled="False">
+
+        <!-- Skia: a plain grid instead of the WinUI TitleBar control. With the system title bar (macOS, Linux) it is a
+             normal row below it; on Windows MainWindow extends the content into the title bar and the code-behind pads
+             the right edge so the search box stays clear of the caption buttons. -->
+        <Grid x:Name="AppTitleBar"
+              Height="48"
+              ColumnSpacing="12"
+              ColumnDefinitions="Auto,Auto,*,Auto"
+              Padding="14,0,14,0">
+            <Image x:Name="AppIcon" Width="20" Height="20" VerticalAlignment="Center">
+                <Image.Source>
+                    <SvgImageSource UriSource="ms-appx:///Assets/app_icon.svg"
+                                    RasterizePixelWidth="40"
+                                    RasterizePixelHeight="40" />
+                </Image.Source>
+            </Image>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding [Photos_AppTitle]}"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <daisy:DaisyInput x:Name="SearchBox"
+                              Grid.Column="2"
+                              MaxWidth="460"
+                              MinWidth="200"
+                              Margin="8,0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Center"
+                              Variant="Bordered"
+                              Size="Small"
+                              daisy:FlowerySizeManager.IgnoreGlobalSize="True"
+                              StartIconData="{StaticResource DaisyIconSearch}"
+                              PlaceholderText="{Binding [Photos_SearchPlaceholder]}"
+                              TextChanged="SearchBox_TextChanged" />
+            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <daisy:DaisyLoading x:Name="ScanIndicator"
+                                    Size="ExtraSmall"
+                                    Variant="Spinner"
+                                    Visibility="Collapsed"
+                                    VerticalAlignment="Center" />
+                <!-- Hidden until the avatar gets a function (account menu). -->
+                <daisy:DaisyAvatar x:Name="UserAvatar"
+                                   Visibility="Collapsed"
+                                   Size="ExtraSmall"
+                                   Shape="Circle"
+                                   HasRing="True"
+                                   RingColor="Primary"
+                                   VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+            <!-- Navigation rail -->
+            <Grid x:Name="Rail"
+                  Width="{StaticResource PhotosRailWidth}"
+                  RowDefinitions="*,Auto">
+                <StackPanel x:Name="RailTop" Spacing="4" Margin="0,8,0,8" />
+                <StackPanel x:Name="RailBottom" Grid.Row="1" Spacing="4" Margin="0,8,0,12" />
+            </Grid>
+
+            <!-- Pages -->
+            <Border x:Name="PageSurface"
+                    Grid.Column="1"
+                    Background="{ThemeResource DaisyBase100Brush}"
+                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                    BorderThickness="1,1,0,0"
+                    CornerRadius="12,0,0,0">
+                <Grid x:Name="PageHost">
+                    <views:HomeView x:Name="Home" />
+                    <views:GalleryView x:Name="Gallery" Visibility="Collapsed" />
+                    <views:CollectionsView x:Name="Collections" Visibility="Collapsed" />
+                </Grid>
+            </Border>
+
+            <!-- Phase 4: the viewer / editor covers the pages here. -->
+        </Grid>
+
+        <!-- Drag & drop overlay -->
+        <Border x:Name="DropOverlay"
+                Grid.RowSpan="2"
+                Visibility="Collapsed"
+                IsHitTestVisible="False"
+                Margin="16"
+                CornerRadius="16"
+                BorderThickness="2"
+                BorderBrush="{ThemeResource DaisyPrimaryBrush}"
+                Background="{ThemeResource DaisyBase100Brush}"
+                Opacity="0.92">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                <Viewbox Width="56" Height="56">
+                    <Path Data="{StaticResource PhotosIconImport}" Fill="{ThemeResource DaisyPrimaryBrush}" />
+                </Viewbox>
+                <TextBlock Text="{Binding [Photos_DropHint]}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            </StackPanel>
+        </Border>
+
+        <daisy:DaisyToast x:Name="Toasts"
+                          Grid.RowSpan="2"
+                          HorizontalPosition="Center"
+                          VerticalPosition="Bottom"
+                          ToastOffset="16,16,16,64" />
+
+        <!-- Settings: cancellable modal dialog above whatever is shown (gallery, collections or viewer). -->
+        <daisy:DaisyModal x:Name="SettingsDialog" Grid.RowSpan="2" IsOpen="False">
+            <!-- Accent frame at the dialog edge: DaisyModal pads its content by 24 and rounds its corners by 16;
+                 the negative margin puts this border exactly on the dialog outline. -->
+            <Border x:Name="SettingsDialogFrame" Margin="-24" Padding="24" CornerRadius="16" BorderThickness="1">
+            <Grid x:Name="SettingsDialogContent" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding [Photos_Nav_Settings]}"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               daisy:FlowerySizeManager.ResponsiveFont="Header" />
+                    <daisy:DaisyButton x:Name="SettingsCloseButton"
+                                       Grid.Column="1"
+                                       Variant="Ghost"
+                                       Shape="Circle"
+                                       IconSymbol="Cancel"
+                                       Click="SettingsCancel_Click" />
+                </Grid>
+                <views:SettingsView x:Name="SettingsPage" Grid.Row="1" />
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <daisy:DaisyButton x:Name="SettingsCancelButton"
+                                       Variant="Neutral"
+                                       Content="{Binding [Photos_Cancel]}"
+                                       Click="SettingsCancel_Click" />
+                    <daisy:DaisyButton x:Name="SettingsOkButton"
+                                       Variant="Primary"
+                                       MinWidth="96"
+                                       Content="{Binding [Photos_Ok]}"
+                                       Click="SettingsOk_Click" />
+                </StackPanel>
+            </Grid>
+            </Border>
+        </daisy:DaisyModal>
+
+        <daisy:DaisyModal x:Name="Dialog" Grid.RowSpan="2" IsOpen="False">
+            <Border x:Name="DialogFrame" Margin="-24" Padding="24" CornerRadius="16" BorderThickness="1">
+                <StackPanel x:Name="DialogPanel" Spacing="14" MinWidth="320" MaxWidth="460" />
+            </Border>
+        </daisy:DaisyModal>
+    </Grid>
+</UserControl>

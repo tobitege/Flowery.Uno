@@ -1,0 +1,134 @@
+<UserControl
+    x:Class="Flowery.Uno.Photos.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls">
+
+    <UserControl.Resources>
+        <Style x:Key="SettingsSectionStyle" TargetType="Border">
+            <Setter Property="Background" Value="{ThemeResource DaisyBase200Brush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource DaisyBase300Brush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="20,16" />
+        </Style>
+        <Style x:Key="SettingsHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        </Style>
+        <Style x:Key="SettingsLabelStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{ThemeResource DaisyBaseContentBrush}" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer x:Name="RootScroller" Padding="28,18,28,28" DataContext="{x:Bind Localization, Mode=OneWay}">
+        <StackPanel x:Name="PageStack" MaxWidth="860" HorizontalAlignment="Stretch" Spacing="16">
+            <TextBlock x:Name="PageTitle" Text="{Binding [Photos_Nav_Settings]}" Style="{StaticResource PhotosPageTitleTextStyle}" />
+
+            <!-- Appearance -->
+            <Border Style="{StaticResource SettingsSectionStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [Photos_Settings_Appearance]}" Style="{StaticResource SettingsHeaderStyle}" daisy:FlowerySizeManager.ResponsiveFont="SectionHeader" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <TextBlock Text="{Binding [Photos_Settings_Theme]}" Style="{StaticResource SettingsLabelStyle}" daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                        <daisy:DaisyThemeDropdown x:Name="ThemeDropdown" Grid.Column="1" Width="240" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding [Photos_Settings_Size]}" Style="{StaticResource SettingsLabelStyle}" daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                            <TextBlock Text="{Binding [Photos_Settings_SizeHint]}" Style="{StaticResource SettingsLabelStyle}" Opacity="0.6" daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+                        </StackPanel>
+                        <daisy:DaisySizeDropdown x:Name="SizeDropdown" Grid.Column="1" Width="240" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <TextBlock Text="{Binding [Photos_Settings_Language]}" Style="{StaticResource SettingsLabelStyle}" daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                        <daisy:DaisySelect x:Name="LanguageSelect" Grid.Column="1" Width="240" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Library -->
+            <Border Style="{StaticResource SettingsSectionStyle}">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding [Photos_Settings_Library]}" Style="{StaticResource SettingsHeaderStyle}" daisy:FlowerySizeManager.ResponsiveFont="SectionHeader" />
+                            <TextBlock x:Name="LibraryStats" Style="{StaticResource SettingsLabelStyle}" Opacity="0.6" daisy:FlowerySizeManager.ResponsiveFont="Secondary" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
+                            <daisy:DaisyButton x:Name="RescanButton"
+                                               Content="{Binding [Photos_Rescan]}"
+                                               IconSymbol="Refresh"
+                                               Variant="Primary"
+                                               Size="Small"
+                                               Click="RescanButton_Click" />
+                            <daisy:DaisyButton x:Name="AddFolderButton"
+                                               Content="{Binding [Photos_AddFolder]}"
+                                               IconSymbol="NewFolder"
+                                               Variant="Primary"
+                                               Size="Small"
+                                               Click="AddFolderButton_Click" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel x:Name="FoldersList" Spacing="6" />
+                    <StackPanel x:Name="LibraryOptions" Spacing="10" />
+                </StackPanel>
+            </Border>
+
+            <!-- Viewing & editing -->
+            <Border Style="{StaticResource SettingsSectionStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [Photos_Settings_ViewingEditing]}" Style="{StaticResource SettingsHeaderStyle}" daisy:FlowerySizeManager.ResponsiveFont="SectionHeader" />
+                    <StackPanel x:Name="ViewerOptions" Spacing="12" />
+                </StackPanel>
+            </Border>
+
+            <!-- Shortcuts -->
+            <Border Style="{StaticResource SettingsSectionStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{Binding [Photos_Settings_Shortcuts]}" Style="{StaticResource SettingsHeaderStyle}" daisy:FlowerySizeManager.ResponsiveFont="SectionHeader" />
+                    <Grid x:Name="ShortcutsGrid" ColumnSpacing="16" RowSpacing="8" />
+                </StackPanel>
+            </Border>
+
+            <!-- About -->
+            <Border Style="{StaticResource SettingsSectionStyle}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                    <Image x:Name="AboutIcon" Width="56" Height="56" VerticalAlignment="Top">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/app_icon.svg" RasterizePixelWidth="112" RasterizePixelHeight="112" />
+                        </Image.Source>
+                    </Image>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="{Binding [Photos_AppTitle]}" Style="{StaticResource SettingsHeaderStyle}" daisy:FlowerySizeManager.ResponsiveFont="SectionHeader" Margin="0" />
+                        <TextBlock x:Name="VersionText" Style="{StaticResource SettingsLabelStyle}" daisy:FlowerySizeManager.ResponsiveFont="Primary" Opacity="0.7" />
+                        <TextBlock Text="{Binding [Photos_Settings_AboutText]}" Style="{StaticResource SettingsLabelStyle}" daisy:FlowerySizeManager.ResponsiveFont="Primary" Opacity="0.7" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                            <daisy:DaisyButton x:Name="GitHubButton"
+                                               Content="GitHub"
+                                               IconData="{StaticResource DaisyIconBrandGitHub}"
+                                               Variant="Primary"
+                                               Size="Small"
+                                               Click="GitHubButton_Click" />
+                            <daisy:DaisyButton x:Name="DataFolderButton"
+                                               Content="{Binding [Photos_Settings_OpenDataFolder]}"
+                                               IconSymbol="Folder"
+                                               Variant="Primary"
+                                               Size="Small"
+                                               Click="DataFolderButton_Click" />
+                            <daisy:DaisyButton x:Name="ClearCacheButton"
+                                               Content="{Binding [Photos_Settings_ClearCache]}"
+                                               IconSymbol="Delete"
+                                               Variant="Primary"
+                                               Size="Small"
+                                               Click="ClearCacheButton_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

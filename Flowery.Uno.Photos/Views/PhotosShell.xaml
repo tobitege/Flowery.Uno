@@ -20,22 +20,41 @@
         <Grid x:Name="AppTitleBar"
               Height="48"
               ColumnSpacing="12"
-              ColumnDefinitions="Auto,Auto,*,Auto"
+              ColumnDefinitions="Auto,Auto,Auto,*,Auto"
               Padding="14,0,14,0">
-            <Image x:Name="AppIcon" Width="20" Height="20" VerticalAlignment="Center">
+            <!-- Back to the pages while the viewer is open (the WinUI TitleBar has this button built in). -->
+            <daisy:DaisyButton x:Name="BackButton"
+                               Variant="Ghost"
+                               Shape="Square"
+                               Size="Small"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"
+                               IconData="{StaticResource DaisyIconChevronLeft}"
+                               daisy:FlowerySizeManager.IgnoreGlobalSize="True"
+                               Click="BackButton_Click" />
+            <Image x:Name="AppIcon" Grid.Column="1" Width="20" Height="20" VerticalAlignment="Center">
                 <Image.Source>
                     <SvgImageSource UriSource="ms-appx:///Assets/app_icon.svg"
                                     RasterizePixelWidth="40"
                                     RasterizePixelHeight="40" />
                 </Image.Source>
             </Image>
-            <TextBlock Grid.Column="1"
-                       Text="{Binding [Photos_AppTitle]}"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold"
-                       Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="{Binding [Photos_AppTitle]}"
+                           VerticalAlignment="Center"
+                           FontWeight="SemiBold"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <!-- File name while the viewer is open (the WinUI TitleBar has a Subtitle). -->
+                <TextBlock x:Name="ViewerTitle"
+                           VerticalAlignment="Center"
+                           MaxWidth="360"
+                           TextTrimming="CharacterEllipsis"
+                           Opacity="0.7"
+                           Visibility="Collapsed"
+                           Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            </StackPanel>
             <daisy:DaisyInput x:Name="SearchBox"
-                              Grid.Column="2"
+                              Grid.Column="3"
                               MaxWidth="460"
                               MinWidth="200"
                               Margin="8,0"
@@ -47,7 +66,18 @@
                               StartIconData="{StaticResource DaisyIconSearch}"
                               PlaceholderText="{Binding [Photos_SearchPlaceholder]}"
                               TextChanged="SearchBox_TextChanged" />
-            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <!-- View options while the viewer's auto-hiding toolbar is hidden. -->
+                <daisy:DaisyButton x:Name="TitleViewButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   Size="Small"
+                                   Margin="0,0,8,0"
+                                   VerticalAlignment="Center"
+                                   Visibility="Collapsed"
+                                   IconData="{StaticResource PhotosIconView}"
+                                   daisy:FlowerySizeManager.IgnoreGlobalSize="True"
+                                   Click="TitleViewButton_Click" />
                 <daisy:DaisyLoading x:Name="ScanIndicator"
                                     Size="ExtraSmall"
                                     Variant="Spinner"
@@ -87,7 +117,10 @@
                 </Grid>
             </Border>
 
-            <!-- Phase 4: the viewer / editor covers the pages here. -->
+            <!-- Viewer / editor covers the pages; the navigation rail stays available. -->
+            <views:ViewerView x:Name="Viewer"
+                              Grid.Column="1"
+                              Visibility="Collapsed" />
         </Grid>
 
         <!-- Drag & drop overlay -->

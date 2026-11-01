@@ -99,11 +99,8 @@ namespace Flowery.Uno.Photos.Views
                 SummaryText.Text = PhotosLocalization.Format("Photos_Settings_LibraryStats", library.Items.Count, library.Folders.Count,
                     FileOperations.FormatFileSize(library.Items.Sum(i => i.FileSize)));
 
-                if (PhotosShell.ViewerAvailable)
-                {
-                    AddHeroAction(L("Photos_Home_StartSlideshow"), DaisyButtonVariant.Primary, null, Icon("PhotosIconSlideshow"), () =>
-                        _ = _shell?.StartSlideshowAsync(SortedByDate(library.Items), 0));
-                }
+                AddHeroAction(L("Photos_Home_StartSlideshow"), DaisyButtonVariant.Primary, null, Icon("PhotosIconSlideshow"), () =>
+                    _ = _shell?.StartSlideshowAsync(SortedByDate(library.Items), 0));
                 AddHeroAction(L("Photos_AddFolder"), DaisyButtonVariant.Primary, Symbol.NewFolder, null, () => _ = _shell?.AddFolderInteractiveAsync());
                 AddHeroAction(L("Photos_ImportFiles"), DaisyButtonVariant.Primary, Symbol.Import, null, () => _ = _shell?.ImportFilesInteractiveAsync());
                 return;
@@ -442,14 +439,7 @@ namespace Flowery.Uno.Photos.Views
             content.Children.Add(placeholder);
             content.Children.Add(image);
 
-            var card = CreateCard(content, new Thickness(2), 12, () =>
-            {
-                // Skia: without the viewer (phase 4) a thumbnail opens the gallery.
-                if (PhotosShell.ViewerAvailable)
-                    _ = _shell?.OpenViewerAsync(items, index);
-                else
-                    _shell?.Navigate(PhotosPage.Gallery);
-            }, item.FileName);
+            var card = CreateCard(content, new Thickness(2), 12, () => _ = _shell?.OpenViewerAsync(items, index), item.FileName);
             ToolTipService.SetToolTip(card, item.FileName);
 
             if (ThumbnailLoader.TryGetCached(item, side) is { } cached)

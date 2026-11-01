@@ -246,9 +246,9 @@ namespace Flowery.Uno.Photos.Services
             }
         }
 
-        private readonly record struct IfdEntry(ushort Tag, uint Count, uint ValueOffset, int EntryOffset);
+        internal readonly record struct IfdEntry(ushort Tag, uint Count, uint ValueOffset, int EntryOffset);
 
-        private static List<IfdEntry> EnumerateIfd(ReadOnlySpan<byte> tiff, uint offset, bool little)
+        internal static List<IfdEntry> EnumerateIfd(ReadOnlySpan<byte> tiff, uint offset, bool little)
         {
             List<IfdEntry> result = [];
             if (offset + 2 > tiff.Length)
@@ -268,7 +268,7 @@ namespace Flowery.Uno.Photos.Services
             return result;
         }
 
-        private static string? ReadAscii(ReadOnlySpan<byte> tiff, uint count, uint valueOffset, ReadOnlySpan<byte> raw)
+        internal static string? ReadAscii(ReadOnlySpan<byte> tiff, uint count, uint valueOffset, ReadOnlySpan<byte> raw)
         {
             if (count == 0)
                 return null;
@@ -282,10 +282,10 @@ namespace Flowery.Uno.Photos.Services
             return Encoding.ASCII.GetString(bytes).TrimEnd('\0', ' ');
         }
 
-        private static ushort ReadU16(ReadOnlySpan<byte> data, int offset, bool little) =>
+        internal static ushort ReadU16(ReadOnlySpan<byte> data, int offset, bool little) =>
             little ? BinaryPrimitives.ReadUInt16LittleEndian(data[offset..]) : BinaryPrimitives.ReadUInt16BigEndian(data[offset..]);
 
-        private static uint ReadU32(ReadOnlySpan<byte> data, int offset, bool little) =>
+        internal static uint ReadU32(ReadOnlySpan<byte> data, int offset, bool little) =>
             little ? BinaryPrimitives.ReadUInt32LittleEndian(data[offset..]) : BinaryPrimitives.ReadUInt32BigEndian(data[offset..]);
     }
 }

@@ -32,8 +32,7 @@ namespace Flowery.Uno.Photos.Views
     }
 
     /// <summary>
-    /// Application shell: title bar with search, navigation rail, pages, toasts and dialogs.
-    /// Skia: the viewer overlay arrives in phase 4, so <see cref="ViewerAvailable"/> is false until then.
+    /// Application shell: title bar with search, navigation rail, pages, viewer overlay, toasts and dialogs.
     /// </summary>
     public sealed partial class PhotosShell : UserControl
     {
@@ -57,8 +56,8 @@ namespace Flowery.Uno.Photos.Views
 
         public static PhotosShell? Current { get; private set; }
 
-        /// <summary>Skia: the viewer and slideshow come with phase 4; actions that start them stay hidden until then.</summary>
-        public static bool ViewerAvailable => false;
+        /// <summary>Skia: editing comes after the viewer; the actions that start it stay hidden until then.</summary>
+        public static bool EditingAvailable => false;
 
         public PhotosLocalization Localization => PhotosLocalization.Instance;
 
@@ -96,6 +95,8 @@ namespace Flowery.Uno.Photos.Views
             Home.Initialize(this);
             Gallery.Initialize(this);
             Collections.Initialize(this);
+            Viewer.Initialize(this);
+            Viewer.Closed += OnViewerClosed;
             SettingsPage.Initialize(this);
             SettingsPage.SetDialogMode();
             SettingsDialog.RegisterPropertyChangedCallback(DaisyModal.IsOpenProperty, (_, _) => OnSettingsDialogOpenChanged());
@@ -129,6 +130,7 @@ namespace Flowery.Uno.Photos.Views
 
         public void Shutdown()
         {
+            Viewer.Shutdown();
         }
 
         private static KeyboardAccelerator CreateAccelerator(VirtualKey key, VirtualKeyModifiers modifiers, TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs> handler)
@@ -198,6 +200,13 @@ namespace Flowery.Uno.Photos.Views
 
         private void UpdateLocalizedChrome()
         {
+            var viewText = PhotosLocalization.GetString("Photos_View");
+            ToolTipService.SetToolTip(TitleViewButton, viewText);
+            AutomationProperties.SetName(TitleViewButton, viewText);
+            var backText = PhotosLocalization.GetString("Photos_Back");
+            ToolTipService.SetToolTip(BackButton, backText);
+            AutomationProperties.SetName(BackButton, backText);
+
             foreach (var (_, item) in _railItems)
             {
                 var text = PhotosLocalization.GetString(item.TooltipKey);
@@ -214,16 +223,21 @@ namespace Flowery.Uno.Photos.Views
         /// Rail navigation also works while the viewer is open: it closes the viewer first
         /// (asking about unsaved edits) and then shows the requested page.
         /// </summary>
-        private Task NavigateFromRailAsync(PhotosPage page)
+        private async Task NavigateFromRailAsync(PhotosPage page)
         {
             // Settings open as a dialog above the current content (also above the editor).
             if (page == PhotosPage.Settings)
             {
                 OpenSettings();
-                return Task.CompletedTask;
+                return;
+            }
+            if (Viewer.IsOpen)
+            {
+                await Viewer.RequestCloseAsync();
+                if (Viewer.IsOpen)
+                    return;
             }
             Navigate(page);
-            return Task.CompletedTask;
         }
 
         public void Navigate(PhotosPage page)
@@ -333,13 +347,67 @@ namespace Flowery.Uno.Photos.Views
 
         #region Viewer
 
-        // Skia: the viewer and the slideshow arrive in phase 4. Callers keep their WinUI shape.
-        public Task OpenViewerAsync(IReadOnlyList<PhotoItem> items, int index, bool edit = false) => Task.CompletedTask;
+        public async Task OpenViewerAsync(IReadOnlyList<PhotoItem> items, int index, bool edit = false)
+        {
+            if (items.Count == 0)
+                return;
 
-        public Task StartSlideshowAsync(IReadOnlyList<PhotoItem> items, int index) => Task.CompletedTask;
+            Viewer.Visibility = Visibility.Visible;
+            // Keep keyboard focus and UI Automation inside the viewer (the rail stays reachable).
+            PageSurface.Visibility = Visibility.Collapsed;
+            BackButton.Visibility = Visibility.Visible;
+            SearchBox.Visibility = Visibility.Collapsed;
+            await Viewer.OpenAsync(items, Math.Clamp(index, 0, items.Count - 1), edit);
+        }
+
+        public async Task StartSlideshowAsync(IReadOnlyList<PhotoItem> items, int index)
+        {
+            await OpenViewerAsync(items, index);
+            Viewer.StartSlideshow();
+        }
+
+        /// <summary>Shows the view options button in the title bar (used while the viewer toolbar is hidden).</summary>
+        public void SetTitleViewButtonVisible(bool visible) =>
+            TitleViewButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+
+        private void TitleViewButton_Click(object sender, RoutedEventArgs e) => Viewer.ShowViewOptions(TitleViewButton);
+
+        /// <summary>Skia: the title bar is a plain grid, so the subtitle of the WinUI TitleBar is a text next to the app title.</summary>
+        public void SetViewerTitle(string? subtitle)
+        {
+            ViewerTitle.Text = subtitle ?? string.Empty;
+            ViewerTitle.Visibility = string.IsNullOrEmpty(subtitle) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void OnViewerClosed(object? sender, PhotoItem? lastItem)
+        {
+            Viewer.Visibility = Visibility.Collapsed;
+            SetTitleViewButtonVisible(false);
+            Rail.Visibility = Visibility.Visible;
+            PageSurface.Visibility = Visibility.Visible;
+            BackButton.Visibility = Visibility.Collapsed;
+            SetViewerTitle(null);
+            SearchBox.Visibility = Visibility.Visible;
+            if (_window?.IsFullScreen == true)
+                _window.SetFullScreen(false);
+            SetTitleBarVisible(true);
+            if (Gallery.Visibility == Visibility.Visible)
+                Gallery.OnReturnedFromViewer(lastItem);
+        }
+
+        private async void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Viewer.IsOpen)
+                await Viewer.RequestCloseAsync();
+        }
 
         public void ToggleFullScreen()
         {
+            if (Viewer.IsOpen)
+            {
+                Viewer.ToggleImmersive();
+                return;
+            }
             if (_window == null)
                 return;
             _window.SetFullScreen(!_window.IsFullScreen);
@@ -408,6 +476,10 @@ namespace Flowery.Uno.Photos.Views
                 SettingsPage.CancelEdit();
             _settingsAccepted = false;
             UpdateRailSelection();
+
+            // Return keyboard focus to where the user was.
+            if (Viewer.IsOpen)
+                Viewer.Focus(FocusState.Programmatic);
 
         }
 
@@ -656,18 +728,7 @@ namespace Flowery.Uno.Photos.Views
                 }
 
                 if (files.Count > 0)
-                {
-                    if (ViewerAvailable)
-                    {
-                        await OpenExternalFilesAsync(files);
-                    }
-                    else
-                    {
-                        // Skia: without the viewer (phase 4) a dropped photo is imported into the library, as in phase 2.
-                        var count = await PhotoLibrary.Instance.ImportFilesAsync(files);
-                        ShowToast(PhotosLocalization.Format("Photos_ImportedCount", count), DaisyAlertVariant.Success);
-                    }
-                }
+                    await OpenExternalFilesAsync(files);
             }
             finally
             {
@@ -699,7 +760,7 @@ namespace Flowery.Uno.Photos.Views
                     var siblings = Directory.EnumerateFiles(folder)
                         .Where(ImageMetadataReader.IsSupported)
                         .OrderBy(f => f, StringComparer.CurrentCultureIgnoreCase)
-                        .Select(f => string.Equals(f, items[0].Path, StringComparison.OrdinalIgnoreCase) ? items[0] : PhotoLibrary.Instance.GetOrCreateItem(f))
+                        .Select(f => string.Equals(f, items[0].Path, PathRules.Comparison) ? items[0] : PhotoLibrary.Instance.GetOrCreateItem(f))
                         .Where(i => i != null)
                         .Cast<PhotoItem>()
                         .ToList();

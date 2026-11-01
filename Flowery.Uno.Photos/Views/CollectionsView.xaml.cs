@@ -112,8 +112,7 @@ namespace Flowery.Uno.Photos.Views
         {
             var menu = new MenuFlyout();
             menu.Items.Add(MenuItem("Photos_Open", Symbol.OpenFile, () => OnEntryInvoked(entry)));
-            if (PhotosShell.ViewerAvailable)
-                menu.Items.Add(MenuItem("Photos_Slideshow", null, () => _ = StartSlideshowAsync(entry), Icon("PhotosIconSlideshow")));
+            menu.Items.Add(MenuItem("Photos_Slideshow", null, () => _ = StartSlideshowAsync(entry), Icon("PhotosIconSlideshow")));
 
             if (entry.Kind == CollectionEntryKind.Album)
             {

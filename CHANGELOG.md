@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - 2026-10-31
+## [1.6.0] - 2026-11-01
 
 - **Breaking:** Kanban: removed the user-provider API that the board no longer used since 1.5.0, as Flowery.NET did: the
   `FlowKanbanUserManagement` control (with `FlowKanbanProviderSummary`, `FlowKanbanUserItem`, its GitHub connect,
@@ -86,8 +86,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of 546 MB.
 - `DaisyDateTimeline` builds its date items once when it loads instead of again for every property set before, such as
   from XAML, and once instead of twice when it resolves its item width or spacing itself. The Gallery's Date Display
-  page, with 13 timelines, builds in 35 instead of 468 ms and shows about 1 s sooner. Runtime tests check that
-  properties set before loading apply and that the items use a resolved width.
+  page, with 13 timelines, builds in 35 instead of 468 ms and shows about 1 s sooner. The size refresh that
+  `FlowerySizeManager` runs on `Loaded` rebuilds the items only when the resolved size differs from the one they were
+  built with, so loading builds them once instead of twice. A theme change only reapplies the header color instead of
+  building the items again, as the items follow the theme themselves; the header now also fetches its brush again, so
+  it follows a brush instance that the app replaced. Runtime tests count the builds and check that properties set
+  before loading apply, that the items use a resolved width, and that a theme or global size change still reaches the
+  header and the items.
 - `DaisyDateTimeline`: changing `Locale` updates `HeaderText` and the accessible name at once, also before the timeline
   loads. Before, both kept the month name in the culture that was current when the timeline was created until the
   selected date changed, so a `Locale` set in XAML did not reach the header.

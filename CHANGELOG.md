@@ -6,188 +6,692 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - 2026-10-28
+## [1.6.0] - 2026-11-01
 
-- **Breaking:** Kanban: removed the user-provider API that the board no longer used since 1.5.0, as Flowery.NET did: the `FlowKanbanUserManagement` control (with `FlowKanbanProviderSummary`, `FlowKanbanUserItem`, its GitHub connect, provider and link dialogs and its style), `IUserProvider`, `ICompositeUserProvider`, `IFlowUser`, `FlowUser`, `FlowUserStatus`, `CompositeUserProvider`, `LocalUserProvider`, `FlowUserIdHelper`, `IUserCacheService` and the token interfaces (`ITokenSaveProvider`, `ITokenStateProvider`, `ITokenValidationProvider` with `ProviderTokenValidationStatus` and `ProviderTokenValidationResult`, `IInteractiveAuthProvider`). Hosts supply assignees through `FlowKanban.AssigneeAdapter`. The language files drop the `Kanban_Users_*` texts, except `Kanban_Users_Unresolved`, which the assignee filter shows, and `Common_Connect` and `Common_Disconnect`. State the removed providers saved (`FlowKanban.LocalUserId`, `FlowKanban.IdentityLinks`) stays where it is; nothing reads it.
-- **New:** Scheduler: `DaisyScheduler`, ported from Flowery.NET 3.10.0 and adapted from the MIT-licensed Xtreme.Components scheduler (#103). Day, Week, Month, Agenda, Calendar, resource Planner and horizontal Timeline views; typed resources with resource kinds, named and collapsible Timeline groups and occupancy queries; selection, move, resize, creation and deletion requests, tooltips, decorations, templates, external drops, daily spans, overlap queries, week rules, editor time slots, regional date/time formats and 12/24-hour clocks. The control follows the global size, the theme and the 12 languages. New in Flowery.Uno: `ShowWeekends` (also in the settings menu) hides Saturday and Sunday in Week, Month and Planner. Differences from Flowery.NET: one-line chips and Planner and Timeline bars never trim their start time (status glyphs and tiles show only when they fit beside it, and the subject takes the rest); a Planner or Timeline hour is as wide as a one-hour bar with its full start time, every hour has a header label, and hours widen to fill the visible width (`DaisySchedulerTimelineMinimumHourWidth`, default 0, can raise the minimum); the selection ring lies over the frame border, so selecting does not move or resize an appointment; the Calendar view reuses its day buttons; labels use a 1.2 em line height and the time gutter is as wide as its widest label, so 12-hour times fit with Skia text metrics; the frozen day header and time gutter are no scroll viewers but follow the scrolled body by a transform, so a touch or the mouse wheel cannot move them on their own; `SchedulerToolbarButton` has public setters for the WinUI XAML compiler; invalid values from XAML or bindings are ignored instead of thrown; external drag data is a `DataPackage` (`ExternalDropHandler.CreateDataPackage`). On touch, a tap selects an appointment or an empty day and dragging a selected appointment moves or resizes it, while a swipe that starts elsewhere scrolls and changes nothing, also when the system takes the touch over, and a double tap edits or creates; resize edges are up to 12 DIP wide with touch or a pen, at most a quarter of the appointment each (5 DIP with a mouse); on Android this needed ManipulationMode `None` on the selected appointment, gesture handlers that also receive handled pointer events, positions taken from the window point, and size writes from SizeChanged and Loaded deferred past the native layout pass, which otherwise left the scheduler without layout; a settled scroll also becomes the offset that Uno restores at every arrange, because its native Android scroll presenter keeps restoring the offset of the last programmatic `ChangeView` and a tap scrolled back to the initial hour. Gallery page under Custom Controls, runtime and unit tests, `llms-static/DaisyScheduler.md`, and `ThirdPartyNotices/Xtreme.Components.txt`, packed under `licenses/`.
-- Scheduler: `DaisySchedulerToolbar`, the scheduler toolbar as its own control, ported from Flowery.NET. The first row holds the date range as a title that opens a date picker, previous and next, Today, the host buttons and the settings; the second row holds the views as icon segments with tooltips, the selected one raised. Heights, icons and the title follow the design tokens of the scheduler size (`DaisySchedulerToolbarIconSize` is new); the title writes month and day in the order of the culture, with the year first for a month where the culture writes it first, and for days only where it also writes the month before the day (such as Japanese). Where the first row is too narrow, as on a phone, the host buttons and the settings move right-aligned below the date and the navigation. `DaisyScheduler.ShowToolbar` (default `true`) hides the built-in toolbar, so another one can be placed elsewhere with its `Scheduler` set. `SchedulerToolbarButton.IconData` shows a host button as a line icon, with ready-made icons in `SchedulerToolbarIcons`. The template part `PART_Toolbar` is now a `DaisySchedulerToolbar`; `PART_Views`, `PART_CustomButtons`, `PART_Date` and the tokens `DaisySchedulerToolbarItemMargin` and `DaisySchedulerViewButtonsMargin` are gone. Differences from Flowery.NET: the button colors follow hover, press and selection in code, as WinUI has no style classes, the selected view segment is raised by a hairline border instead of a shadow, and the view segments narrow evenly where the toolbar is too narrow for them, as on a phone; the buttons take their template from `DaisySchedulerToolbarButtonStyle`.
-- **New:** Scheduler: `DaisyScheduler.ColumnZoom`, ported from Flowery.NET (#124). It widens the day columns of Month, Day and Week and the hours of Planner and Timeline from 1 (default) to 4 times the width that fits them into the view, and the view scrolls sideways. Users zoom by spreading or pinching two fingers, on Android and in the browser, where the gesture zooms the scheduler and not the page; by dragging the right edge of a column heading with the mouse, which shows a resize cursor; with Ctrl (Cmd) and the mouse wheel; by a double click or two taps on a column heading, which switches between fitted and twice as wide columns; and with Column width in the settings menu. The day under the fingers or the pointer stays in place, and the view is not built again. A second finger ends what the first one started, a tap, drag or resize, without a change. `DaisyScheduler.StateKey` keeps the user's zoom in `StateStorageProvider` for the next start; the Gallery sets it, and its hints name the gestures.
-- **New:** Kanban: spreading two fingers zooms `FlowKanban` in and pinching zooms it out, one size per quarter of the fingers' distance, within the sizes of the zoom buttons (#124). Ctrl (Cmd) and the mouse wheel change the size by one per notch. A pinch neither selects nor drags a card: the card under the first finger gets its selection back, and no card starts a drag until both fingers are lifted.
-- `DaisyButton` applies style properties set before it gets its template (`Variant`, `Size`, `ButtonStyle`, `Shape`, `ContentPadding`) once, in `OnApplyTemplate`, instead of once per property, so the first layout already has the size height. On Loaded it skips the size and theme pass while the applied size and theme are still current. Creating and loading many buttons takes a fraction of the time.
-- `DaisyResourceLookup.TryGetResource` no longer searches the merged dictionaries again after a miss. `TryGetValue` already searches nested merged and theme dictionaries, in WinUI and in Uno, whose lookup is the same code on Skia, WebAssembly and Android, so the result is the same, and lookups of optional keys that do not exist, which every Daisy control makes, are much faster. `DaisyNumericUpDown` drops the same search for its icon geometries.
-- `DaisyTooltip`: an open tooltip that moves to a new parent stays open on Skia. Uno raised the `Closed` event of the popup closed on unload only after the tooltip had reopened, and the tooltip then closed itself; it now reopens after that event.
-- `DaisyModal`: on Android the on-screen keyboard no longer covers the dialog. While it is shown, the dialog is centered in the part between the status bar and the keyboard and limited to it, so a field in its lower part and the buttons below stay visible; a dialog with a scroll viewer, such as the Kanban editors, scrolls the focused field into view there. This also holds for a dialog opened while the keyboard is open, after the screen turns, and while a dialog is dragged or resized. The backdrop still covers the whole window. Before, the dialog stayed centered over the whole window under the keyboard: with the soft input mode `adjustNothing`, the default of Uno's app template and the Gallery's setting, the keyboard covers the window instead of shrinking it, and the dialog has no scroll viewer of its own. With `adjustPan` Android still moves the window itself. A `DaisyModal` or a dialog based on `FloweryDialogBase` that is loaded again after an unload closes with Escape again and follows size changes, and the dialog confirms with Enter (with `IsCloseOnEnterEnabled`) and cycles with Tab again; they stopped listening after the unload.
-- `FlowKanban`: an edit that waits for its debounced auto-save is saved at once, as in Flowery.NET, instead of being lost or saved later into whatever was current then. This happens when the board unloads, before the home view clears the last board ID (before, the timer fired later into whatever state storage was current and set the last board ID again); when the app goes to the background or closes (`Application.EnteredBackground` and `Suspending`, which Uno raises when an Android activity stops, when an iOS app goes to the background, and the first time a window of a Skia desktop app on Windows closes; WebAssembly with the Skia renderer, Linux and macOS raise neither), as on Android leaving the app does not unload the board and an edit made just before was lost when the system ended the app; before a board loads, so reopening the open board shows the edit; and when `Board` or `BoardStore` of a loaded board changes, on the edited board and into its store, where a replaced board does not become the last board. Deleting the open board drops its waiting edit instead of saving the board back. A save no longer requests another one when it gives the board a valid ID. State that the board sets itself and does not save no longer starts an auto-save: the archive column flags (`IsArchiveColumn`, `IsArchiveColumnVisible`, which also raise no `ColumnEdited` any more), the assignee avatars and roles from the adapter (no `CardEdited` any more), and the selection. So a host that sets `Board` and then `BoardStore` saves nothing into the default store.
-- `DaisyResizableColumnsHost` listens to `LayoutUpdated` only while it is loaded and has not found its items panel yet. Before, every host stayed subscribed for good: a host that had left the UI, such as the one of a closed Kanban board, stayed in memory, ran on every layout pass of the window and could throw a `NullReferenceException` there, which also failed a Gallery runtime test on Linux now and then.
-- Gallery: the Scheduler sample data fills the current month, and today has four appointments. Xaver (sales) and Sammy (communications) join with their own appointments and department groups, every sample has a description with made-up customers and suppliers, start times spread over the working day, and the second and fourth Sunday of the month stay free.
-- Docs: `llms-static/DaisyButton.md` says that `DaisyButton` sets its own `Foreground` for every state and that `DaisyButtonForeground` and `DaisyButtonForegroundPointerOver` in the button's resources change the text color. The Hero sample's "Learn more" button drops a `Foreground` that the button replaced anyway.
-- Gallery: on Android and iOS the Scheduler page keeps the screen height instead of scrolling, so the scheduler's days and hours scroll by touch.
-- Gallery: the Scheduler page opens the appointment editor over the right side of the scheduler, which keeps its width, instead of beside it. A press on the scheduler or Escape closes the editor while its fields are unchanged; with changes it stays open until Save or Cancel. A page narrower than 600 px keeps 8 instead of 24 at its sides. On Android and iOS the page hides the Gallery header, and its title bar folds the description and the options away: they start folded, a tap on the bar shows them, the editor folds them when it opens, and the menu button moves into the bar; a help line below the scheduler names the taps and the bin button (`Scheduler_TouchHelp` in all Gallery languages). In the editor, date and time share a row.
-- Gallery: the Scheduler page drops its resource-kind, date/time-format and clock-format selects; the scheduler's settings menu has them.
+- **Breaking:** Kanban: removed the user-provider API that the board no longer used since 1.5.0, as Flowery.NET did: the
+  `FlowKanbanUserManagement` control (with `FlowKanbanProviderSummary`, `FlowKanbanUserItem`, its GitHub connect,
+  provider and link dialogs and its style), `IUserProvider`, `ICompositeUserProvider`, `IFlowUser`, `FlowUser`,
+  `FlowUserStatus`, `CompositeUserProvider`, `LocalUserProvider`, `FlowUserIdHelper`, `IUserCacheService` and the token
+  interfaces (`ITokenSaveProvider`, `ITokenStateProvider`, `ITokenValidationProvider` with
+  `ProviderTokenValidationStatus` and `ProviderTokenValidationResult`, `IInteractiveAuthProvider`). Hosts supply
+  assignees through `FlowKanban.AssigneeAdapter`. The language files drop the `Kanban_Users_*` texts, except
+  `Kanban_Users_Unresolved`, which the assignee filter shows, and `Common_Connect` and `Common_Disconnect`. State the
+  removed providers saved (`FlowKanban.LocalUserId`, `FlowKanban.IdentityLinks`) stays where it is; nothing reads it.
+- **New:** Scheduler: `DaisyScheduler`, ported from Flowery.NET 3.10.0 and adapted from the MIT-licensed
+  Xtreme.Components scheduler (#103). Day, Week, Month, Agenda, Calendar, resource Planner and horizontal Timeline
+  views; typed resources with resource kinds, named and collapsible Timeline groups and occupancy queries; selection,
+  move, resize, creation and deletion requests, tooltips, decorations, templates, external drops, daily spans, overlap
+  queries, week rules, editor time slots, regional date/time formats and 12/24-hour clocks. The control follows the
+  global size, the theme and the 12 languages. New in Flowery.Uno: `ShowWeekends` (also in the settings menu) hides
+  Saturday and Sunday in Week, Month and Planner. Differences from Flowery.NET: one-line chips and Planner and Timeline
+  bars never trim their start time (status glyphs and tiles show only when they fit beside it, and the subject takes the
+  rest); a Planner or Timeline hour is as wide as a one-hour bar with its full start time, every hour has a header
+  label, and hours widen to fill the visible width (`DaisySchedulerTimelineMinimumHourWidth`, default 0, can raise the
+  minimum); the selection ring lies over the frame border, so selecting does not move or resize an appointment; the
+  Calendar view reuses its day buttons; labels use a 1.2 em line height and the time gutter is as wide as its widest
+  label, so 12-hour times fit with Skia text metrics; the frozen day header and time gutter are no scroll viewers but
+  follow the scrolled body by a transform, so a touch or the mouse wheel cannot move them on their own;
+  `SchedulerToolbarButton` has public setters for the WinUI XAML compiler; invalid values from XAML or bindings are
+  ignored instead of thrown; external drag data is a `DataPackage` (`ExternalDropHandler.CreateDataPackage`). On touch,
+  a tap selects an appointment or an empty day and dragging a selected appointment moves or resizes it, while a swipe
+  that starts elsewhere scrolls and changes nothing, also when the system takes the touch over, and a double tap edits
+  or creates; resize edges are up to 12 DIP wide with touch or a pen, at most a quarter of the appointment each (5 DIP
+  with a mouse); on Android this needed ManipulationMode `None` on the selected appointment, gesture handlers that also
+  receive handled pointer events, positions taken from the window point, and size writes from SizeChanged and Loaded
+  deferred past the native layout pass, which otherwise left the scheduler without layout; a settled scroll also becomes
+  the offset that Uno restores at every arrange, because its native Android scroll presenter keeps restoring the offset
+  of the last programmatic `ChangeView` and a tap scrolled back to the initial hour. Gallery page under Custom Controls,
+  runtime and unit tests, `llms-static/DaisyScheduler.md`, and `ThirdPartyNotices/Xtreme.Components.txt`, packed under
+  `licenses/`.
+- Scheduler: `DaisySchedulerToolbar`, the scheduler toolbar as its own control, ported from Flowery.NET. The first row
+  holds the date range as a title that opens a date picker, previous and next, Today, the host buttons and the settings;
+  the second row holds the views as icon segments with tooltips, the selected one raised. Heights, icons and the title
+  follow the design tokens of the scheduler size (`DaisySchedulerToolbarIconSize` is new); the title writes month and
+  day in the order of the culture, with the year first for a month where the culture writes it first, and for days only
+  where it also writes the month before the day (such as Japanese). Where the first row is too narrow, as on a phone,
+  the host buttons and the settings move right-aligned below the date and the navigation. `DaisyScheduler.ShowToolbar`
+  (default `true`) hides the built-in toolbar, so another one can be placed elsewhere with its `Scheduler` set.
+  `SchedulerToolbarButton.IconData` shows a host button as a line icon, with ready-made icons in
+  `SchedulerToolbarIcons`. The template part `PART_Toolbar` is now a `DaisySchedulerToolbar`; `PART_Views`,
+  `PART_CustomButtons`, `PART_Date` and the tokens `DaisySchedulerToolbarItemMargin` and
+  `DaisySchedulerViewButtonsMargin` are gone. Differences from Flowery.NET: the button colors follow hover, press and
+  selection in code, as WinUI has no style classes, the selected view segment is raised by a hairline border instead of
+  a shadow, and the view segments narrow evenly where the toolbar is too narrow for them, as on a phone; the buttons
+  take their template from `DaisySchedulerToolbarButtonStyle`.
+- **New:** Scheduler: `DaisyScheduler.ColumnZoom`, ported from Flowery.NET (#124). It widens the day columns of Month,
+  Day and Week and the hours of Planner and Timeline from 1 (default) to 4 times the width that fits them into the view,
+  and the view scrolls sideways. Users zoom by spreading or pinching two fingers, on Android and in the browser, where
+  the gesture zooms the scheduler and not the page; by dragging the right edge of a column heading with the mouse, which
+  shows a resize cursor; with Ctrl (Cmd) and the mouse wheel; by a double click or two taps on a column heading, which
+  switches between fitted and twice as wide columns; and with Column width in the settings menu. The day under the
+  fingers or the pointer stays in place, and the view is not built again. A second finger ends what the first one
+  started, a tap, drag or resize, without a change. `DaisyScheduler.StateKey` keeps the user's zoom in
+  `StateStorageProvider` for the next start; the Gallery sets it, and its hints name the gestures.
+- **New:** Kanban: spreading two fingers zooms `FlowKanban` in and pinching zooms it out, one size per quarter of the
+  fingers' distance, within the sizes of the zoom buttons (#124). Ctrl (Cmd) and the mouse wheel change the size by one
+  per notch. A pinch neither selects nor drags a card: the card under the first finger gets its selection back, and no
+  card starts a drag until both fingers are lifted.
+- `DaisyButton` applies style properties set before it gets its template (`Variant`, `Size`, `ButtonStyle`, `Shape`,
+  `ContentPadding`) once, in `OnApplyTemplate`, instead of once per property, so the first layout already has the size
+  height. On Loaded it skips the size and theme pass while the applied size and theme are still current. Creating and
+  loading many buttons takes a fraction of the time.
+- `DaisyResourceLookup.TryGetResource` no longer searches the merged dictionaries again after a miss. `TryGetValue`
+  already searches nested merged and theme dictionaries, in WinUI and in Uno, whose lookup is the same code on Skia,
+  WebAssembly and Android, so the result is the same, and lookups of optional keys that do not exist, which every Daisy
+  control makes, are much faster. `DaisyNumericUpDown` drops the same search for its icon geometries.
+- `FlowerySizeManager`: changing `IgnoreGlobalSize` (the attached property or `SetIgnoreGlobalSize`) refreshes only the
+  element and the loaded controls below it, the only ones whose policy can change, instead of every loaded control. A
+  page that sets it in XAML is built before it is in the tree, so each setting also refreshed every control still loaded
+  elsewhere: in the Gallery, Data Input opened after Date Display now builds in 121 instead of 977 ms and allocates 200
+  instead of 546 MB.
+- `DaisyDateTimeline` builds its date items once when it loads instead of again for every property set before, such as
+  from XAML, and once instead of twice when it resolves its item width or spacing itself. The Gallery's Date Display
+  page, with 13 timelines, builds in 35 instead of 468 ms and shows about 1 s sooner. The size refresh that
+  `FlowerySizeManager` runs on `Loaded` rebuilds the items only when the resolved size differs from the one they were
+  built with, so loading builds them once instead of twice. A theme change only reapplies the header color instead of
+  building the items again, as the items follow the theme themselves; the header now also fetches its brush again, so
+  it follows a brush instance that the app replaced. Runtime tests count the builds and check that properties set
+  before loading apply, that the items use a resolved width, and that a theme or global size change still reaches the
+  header and the items.
+- `DaisyDateTimeline`: changing `Locale` updates `HeaderText` and the accessible name at once, also before the timeline
+  loads. Before, both kept the month name in the culture that was current when the timeline was created until the
+  selected date changed, so a `Locale` set in XAML did not reach the header.
+- `DaisySelect` listens to its `LocalizationSource` only while it is loaded and applies what changed meanwhile when it
+  loads again. Before, an app-wide source such as the Gallery's localization kept every select it had ever served, and
+  the page around it, in memory: each visit to the Gallery's Carousel page stayed alive.
+- `DaisyLoading` stops its animations of `Translation.X`, `Translation.Y` and `Scale.Y` when it unloads or rebuilds
+  (Win95 file copy, delete and search, chart pulse). They kept running on the removed visuals, which kept those visuals
+  and the compositor busy.
+- `DaisyStatusIndicator`: the orbit variants stop their rotation when they unload on Skia and WebAssembly. It kept
+  running per frame, so after a visit to the Gallery's Feedback page the app redrew every frame.
+- `DaisyDivider`: the `Glow` pulse stops when the divider unloads and does not start twice. It kept running per frame
+  after its page was gone, one more with every Gallery page that was opened.
+- `DaisyTooltip`: an open tooltip that moves to a new parent stays open on Skia. Uno raised the `Closed` event of the
+  popup closed on unload only after the tooltip had reopened, and the tooltip then closed itself; it now reopens after
+  that event.
+- `DaisyModal`: on Android the on-screen keyboard no longer covers the dialog. While it is shown, the dialog is centered
+  in the part between the status bar and the keyboard and limited to it, so a field in its lower part and the buttons
+  below stay visible; a dialog with a scroll viewer, such as the Kanban editors, scrolls the focused field into view
+  there. This also holds for a dialog opened while the keyboard is open, after the screen turns, and while a dialog is
+  dragged or resized. The backdrop still covers the whole window. Before, the dialog stayed centered over the whole
+  window under the keyboard: with the soft input mode `adjustNothing`, the default of Uno's app template and the
+  Gallery's setting, the keyboard covers the window instead of shrinking it, and the dialog has no scroll viewer of its
+  own. With `adjustPan` Android still moves the window itself. A `DaisyModal` or a dialog based on `FloweryDialogBase`
+  that is loaded again after an unload closes with Escape again and follows size changes, and the dialog confirms with
+  Enter (with `IsCloseOnEnterEnabled`) and cycles with Tab again; they stopped listening after the unload.
+- `FlowKanban`: an edit that waits for its debounced auto-save is saved at once, as in Flowery.NET, instead of being
+  lost or saved later into whatever was current then. This happens when the board unloads, before the home view clears
+  the last board ID (before, the timer fired later into whatever state storage was current and set the last board ID
+  again); when the app goes to the background or closes (`Application.EnteredBackground` and `Suspending`, which Uno
+  raises when an Android activity stops, when an iOS app goes to the background, and the first time a window of a Skia
+  desktop app on Windows closes; WebAssembly with the Skia renderer, Linux and macOS raise neither), as on Android
+  leaving the app does not unload the board and an edit made just before was lost when the system ended the app; before
+  a board loads, so reopening the open board shows the edit; and when `Board` or `BoardStore` of a loaded board changes,
+  on the edited board and into its store, where a replaced board does not become the last board. Deleting the open board
+  drops its waiting edit instead of saving the board back. A save no longer requests another one when it gives the board
+  a valid ID. State that the board sets itself and does not save no longer starts an auto-save: the archive column flags
+  (`IsArchiveColumn`, `IsArchiveColumnVisible`, which also raise no `ColumnEdited` any more), the assignee avatars and
+  roles from the adapter (no `CardEdited` any more), and the selection. So a host that sets `Board` and then
+  `BoardStore` saves nothing into the default store.
+- `DaisyResizableColumnsHost` listens to `LayoutUpdated` only while it is loaded and has not found its items panel yet.
+  Before, every host stayed subscribed for good: a host that had left the UI, such as the one of a closed Kanban board,
+  stayed in memory, ran on every layout pass of the window and could throw a `NullReferenceException` there, which also
+  failed a Gallery runtime test on Linux now and then.
+- `DaisyWeatherForecast` spaces its days by `ItemSpacing`, as in Flowery.WinUI. The items panel bound its spacing to
+  `TemplatedParent`, which in an items panel template is not the forecast, so the spacing always stayed 0. The forecast
+  now sets the spacing of its panel itself.
+- `FlowKanbanData.Columns` raises `PropertyChanged` when it gets a new collection, as in Flowery.WinUI, so a board shows
+  the new columns: `FlowKanban` waits for that change to rebuild its columns, and before it kept showing the replaced
+  ones. A null collection becomes an empty one, as for `Lanes`.
+- Gallery: the Scheduler sample data fills the current month, and today has four appointments. Xaver (sales) and Sammy
+  (communications) join with their own appointments and department groups, every sample has a description with made-up
+  customers and suppliers, start times spread over the working day, and the second and fourth Sunday of the month stay
+  free.
+- Docs: `llms-static/DaisyButton.md` says that `DaisyButton` sets its own `Foreground` for every state and that
+  `DaisyButtonForeground` and `DaisyButtonForegroundPointerOver` in the button's resources change the text color. The
+  Hero sample's "Learn more" button drops a `Foreground` that the button replaced anyway.
+- Gallery: on Android and iOS the Scheduler page keeps the screen height instead of scrolling, so the scheduler's days
+  and hours scroll by touch.
+- Gallery: the Scheduler page opens the appointment editor over the right side of the scheduler, which keeps its width,
+  instead of beside it. A press on the scheduler or Escape closes the editor while its fields are unchanged; with
+  changes it stays open until Save or Cancel. A page narrower than 600 px keeps 8 instead of 24 at its sides. On Android
+  and iOS the page hides the Gallery header, and its title bar folds the description and the options away: they start
+  folded, a tap on the bar shows them, the editor folds them when it opens, and the menu button moves into the bar; a
+  help line below the scheduler names the taps and the bin button (`Scheduler_TouchHelp` in all Gallery languages). In
+  the editor, date and time share a row.
+- Gallery: the Scheduler page drops its resource-kind, date/time-format and clock-format selects; the scheduler's
+  settings menu has them.
 - Gallery: the Scheduler page's New and Delete toolbar buttons show line icons, with their names as tooltips.
 - Gallery: the header reads "2025, 2026 - MIT licensed" in all languages.
 - Gallery: the Windows runtime-test window is titled "Uno Desktop" (it showed the WinUI default "WinUI Desktop").
-- Gallery: the `pixelize` GL transition pixelates again instead of crossfading. The transition shaders read the `progress` uniform directly instead of a global copy that `main` set only after the global initializers had run, so shaders whose global initializers read `progress` see its real value instead of 0. A browser test, `scripts/tests/browser/gl-transitions.spec.cjs`, checks the middle frame of `pixelize`.
-- Gallery: the `BookFlip` GL transition selects the page for each side of the fold instead of mixing both pages with a weight of 0 or 1. At exactly half progress the unused page divides by zero, which GLSL leaves unspecified, so a GPU could put NaN pixels into the frame; Chrome's WebGL clamps the result and drew the frame correctly. The browser test checks that the middle frame of `BookFlip` shows the outgoing image left of the center and the incoming image right of it.
-- README: the note no longer calls Flowery.Uno an alpha and gives the current size of the repo (~175K lines of C# and XAML in 1,000+ files, with 100+ controls; it said ~134K lines in 900+ files).
+- Gallery: the `pixelize` GL transition pixelates again instead of crossfading. The transition shaders read the
+  `progress` uniform directly instead of a global copy that `main` set only after the global initializers had run, so
+  shaders whose global initializers read `progress` see its real value instead of 0. A browser test,
+  `scripts/tests/browser/gl-transitions.spec.cjs`, checks the middle frame of `pixelize`.
+- Gallery: the `BookFlip` GL transition selects the page for each side of the fold instead of mixing both pages with a
+  weight of 0 or 1. At exactly half progress the unused page divides by zero, which GLSL leaves unspecified, so a GPU
+  could put NaN pixels into the frame; Chrome's WebGL clamps the result and drew the frame correctly. The browser test
+  checks that the middle frame of `BookFlip` shows the outgoing image left of the center and the incoming image right of
+  it.
+- README: the note no longer calls Flowery.Uno an alpha and gives the current size of the repo (~175K lines of C# and
+  XAML in 1,000+ files, with 100+ controls; it said ~134K lines in 900+ files).
 - Kiosk.Browser: the login slide lists 100+ controls (was 80+) and 50+ themes (was 35+).
-- Docs: the theme counts match the 53 built-in themes (36 DaisyUI themes and 17 HappyHues themes) that `DaisyThemeDropdown` lists. The README, `THEMING.md` and the `llms-static` pages for the theme dropdown, controller, manager, radio, swap and product dropdown said 35+ or 36, and so did the doc comment of `DaisyPaletteFactory`.
-- Development: `scripts/run-linux-desktop.ps1` runs the Desktop (Skia) Gallery on a Linux desktop (XFCE) in Docker, shown in the browser through noVNC at http://localhost:6081, beside the Flowery.NET desktop on 6080. The script publishes the Gallery self-contained for the architecture of the Docker host (`linux-x64` or `linux-arm64`) and mounts it read-only. `docker/linux-desktop` is the same as in Flowery.NET, so both build the same image under the same tag. The image sets no `APP_PATH`; each repository's script passes the path of its app. The image has no .NET SDK. The script builds it again from the current base image and packages when it is older than 7 days, so Debian's security updates are at most a week old; `-RebuildImage` does that at once, for example for a CVE. `xwd` and `xdotool` in the image take screenshots and drive input for checks from outside. On pull requests that touch the library or the Gallery, the `Linux Desktop` workflow checks that `docker/linux-desktop` matches Flowery.NET's, starts the Gallery with the script and has the sidebar restore the Scheduler page. It fails when the sidebar does not restore it, the Gallery stops, it writes a crash log, or its output shows an exception.
-- Development: the CI builds the Gallery with the .NET 11 SDK (RC2) as well, as Flowery.WinUI's CI does. Linux Desktop and Windows run their runtime tests; WebAssembly and Android build with the .NET 11 SDK's workloads for the `net10.0` targets. A shared script, `scripts/ci/Assert-GalleryRuntimeTests.ps1`, checks the runtime test results of every Gallery job that runs them and holds the list of required regression tests; `scripts/tests/Assert-GalleryRuntimeTests.test.ps1` checks the script in the library job. The jobs keep the `net10.0` targets and rewrite `global.json` to the .NET 11 SDK only in their CI runs; the repository stays on .NET 10. These jobs are not required checks, so a failure shows what breaks without blocking a merge; releases build with .NET 10 only.
-- Development: the Windows build has no `CsWinRT1032` warnings with the .NET 11 SDK. Its newer Windows SDK projection warns where a collection expression fills a read-only interface (`IReadOnlyList<T>`, `IEnumerable<T>`, `IReadOnlyCollection<T>`), as such a list has no defined type for trimming and AOT in WinRT. The neumorphic surfaces of Toggle, SlideToConfirm, Radio, CheckBox and the base content control, the weather forecast, the Gallery settings and samples, and the runtime tests now pass arrays or lists instead; `.editorconfig` sets `dotnet_style_prefer_collection_expression = when_types_exactly_match`, so the IDE no longer suggests turning them back.
-- Development: CI is faster. A first job skips the builds for pull requests that only change Markdown files or `llms-static/` (the required checks still report as passed, and the builds run when that job fails); the NuGet audit runs one job per OS (now also Linux) for Release and Debug instead of one per configuration, which frees a macOS and a Windows runner; the WebAssembly Release build runs in its own Linux job beside the Windows Gallery job; and the build jobs restore the NuGet packages from the Actions cache, which the audit job of each OS saves on `main`.
-- Development: Kanban runtime tests check the real paths, as in Flowery.NET: changing `BoardSize` on a loaded board reaches its column and add cards, `IsDropEnabled = false` on a loaded column turns off drops on the column and its task list, and the v0 migration test asserts that it removed `schemaVersion`. New tests cover the waiting auto-save in each case above, and a home tile whose menu names Open, Rename, Duplicate, Export and Delete and opens its board, also after the home view was attached again.
+- Docs: the theme counts match the 53 built-in themes (36 DaisyUI themes and 17 HappyHues themes) that
+  `DaisyThemeDropdown` lists. The README, `THEMING.md` and the `llms-static` pages for the theme dropdown, controller,
+  manager, radio, swap and product dropdown said 35+ or 36, and so did the doc comment of `DaisyPaletteFactory`.
+- Development: `scripts/run-linux-desktop.ps1` runs the Desktop (Skia) Gallery on a Linux desktop (XFCE) in Docker,
+  shown in the browser through noVNC at http://localhost:6081, beside the Flowery.NET desktop on 6080. The script
+  publishes the Gallery self-contained for the architecture of the Docker host (`linux-x64` or `linux-arm64`) and mounts
+  it read-only. `docker/linux-desktop` is the same as in Flowery.NET, so both build the same image under the same tag.
+  The image sets no `APP_PATH`; each repository's script passes the path of its app. The image has no .NET SDK. The
+  script builds it again from the current base image and packages when it is older than 7 days, so Debian's security
+  updates are at most a week old; `-RebuildImage` does that at once, for example for a CVE. `xwd` and `xdotool` in the
+  image take screenshots and drive input for checks from outside. On pull requests that touch the library or the
+  Gallery, the `Linux Desktop` workflow checks that `docker/linux-desktop` matches Flowery.NET's, starts the Gallery
+  with the script and has the sidebar restore the Scheduler page. It fails when the sidebar does not restore it, the
+  Gallery stops, it writes a crash log, or its output shows an exception.
+- Development: the CI builds the Gallery with the .NET 11 SDK (RC2) as well, as Flowery.WinUI's CI does. Linux Desktop
+  and Windows run their runtime tests; WebAssembly and Android build with the .NET 11 SDK's workloads for the `net10.0`
+  targets. A shared script, `scripts/ci/Assert-GalleryRuntimeTests.ps1`, checks the runtime test results of every
+  Gallery job that runs them and holds the list of required regression tests;
+  `scripts/tests/Assert-GalleryRuntimeTests.test.ps1` checks the script in the library job. The jobs keep the `net10.0`
+  targets and rewrite `global.json` to the .NET 11 SDK only in their CI runs; the repository stays on .NET 10. These
+  jobs are not required checks, so a failure shows what breaks without blocking a merge; releases build with .NET 10
+  only.
+- Development: the Windows build has no `CsWinRT1032` warnings with the .NET 11 SDK. Its newer Windows SDK projection
+  warns where a collection expression fills a read-only interface (`IReadOnlyList<T>`, `IEnumerable<T>`,
+  `IReadOnlyCollection<T>`), as such a list has no defined type for trimming and AOT in WinRT. The neumorphic surfaces
+  of Toggle, SlideToConfirm, Radio, CheckBox and the base content control, the weather forecast, the Gallery settings
+  and samples, and the runtime tests now pass arrays or lists instead; `.editorconfig` sets
+  `dotnet_style_prefer_collection_expression = when_types_exactly_match`, so the IDE no longer suggests turning them
+  back.
+- Development: CI is faster. A first job skips the builds for pull requests that only change Markdown files or
+  `llms-static/` (the required checks still report as passed, and the builds run when that job fails); the NuGet audit
+  runs one job per OS (now also Linux) for Release and Debug instead of one per configuration, which frees a macOS and a
+  Windows runner; the WebAssembly Release build runs in its own Linux job beside the Windows Gallery job; and the build
+  jobs restore the NuGet packages from the Actions cache, which the audit job of each OS saves on `main`.
+- Gallery: the sample images (`GalleryAssetHelper`) are new for each use instead of shared static images. Uno 6.7's
+  `ImageBrush` stays subscribed to its image, so the shared images kept every Cards page that was opened in memory.
+- Development: runtime tests check that an unloaded `DaisySelect` leaves its `LocalizationSource`, and that the animated
+  controls (every `DaisyLoading` and `DaisyStatusIndicator` variant, `DaisySkeleton`, the progress shimmers and the
+  `Glow` divider) leave no composition animation and no per-frame handler running after they unload.
+- Development: the Scheduler runtime tests that scroll an appointment or a slot into view wait until it lies inside the
+  viewport and the scroll position holds still before they press there, and a synthesized press that hits nothing fails
+  at once. WinUI applies the scroll when it renders, so on the Windows runner with the .NET 11 SDK a press could land
+  outside the viewport, and the planner and spring-gap tests failed now and then.
+- Development: the build has no `MSTEST0017` warning (swapped arguments of an `Assert.AreNotEqual` in the
+  `DaisyDateTimeline` locale test) and no `CsWinRT1032` warning for the scheduler's saved column zoom with the .NET 11
+  SDK.
+- Development: the carousel runtime test that checks the frozen pose of the outgoing image no longer fails now and then
+  on the macOS runner, which renders Skia in software and can hold back a frame for seconds. It uses a 4 s instead of a
+  1 s transition and waits up to 30 s for a frame instead of 5 s; when the runner still renders too slowly to check the
+  pose inside the transition, the test reports inconclusive. A transition that ends before its duration still fails it.
+- Development: Kanban runtime tests check the real paths, as in Flowery.NET: changing `BoardSize` on a loaded board
+  reaches its column and add cards, `IsDropEnabled = false` on a loaded column turns off drops on the column and its
+  task list, and the v0 migration test asserts that it removed `schemaVersion`. New tests cover the waiting auto-save in
+  each case above, and a home tile whose menu names Open, Rename, Duplicate, Export and Delete and opens its board, also
+  after the home view was attached again.
 
 ## [1.5.0] - 2026-10-24
 
-- **Breaking:** Neumorphic: removed the rim light and surface gradient API (`NeumorphicRimLightEnabled`, `NeumorphicSurfaceGradientEnabled`, `GlobalNeumorphicRimLightEnabled`, `GlobalNeumorphicSurfaceGradientEnabled`, the matching `DaisyNeumorphic` attached properties and the `IsNeumorphic*EffectivelyEnabled()` helpers). No rendering code ever read them (#94).
-- **Breaking:** Neumorphic: `GlobalNeumorphicDarkShadowColor` and `GlobalNeumorphicLightShadowColor` are now `Color?`. `null` (the default) follows the theme; a color set by the app survives theme changes. The navy fallback before the first theme is gone (#94).
-- **Breaking:** Neumorphic: the protected `_neumorphicHelper` field of `DaisyBaseContentControl` is replaced by `GetNeumorphicSurfaces()`, which describes one or more surfaces with an optional fixed mode. `OnNeumorphicRefreshed(bool)` tells derived controls whether the effect is drawn (#94).
-- **Breaking:** Templates: the `DaisyToggle` part `Knob` is now a `Border` (was an `Ellipse`), inside the new `PART_TrackSurface` grid; `KnobTransform` sits on a wrapper `Grid` around it. `PART_HandleTransform` of `DaisySlideToConfirm` moved to a wrapper `Grid` around `PART_Handle`, and `PART_InnerDot` of `DaisyRadio` sits in a `Grid`. Custom templates for these controls need the same structure (#94).
-- **Breaking:** Sizing: aligned the font tokens with Flowery.NET and Flowery.WinUI. The primary ladder is now 10/12/14/18/20 (was 8/10/12/14/16), and the secondary, tertiary, section header, header, line height, badge, menu, kbd, divider and DateTimeline font tokens grow with it. `GetDefaultFontSize`, `GetDefaultLineHeight` and the `GetFontSizeForTier` fallbacks use the same values. Badge, kbd, DateTimeline, TextArea and floating input heights follow the Flowery.NET tokens so the larger text fits; the missing ExtraLarge badge tokens are added. Checkbox, radio and toggle labels read the new `DaisyCheckbox/Radio/Toggle{Size}FontSize` tokens.
-- **Breaking:** Sizing: `DaisyCheckBox`, `DaisyRadio` and `DaisyToggle` indicators are as tall as the line height of their label text; Medium matches the WinUI defaults (20 px checkbox and radio, 40×20 toggle with a 12 px knob). The compact sizes were much smaller than their labels and too small to show the neumorphic effects. `TogglePadding` defaults to `NaN`, which centers the knob with the same gap on every side; the checked knob no longer overlaps the track border, and the track border uses BaseContent at 50 % opacity like DaisyUI.
-- **Breaking:** Sizing: the new `DaisySize.Auto` (-1) is the default `Size` of every Daisy control, so an unset `Size` now reads `Auto`; the five tiers keep their values 0 to 4. An Auto control takes the size of its containing composite control (button group, avatar group, list row, steps, dock, Fab, accordion, weather forecast, table) or the global size, and the new read-only `ResolvedSize` reports the concrete tier. Code that reads `Size` for layout or token lookups must read `ResolvedSize`. Constructors, `DaisyControlLifecycle`, the size manager, the size dropdown and the Gallery no longer write `Size`, so explicit values, styles and bindings keep their precedence, and an explicit Medium stays explicit when the global size changes. Without a global size, Auto resolves to Medium, to Small for `DaisyModifierKeys`, `DaisyDivider`, `DaisyTabsHeaderButtons` and `DaisyTagPicker`, and to Large for `DaisyFab`.
-- **Breaking:** Sizing, for derived and custom controls: `DaisyControlLifecycle` only handles theme changes, and its constructor no longer takes `getSize`, `setSize` and `subscribeSizeChanges`. The protected `DaisyComboBoxBase(bool subscribeSizeChanges)` constructor is removed. In `DaisyBaseContentControl`, the virtual `OnGlobalSizeChanged` and `SetControlSize` are replaced by `OnResolvedSizeChanged` and `DefaultSize`.
-- **Breaking:** Button: `Padding` is outer spacing added to the automatic inner padding. Code that set `Padding` to replace the inner padding sets the new `ContentPadding` (`Thickness?`) instead; `null` selects the automatic padding, and an explicit zero is kept. Custom templates bind the new `ResolvedContentPadding`. ButtonGroup no longer writes the padding of its buttons.
-- **Breaking:** Card: `BodyPadding` is `Thickness?`. `null` selects 16/24/32/40/48 by tier (half in Compact); explicit values, including zero, survive size and variant changes. XAML values stay valid; code and custom templates that need the concrete value read the new `ResolvedBodyPadding`.
-- Checkbox: the corner radius follows the box size (a fifth of it). Radio: ring and dot skip layout rounding, so the dot stays centered at display scales such as 125 % and 175 %.
-- Toggle: the knob stays visible in themes whose variant color is close to the track color (e.g. Secondary in the HappyHues themes). It always has a thin BaseContent outline (50 % opacity), the checked track border takes the variant color where that color stands out from the track, and a checked knob whose color is too close to the track (CIE76 color difference below 20) is darkened on a light track or lightened on a dark one, keeping its hue. Knob brushes set by the app are used as given. New `FloweryColorHelpers.GetColorDifference`.
-- Theming: `DaisyThemeManager.ThemeChanged` notifies its handlers one at a time. A handler that threw stopped the notification, so every control subscribed after it kept its old colors; the failure is now logged under `Events`. A theme that fails to apply is logged under `Theming` instead of failing silently.
-- TextArea: every text area with the same `MinRows` has the same height. The visible border kept the 80 px default when the rows needed more, unless something else (such as a placeholder binding) re-applied the sizing later; `DaisyInput` now re-applies its sizing when `MinHeight` changes. Input: vertical padding set by the app is capped at what still fits one text line, and padding changes still reach the text box after the input was unloaded and loaded again.
-- Table: `DaisyTableRow` reads its lightweight-styling brushes (`DaisyTableRowBorderBrush`, `DaisyTableRowHoverBackground` and the others) from the `Resources` of its `DaisyTable` when the row does not define them itself, so one definition on the table styles all rows.
-- Gallery: the Toggle and Radio sections show a small `DaisyTable` with the controls in its cells, to check the row height in every size tier.
-- Neumorphic: table rows and cells, and list rows and columns, no longer draw their own surface; the table or list is the one surface (#67). The table's root border now sits in a `Grid`, so the surface is drawn next to it; before, it went into the row panel, where it had no height.
-- Gallery: the Table example is 670 px wide instead of 620, so the `Message` button in its last column is no longer clipped.
-- Release: every release asset has a signed build provenance attestation, verifiable with `gh attestation verify <file> --repo tobitege/Flowery.Uno`, and `SHA256SUMS.txt` lists the SHA-256 checksum of each asset. The release notes explain both checks.
-- Release: the WinUI Gallery is also published for Windows arm64 (`Flowery.Gallery-Windows-arm64.zip`), cross-compiled on the x64 runner. Before, ARM64 devices had only the Skia build.
-- Badge: the label is no longer cut off at the bottom. The default style fixed the height to the Medium token and drew a second border, so a badge in another size tier was squeezed; `DaisyBadge` now owns its border, padding and size, as in Flowery.WinUI.
-- Join: Default and Soft buttons keep the join's divider border, so a join shows its shared borders and rounded ends again. The buttons re-applied their own transparent border on load, theme change and hover.
-- Join and ButtonGroup: buttons keep their segment corners (square inside, rounded at the ends) after a size change. They could return to the size token's radius when the container set a radius equal to the button's current one.
-- Neumorphic: children of `DaisyJoin` and `DaisyButtonGroup` stay flat even when an ancestor sets `NeumorphicScopeEnabled="True"` (#94).
-- Neumorphic: buttons without an opaque face (Ghost, Link, Outline, Dash, Soft) draw no effect; their shadows showed through the face as a grey shimmer, most visibly in table cells, which clipped the halo to a box. Changing `Variant` or `ButtonStyle` re-evaluates this (#94).
-- Neumorphic: controls without a surface of their own (e.g. `DaisyLoading`, `DaisyIndicator`, `DaisyStack`: their own host, with no visible background) no longer get a raised Base200 box in global mode. Surfaces a control declares keep the Base200 fallback (#94).
-- Neumorphic (Windows): shadow layers of surfaces inside a control template are removed again when the control unloads. WinUI reports no parent for them after unload, so they stayed in the tree and were added a second time on the next load (#94).
-- Neumorphic: new `NeumorphicScopeMode` and `NeumorphicScopeIntensity` attached properties set mode and intensity for a subtree; a control's own values still win (#94).
-- Neumorphic: `DaisyToggle` (inset track, raised knob), `DaisyCheckBox` and `DaisyRadio` (inset wells) and boxed `DaisyTimelineItem`s draw the effect. `DaisySlideToConfirm` keeps its inset track and raised handle on global changes, the handle shadow now moves with the handle, and it keeps its normal track in neumorphic mode; the handle gets an opaque Base100 face for its raised effect. Before, a local `NeumorphicEnabled="True"` made the track transparent (#94).
-- Sizing: composite controls give Auto children their size without overwriting a child's own `Size`, and a size change on the container refreshes nested Auto controls. Dock no longer writes its items' `IconSize` or `IgnoreGlobalSize`; a `DaisyWeatherForecastItem` supplied by the app keeps its `Size`. Controls register for global size changes while loaded and unregister on unload; a reloaded PasswordBox keeps its password.
-- Sizing: `FlowerySizeManager.ApplySize` throws `ArgumentOutOfRangeException` for `Auto` or a value outside the five tiers. With `EnableGlobalAutoSize` set to false it refreshes neither loaded controls nor responsive TextBlocks; `RefreshAllSizes`, or setting `EnableGlobalAutoSize` back to true, catches them up. New `FlowerySizeManager.ResolveSize` resolves a requested size for an element.
-- Accordion: `DaisyAccordion` and `DaisyAccordionItem` have a `Size`; an accordion's size is the default for its items. Header and body padding are 8/12/16/20/24 and the header minimum height 32/40/48/56/64 by tier, overridable with `DaisyAccordion{Size}Padding` and `DaisyAccordion{Size}HeaderMinHeight`.
-- Stat: new `ValueFontSize` and `LabelFontSize`; `NaN` (the default) selects 18/20/24/28/32 for the value (overridable with `DaisyStat{Size}ValueFontSize`) and the secondary font size for title and description. Title and description use the Muted brush at full opacity.
-- Breadcrumbs: new `SeparatorBrush` on `DaisyBreadcrumbs` and `DaisyBreadcrumbItem`; the item's brush wins over the container's. Separators use the Subtle brush at `SeparatorOpacity` 1 (was 0.5; an explicit opacity still multiplies), and the last item uses the Muted brush instead of 70 % opacity. Content set by the app inherits the item's foreground and keeps its own foreground and opacity.
-- ThemeController: new `Size` and `ResolvedSize`. The checkbox mode follows the checkbox and checkmark size tokens instead of a fixed 48 px indicator, and the ToggleWithText labels use the control's `FontSize`.
+- **Breaking:** Neumorphic: removed the rim light and surface gradient API (`NeumorphicRimLightEnabled`,
+  `NeumorphicSurfaceGradientEnabled`, `GlobalNeumorphicRimLightEnabled`, `GlobalNeumorphicSurfaceGradientEnabled`, the
+  matching `DaisyNeumorphic` attached properties and the `IsNeumorphic*EffectivelyEnabled()` helpers). No rendering code
+  ever read them (#94).
+- **Breaking:** Neumorphic: `GlobalNeumorphicDarkShadowColor` and `GlobalNeumorphicLightShadowColor` are now `Color?`.
+  `null` (the default) follows the theme; a color set by the app survives theme changes. The navy fallback before the
+  first theme is gone (#94).
+- **Breaking:** Neumorphic: the protected `_neumorphicHelper` field of `DaisyBaseContentControl` is replaced by
+  `GetNeumorphicSurfaces()`, which describes one or more surfaces with an optional fixed mode.
+  `OnNeumorphicRefreshed(bool)` tells derived controls whether the effect is drawn (#94).
+- **Breaking:** Templates: the `DaisyToggle` part `Knob` is now a `Border` (was an `Ellipse`), inside the new
+  `PART_TrackSurface` grid; `KnobTransform` sits on a wrapper `Grid` around it. `PART_HandleTransform` of
+  `DaisySlideToConfirm` moved to a wrapper `Grid` around `PART_Handle`, and `PART_InnerDot` of `DaisyRadio` sits in a
+  `Grid`. Custom templates for these controls need the same structure (#94).
+- **Breaking:** Sizing: aligned the font tokens with Flowery.NET and Flowery.WinUI. The primary ladder is now
+  10/12/14/18/20 (was 8/10/12/14/16), and the secondary, tertiary, section header, header, line height, badge, menu,
+  kbd, divider and DateTimeline font tokens grow with it. `GetDefaultFontSize`, `GetDefaultLineHeight` and the
+  `GetFontSizeForTier` fallbacks use the same values. Badge, kbd, DateTimeline, TextArea and floating input heights
+  follow the Flowery.NET tokens so the larger text fits; the missing ExtraLarge badge tokens are added. Checkbox, radio
+  and toggle labels read the new `DaisyCheckbox/Radio/Toggle{Size}FontSize` tokens.
+- **Breaking:** Sizing: `DaisyCheckBox`, `DaisyRadio` and `DaisyToggle` indicators are as tall as the line height of
+  their label text; Medium matches the WinUI defaults (20 px checkbox and radio, 40×20 toggle with a 12 px knob). The
+  compact sizes were much smaller than their labels and too small to show the neumorphic effects. `TogglePadding`
+  defaults to `NaN`, which centers the knob with the same gap on every side; the checked knob no longer overlaps the
+  track border, and the track border uses BaseContent at 50 % opacity like DaisyUI.
+- **Breaking:** Sizing: the new `DaisySize.Auto` (-1) is the default `Size` of every Daisy control, so an unset `Size`
+  now reads `Auto`; the five tiers keep their values 0 to 4. An Auto control takes the size of its containing composite
+  control (button group, avatar group, list row, steps, dock, Fab, accordion, weather forecast, table) or the global
+  size, and the new read-only `ResolvedSize` reports the concrete tier. Code that reads `Size` for layout or token
+  lookups must read `ResolvedSize`. Constructors, `DaisyControlLifecycle`, the size manager, the size dropdown and the
+  Gallery no longer write `Size`, so explicit values, styles and bindings keep their precedence, and an explicit Medium
+  stays explicit when the global size changes. Without a global size, Auto resolves to Medium, to Small for
+  `DaisyModifierKeys`, `DaisyDivider`, `DaisyTabsHeaderButtons` and `DaisyTagPicker`, and to Large for `DaisyFab`.
+- **Breaking:** Sizing, for derived and custom controls: `DaisyControlLifecycle` only handles theme changes, and its
+  constructor no longer takes `getSize`, `setSize` and `subscribeSizeChanges`. The protected
+  `DaisyComboBoxBase(bool subscribeSizeChanges)` constructor is removed. In `DaisyBaseContentControl`, the virtual
+  `OnGlobalSizeChanged` and `SetControlSize` are replaced by `OnResolvedSizeChanged` and `DefaultSize`.
+- **Breaking:** Button: `Padding` is outer spacing added to the automatic inner padding. Code that set `Padding` to
+  replace the inner padding sets the new `ContentPadding` (`Thickness?`) instead; `null` selects the automatic padding,
+  and an explicit zero is kept. Custom templates bind the new `ResolvedContentPadding`. ButtonGroup no longer writes the
+  padding of its buttons.
+- **Breaking:** Card: `BodyPadding` is `Thickness?`. `null` selects 16/24/32/40/48 by tier (half in Compact); explicit
+  values, including zero, survive size and variant changes. XAML values stay valid; code and custom templates that need
+  the concrete value read the new `ResolvedBodyPadding`.
+- Checkbox: the corner radius follows the box size (a fifth of it). Radio: ring and dot skip layout rounding, so the dot
+  stays centered at display scales such as 125 % and 175 %.
+- Toggle: the knob stays visible in themes whose variant color is close to the track color (e.g. Secondary in the
+  HappyHues themes). It always has a thin BaseContent outline (50 % opacity), the checked track border takes the variant
+  color where that color stands out from the track, and a checked knob whose color is too close to the track (CIE76
+  color difference below 20) is darkened on a light track or lightened on a dark one, keeping its hue. Knob brushes set
+  by the app are used as given. New `FloweryColorHelpers.GetColorDifference`.
+- Theming: `DaisyThemeManager.ThemeChanged` notifies its handlers one at a time. A handler that threw stopped the
+  notification, so every control subscribed after it kept its old colors; the failure is now logged under `Events`. A
+  theme that fails to apply is logged under `Theming` instead of failing silently.
+- TextArea: every text area with the same `MinRows` has the same height. The visible border kept the 80 px default when
+  the rows needed more, unless something else (such as a placeholder binding) re-applied the sizing later; `DaisyInput`
+  now re-applies its sizing when `MinHeight` changes. Input: vertical padding set by the app is capped at what still
+  fits one text line, and padding changes still reach the text box after the input was unloaded and loaded again.
+- Table: `DaisyTableRow` reads its lightweight-styling brushes (`DaisyTableRowBorderBrush`,
+  `DaisyTableRowHoverBackground` and the others) from the `Resources` of its `DaisyTable` when the row does not define
+  them itself, so one definition on the table styles all rows.
+- Gallery: the Toggle and Radio sections show a small `DaisyTable` with the controls in its cells, to check the row
+  height in every size tier.
+- Neumorphic: table rows and cells, and list rows and columns, no longer draw their own surface; the table or list is
+  the one surface (#67). The table's root border now sits in a `Grid`, so the surface is drawn next to it; before, it
+  went into the row panel, where it had no height.
+- Gallery: the Table example is 670 px wide instead of 620, so the `Message` button in its last column is no longer
+  clipped.
+- Release: every release asset has a signed build provenance attestation, verifiable with
+  `gh attestation verify <file> --repo tobitege/Flowery.Uno`, and `SHA256SUMS.txt` lists the SHA-256 checksum of each
+  asset. The release notes explain both checks.
+- Release: the WinUI Gallery is also published for Windows arm64 (`Flowery.Gallery-Windows-arm64.zip`), cross-compiled
+  on the x64 runner. Before, ARM64 devices had only the Skia build.
+- Badge: the label is no longer cut off at the bottom. The default style fixed the height to the Medium token and drew a
+  second border, so a badge in another size tier was squeezed; `DaisyBadge` now owns its border, padding and size, as in
+  Flowery.WinUI.
+- Join: Default and Soft buttons keep the join's divider border, so a join shows its shared borders and rounded ends
+  again. The buttons re-applied their own transparent border on load, theme change and hover.
+- Join and ButtonGroup: buttons keep their segment corners (square inside, rounded at the ends) after a size change.
+  They could return to the size token's radius when the container set a radius equal to the button's current one.
+- Neumorphic: children of `DaisyJoin` and `DaisyButtonGroup` stay flat even when an ancestor sets
+  `NeumorphicScopeEnabled="True"` (#94).
+- Neumorphic: buttons without an opaque face (Ghost, Link, Outline, Dash, Soft) draw no effect; their shadows showed
+  through the face as a grey shimmer, most visibly in table cells, which clipped the halo to a box. Changing `Variant`
+  or `ButtonStyle` re-evaluates this (#94).
+- Neumorphic: controls without a surface of their own (e.g. `DaisyLoading`, `DaisyIndicator`, `DaisyStack`: their own
+  host, with no visible background) no longer get a raised Base200 box in global mode. Surfaces a control declares keep
+  the Base200 fallback (#94).
+- Neumorphic (Windows): shadow layers of surfaces inside a control template are removed again when the control unloads.
+  WinUI reports no parent for them after unload, so they stayed in the tree and were added a second time on the next
+  load (#94).
+- Neumorphic: new `NeumorphicScopeMode` and `NeumorphicScopeIntensity` attached properties set mode and intensity for a
+  subtree; a control's own values still win (#94).
+- Neumorphic: `DaisyToggle` (inset track, raised knob), `DaisyCheckBox` and `DaisyRadio` (inset wells) and boxed
+  `DaisyTimelineItem`s draw the effect. `DaisySlideToConfirm` keeps its inset track and raised handle on global changes,
+  the handle shadow now moves with the handle, and it keeps its normal track in neumorphic mode; the handle gets an
+  opaque Base100 face for its raised effect. Before, a local `NeumorphicEnabled="True"` made the track transparent
+  (#94).
+- Sizing: composite controls give Auto children their size without overwriting a child's own `Size`, and a size change
+  on the container refreshes nested Auto controls. Dock no longer writes its items' `IconSize` or `IgnoreGlobalSize`; a
+  `DaisyWeatherForecastItem` supplied by the app keeps its `Size`. Controls register for global size changes while
+  loaded and unregister on unload; a reloaded PasswordBox keeps its password.
+- Sizing: `FlowerySizeManager.ApplySize` throws `ArgumentOutOfRangeException` for `Auto` or a value outside the five
+  tiers. With `EnableGlobalAutoSize` set to false it refreshes neither loaded controls nor responsive TextBlocks;
+  `RefreshAllSizes`, or setting `EnableGlobalAutoSize` back to true, catches them up. New
+  `FlowerySizeManager.ResolveSize` resolves a requested size for an element.
+- Accordion: `DaisyAccordion` and `DaisyAccordionItem` have a `Size`; an accordion's size is the default for its items.
+  Header and body padding are 8/12/16/20/24 and the header minimum height 32/40/48/56/64 by tier, overridable with
+  `DaisyAccordion{Size}Padding` and `DaisyAccordion{Size}HeaderMinHeight`.
+- Stat: new `ValueFontSize` and `LabelFontSize`; `NaN` (the default) selects 18/20/24/28/32 for the value (overridable
+  with `DaisyStat{Size}ValueFontSize`) and the secondary font size for title and description. Title and description use
+  the Muted brush at full opacity.
+- Breadcrumbs: new `SeparatorBrush` on `DaisyBreadcrumbs` and `DaisyBreadcrumbItem`; the item's brush wins over the
+  container's. Separators use the Subtle brush at `SeparatorOpacity` 1 (was 0.5; an explicit opacity still multiplies),
+  and the last item uses the Muted brush instead of 70 % opacity. Content set by the app inherits the item's foreground
+  and keeps its own foreground and opacity.
+- ThemeController: new `Size` and `ResolvedSize`. The checkbox mode follows the checkbox and checkmark size tokens
+  instead of a fixed 48 px indicator, and the ToggleWithText labels use the control's `FontSize`.
 - NumberFlow: new `DigitForeground` for digits and separators. Digit boxes update their background on theme changes.
-- IconText and Kbd: changes to `Text` or `Icon` while unloaded show after the next load, and an explicit `Size` change updates the spacing.
-- Button: an authored `MinWidth`, including one from a style or binding, is kept. Every size or shape update reset it to 0 (200 for Wide); the Wide shape still supplies 200 when nothing else sets a minimum width, and leaving Wide removes only that value.
-- Tooltip: a tooltip opened with `IsOpen` closes when the control unloads, for example on navigation, and opens again when it loads while `IsOpen` is still true. It stayed on screen without its owner. `IsOpen` set before the first load now opens the tooltip too.
-- Glass: `DaisyGlass` applies its `Padding` to the content. It builds its visual tree in code and ignored `Padding`, so the content touched the edges and the glass was only as tall as its content.
-- Card: a `BodyFontSize` set on the card (attribute, code or binding) is used for custom content. With global sizing, which is on by default, the card always used the size tier's font, so a compact card with a smaller `BodyFontSize` showed larger text than intended.
-- Gallery: the Windows head uses the variable Noto Sans fonts, so bold and semibold text is drawn with its weight instead of Regular, and Hebrew is covered. Skia heads (Desktop, WebAssembly, iOS) and Android keep the static Regular fonts, because Skia cannot select the weight of a variable font and the CJK and Hebrew variable fonts default to Thin. Every font family ships with its OFL license notice.
-- Sidebar: `FloweryComponentSidebar` items can be selected with the keyboard and through UI Automation. Each item is a tab stop that Enter or Space selects, and it is exposed as a list item with the Invoke pattern and its display name. Before, only a tap selected an item, so keyboard users, screen readers and automation tools could not.
-- Menu: new `DaisyMenuItem.IsTitle`, a non-interactive section heading (Primary, bold, Base300 divider below) that pointer, keyboard and selection skip. Disabled items use the Disabled brush.
-- Theming: every palette, including registered custom palettes, provides `DaisyBaseContentMuted` (70 % of BaseContent), `DaisyBaseContentSubtle` and `DaisyBaseContentDisabled` (50 %), and `DaisyButton{Variant}Soft`, `SoftHover` and `SoftBorder` (15, 30 and 45 % of the variant color; Business Primary Soft 12 %) colors and brushes. A color or brush the palette defines itself is kept. Soft buttons and button groups use these surface, hover and border brushes in the seven color variants.
-- Input, PasswordBox and TextArea: hint, helper and optional text use the Muted brush, placeholders the Subtle brush, and disabled text the Disabled brush. CalendarDatePicker: the date hint uses the placeholder brush, a selected date the full foreground.
-- Gallery: the sidebar takes the library widths 190/205/220/235/250 per tier, the four selectors stretch to the sidebar width, and a size change keeps the pane open or closed. A saved global size that is not one of the five tiers is ignored.
-- Build: the Skia image helpers call the `DrawBitmap` overloads with `SKSamplingOptions`; the obsolete overloads raised `CS0618`. The input templates set `UseLayoutRounding` only on Windows and Desktop, which removes the `Uno0001` warnings on Android and WebAssembly.
-- Runtime tests run in English, whatever the saved Gallery language. The runner reports inconclusive tests separately and fails only on failed tests.
+- IconText and Kbd: changes to `Text` or `Icon` while unloaded show after the next load, and an explicit `Size` change
+  updates the spacing.
+- Button: an authored `MinWidth`, including one from a style or binding, is kept. Every size or shape update reset it to
+  0 (200 for Wide); the Wide shape still supplies 200 when nothing else sets a minimum width, and leaving Wide removes
+  only that value.
+- Tooltip: a tooltip opened with `IsOpen` closes when the control unloads, for example on navigation, and opens again
+  when it loads while `IsOpen` is still true. It stayed on screen without its owner. `IsOpen` set before the first load
+  now opens the tooltip too.
+- Glass: `DaisyGlass` applies its `Padding` to the content. It builds its visual tree in code and ignored `Padding`, so
+  the content touched the edges and the glass was only as tall as its content.
+- Card: a `BodyFontSize` set on the card (attribute, code or binding) is used for custom content. With global sizing,
+  which is on by default, the card always used the size tier's font, so a compact card with a smaller `BodyFontSize`
+  showed larger text than intended.
+- Gallery: the Windows head uses the variable Noto Sans fonts, so bold and semibold text is drawn with its weight
+  instead of Regular, and Hebrew is covered. Skia heads (Desktop, WebAssembly, iOS) and Android keep the static Regular
+  fonts, because Skia cannot select the weight of a variable font and the CJK and Hebrew variable fonts default to Thin.
+  Every font family ships with its OFL license notice.
+- Sidebar: `FloweryComponentSidebar` items can be selected with the keyboard and through UI Automation. Each item is a
+  tab stop that Enter or Space selects, and it is exposed as a list item with the Invoke pattern and its display name.
+  Before, only a tap selected an item, so keyboard users, screen readers and automation tools could not.
+- Menu: new `DaisyMenuItem.IsTitle`, a non-interactive section heading (Primary, bold, Base300 divider below) that
+  pointer, keyboard and selection skip. Disabled items use the Disabled brush.
+- Theming: every palette, including registered custom palettes, provides `DaisyBaseContentMuted` (70 % of BaseContent),
+  `DaisyBaseContentSubtle` and `DaisyBaseContentDisabled` (50 %), and `DaisyButton{Variant}Soft`, `SoftHover` and
+  `SoftBorder` (15, 30 and 45 % of the variant color; Business Primary Soft 12 %) colors and brushes. A color or brush
+  the palette defines itself is kept. Soft buttons and button groups use these surface, hover and border brushes in the
+  seven color variants.
+- Input, PasswordBox and TextArea: hint, helper and optional text use the Muted brush, placeholders the Subtle brush,
+  and disabled text the Disabled brush. CalendarDatePicker: the date hint uses the placeholder brush, a selected date
+  the full foreground.
+- Gallery: the sidebar takes the library widths 190/205/220/235/250 per tier, the four selectors stretch to the sidebar
+  width, and a size change keeps the pane open or closed. A saved global size that is not one of the five tiers is
+  ignored.
+- Build: the Skia image helpers call the `DrawBitmap` overloads with `SKSamplingOptions`; the obsolete overloads raised
+  `CS0618`. The input templates set `UseLayoutRounding` only on Windows and Desktop, which removes the `Uno0001`
+  warnings on Android and WebAssembly.
+- Runtime tests run in English, whatever the saved Gallery language. The runner reports inconclusive tests separately
+  and fails only on failed tests.
 
 ## [1.4.1] - 2026-10-20
 
-- Dependencies: updated SkiaSharp and its native assets to 4.153.1, with matching Views packages for Browser and Desktop.
+- Dependencies: updated SkiaSharp and its native assets to 4.153.1, with matching Views packages for Browser and
+  Desktop.
 - Build (WASM): native C sources compile separately from the C++ WebGPU inputs before the link step.
 - Gallery (Browser): the WASM build now uses the Skia renderer, with real blur in the Glass demos (#92).
-- Gallery (Carousel): image and shader paths now use the Uno application package directory, including sites hosted under a subdirectory (#92).
+- Gallery (Carousel): image and shader paths now use the Uno application package directory, including sites hosted under
+  a subdirectory (#92).
 - Carousel: complex transitions now animate their masks on Skia (#92).
-- Gallery (Carousel): automatic transitions preserve the animated position and shape of the outgoing image. The next image effect starts after the transition (#92).
+- Gallery (Carousel): automatic transitions preserve the animated position and shape of the outgoing image. The next
+  image effect starts after the transition (#92).
 - Gallery (Carousel): the infinite-loop toggle now has a visible localized label (#92).
 - Glass: corrected the saturation matrix so zero saturation produces grayscale.
 - Carousel GL: pending image loads no longer restart a detached or replaced renderer.
-- Gallery (Browser): GL overlays pause while the overlay navigation pane is open or closing, so they cannot cover the sidebar.
-- CI: pull requests now build the Gallery on Linux, macOS 15 (Apple Silicon), and Android. Linux and macOS also run the Gallery runtime suite.
-- CI: Chromium checks both normal and missing drawer state groups, including closing animations and reopening during closure. Test reports remain available as artifacts.
-- CI: use native NuGet restore auditing for direct and transitive dependencies, with an explicit advisory source and audit warnings treated as errors in audit jobs. Raw tool output remains private.
+- Gallery (Browser): GL overlays pause while the overlay navigation pane is open or closing, so they cannot cover the
+  sidebar.
+- CI: pull requests now build the Gallery on Linux, macOS 15 (Apple Silicon), and Android. Linux and macOS also run the
+  Gallery runtime suite.
+- CI: Chromium checks both normal and missing drawer state groups, including closing animations and reopening during
+  closure. Test reports remain available as artifacts.
+- CI: use native NuGet restore auditing for direct and transitive dependencies, with an explicit advisory source and
+  audit warnings treated as errors in audit jobs. Raw tool output remains private.
 
 ## [1.4.0] - 2026-10-19
 
-- Security: Kiosk Browser uses `System.Security.Cryptography.Xml` 10.0.13 and the updated Pkcs dependency to replace vulnerable 10.0.7 packages (#85).
-- Gallery: Android and iOS `ApplicationDisplayVersion` now follows the shared release version instead of the fixed value 1.0.
-- Maintenance: Dependabot checks NuGet packages in all twelve projects and GitHub Actions each week (#85). CI checks direct and transitive NuGet packages in Debug and Release on Windows and macOS. CI also submits resolved NuGet dependencies to the repository graph.
+- Security: Kiosk Browser uses `System.Security.Cryptography.Xml` 10.0.13 and the updated Pkcs dependency to replace
+  vulnerable 10.0.7 packages (#85).
+- Gallery: Android and iOS `ApplicationDisplayVersion` now follows the shared release version instead of the fixed value
+  1.0.
+- Maintenance: Dependabot checks NuGet packages in all twelve projects and GitHub Actions each week (#85). CI checks
+  direct and transitive NuGet packages in Debug and Release on Windows and macOS. CI also submits resolved NuGet
+  dependencies to the repository graph.
 - Build: The icon and pattern generators now use the Uno Desktop target and can restore their library references (#85).
 - Build: Updated supported GitHub Actions releases and restricted write permissions to the jobs that need them (#85).
 - Build: Removed ineffective Uno.Check setup from CI and release workflows.
-- Build: Windows Gallery publishing restores packages for the selected configuration, keeping Debug-only development packages out of Release builds.
+- Build: Windows Gallery publishing restores packages for the selected configuration, keeping Debug-only development
+  packages out of Release builds.
 - Build: CI and CodeQL install the WebAssembly workload for the browser library's native Skia dependencies.
-- Tests: Updated the MSTest framework, adapter, analyzers and metapackage to 4.5.1. HangDump and TRX extensions use 2.5.1 (#87).
+- Tests: Updated the MSTest framework, adapter, analyzers and metapackage to 4.5.1. HangDump and TRX extensions use
+  2.5.1 (#87).
 
 ## [1.3.0] 2026-10-18
-- **Breaking:** Build: moved from Uno.Sdk 6.5.33 to 6.7.30 (Uno packages 6.7.135) (#81). `global.json`, the `Uno.Sdk` version in every project and the `<UnoVersion>` property are updated; the SDK checks that `UnoVersion` matches it (`UNOB0004`), so consumers that pin Uno packages should move to 6.7.x as well. All heads build (Windows WinUI, Desktop Skia, Browser, Android, iOS) and the unit and Skia runtime tests pass on macOS, Windows ARM64 and Linux ARM64. Not run on a device or simulator: Android, iOS, Browser
-- Gallery (Linux): the X11 window now has `WM_CLASS` `com.uno.flowery.gallery` (checked with `xprop` on Ubuntu 24.04 ARM64 from the 1.3.0 `.deb`), which matches the `.desktop` `StartupWMClass`, so the GNOME sidebar/dock can match the window to its icon. Uno 6.7 sets it (`XSetClassHint`); the limitation noted in 1.2.3 is gone and no code change was needed. Sidebar icon itself still to be confirmed after a real `.deb` install
-- Tests: the DaisyDivider Tapered runtime test counts any pixel that differs from the background instead of requiring a 16-level luminance change. With Uno 6.7 on Linux the 1 px tapered line is drawn but fainter, so its contrast fell below that threshold and the test reported no line
+- **Breaking:** Build: moved from Uno.Sdk 6.5.33 to 6.7.30 (Uno packages 6.7.135) (#81). `global.json`, the `Uno.Sdk`
+  version in every project and the `<UnoVersion>` property are updated; the SDK checks that `UnoVersion` matches it
+  (`UNOB0004`), so consumers that pin Uno packages should move to 6.7.x as well. All heads build (Windows WinUI, Desktop
+  Skia, Browser, Android, iOS) and the unit and Skia runtime tests pass on macOS, Windows ARM64 and Linux ARM64. Not run
+  on a device or simulator: Android, iOS, Browser
+- Gallery (Linux): the X11 window now has `WM_CLASS` `com.uno.flowery.gallery` (checked with `xprop` on Ubuntu 24.04
+  ARM64 from the 1.3.0 `.deb`), which matches the `.desktop` `StartupWMClass`, so the GNOME sidebar/dock can match the
+  window to its icon. Uno 6.7 sets it (`XSetClassHint`); the limitation noted in 1.2.3 is gone and no code change was
+  needed. Sidebar icon itself still to be confirmed after a real `.deb` install
+- Tests: the DaisyDivider Tapered runtime test counts any pixel that differs from the background instead of requiring a
+  16-level luminance change. With Uno 6.7 on Linux the 1 px tapered line is drawn but fainter, so its contrast fell
+  below that threshold and the test reported no line
 
 ## [1.2.3] 2026-10-18
-- Gallery (Desktop): the Skia Desktop head now has a `Platforms/Desktop/Package.appxmanifest` and a pre-composed `app_icon_desktop.png` (background + flower). Skia Desktop reads the window/taskbar icon from that manifest; the head had none, so the Windows taskbar showed the default icon and macOS/Linux fell back to the background-only `app_icon.svg`.
-- Gallery (Desktop): `App.OnLaunched` calls the Resizetizer-generated `Window.SetWindowIcon()` on Windows, Linux and macOS, and the `.deb` `StartupWMClass` is now the `ApplicationId` (`com.uno.flowery.gallery`). Known limitation: with Uno 6.5.x the X11 host sets no `WM_CLASS`, so the GNOME sidebar still lists the app as "unknown" on Linux; Uno 6.7.x sets it (`XSetClassHint`), so this needs a separate Uno upgrade.
-- Gallery (packaging): `scripts/gallery/packaging/render-icon.sh` now renders the background plus the flower; it used only `app_icon.svg`, so the DMG `.icns` and the `.deb` hicolor icons showed the background alone. The Desktop head sets `ApplicationIcon` to a checked-in `app_icon.ico`, because Resizetizer only generates one when building on Windows and the Windows zips are cross-published from macOS (the `.exe` had the default icon in Explorer).
+- Gallery (Desktop): the Skia Desktop head now has a `Platforms/Desktop/Package.appxmanifest` and a pre-composed
+  `app_icon_desktop.png` (background + flower). Skia Desktop reads the window/taskbar icon from that manifest; the head
+  had none, so the Windows taskbar showed the default icon and macOS/Linux fell back to the background-only
+  `app_icon.svg`.
+- Gallery (Desktop): `App.OnLaunched` calls the Resizetizer-generated `Window.SetWindowIcon()` on Windows, Linux and
+  macOS, and the `.deb` `StartupWMClass` is now the `ApplicationId` (`com.uno.flowery.gallery`). Known limitation: with
+  Uno 6.5.x the X11 host sets no `WM_CLASS`, so the GNOME sidebar still lists the app as "unknown" on Linux; Uno 6.7.x
+  sets it (`XSetClassHint`), so this needs a separate Uno upgrade.
+- Gallery (packaging): `scripts/gallery/packaging/render-icon.sh` now renders the background plus the flower; it used
+  only `app_icon.svg`, so the DMG `.icns` and the `.deb` hicolor icons showed the background alone. The Desktop head
+  sets `ApplicationIcon` to a checked-in `app_icon.ico`, because Resizetizer only generates one when building on Windows
+  and the Windows zips are cross-published from macOS (the `.exe` had the default icon in Explorer).
 
 ## [1.2.2] - 2026-10-17
-- Gallery: the home page shows the Flowery.Uno library version (e.g. `v1.2.2`) in a muted line below the title, and the window title reads `Flowery.Uno Gallery v1.2.1` (#76). The version is read at runtime from the `Flowery.Uno` assembly (`GalleryInfo.Version`), so it always matches the NuGet package and nothing is hardcoded in the Gallery.
-- Gallery: new logo, a six-petal flower mark. The app icon, splash screen, favicon, README banner and the sidebar/Home banner images use it. The app icon is now a background/foreground pair (`app_icon.svg` + `app_icon_foreground.svg`, wired with `ForegroundFile` in the Gallery head) so Android gets a proper adaptive icon; the unsupported `ForegroundBrush` attribute is gone, which also stops the mark from being tinted. The splash screen and the web manifest use the same dark background color.
-- Gallery (Android): the `[Application]` attribute now sets `Icon` and `RoundIcon`. The Resizetizer icons were generated but never referenced, so the launcher showed the default robot and the splash showed it on white. A `values-v31` style gives the splash the same dark background as the icon.
-- Kiosk.Browser: uses the Gallery.Core app icon instead of its own magenta flower; its `app_icon.svg` and `splash_screen.svg` are removed.
+- Gallery: the home page shows the Flowery.Uno library version (e.g. `v1.2.2`) in a muted line below the title, and the
+  window title reads `Flowery.Uno Gallery v1.2.1` (#76). The version is read at runtime from the `Flowery.Uno` assembly
+  (`GalleryInfo.Version`), so it always matches the NuGet package and nothing is hardcoded in the Gallery.
+- Gallery: new logo, a six-petal flower mark. The app icon, splash screen, favicon, README banner and the sidebar/Home
+  banner images use it. The app icon is now a background/foreground pair (`app_icon.svg` + `app_icon_foreground.svg`,
+  wired with `ForegroundFile` in the Gallery head) so Android gets a proper adaptive icon; the unsupported
+  `ForegroundBrush` attribute is gone, which also stops the mark from being tinted. The splash screen and the web
+  manifest use the same dark background color.
+- Gallery (Android): the `[Application]` attribute now sets `Icon` and `RoundIcon`. The Resizetizer icons were generated
+  but never referenced, so the launcher showed the default robot and the splash showed it on white. A `values-v31` style
+  gives the splash the same dark background as the icon.
+- Kiosk.Browser: uses the Gallery.Core app icon instead of its own magenta flower; its `app_icon.svg` and
+  `splash_screen.svg` are removed.
 - Gallery: removed the unreferenced assets `favicon.svg`, `splash_screen_48.svg` and `placeholder1.jpg`.
-- Toggle: `DaisyToggle` no longer keeps the `MinWidth`/`MinHeight` of its first size on desktop (#70). A toggle that follows the global size now shrinks with it; before, it reserved at least the first track size, because the control treated the minimum it had written itself as an app override. The 44 px touch target on mobile is unchanged.
-- Sidebar: `SidebarItem` has an optional `ControlName` and a `MatchesSearch` method. The `FloweryComponentSidebar` search matches the translated name and the control class name, ignoring case, spaces and punctuation (#65), so "Tag Picker", "DaisyTagPicker", "TagPicker" and "tag picker" all find the tag picker.
-- Gallery: section headers show the translated sidebar name followed by the control class, e.g. `Tag Picker (DaisyTagPicker)`, and follow language changes (#65).
-- Button: `DaisyButton` no longer keeps the corner radius of its first size (#71). When `Size` changes later, for example through the global size, the radius follows the new tier (ExtraSmall/Small 4, Medium/Large 8, ExtraLarge 12); before, the control treated the radius it had written itself as an app override. A `CornerRadius` set by the app, `DaisyJoin` or `DaisyButtonGroup` still wins.
-- **Breaking:** Build: moved all Windows, Desktop (Skia), Browser and tooling target frameworks from net9.0 to net10.0 (Android was already net10.0); consumers must now target net10.0. Build/run scripts, CI build, runtime test runners and developer docs updated accordingly.
-- Linux: the Desktop (Skia) Gallery head starts again. The `Tmds.DBus.Protocol` 0.93.0 pin broke Uno's X11 host, which expects the 0.21 API, and aborted startup on `Tmds.DBus.Protocol.Address`. The direct reference and central version pin are removed; the version now flows transitively from Uno.Sdk (`Uno.WinUI.Runtime.Skia.X11` resolves 0.21.3).
-- Gallery: the Showcase button demos (`DaisyButtonTechDemo`) no longer throw a `NullReferenceException` on Desktop (Skia) each time they load, resize or unload (#42). They only detach a child visual they attached; Uno's Skia renderer throws when `ElementCompositionPreview.SetElementChildVisual` gets `null`. The WinUI-only shadow modes are now chosen with `#if WINDOWS` instead of `OperatingSystem.IsWindows()`, so the Desktop head on Windows uses `SetElevation` like on macOS and Linux, as the page describes, instead of the WinUI path, which fails there because `Compositor.CreateDropShadow` is not implemented on Skia.
-- Gallery: the component sidebar is no longer clipped on the right on phones in landscape (#61). The pane now widens by the safe-area padding of the display cutout instead of taking it from the 250 px sidebar. The hamburger button is always shown and also collapses the inline sidebar in wide layouts; a collapsed sidebar stays collapsed when the window is resized or rotated. On Android and iOS the pane, header and page content are padded by a Gallery helper (`GallerySafeAreaPadding`) instead of Uno Toolkit's `SafeArea`, which stops updating after Android reloads the visual tree (e.g. when the navigation mode changes); page content also stays clear of the gesture bar and a side cutout.
-- Tests: the Windows runtime tests no longer fail with path-too-long errors when the repository sits in a deep folder (e.g. a VM shared folder). Both runtime test runners now build the Gallery under `<temp>/frt/<8-char id>/` and log that folder as `Runtime test build root: ...`; the folder is deleted after each run. This is needed because the Windows App SDK XAML compiler (a net472 tool) ignores `LongPathsEnabled`. The results directory also drops a redundant project-name segment.
-- Build: `Flowery.Uno.UnitTests` now uses Uno.Sdk and targets `net10.0-desktop;net10.0-windows10.0.19041`, like `Flowery.Uno.RuntimeTests`, so the unit tests also run on macOS and Linux (Skia). Run them with `dotnet run --project Flowery.Uno.UnitTests -f <tfm>`; `dotnet test` is not supported by Microsoft.Testing.Platform on the .NET 10 SDK.
-- Build: the Browser build of `Flowery.Uno` no longer reports the trimming warning `IL2122` for the `ElementCompositionPreview` check in `PlatformCompatibility.TrySetIsTranslationEnabled`.
-- Build: the Gallery has launch profiles (`Properties/launchSettings.json`): WebAssembly on port 5280 (port 5000 is taken by AirPlay Receiver on macOS), Desktop, WinAppSDK Unpackaged and Desktop WSL2.
-- Build: `global.json` rolls forward to the latest patch of SDK 10.0.203 only (was `latestFeature`), so every host uses the same SDK feature band and workloads.
-- Build: the Windows target framework is listed only when building on Windows. Rider reads `TargetFrameworks` before Uno.Sdk filters out unsupported targets, so "Build Solution" on macOS and Linux failed on `net10.0-windows10.0.19041`. On Linux hosts without an Android SDK (`ANDROID_HOME`, `ANDROID_SDK_ROOT` or `AndroidSdkDirectory`) the Android target is skipped too.
-- Build: macOS and Linux build into `bin/macos|linux/` and `obj/macos|linux/`, so one checkout can be built from macOS and from Windows/Linux VMs without overwriting restore output and generated XAML. Windows output paths are unchanged.
-- Build: the Windows target uses the host architecture (`win-arm64` on Windows ARM64, `win-x64` otherwise) instead of a fixed `win-x64`, which failed in Visual Studio on ARM64 with NETSDK1032. An explicit `-r`/`RuntimeIdentifier` (CI, release, `publish_windows.ps1`) still wins.
-- Windows: the Gallery copies the library XBFs from the libraries' intermediate output; with Visual Studio's AnyCPU solution platform they were missing from the expected bin paths (MSB3030).
-- Gallery: WebAssembly no longer forces `RuntimeIdentifier=browser-wasm` and no longer overrides `RunCommand`/`RunArguments` with a nested `dotnet run`. The SDK now starts `WasmAppHost` directly, as in the Uno template; WebAssembly debugging with F5 in Visual Studio works.
-- Gallery: a single `PackageVersion` across target frameworks fixes Visual Studio's NuGet restore error NU1105 (Android derives `Version` 1.0 from `ApplicationDisplayVersion`).
-- Gallery: the Welcome page no longer shows an empty diagnostics box at the bottom (black on Desktop, a blank 200 px gap on WinUI). The box only gets text while the central diagnostics log in `MainView` is enabled, so it now stays hidden until it has text.
-- Tests: runtime tests now use an in-memory state storage instead of the app's real one. Saved user settings no longer leak into tests (the Kanban drop-index test failed whenever the last saved Kanban view was Home), and test runs no longer add "Untitled Board" files to the Gallery's storage.
-- **Visual:** Theming: contrast fixes ported from Flowery.NET 3.2.3 (8132bca) and 3.3.0 (62800f1). New palette keys `DaisyPrimaryForegroundBrush`, `DaisySecondaryForegroundBrush`, `DaisyAccentForegroundBrush` and `DaisyButtonPrimaryForegroundBrush` drive the text of outline, dash, soft and link buttons and of `DaisyIconText` on base surfaces; they equal the fill unless a theme overrides them. Black, Coffee, Cupcake, Dark, Lemonade, Luxury, Pastel, Retro and Wireframe use more readable shades there. Business uses white primary content and an opaque fill for disabled primary buttons. Smooth uses a lighter `Base300`, so borders and separators are visible. Review custom color overrides that depend on the previous values.
-- **Breaking:** Visual: `DaisyCheckBox`, `DaisyRadio` and `DaisyToggle` use the compact indicators from Flowery.NET 3.3.0 (62800f1) in every size tier, for example a 12 px checkbox and radio and a 24×12 toggle at Medium (before 20 px and 36×20). `DaisyRadio` gets its own `DaisyRadio{Size}Size` tokens instead of reusing the checkbox sizes. The default `TogglePadding` is 1 instead of 4, so the knob sits at the track edge in every size. Label font sizes stay as they were, since Flowery.Uno's are already smaller than the new Flowery.NET ones. Review fixed dimensions and style overrides that depend on the previous sizes.
-- Windows: `DaisyTableCell` with string content showed empty cells on the WinUI head, because its default style had no template and WinUI never displayed the string. The style now has an explicit `ContentPresenter` template; cells with element content were not affected.
-- Theming: `DaisyThemeManager.TryCreatePalette` and `GetPaletteFactory` expose the factory passed to `RegisterTheme`. `AvailableThemesChanged` fires when `RegisterTheme` adds a new theme name; built-in themes raise it only when `NotifyForInternalThemesChanged` is true (default false). Ported from Flowery.NET 3.2.0 (4c1cc89).
-- Theming: `DaisyThemeDropdown` preview swatches now come from the registered palette factory. Themes registered with a custom factory previously showed the Dark palette, because the dropdown created palettes by name and unknown names fall back to Dark. Themes registered after a dropdown was loaded now appear in it.
-- Theming: theme lists can be customized, ported from Flowery.NET 3.3.0 (62800f1). `DaisyThemeManager.ExcludedThemes`, `HideTheme`, `ShowTheme` and `IsThemeVisible` hide themes from both dropdowns. `PreferredThemes` and `AddTheme(originalName, displayName, preferred)` put themes into a preferred group at the top, separated by a line, with optional display aliases; `RemoveThemeOverride` undoes an addition. `DaisyThemeDropdown` and `DaisyProductThemeDropdown` gain local `AddTheme`/`RemoveThemeOverride`. Selecting an added product theme registers and applies it. `AvailableThemes` now lists preferred themes first.
-- Security: `System.Security.Cryptography.Xml` (Gallery Browser head) bumped from 10.0.7 to 10.0.13, the first 10.0.x release without known vulnerabilities; this removes the `NU1903` build warnings.
-- ColorPicker: added `DaisyColorPickerDialog`, ported from Flowery.NET 3.1.1. It combines the color wheel, lightness slider, screen color picker, palette and editor in a `FloweryDialogBase`, with a 50-step Undo/Redo history, and `ShowAsync(XamlRoot, Color)` returns the selected color or `null`. Every component, including hex input and the editor sliders, updates the preview and the returned color. The Gallery's Color Picker Dialog sample now uses it instead of a hand-built modal, and `DaisyColorPickerDialog.md` documents the Uno API instead of the Avalonia window API.
-- iOS: the Gallery builds and runs on the iOS simulator (unsigned, Skia renderer with the UIKit host) when building on macOS. `net10.0-ios` is added to `Flowery.Uno`, `Flowery.Uno.Kanban`, `Flowery.Uno.Gallery.Core` and `Flowery.Uno.Gallery`; Windows and Linux hosts never list it. The Gallery gets `Platforms/iOS` from the Uno 6.5 template and reuses Android's `ApplicationId`. Two compile fixes: `DaisyLoginButton` (explicit `(Color?)null` casts) and `FlowKanban` (`Microsoft.UI.Xaml.Window.Current` qualified, since `Window` resolves to `UIWindow` on iOS). The iOS target is not part of the published NuGet package, which is packed on Linux. The iOS target uses `SkiaRenderer` (only for `-ios`; Android and Browser keep the native renderer): with the native renderer, controls that rebuild their visual tree and assign shared brushes (`DaisyDivider`, `DaisySelect`) threw `ObjectDisposedException` from `UIView.Superview`, so Gallery pages fell back to placeholders and sidebar categories stayed empty. The Gallery declares a launch screen (`UnoSplashScreen` now also applies to iOS), so it runs full-screen instead of in legacy screen-size mode; `armv7` is removed from `UIRequiredDeviceCapabilities`, and `PrivacyInfo.xcprivacy` (taken from the template with four root `<dict>` elements and a BOM) now has a single root `<dict>` with the entries under `NSPrivacyAccessedAPITypes`. `FlowKanban` uses the touch defaults on iOS too: keyboard help and column tooltips are off by default, as on Android and Browser. Gallery header and sidebar use Uno.Toolkit `SafeArea` to stay clear of the status bar, notch and home indicator, and below 560 px width the header uses a smaller title and logo with the license text on its own row.
-- Gallery: the Android and iOS `ApplicationId` is now `com.uno.flowery.gallery` (was the template placeholder `com.companyname.flowery.uno.gallery`). Android treats it as a different app, so an installed older build stays alongside the new one and must be uninstalled by hand; its app data does not carry over.
-- Sizing: `FlowerySizeManager.GetControlHeight(DaisySize)` returns the standard single-line control height per size (24/28/32/34/36 px), ported from Flowery.NET 2.3.2. The Gallery's Size Dropdown section shows the values.
-- Controls: `DaisyButton`, `DaisyTabs`, `DaisyMenuItem` and `DaisyIconText` show WinForms-style mnemonics in their string labels, ported from Flowery.NET 2.3.1: `&` underlines the access character and `&&` is a literal `&`. Display only; apps handle Alt+key themselves. New `DaisyMnemonicText` (`Text`, `ShowMnemonic`, `MnemonicChar`) and `FloweryMnemonicHelpers` (`Parse`, `GetDisplayText`, `GetMnemonicChar`, `ApplyMnemonicText`, `StringContentTemplate`). WinUI's `TextBlock` is sealed, so `DaisyMnemonicText` hosts a `TextBlock` instead of deriving from it. There is no `EnsureStringContentTemplate`: WinUI did not apply a `ContentTemplateSelector` to string content, so `DaisyButton` sets `StringContentTemplate` as its `ContentTemplate` while `Content` is a string with `&` and no other template is set; `Content` keeps the markers; automation names of tab headers, menu items and `DaisyIconText` use the display text. Uno's Skia text renderer does not draw `TextDecorations`, so on Desktop (Skia) and iOS `ApplyMnemonicText` draws the underline as a composition child visual of the `TextBlock`. Labels that should show a plain `&` must now use `&&`; the Gallery labels "Save & Add Another", "Notes & Comments" and the Carousel "Transition & Effect" button (all languages) are updated.
-- Tabs: header actions, ported from Flowery.NET 3.4.0. `DaisyTabs.HeaderTrailingContent` and `HeaderTrailingContentTemplate` place content to the right of the tab headers (margin token `DaisyTabHeaderTrailingMargin`, default `8,0,0,0`); an empty slot does not change the layout. `ShowHeaderButtons` fills an empty slot with a built-in `DaisyTabsHeaderButtons` exposed through `HeaderButtons`; custom trailing content takes precedence. New `DaisyTabsHeaderButtons` with optional previous/next buttons and a view menu (`ShowNavigationButtons`, `ShowViewMenuButton`, `Views`, `ActiveViewId`, `ShowManageViewsEntry`, `Size`), commands and events for previous, next, view selected and manage views, the cancellable `ViewMenuOpening` event, `DaisyTabView` and `DaisyTabViewEventArgs`. The view menu is a WinUI `MenuFlyout` with a check mark on the active view; the button raises `ViewMenuOpening` and opens the menu itself, because `FlyoutBase.Opening` cannot be cancelled. While the built-in group is shown, `HeaderTrailingContent` stays null, because WinUI has no `SetCurrentValue`. New localized strings `Tabs_Views`, `Tabs_ManageViews`, `Accessibility_PreviousItem` and `Accessibility_NextItem` in all languages.
-- **Breaking:** Kanban: assignees come from the host app through `FlowKanban.AssigneeAdapter`, ported from Flowery.NET 3.1.0 (86f6d3f). New `FlowKanbanAssignee` (stable ID, display name, optional `ImageSource` avatar, descriptive roles), `IFlowKanbanAssigneeAdapter`, `FlowKanbanAssigneeAdapter` (direct list, list callbacks, single-ID resolver), `RefreshAssigneesAsync` and the `AssigneeAdapterFailed` event with `FlowKanbanAssigneeAdapterFailedEventArgs`. Assignee IDs are case-sensitive and kept exactly in filters, task editing and saved boards; unknown IDs keep their last known name and appear in the assignee filter as unavailable. Task cards show the adapter's avatar and roles (`FlowTask.AssigneeAvatarSource` and `AssigneeRoles`, not saved). As in Flowery.NET 3.5.0, the board no longer uses `IUserProvider`: `FlowKanban.UserProvider`, `DefaultUserProvider`, `IsUserManagementButtonEnabled`, `IsUserManagementButtonVisible`, `ShowUserManagementCommand`, `IsUserManagementViewActive`, `FlowKanbanView.UserManagement`, `GlobalAdminId`, `EnsureGlobalAdminAsync`, `TryLoadUserSettings` and `TrySaveUserSettings` are removed. Settings are stored under one key (`kanban.settings`) instead of per user, and the column shortcuts Ctrl+B, Ctrl+D and Ctrl+T no longer require a global admin. `IUserProvider`, `LocalUserProvider`, `CompositeUserProvider` and the `FlowKanbanUserManagement` control remain. There is no compatibility adapter: hosts that fed the board through `IUserProvider` supply `FlowKanbanAssigneeAdapter` instead. The Uno-only `Flowery.Integrations.Uno` project (GitHub, Teams, Slack and OAuth user providers) is removed, since its providers only fed the board. The Gallery Kanban sample uses `FlowKanbanAssigneeAdapter`.
-- Kanban: the standard, compact and swimlane layouts share one column template, as in Flowery.NET 3.1.0. The column surface used to be copied four times into `DaisyKanban.xaml` (standard, compact, swimlane header row, swimlane cells), and the copies had drifted: the swimlane header showed no policy icon, and the compact and swimlane columns lacked the size-dependent task list padding and the collapsed rail. The surface now lives in the `FlowKanbanColumn` template and the layouts only set properties. New `FlowKanbanColumn.TaskListMaxHeight` (swimlane cells use `SwimlaneCellMaxHeight`).
-- Kanban: at the Large and ExtraLarge global sizes the side toolbar no longer clips its buttons; it was fixed at 56 px and is now at least 56 px wide. On task cards the end date moves to a second line when it does not fit next to the start date, instead of being cut off.
-- Kanban: on narrow boards the search box takes the width left beside the filter button instead of a fixed minimum of 200 px, which cut off its right edge, and the status bar items (section count, zoom level, archive toggle, status message) wrap onto further lines instead of being cut off.
-- Layout: `WrapPanel` gives collapsed children no space and no spacing, as `StackPanel` does. Before, each collapsed child added one spacing and could start an empty line. It also no longer moves an item to the next line during arrange that fit on the line during measure: on Desktop (Skia) at 125 % scaling, layout rounding made the arranged width up to one pixel smaller than the measured width.
-- Controls: `DaisyDivider` builds its visual tree once it is loaded. Before, it built the tree in the constructor, again on every property change before loading, and twice on each Loaded. Each rebuild discards native views, which is the setting in which the iOS native renderer threw `ObjectDisposedException` when a brush was assigned (#47). Not verified on iOS.
-- Controls: the `DaisyDivider` styles Inset and Tapered are visible again on Desktop (Skia) (#58). Tapered's `Path` had no size without geometry, so its geometry was never created; it now gets its size from a container, as Wave does. Inset lost its top (or left) line at the sizes ExtraSmall and Large, because Skia clipped the line container in a root grid lower than the container; the root grid now has at least the height (or width) of both lines and the gap, as Double does. On light backgrounds that left only the white highlight, so the divider looked empty.
-- Controls: `FloweryComponentSidebar` no longer shows expanded but empty categories after a search. When the search text changed again before the items of the previous search had been added, the pending item batch stopped and no new one was scheduled. Collapsing and expanding a category was the only way to show its items. Reproduced on Android, where the on-screen keyboard sends several text changes in quick succession.
-- Gallery: on the Windows head the sidebar no longer stays open over the content when the window starts narrower than the inline layout needs. WinUI ignored pane changes made before the `SplitView` had loaded, and a pane that started open stayed visible when it was first closed. The sidebar now starts closed in Overlay mode and opens after the first rendered frame when the window is wide enough.
-- Controls: `DaisyColorPickerDialog` and `DaisyScreenColorPicker` are localized (#62). Their labels, buttons, tooltips and the screen picker hint were hard-coded in English; they now use new `ColorPicker_*` and `Common_Ok` keys in all 12 languages, and the screen picker follows language changes while it is shown. Same change as Flowery.WinUI #7.
+- Toggle: `DaisyToggle` no longer keeps the `MinWidth`/`MinHeight` of its first size on desktop (#70). A toggle that
+  follows the global size now shrinks with it; before, it reserved at least the first track size, because the control
+  treated the minimum it had written itself as an app override. The 44 px touch target on mobile is unchanged.
+- Sidebar: `SidebarItem` has an optional `ControlName` and a `MatchesSearch` method. The `FloweryComponentSidebar`
+  search matches the translated name and the control class name, ignoring case, spaces and punctuation (#65), so "Tag
+  Picker", "DaisyTagPicker", "TagPicker" and "tag picker" all find the tag picker.
+- Gallery: section headers show the translated sidebar name followed by the control class, e.g.
+  `Tag Picker (DaisyTagPicker)`, and follow language changes (#65).
+- Button: `DaisyButton` no longer keeps the corner radius of its first size (#71). When `Size` changes later, for
+  example through the global size, the radius follows the new tier (ExtraSmall/Small 4, Medium/Large 8, ExtraLarge 12);
+  before, the control treated the radius it had written itself as an app override. A `CornerRadius` set by the app,
+  `DaisyJoin` or `DaisyButtonGroup` still wins.
+- **Breaking:** Build: moved all Windows, Desktop (Skia), Browser and tooling target frameworks from net9.0 to net10.0
+  (Android was already net10.0); consumers must now target net10.0. Build/run scripts, CI build, runtime test runners
+  and developer docs updated accordingly.
+- Linux: the Desktop (Skia) Gallery head starts again. The `Tmds.DBus.Protocol` 0.93.0 pin broke Uno's X11 host, which
+  expects the 0.21 API, and aborted startup on `Tmds.DBus.Protocol.Address`. The direct reference and central version
+  pin are removed; the version now flows transitively from Uno.Sdk (`Uno.WinUI.Runtime.Skia.X11` resolves 0.21.3).
+- Gallery: the Showcase button demos (`DaisyButtonTechDemo`) no longer throw a `NullReferenceException` on Desktop
+  (Skia) each time they load, resize or unload (#42). They only detach a child visual they attached; Uno's Skia renderer
+  throws when `ElementCompositionPreview.SetElementChildVisual` gets `null`. The WinUI-only shadow modes are now chosen
+  with `#if WINDOWS` instead of `OperatingSystem.IsWindows()`, so the Desktop head on Windows uses `SetElevation` like
+  on macOS and Linux, as the page describes, instead of the WinUI path, which fails there because
+  `Compositor.CreateDropShadow` is not implemented on Skia.
+- Gallery: the component sidebar is no longer clipped on the right on phones in landscape (#61). The pane now widens by
+  the safe-area padding of the display cutout instead of taking it from the 250 px sidebar. The hamburger button is
+  always shown and also collapses the inline sidebar in wide layouts; a collapsed sidebar stays collapsed when the
+  window is resized or rotated. On Android and iOS the pane, header and page content are padded by a Gallery helper
+  (`GallerySafeAreaPadding`) instead of Uno Toolkit's `SafeArea`, which stops updating after Android reloads the visual
+  tree (e.g. when the navigation mode changes); page content also stays clear of the gesture bar and a side cutout.
+- Tests: the Windows runtime tests no longer fail with path-too-long errors when the repository sits in a deep folder
+  (e.g. a VM shared folder). Both runtime test runners now build the Gallery under `<temp>/frt/<8-char id>/` and log
+  that folder as `Runtime test build root: ...`; the folder is deleted after each run. This is needed because the
+  Windows App SDK XAML compiler (a net472 tool) ignores `LongPathsEnabled`. The results directory also drops a redundant
+  project-name segment.
+- Build: `Flowery.Uno.UnitTests` now uses Uno.Sdk and targets `net10.0-desktop;net10.0-windows10.0.19041`, like
+  `Flowery.Uno.RuntimeTests`, so the unit tests also run on macOS and Linux (Skia). Run them with
+  `dotnet run --project Flowery.Uno.UnitTests -f <tfm>`; `dotnet test` is not supported by Microsoft.Testing.Platform on
+  the .NET 10 SDK.
+- Build: the Browser build of `Flowery.Uno` no longer reports the trimming warning `IL2122` for the
+  `ElementCompositionPreview` check in `PlatformCompatibility.TrySetIsTranslationEnabled`.
+- Build: the Gallery has launch profiles (`Properties/launchSettings.json`): WebAssembly on port 5280 (port 5000 is
+  taken by AirPlay Receiver on macOS), Desktop, WinAppSDK Unpackaged and Desktop WSL2.
+- Build: `global.json` rolls forward to the latest patch of SDK 10.0.203 only (was `latestFeature`), so every host uses
+  the same SDK feature band and workloads.
+- Build: the Windows target framework is listed only when building on Windows. Rider reads `TargetFrameworks` before
+  Uno.Sdk filters out unsupported targets, so "Build Solution" on macOS and Linux failed on `net10.0-windows10.0.19041`.
+  On Linux hosts without an Android SDK (`ANDROID_HOME`, `ANDROID_SDK_ROOT` or `AndroidSdkDirectory`) the Android target
+  is skipped too.
+- Build: macOS and Linux build into `bin/macos|linux/` and `obj/macos|linux/`, so one checkout can be built from macOS
+  and from Windows/Linux VMs without overwriting restore output and generated XAML. Windows output paths are unchanged.
+- Build: the Windows target uses the host architecture (`win-arm64` on Windows ARM64, `win-x64` otherwise) instead of a
+  fixed `win-x64`, which failed in Visual Studio on ARM64 with NETSDK1032. An explicit `-r`/`RuntimeIdentifier` (CI,
+  release, `publish_windows.ps1`) still wins.
+- Windows: the Gallery copies the library XBFs from the libraries' intermediate output; with Visual Studio's AnyCPU
+  solution platform they were missing from the expected bin paths (MSB3030).
+- Gallery: WebAssembly no longer forces `RuntimeIdentifier=browser-wasm` and no longer overrides
+  `RunCommand`/`RunArguments` with a nested `dotnet run`. The SDK now starts `WasmAppHost` directly, as in the Uno
+  template; WebAssembly debugging with F5 in Visual Studio works.
+- Gallery: a single `PackageVersion` across target frameworks fixes Visual Studio's NuGet restore error NU1105 (Android
+  derives `Version` 1.0 from `ApplicationDisplayVersion`).
+- Gallery: the Welcome page no longer shows an empty diagnostics box at the bottom (black on Desktop, a blank 200 px gap
+  on WinUI). The box only gets text while the central diagnostics log in `MainView` is enabled, so it now stays hidden
+  until it has text.
+- Tests: runtime tests now use an in-memory state storage instead of the app's real one. Saved user settings no longer
+  leak into tests (the Kanban drop-index test failed whenever the last saved Kanban view was Home), and test runs no
+  longer add "Untitled Board" files to the Gallery's storage.
+- **Visual:** Theming: contrast fixes ported from Flowery.NET 3.2.3 (8132bca) and 3.3.0 (62800f1). New palette keys
+  `DaisyPrimaryForegroundBrush`, `DaisySecondaryForegroundBrush`, `DaisyAccentForegroundBrush` and
+  `DaisyButtonPrimaryForegroundBrush` drive the text of outline, dash, soft and link buttons and of `DaisyIconText` on
+  base surfaces; they equal the fill unless a theme overrides them. Black, Coffee, Cupcake, Dark, Lemonade, Luxury,
+  Pastel, Retro and Wireframe use more readable shades there. Business uses white primary content and an opaque fill for
+  disabled primary buttons. Smooth uses a lighter `Base300`, so borders and separators are visible. Review custom color
+  overrides that depend on the previous values.
+- **Breaking:** Visual: `DaisyCheckBox`, `DaisyRadio` and `DaisyToggle` use the compact indicators from Flowery.NET
+  3.3.0 (62800f1) in every size tier, for example a 12 px checkbox and radio and a 24×12 toggle at Medium (before 20 px
+  and 36×20). `DaisyRadio` gets its own `DaisyRadio{Size}Size` tokens instead of reusing the checkbox sizes. The default
+  `TogglePadding` is 1 instead of 4, so the knob sits at the track edge in every size. Label font sizes stay as they
+  were, since Flowery.Uno's are already smaller than the new Flowery.NET ones. Review fixed dimensions and style
+  overrides that depend on the previous sizes.
+- Windows: `DaisyTableCell` with string content showed empty cells on the WinUI head, because its default style had no
+  template and WinUI never displayed the string. The style now has an explicit `ContentPresenter` template; cells with
+  element content were not affected.
+- Theming: `DaisyThemeManager.TryCreatePalette` and `GetPaletteFactory` expose the factory passed to `RegisterTheme`.
+  `AvailableThemesChanged` fires when `RegisterTheme` adds a new theme name; built-in themes raise it only when
+  `NotifyForInternalThemesChanged` is true (default false). Ported from Flowery.NET 3.2.0 (4c1cc89).
+- Theming: `DaisyThemeDropdown` preview swatches now come from the registered palette factory. Themes registered with a
+  custom factory previously showed the Dark palette, because the dropdown created palettes by name and unknown names
+  fall back to Dark. Themes registered after a dropdown was loaded now appear in it.
+- Theming: theme lists can be customized, ported from Flowery.NET 3.3.0 (62800f1). `DaisyThemeManager.ExcludedThemes`,
+  `HideTheme`, `ShowTheme` and `IsThemeVisible` hide themes from both dropdowns. `PreferredThemes` and
+  `AddTheme(originalName, displayName, preferred)` put themes into a preferred group at the top, separated by a line,
+  with optional display aliases; `RemoveThemeOverride` undoes an addition. `DaisyThemeDropdown` and
+  `DaisyProductThemeDropdown` gain local `AddTheme`/`RemoveThemeOverride`. Selecting an added product theme registers
+  and applies it. `AvailableThemes` now lists preferred themes first.
+- Security: `System.Security.Cryptography.Xml` (Gallery Browser head) bumped from 10.0.7 to 10.0.13, the first 10.0.x
+  release without known vulnerabilities; this removes the `NU1903` build warnings.
+- ColorPicker: added `DaisyColorPickerDialog`, ported from Flowery.NET 3.1.1. It combines the color wheel, lightness
+  slider, screen color picker, palette and editor in a `FloweryDialogBase`, with a 50-step Undo/Redo history, and
+  `ShowAsync(XamlRoot, Color)` returns the selected color or `null`. Every component, including hex input and the editor
+  sliders, updates the preview and the returned color. The Gallery's Color Picker Dialog sample now uses it instead of a
+  hand-built modal, and `DaisyColorPickerDialog.md` documents the Uno API instead of the Avalonia window API.
+- iOS: the Gallery builds and runs on the iOS simulator (unsigned, Skia renderer with the UIKit host) when building on
+  macOS. `net10.0-ios` is added to `Flowery.Uno`, `Flowery.Uno.Kanban`, `Flowery.Uno.Gallery.Core` and
+  `Flowery.Uno.Gallery`; Windows and Linux hosts never list it. The Gallery gets `Platforms/iOS` from the Uno 6.5
+  template and reuses Android's `ApplicationId`. Two compile fixes: `DaisyLoginButton` (explicit `(Color?)null` casts)
+  and `FlowKanban` (`Microsoft.UI.Xaml.Window.Current` qualified, since `Window` resolves to `UIWindow` on iOS). The iOS
+  target is not part of the published NuGet package, which is packed on Linux. The iOS target uses `SkiaRenderer` (only
+  for `-ios`; Android and Browser keep the native renderer): with the native renderer, controls that rebuild their
+  visual tree and assign shared brushes (`DaisyDivider`, `DaisySelect`) threw `ObjectDisposedException` from
+  `UIView.Superview`, so Gallery pages fell back to placeholders and sidebar categories stayed empty. The Gallery
+  declares a launch screen (`UnoSplashScreen` now also applies to iOS), so it runs full-screen instead of in legacy
+  screen-size mode; `armv7` is removed from `UIRequiredDeviceCapabilities`, and `PrivacyInfo.xcprivacy` (taken from the
+  template with four root `<dict>` elements and a BOM) now has a single root `<dict>` with the entries under
+  `NSPrivacyAccessedAPITypes`. `FlowKanban` uses the touch defaults on iOS too: keyboard help and column tooltips are
+  off by default, as on Android and Browser. Gallery header and sidebar use Uno.Toolkit `SafeArea` to stay clear of the
+  status bar, notch and home indicator, and below 560 px width the header uses a smaller title and logo with the license
+  text on its own row.
+- Gallery: the Android and iOS `ApplicationId` is now `com.uno.flowery.gallery` (was the template placeholder
+  `com.companyname.flowery.uno.gallery`). Android treats it as a different app, so an installed older build stays
+  alongside the new one and must be uninstalled by hand; its app data does not carry over.
+- Sizing: `FlowerySizeManager.GetControlHeight(DaisySize)` returns the standard single-line control height per size
+  (24/28/32/34/36 px), ported from Flowery.NET 2.3.2. The Gallery's Size Dropdown section shows the values.
+- Controls: `DaisyButton`, `DaisyTabs`, `DaisyMenuItem` and `DaisyIconText` show WinForms-style mnemonics in their
+  string labels, ported from Flowery.NET 2.3.1: `&` underlines the access character and `&&` is a literal `&`. Display
+  only; apps handle Alt+key themselves. New `DaisyMnemonicText` (`Text`, `ShowMnemonic`, `MnemonicChar`) and
+  `FloweryMnemonicHelpers` (`Parse`, `GetDisplayText`, `GetMnemonicChar`, `ApplyMnemonicText`, `StringContentTemplate`).
+  WinUI's `TextBlock` is sealed, so `DaisyMnemonicText` hosts a `TextBlock` instead of deriving from it. There is no
+  `EnsureStringContentTemplate`: WinUI did not apply a `ContentTemplateSelector` to string content, so `DaisyButton`
+  sets `StringContentTemplate` as its `ContentTemplate` while `Content` is a string with `&` and no other template is
+  set; `Content` keeps the markers; automation names of tab headers, menu items and `DaisyIconText` use the display
+  text. Uno's Skia text renderer does not draw `TextDecorations`, so on Desktop (Skia) and iOS `ApplyMnemonicText` draws
+  the underline as a composition child visual of the `TextBlock`. Labels that should show a plain `&` must now use `&&`;
+  the Gallery labels "Save & Add Another", "Notes & Comments" and the Carousel "Transition & Effect" button (all
+  languages) are updated.
+- Tabs: header actions, ported from Flowery.NET 3.4.0. `DaisyTabs.HeaderTrailingContent` and
+  `HeaderTrailingContentTemplate` place content to the right of the tab headers (margin token
+  `DaisyTabHeaderTrailingMargin`, default `8,0,0,0`); an empty slot does not change the layout. `ShowHeaderButtons`
+  fills an empty slot with a built-in `DaisyTabsHeaderButtons` exposed through `HeaderButtons`; custom trailing content
+  takes precedence. New `DaisyTabsHeaderButtons` with optional previous/next buttons and a view menu
+  (`ShowNavigationButtons`, `ShowViewMenuButton`, `Views`, `ActiveViewId`, `ShowManageViewsEntry`, `Size`), commands and
+  events for previous, next, view selected and manage views, the cancellable `ViewMenuOpening` event, `DaisyTabView` and
+  `DaisyTabViewEventArgs`. The view menu is a WinUI `MenuFlyout` with a check mark on the active view; the button raises
+  `ViewMenuOpening` and opens the menu itself, because `FlyoutBase.Opening` cannot be cancelled. While the built-in
+  group is shown, `HeaderTrailingContent` stays null, because WinUI has no `SetCurrentValue`. New localized strings
+  `Tabs_Views`, `Tabs_ManageViews`, `Accessibility_PreviousItem` and `Accessibility_NextItem` in all languages.
+- **Breaking:** Kanban: assignees come from the host app through `FlowKanban.AssigneeAdapter`, ported from Flowery.NET
+  3.1.0 (86f6d3f). New `FlowKanbanAssignee` (stable ID, display name, optional `ImageSource` avatar, descriptive roles),
+  `IFlowKanbanAssigneeAdapter`, `FlowKanbanAssigneeAdapter` (direct list, list callbacks, single-ID resolver),
+  `RefreshAssigneesAsync` and the `AssigneeAdapterFailed` event with `FlowKanbanAssigneeAdapterFailedEventArgs`.
+  Assignee IDs are case-sensitive and kept exactly in filters, task editing and saved boards; unknown IDs keep their
+  last known name and appear in the assignee filter as unavailable. Task cards show the adapter's avatar and roles
+  (`FlowTask.AssigneeAvatarSource` and `AssigneeRoles`, not saved). As in Flowery.NET 3.5.0, the board no longer uses
+  `IUserProvider`: `FlowKanban.UserProvider`, `DefaultUserProvider`, `IsUserManagementButtonEnabled`,
+  `IsUserManagementButtonVisible`, `ShowUserManagementCommand`, `IsUserManagementViewActive`,
+  `FlowKanbanView.UserManagement`, `GlobalAdminId`, `EnsureGlobalAdminAsync`, `TryLoadUserSettings` and
+  `TrySaveUserSettings` are removed. Settings are stored under one key (`kanban.settings`) instead of per user, and the
+  column shortcuts Ctrl+B, Ctrl+D and Ctrl+T no longer require a global admin. `IUserProvider`, `LocalUserProvider`,
+  `CompositeUserProvider` and the `FlowKanbanUserManagement` control remain. There is no compatibility adapter: hosts
+  that fed the board through `IUserProvider` supply `FlowKanbanAssigneeAdapter` instead. The Uno-only
+  `Flowery.Integrations.Uno` project (GitHub, Teams, Slack and OAuth user providers) is removed, since its providers
+  only fed the board. The Gallery Kanban sample uses `FlowKanbanAssigneeAdapter`.
+- Kanban: the standard, compact and swimlane layouts share one column template, as in Flowery.NET 3.1.0. The column
+  surface used to be copied four times into `DaisyKanban.xaml` (standard, compact, swimlane header row, swimlane cells),
+  and the copies had drifted: the swimlane header showed no policy icon, and the compact and swimlane columns lacked the
+  size-dependent task list padding and the collapsed rail. The surface now lives in the `FlowKanbanColumn` template and
+  the layouts only set properties. New `FlowKanbanColumn.TaskListMaxHeight` (swimlane cells use
+  `SwimlaneCellMaxHeight`).
+- Kanban: at the Large and ExtraLarge global sizes the side toolbar no longer clips its buttons; it was fixed at 56 px
+  and is now at least 56 px wide. On task cards the end date moves to a second line when it does not fit next to the
+  start date, instead of being cut off.
+- Kanban: on narrow boards the search box takes the width left beside the filter button instead of a fixed minimum of
+  200 px, which cut off its right edge, and the status bar items (section count, zoom level, archive toggle, status
+  message) wrap onto further lines instead of being cut off.
+- Layout: `WrapPanel` gives collapsed children no space and no spacing, as `StackPanel` does. Before, each collapsed
+  child added one spacing and could start an empty line. It also no longer moves an item to the next line during arrange
+  that fit on the line during measure: on Desktop (Skia) at 125 % scaling, layout rounding made the arranged width up to
+  one pixel smaller than the measured width.
+- Controls: `DaisyDivider` builds its visual tree once it is loaded. Before, it built the tree in the constructor, again
+  on every property change before loading, and twice on each Loaded. Each rebuild discards native views, which is the
+  setting in which the iOS native renderer threw `ObjectDisposedException` when a brush was assigned (#47). Not verified
+  on iOS.
+- Controls: the `DaisyDivider` styles Inset and Tapered are visible again on Desktop (Skia) (#58). Tapered's `Path` had
+  no size without geometry, so its geometry was never created; it now gets its size from a container, as Wave does.
+  Inset lost its top (or left) line at the sizes ExtraSmall and Large, because Skia clipped the line container in a root
+  grid lower than the container; the root grid now has at least the height (or width) of both lines and the gap, as
+  Double does. On light backgrounds that left only the white highlight, so the divider looked empty.
+- Controls: `FloweryComponentSidebar` no longer shows expanded but empty categories after a search. When the search text
+  changed again before the items of the previous search had been added, the pending item batch stopped and no new one
+  was scheduled. Collapsing and expanding a category was the only way to show its items. Reproduced on Android, where
+  the on-screen keyboard sends several text changes in quick succession.
+- Gallery: on the Windows head the sidebar no longer stays open over the content when the window starts narrower than
+  the inline layout needs. WinUI ignored pane changes made before the `SplitView` had loaded, and a pane that started
+  open stayed visible when it was first closed. The sidebar now starts closed in Overlay mode and opens after the first
+  rendered frame when the window is wide enough.
+- Controls: `DaisyColorPickerDialog` and `DaisyScreenColorPicker` are localized (#62). Their labels, buttons, tooltips
+  and the screen picker hint were hard-coded in English; they now use new `ColorPicker_*` and `Common_Ok` keys in all 12
+  languages, and the screen picker follows language changes while it is shown. Same change as Flowery.WinUI #7.
 
 ## [1.2.0] - 2026-07-09
 
-- Windows: fixed the Gallery startup crash (0xC000027B) caused by library XBFs missing from the app output; the WinAppSDK PRI merge skips multi-targeted library projects, so the Windows head now copies theme/resource XBFs to the library layout paths after build.
-- Kanban: fixed dropping cards onto swimlane cells (lane reassignment within the same column did nothing and drop positions were mapped incorrectly in lane-filtered cells).
-- Kanban: card moves now update the board incrementally instead of rebuilding all lane rows and task lists, removing the visible flicker on drag and drop.
-- Kanban: bounded lane-cell heights in swimlane layout so task lists virtualize and scroll instead of realizing every card.
-- Kanban: made drop-index calculation order-independent under ListView container recycling and simplified the internal visual caches.
-- Tests: runtime tests now run with deterministic theme and global size instead of inheriting user-persisted Gallery settings, and no longer overwrite them.
-- Tests: fixed stale default-value assertions and added coverage for drop-index calculation and lane-aware moves; full Skia runtime suite passes again.
+- Windows: fixed the Gallery startup crash (0xC000027B) caused by library XBFs missing from the app output; the
+  WinAppSDK PRI merge skips multi-targeted library projects, so the Windows head now copies theme/resource XBFs to the
+  library layout paths after build.
+- Kanban: fixed dropping cards onto swimlane cells (lane reassignment within the same column did nothing and drop
+  positions were mapped incorrectly in lane-filtered cells).
+- Kanban: card moves now update the board incrementally instead of rebuilding all lane rows and task lists, removing the
+  visible flicker on drag and drop.
+- Kanban: bounded lane-cell heights in swimlane layout so task lists virtualize and scroll instead of realizing every
+  card.
+- Kanban: made drop-index calculation order-independent under ListView container recycling and simplified the internal
+  visual caches.
+- Tests: runtime tests now run with deterministic theme and global size instead of inheriting user-persisted Gallery
+  settings, and no longer overwrite them.
+- Tests: fixed stale default-value assertions and added coverage for drop-index calculation and lane-aware moves; full
+  Skia runtime suite passes again.
 
 ## [1.1.0] - 2026-07-04
 
@@ -200,35 +704,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bumped version to 1.0.0 as there's no reason not to. :)
 - Fixed Daisy control public styling behavior for `DaisyRadio`, `DaisyCheckBox`, `DaisyToggle`, and `DaisyTagPicker`.
-- Public `BorderBrush` and `BorderThickness` now apply to each whole control border while internal themed indicators and tag panels keep their own borders.
-- Public text styling such as `Foreground`, `FontSize`, `FontFamily`, `FontStyle`, and `FontWeight` now flows to visible labels, headers, and tag text.
+- Public `BorderBrush` and `BorderThickness` now apply to each whole control border while internal themed indicators and
+  tag panels keep their own borders.
+- Public text styling such as `Foreground`, `FontSize`, `FontFamily`, `FontStyle`, and `FontWeight` now flows to visible
+  labels, headers, and tag text.
 - Added runtime coverage for explicit public border and font styling on the updated Daisy controls.
 
 ## [0.1.3] - 2026-05-07
 
 - Updated Flowery shared package version metadata to `0.1.3`.
 - Updated Uno SDK and Uno package pins to the 6.5 line across Flowery shared projects.
-- Updated central package versions for SkiaSharp, Uno Toolkit, MSTest, Octokit, Win2D, WebAssembly crypto support, Tmds.DBus.Protocol, and Microsoft Testing extensions.
-- Kept `Microsoft.Graphics.Win2D` on `1.3.2` because `1.4.0` introduces a mixed Windows App SDK 1.7/1.8 build graph with the current Uno SDK.
+- Updated central package versions for SkiaSharp, Uno Toolkit, MSTest, Octokit, Win2D, WebAssembly crypto support,
+  Tmds.DBus.Protocol, and Microsoft Testing extensions.
+- Kept `Microsoft.Graphics.Win2D` on `1.3.2` because `1.4.0` introduces a mixed Windows App SDK 1.7/1.8 build graph with
+  the current Uno SDK.
 - Updated Gallery desktop/browser package references required by the refreshed package graph.
 - Updated release artifact actions for Node.js 24 and pinned Windows CI jobs to `windows-2025-vs2026`.
-- Normalized Android library-layout package paths so `dotnet pack` emits matching `net10.0-android36.0` lib and dependency groups.
+- Normalized Android library-layout package paths so `dotnet pack` emits matching `net10.0-android36.0` lib and
+  dependency groups.
 
 ## [0.1.2] - 2026-02-12
 
-- Refined size design tokens around a 4px grid and introduced mobile-specific sizing via `PlatformCompatibility.IsMobile`, keeping desktop/Windows ergonomics with the existing size presets.
+- Refined size design tokens around a 4px grid and introduced mobile-specific sizing via
+  `PlatformCompatibility.IsMobile`, keeping desktop/Windows ergonomics with the existing size presets.
 - Increased mobile touch-target defaults for interactive controls and aligned global default size to `DaisySize.Medium`.
-- Added line-height size tokens and applied token-driven text vertical alignment improvements in `DaisyButton`, `DaisyInput`, and `DaisyNumericUpDown` (including Android-specific centering adjustments).
-- Updated `DaisyToggle` sizing behavior to enforce mobile-friendly minimum tap targets while preserving compact desktop rendering.
-- Fixed browser build scripts to force browser-only framework evaluation and suppress EOL-check noise on preview SDKs (`build_browser.ps1`, `build_core.ps1`, `run-browser.ps1`).
-- Migrated Android targets from `net9.0-android` to `net10.0-android36.0` across Flowery projects and Android build/run scripts.
+- Added line-height size tokens and applied token-driven text vertical alignment improvements in `DaisyButton`,
+  `DaisyInput`, and `DaisyNumericUpDown` (including Android-specific centering adjustments).
+- Updated `DaisyToggle` sizing behavior to enforce mobile-friendly minimum tap targets while preserving compact desktop
+  rendering.
+- Fixed browser build scripts to force browser-only framework evaluation and suppress EOL-check noise on preview SDKs
+  (`build_browser.ps1`, `build_core.ps1`, `run-browser.ps1`).
+- Migrated Android targets from `net9.0-android` to `net10.0-android36.0` across Flowery projects and Android build/run
+  scripts.
 
 ## [0.1.1] - 2026-02-07
 
 - Centralized versioning in `Directory.Build.props`.
-- Improved Gallery startup responsiveness by prioritizing initial Home rendering and deferring restore navigation to heavy pages.
-- Reduced Gallery startup overhead by deferring Kanban-specific initialization and resource loading until first Kanban usage.
-- Library: mitigated repeated first-chance `NotImplementedException` churn for unsupported stroke APIs by caching runtime support checks.
+- Improved Gallery startup responsiveness by prioritizing initial Home rendering and deferring restore navigation to
+  heavy pages.
+- Reduced Gallery startup overhead by deferring Kanban-specific initialization and resource loading until first Kanban
+  usage.
+- Library: mitigated repeated first-chance `NotImplementedException` churn for unsupported stroke APIs by caching
+  runtime support checks.
 - Common versions across projects updated.
 
 ## [0.1.0] - 2026-02-03

@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Flowery.Controls.Scheduler.Contracts;
 using Flowery.Controls.Scheduler.Models;
 using Flowery.Controls.Scheduler.Utilities;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Windows.ApplicationModel.DataTransfer;
@@ -232,8 +231,7 @@ public class Given_SchedulerGestures
 
     private static async Task<Border> BringIntoViewAsync(SchedulerScope scope, Border frame)
     {
-        frame.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false });
-        await scope.LayoutAsync();
+        await scope.BringIntoViewAsync(frame);
         return frame;
     }
 
@@ -247,8 +245,7 @@ public class Given_SchedulerGestures
         if (days == 7)
             origin = origin.AddDays(-((7 + (int)origin.DayOfWeek - (int)scope.Scheduler.FirstDayOfWeek) % 7));
         var x = ((time - origin).TotalMinutes + 1) * lane.Width / (days * 1440);
-        lane.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false, TargetRect = new Rect(x - 4, 0, 8, lane.Height) });
-        await scope.LayoutAsync();
+        await scope.BringIntoViewAsync(lane, new Rect(x - 4, 0, 8, lane.Height));
         return scope.Point(lane, x, lane.Height / 2);
     }
 }

@@ -218,6 +218,14 @@ namespace Flowery.Controls
             RebuildVisualTree();
         }
 
+        // The glow pulse repeats forever: left running, it keeps the app rendering every frame after the divider is
+        // gone. OnLoaded rebuilds the visual tree and starts it again.
+        protected override void OnUnloaded()
+        {
+            base.OnUnloaded();
+            StopGlowAnimation();
+        }
+
         protected override void OnThemeChanged(string themeName)
         {
             base.OnThemeChanged(themeName);
@@ -803,6 +811,7 @@ namespace Flowery.Controls
 
         private void StartGlowAnimation()
         {
+            StopGlowAnimation();
             if (_glowLine == null) return;
 
             // Use explicit keyframes to ensure smooth pulsation in all environments (avoiding potential AutoReverse bugs)

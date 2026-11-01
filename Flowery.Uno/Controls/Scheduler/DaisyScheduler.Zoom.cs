@@ -273,7 +273,7 @@ public partial class DaisyScheduler
             return;
         try
         {
-            StateStorageProvider.Instance.SaveLines(key, [ColumnZoomState + ColumnZoom.ToString("R", CultureInfo.InvariantCulture)]);
+            StateStorageProvider.Instance.SaveLines(key, new[] { ColumnZoomState + ColumnZoom.ToString("R", CultureInfo.InvariantCulture) });
         }
         catch (Exception)
         {

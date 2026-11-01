@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Flowery.Controls;
 using Microsoft.UI.Xaml;
@@ -81,6 +82,59 @@ namespace Flowery.Uno.RuntimeTests.Controls
 
             Assert.AreEqual("Alpha", first.Text);
             Assert.AreEqual("Beta", second.Text);
+        }
+
+        [TestMethod]
+        public async Task When_Select_Unloads_It_Leaves_The_LocalizationSource()
+        {
+            var source = new CountingLocalizationSource { Text = "Alpha" };
+            var item = new DaisySelectItem { LocalizationKey = "Key", Text = "Key" };
+            var select = new DaisySelect { LocalizationSource = source };
+            select.Items.Add(item);
+            Assert.AreEqual(0, source.Subscribers, "An unloaded select does not subscribe to the source.");
+
+            RuntimeTestHelpers.AttachToHost(select);
+            await RuntimeTestHelpers.EnsureLoadedAsync(select);
+            Assert.AreEqual(1, source.Subscribers);
+            Assert.AreEqual("Alpha", item.Text);
+
+            source.Change("Beta");
+            Assert.AreEqual("Beta", item.Text, "A loaded select follows the source.");
+
+            var unloaded = new TaskCompletionSource();
+            select.Unloaded += (_, _) => unloaded.TrySetResult();
+            RuntimeTestHelpers.AttachToHost(new Border());
+            await unloaded.Task;
+            Assert.AreEqual(0, source.Subscribers, "A long-lived source must not keep the removed select alive.");
+
+            source.Change("Gamma");
+            RuntimeTestHelpers.AttachToHost(select);
+            await RuntimeTestHelpers.EnsureLoadedAsync(select);
+            Assert.AreEqual(1, source.Subscribers);
+            Assert.AreEqual("Gamma", item.Text, "Loading again applies what changed while unloaded.");
+        }
+
+        private sealed class CountingLocalizationSource : INotifyPropertyChanged
+        {
+            private PropertyChangedEventHandler? _handlers;
+
+            public event PropertyChangedEventHandler? PropertyChanged
+            {
+                add => _handlers += value;
+                remove => _handlers -= value;
+            }
+
+            public string Text { get; set; } = string.Empty;
+
+            public int Subscribers => _handlers?.GetInvocationList().Length ?? 0;
+
+            public string this[string key] => Text;
+
+            public void Change(string text)
+            {
+                Text = text;
+                _handlers?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+            }
         }
 
         [TestMethod]

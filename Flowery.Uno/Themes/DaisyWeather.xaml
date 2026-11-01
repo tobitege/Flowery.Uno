@@ -380,8 +380,8 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="{Binding ItemSpacing, RelativeSource={RelativeSource TemplatedParent}}" />
+                    <!-- DaisyWeatherForecast sets Spacing to its ItemSpacing. -->
+                    <StackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Flowery.Controls;
 using Flowery.Enums;
@@ -499,6 +499,36 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 Assert.AreEqual(DaisySize.ExtraLarge, fab.ResolvedSize);
                 AssertButtonTier(trigger, DaisySize.ExtraLarge);
                 AssertButtonTier(automatic, DaisySize.ExtraLarge);
+            });
+
+        [TestMethod]
+        public Task When_IgnoreGlobalSizeChanges_OnlyThatSubtreeRefreshes() =>
+            WithSizeScopeAsync(static async host =>
+            {
+                var inside = new Border();
+                var outside = new Border();
+                var scope = new StackPanel { Children = { inside } };
+                var refreshes = new int[2];
+                FlowerySizeManager.Register(inside, () => refreshes[0]++, static () => DaisySize.Medium);
+                FlowerySizeManager.Register(outside, () => refreshes[1]++, static () => DaisySize.Medium);
+                host.Children.Add(scope);
+                host.Children.Add(outside);
+                await CompleteLayoutAsync(host, inside, outside);
+                var (insideBefore, outsideBefore) = (refreshes[0], refreshes[1]);
+
+                FlowerySizeManager.SetIgnoreGlobalSize(scope, true);
+                Assert.IsGreaterThan(insideBefore, refreshes[0], "A control below the changed element must refresh.");
+                Assert.AreEqual(outsideBefore, refreshes[1], "A control outside the changed element must not refresh.");
+
+                // A page built from XAML sets the property before it is in the tree: no loaded control depends on it.
+                insideBefore = refreshes[0];
+                FlowerySizeManager.SetIgnoreGlobalSize(new StackPanel(), true);
+                Assert.AreEqual(insideBefore, refreshes[0]);
+                Assert.AreEqual(outsideBefore, refreshes[1]);
+
+                FlowerySizeManager.SetIgnoreGlobalSize(inside, false);
+                Assert.IsGreaterThan(insideBefore, refreshes[0], "Opting back in must refresh the control itself.");
+                Assert.AreEqual(outsideBefore, refreshes[1]);
             });
 
         private static void AssertButtonTier(DaisyButton button, DaisySize size)

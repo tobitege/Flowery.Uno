@@ -561,8 +561,7 @@ namespace Flowery.Controls
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                Foreground = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush")
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             };
             _headerGrid.Children.Add(_headerTextBlock);
             Grid.SetColumn(_headerTextBlock, 1);

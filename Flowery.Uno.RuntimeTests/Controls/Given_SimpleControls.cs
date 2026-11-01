@@ -1353,6 +1353,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 RuntimeTestHelpers.AttachToHost(timeline);
                 await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
 
+                Assert.AreEqual(1, timeline.ItemBuildCount, "Loading with the global size must build the items once.");
                 Assert.IsTrue(FindDescendants<DaisyDateTimelineItem>(timeline).All(item => item.Size == DaisySize.Small));
                 var smallWidth = timeline.ItemWidth;
                 var builds = timeline.ItemBuildCount;

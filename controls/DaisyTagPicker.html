@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTagPicker</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTagPicker</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyTagPicker.png" alt="DaisyTagPicker" class="doc-image">
+
+<p>DaisyTagPicker is an organized tag selection component inspired by "Animated Tags". It separates selected tags into a distinct, bordered area with "remove" icons, while keeping available tags in a separate list with "add" icons.</p>
+
+<h2>Features</h2>
+
+<p>* <strong>Organized Layout</strong>: Distinct areas for selected and available tags.</p>
+<p>* <strong>Interactive Icons</strong>: Automatic "add" (Plus) and "remove" (Close) icons on tag chips.</p>
+<p>* <strong>Customizable Title</strong>: Set the header for the selected tags area using the <code>Title</code> property.</p>
+<p>* <strong>Flexible Sizing</strong>: Inherits DaisyUI size presets (ExtraSmall, Small, Medium, Large, ExtraLarge) for all chips.</p>
+<p>* <strong>Two Modes</strong>: Standard selection mode or a library mode for managing a single tag set.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Tags</code> (<code>IList<string>?</code>)</td>
+<td>Pool of all available tags.</td>
+</tr>
+<tr>
+<td><code>SelectedTags</code> (<code>IList<string>?</code>)</td>
+<td>Currently selected tags. When null, managed internally.</td>
+</tr>
+<tr>
+<td><code>Mode</code> (<code>DaisyTagPickerMode</code>)</td>
+<td>Tag interaction mode: <code>Selection</code> (default) or <code>Library</code>.</td>
+</tr>
+<tr>
+<td><code>Title</code> (<code>string</code>)</td>
+<td>Header text for the selected tags box (default: "Selected Tags").</td>
+</tr>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>)</td>
+<td>Size preset for the tag chips (default <code>Small</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectionChanged</code></td>
+<td>Raised whenever the selection changes.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage with internal selection --&gt;
+&lt;controls:DaisyTagPicker Title="Selected Skills"&gt;
+    &lt;controls:DaisyTagPicker.Tags&gt;
+        &lt;x:Array Type="{x:Type sys:String}"&gt;
+            &lt;sys:String&gt;Uno Platform&lt;/sys:String&gt;
+            &lt;sys:String&gt;C#&lt;/sys:String&gt;
+            &lt;sys:String&gt;DaisyUI&lt;/sys:String&gt;
+            &lt;sys:String&gt;XAML&lt;/sys:String&gt;
+        &lt;/x:Array&gt;
+    &lt;/controls:DaisyTagPicker.Tags&gt;
+&lt;/controls:DaisyTagPicker&gt;
+
+&lt;!-- MVVM binding --&gt;
+&lt;controls:DaisyTagPicker Tags="{Binding AllTags}"
+                       SelectedTags="{Binding UserTags, Mode=TwoWay}"
+                       Title="Chosen Options"
+                       Size="Medium" /&gt;
+
+&lt;!-- Library mode: manage the canonical tag set --&gt;
+&lt;controls:DaisyTagPicker Tags="{Binding BoardTags}"
+                       SelectedTags="{Binding BoardTags}"
+                       Mode="Library"
+                       Title="Available Tags"
+                       Size="Small" /&gt;</code></pre>
+
+<h2>DaisyTagPickerMode</h2>
+
+<code>DaisyTagPickerMode</code> controls how chips behave and how the two lists are treated:
+
+<p>* <strong>Selection</strong> (default): Standard picker behavior with two areas. Clicking a chip moves it between <strong>Selected</strong> and <strong>Available</strong>.</p>
+<p>* <strong>Library</strong>: Treats tags as a single canonical set. All chips are shown in the <strong>Selected</strong> area, the <strong>Available</strong> area is hidden, and clicking a chip removes it from the set entirely. Adding a tag inserts it into the set and it remains selected.</p>
+
+<h3>When to use Library mode</h3>
+
+<p>Library mode is ideal when the UI is <em>defining the available tags themselves</em> (not choosing a subset). A common example is board-level tag management: the user is curating the list of tags that cards can later choose from. In that scenario:</p>
+
+<p>* Newly added tags should always appear as selected.</p>
+<p>* Removing a tag should delete it from the set, not just move it to "Available."</p>
+
+<h2>Tips & Best Practices</h2>
+
+<p>* Selection is string-based; ensure tag strings are unique.</p>
+<p>* The control automatically filters the pool of <code>Tags</code> to only show unselected ones in the "Available" area.</p>
+<p>* If you bind <code>SelectedTags</code>, the control mutates the list when it is writable.</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTabsHeaderButtons.html">← TabsHeaderButtons</a></div>
+    <div class="nav-right"><a href="DaisyTextArea.html">TextArea →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

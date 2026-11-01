@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTimeline</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTimeline</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyTimeline.png" alt="DaisyTimeline" class="doc-image">
+
+<p>DaisyTimeline lays out timeline items horizontally or vertically. Each <code>DaisyTimelineItem</code> can show start/end content (labels), an optional middle icon, lines before/after, boxed styles, and active states. Supports compact mode and icon snapping for consistent alignment.</p>
+
+<h2>DaisyTimeline Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Orientation</code></td>
+<td>Horizontal (default) or Vertical.</td>
+</tr>
+<tr>
+<td><code>IsCompact</code></td>
+<td>Reduces spacing and sizing for dense layouts.</td>
+</tr>
+<tr>
+<td><code>SnapIcon</code></td>
+<td>Aligns middle icons to the grid for crisp placement.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>DaisyTimelineItem Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>StartContent</code></td>
+<td>Leading text/label (e.g., year).</td>
+</tr>
+<tr>
+<td><code>MiddleContent</code></td>
+<td>Icon or node marker.</td>
+</tr>
+<tr>
+<td><code>EndContent</code></td>
+<td>Trailing text/label (e.g., description).</td>
+</tr>
+<tr>
+<td><code>HasStartLine</code> / <code>HasEndLine</code></td>
+<td>Show/hide line segments before/after.</td>
+</tr>
+<tr>
+<td><code>IsBoxed</code></td>
+<td>Box the content area (vertical items).</td>
+</tr>
+<tr>
+<td><code>IsActive</code></td>
+<td>Apply active styling to node/lines.</td>
+</tr>
+<tr>
+<td><code>Position</code></td>
+<td><code>Start</code> or <code>End</code> alignment (when compact).</td>
+</tr>
+<tr>
+<td><code>Orientation</code>, <code>IsCompact</code>, <code>SnapIcon</code></td>
+<td>Inherited from parent for layout.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Horizontal --&gt;
+&lt;controls:DaisyTimeline Orientation="Horizontal"&gt;
+    &lt;controls:DaisyTimelineItem StartContent="1984" EndContent="First Mac" HasEndLine="True" IsActive="True"&gt;
+        &lt;controls:DaisyTimelineItem.MiddleContent&gt;
+            &lt;PathIcon Width="16" Height="16" Foreground="{ThemeResource DaisyPrimaryBrush}"
+                      Data="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" /&gt;
+        &lt;/controls:DaisyTimelineItem.MiddleContent&gt;
+    &lt;/controls:DaisyTimelineItem&gt;
+    &lt;controls:DaisyTimelineItem StartContent="1998" EndContent="iMac" HasStartLine="True" HasEndLine="True" IsActive="True"&gt;
+        &lt;controls:DaisyTimelineItem.MiddleContent&gt;
+            &lt;PathIcon Width="16" Height="16" Foreground="{ThemeResource DaisyPrimaryBrush}"
+                      Data="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" /&gt;
+        &lt;/controls:DaisyTimelineItem.MiddleContent&gt;
+    &lt;/controls:DaisyTimelineItem&gt;
+&lt;/controls:DaisyTimeline&gt;
+
+&lt;!-- Vertical boxed --&gt;
+&lt;controls:DaisyTimeline Orientation="Vertical"&gt;
+    &lt;controls:DaisyTimelineItem StartContent="1984" EndContent="First Macintosh" IsBoxed="True" HasEndLine="True" IsActive="True" /&gt;
+    &lt;controls:DaisyTimelineItem StartContent="1998" EndContent="iMac" IsBoxed="True" HasStartLine="True" HasEndLine="True" IsActive="True" /&gt;
+&lt;/controls:DaisyTimeline&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>IsActive</code> to highlight completed/current milestones; combine with <code>HasStartLine/HasEndLine</code> to control connectors.</li>
+<li>Set <code>IsCompact=True</code> for dense sidebars; <code>SnapIcon=True</code> keeps icons aligned on pixel boundaries.</li>
+<li>For vertical timelines, <code>IsBoxed=True</code> helps differentiate items from the spine.</li>
+<li>Keep <code>StartContent</code> concise (dates/labels) and <code>EndContent</code> for descriptions; use <code>MiddleContent</code> for status icons.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyThemeSwap.html">← ThemeSwap</a></div>
+    <div class="nav-right"><a href="DaisyToast.html">Toast →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphics</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>Graphics & Visual Effects</h1>
+
+<p>This document describes the graphics rendering capabilities, visual effects, and animation systems in Flowery.Uno.</p>
+<hr>
+<h2>Table of Contents</h2>
+
+<p>1. <a href="#overview">Overview</a></p>
+<p>2. <a href="#skiasharp-infrastructure">SkiaSharp Infrastructure</a></p>
+<p>3. <a href="#glass-blur-effects">Glass Blur Effects</a> (DaisyGlass & DaisyCard)</p>
+<p>4. <a href="#carousel-slide-effects">Carousel Slide Effects</a></p>
+<p>5. <a href="#carousel-slide-transitions">Carousel Slide Transitions</a></p>
+<p>6. <a href="#platform-support-matrix">Platform Support Matrix</a></p>
+<p>7. <a href="#performance-considerations">Performance Considerations</a></p>
+<hr>
+<h2>Overview</h2>
+
+<p>Flowery.Uno provides three layers of graphics capabilities:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Layer</th>
+<th>Technology</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>UI Animations</strong></td>
+<td>WinUI Composition API, Storyboards</td>
+<td>Standard control animations, transitions</td>
+</tr>
+<tr>
+<td><strong>Skia Processing</strong></td>
+<td>SkiaSharp</td>
+<td>Image blur, saturation, glass effects</td>
+</tr>
+<tr>
+<td><strong>Carousel GL Effects</strong></td>
+<td>Skia (Browser only)</td>
+<td>Advanced carousel transitions/effects</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>All effects are designed for cross-platform compatibility across Desktop (Skia), Browser (WASM), Windows, Android, and iOS.</p>
+<hr>
+<h2>SkiaSharp Infrastructure</h2>
+
+<h3>Architecture</h3>
+
+<p>The <code>Flowery.Skia</code> namespace provides core image processing capabilities:</p>
+
+<pre><code class="language-txt">Flowery.Uno/Skia/
+├── SkiaImageProcessor.cs      # Core blur, saturation, glass effect processing
+└── SkiaBackdropCapture.cs     # WinUI ↔ Skia bridge for backdrop capture</code></pre>
+
+<h3>SkiaImageProcessor</h3>
+
+<p>Static utility class for GPU-accelerated image processing:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ApplyBlur(bytes, sigmaX, sigmaY)</code></td>
+<td>Gaussian blur on image bytes</td>
+</tr>
+<tr>
+<td><code>ApplyBlurAndSaturation(bytes, sigma, saturation)</code></td>
+<td>Combined blur + saturation adjustment</td>
+</tr>
+<tr>
+<td><code>ApplyGlassEffect(bitmap, blur, saturation, tint, opacity, radius)</code></td>
+<td>Full glass effect with tint overlay and rounded corners</td>
+</tr>
+<tr>
+<td><code>CreateSaturationFilter(saturation)</code></td>
+<td>Creates SKColorFilter for saturation (0 = grayscale, 1 = normal)</td>
+</tr>
+<tr>
+<td><code>FromPixelData(pixels, width, height)</code></td>
+<td>Convert BGRA pixel data to SKBitmap</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>SkiaBackdropCapture</h3>
+
+<p>Bridges WinUI's <code>RenderTargetBitmap</code> with Skia processing:</p>
+
+<pre><code class="language-csharp">// Capture area behind element and apply glass effect
+var imageSource = await SkiaBackdropCapture.CaptureAndApplyGlassEffectAsync(
+    element,
+    blurRadius: 40,
+    saturation: 0.8,
+    tintColor: Colors.White,
+    tintOpacity: 0.3,
+    cornerRadius: 16);</code></pre>
+
+<strong>How it works:</strong>
+
+<p>1. Finds parent element with background</p>
+<p>2. Temporarily hides target element</p>
+<p>3. Captures region via <code>RenderTargetBitmap</code></p>
+<p>4. Converts to <code>SKBitmap</code></p>
+<p>5. Applies blur + saturation + tint via Skia</p>
+<p>6. Returns as WinUI <code>ImageSource</code></p>
+<hr>
+<h2>Glass Blur Effects</h2>
+
+<p>Both <code>DaisyGlass</code> and <code>DaisyCard</code> (with <code>IsGlass="True"</code> or <code>CardStyle="Glass"</code>) support three blur rendering modes:</p>
+
+<h3>Blur Modes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+<th>Performance</th>
+<th>Quality</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Simulated</code></td>
+<td>Gradient overlays only (no real blur)</td>
+<td>⚡ Fastest</td>
+<td>Good</td>
+</tr>
+<tr>
+<td><code>BitmapCapture</code></td>
+<td>One-time capture + Skia blur</td>
+<td>⚡⚡ Medium</td>
+<td>Better</td>
+</tr>
+<tr>
+<td><code>SkiaSharp</code></td>
+<td>GPU blur via SkiaSharp</td>
+<td>⚡⚡⚡ Variable</td>
+<td>Best</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Key Properties</h3>
+
+<p>Available on both <code>DaisyGlass</code> and <code>DaisyCard</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>EnableBackdropBlur</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enable real blur capture</td>
+</tr>
+<tr>
+<td><code>BlurMode</code></td>
+<td><code>GlassBlurMode</code></td>
+<td><code>Simulated</code></td>
+<td>Rendering mode</td>
+</tr>
+<tr>
+<td><code>GlassBlur</code></td>
+<td><code>double</code></td>
+<td><code>40</code></td>
+<td>Blur strength (higher = more blur)</td>
+</tr>
+<tr>
+<td><code>GlassSaturation</code></td>
+<td><code>double</code></td>
+<td><code>1.0</code></td>
+<td>Saturation (0 = grayscale, 1 = normal)</td>
+</tr>
+<tr>
+<td><code>GlassTint</code></td>
+<td><code>Color</code></td>
+<td><code>White</code></td>
+<td>Tint overlay color</td>
+</tr>
+<tr>
+<td><code>GlassTintOpacity</code></td>
+<td><code>double</code></td>
+<td><code>0.5</code></td>
+<td>Tint opacity</td>
+</tr>
+<tr>
+<td><code>GlassOpacity</code></td>
+<td><code>double</code></td>
+<td><code>0.25</code>/<code>0.3</code></td>
+<td>Base glass opacity</td>
+</tr>
+<tr>
+<td><code>GlassBorderOpacity</code></td>
+<td><code>double</code></td>
+<td><code>0.2</code></td>
+<td>Border line opacity</td>
+</tr>
+<tr>
+<td><code>GlassReflectOpacity</code></td>
+<td><code>double</code></td>
+<td><code>0.1</code>/<code>0.15</code></td>
+<td>Top highlight opacity</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>DaisyGlass Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Simulated glass (lightweight) --&gt;
+&lt;controls:DaisyGlass&gt;
+    &lt;TextBlock Text="Simulated" Margin="16" /&gt;
+&lt;/controls:DaisyGlass&gt;
+
+&lt;!-- Bitmap capture blur --&gt;
+&lt;controls:DaisyGlass EnableBackdropBlur="True"
+                     BlurMode="BitmapCapture"
+                     GlassBlur="30"&gt;
+    &lt;TextBlock Text="Captured Blur" Margin="16" /&gt;
+&lt;/controls:DaisyGlass&gt;
+
+&lt;!-- SkiaSharp blur with desaturation --&gt;
+&lt;controls:DaisyGlass EnableBackdropBlur="True"
+                     BlurMode="SkiaSharp"
+                     GlassBlur="50"
+                     GlassSaturation="0.5"&gt;
+    &lt;TextBlock Text="Desaturated Blur" Margin="16" /&gt;
+&lt;/controls:DaisyGlass&gt;</code></pre>
+
+<h3>DaisyCard Glass Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Simulated glass card (lightweight) --&gt;
+&lt;controls:DaisyCard IsGlass="True"&gt;
+    &lt;TextBlock Text="Glass Card" Margin="16" /&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Glass card with Skia blur --&gt;
+&lt;controls:DaisyCard CardStyle="Glass"
+                    EnableBackdropBlur="True"
+                    BlurMode="SkiaSharp"
+                    GlassBlur="40"
+                    GlassSaturation="0.8"&gt;
+    &lt;StackPanel Margin="16"&gt;
+        &lt;TextBlock Text="Real Blur Effect" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Content over blurred background" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Glass card with custom tint --&gt;
+&lt;controls:DaisyCard IsGlass="True"
+                    EnableBackdropBlur="True"
+                    BlurMode="BitmapCapture"
+                    GlassTint="LightBlue"
+                    GlassTintOpacity="0.3"&gt;
+    &lt;TextBlock Text="Tinted Glass" Margin="16" /&gt;
+&lt;/controls:DaisyCard&gt;</code></pre>
+
+<h3>Programmatic Refresh</h3>
+
+<p>For dynamic backgrounds, manually trigger recapture:</p>
+
+<pre><code class="language-csharp">// DaisyGlass
+myGlass.RefreshBackdrop();
+
+// DaisyCard with glass enabled
+myCard.RefreshBackdrop();</code></pre>
+<hr>
+<h2>Carousel Slide Effects</h2>
+
+<p>Slide effects animate the <strong>currently visible</strong> slide during display. They create cinematic motion like Ken Burns documentary-style pan/zoom.</p>
+
+<h3>Available Effects</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Effect</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>Static display (default)</td>
+</tr>
+<tr>
+<td><code>PanAndZoom</code></td>
+<td>Randomized pan + zoom combination</td>
+</tr>
+<tr>
+<td><code>ZoomIn</code></td>
+<td>Slow zoom from 1.0x to 1.0x + intensity</td>
+</tr>
+<tr>
+<td><code>ZoomOut</code></td>
+<td>Slow zoom from 1.0x + intensity to 1.0x</td>
+</tr>
+<tr>
+<td><code>PanLeft</code></td>
+<td>Slow pan leftward</td>
+</tr>
+<tr>
+<td><code>PanRight</code></td>
+<td>Slow pan rightward</td>
+</tr>
+<tr>
+<td><code>PanUp</code></td>
+<td>Slow pan upward</td>
+</tr>
+<tr>
+<td><code>PanDown</code></td>
+<td>Slow pan downward</td>
+</tr>
+<tr>
+<td><code>Drift</code></td>
+<td>Random direction pan (varies per slide)</td>
+</tr>
+<tr>
+<td><code>Pulse</code></td>
+<td>Subtle breathing/pulsing zoom</td>
+</tr>
+<tr>
+<td><code>Breath</code></td>
+<td>Zoom in to peak, settle back</td>
+</tr>
+<tr>
+<td><code>Throw</code></td>
+<td>Dramatic parallax fly-through</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Effect Parameters</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SlideEffect</code></td>
+<td><code>FlowerySlideEffect</code></td>
+<td><code>None</code></td>
+<td>Active effect</td>
+</tr>
+<tr>
+<td><code>ZoomIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.15</code></td>
+<td>Zoom scale (0.15 = 115%)</td>
+</tr>
+<tr>
+<td><code>PanDistance</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Pan distance in pixels</td>
+</tr>
+<tr>
+<td><code>PulseIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.08</code></td>
+<td>Pulse scale (0.08 = 108%)</td>
+</tr>
+<tr>
+<td><code>PanAndZoomLockZoom</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Pan only (no zoom)</td>
+</tr>
+<tr>
+<td><code>PanAndZoomPanSpeed</code></td>
+<td><code>double</code></td>
+<td><code>4.0</code></td>
+<td>Pan speed (px/sec)</td>
+</tr>
+<tr>
+<td><code>PanAndZoomCycleSeconds</code></td>
+<td><code>double</code></td>
+<td><code>6.0</code></td>
+<td>Effect cycle duration</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Usage</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyCarousel SlideEffect="PanAndZoom"
+                        ZoomIntensity="0.2"
+                        PanDistance="60"
+                        SlideInterval="5"&gt;
+    &lt;Image Source="photo1.jpg" /&gt;
+    &lt;Image Source="photo2.jpg" /&gt;
+&lt;/controls:DaisyCarousel&gt;</code></pre>
+<hr>
+<h2>Carousel Slide Transitions</h2>
+
+<p>Slide transitions animate the <strong>change between</strong> slides. They are categorized by implementation complexity.</p>
+
+<h3>Tier 1: Transform-Based (Universal)</h3>
+
+<p>Uses <code>CompositeTransform</code> and <code>PlaneProjection</code>. Works on all platforms.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Family</th>
+<th>Transitions</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Fade</strong></td>
+<td><code>Fade</code>, <code>FadeThroughBlack</code>, <code>FadeThroughWhite</code></td>
+</tr>
+<tr>
+<td><strong>Slide</strong></td>
+<td><code>SlideLeft</code>, <code>SlideRight</code>, <code>SlideUp</code>, <code>SlideDown</code></td>
+</tr>
+<tr>
+<td><strong>Push</strong></td>
+<td><code>PushLeft</code>, <code>PushRight</code>, <code>PushUp</code>, <code>PushDown</code></td>
+</tr>
+<tr>
+<td><strong>Zoom</strong></td>
+<td><code>ZoomIn</code>, <code>ZoomOut</code>, <code>ZoomCross</code></td>
+</tr>
+<tr>
+<td><strong>Flip</strong></td>
+<td><code>FlipHorizontal</code>, <code>FlipVertical</code>, <code>CubeLeft</code>, <code>CubeRight</code></td>
+</tr>
+<tr>
+<td><strong>Cover/Reveal</strong></td>
+<td><code>CoverLeft</code>, <code>CoverRight</code>, <code>CoverUp</code>, <code>CoverDown</code>, <code>RevealLeft</code>, <code>RevealRight</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Tier 2: Clip-Based (Advanced)</h3>
+
+<p>Uses animated <code>RectangleGeometry</code> clips. Works on most platforms.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Family</th>
+<th>Transitions</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Wipe</strong></td>
+<td><code>WipeLeft</code>, <code>WipeRight</code>, <code>WipeUp</code>, <code>WipeDown</code></td>
+</tr>
+<tr>
+<td><strong>Blinds</strong></td>
+<td><code>BlindsHorizontal</code>, <code>BlindsVertical</code></td>
+</tr>
+<tr>
+<td><strong>Slices</strong></td>
+<td><code>SlicesHorizontal</code>, <code>SlicesVertical</code>, <code>Checkerboard</code>, <code>Spiral</code>, <code>MatrixRain</code>, <code>Wormhole</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Tier 3: Skia-Based (Experimental)</h3>
+
+<p>Requires SkiaSharp rendering. Only on Skia-enabled targets (Desktop, WASM).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Transition</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Dissolve</code></td>
+<td>Pixel noise dissolve pattern</td>
+</tr>
+<tr>
+<td><code>Pixelate</code></td>
+<td>Mosaic pixelation effect</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Special Transitions</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Transition</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>Instant snap (no animation)</td>
+</tr>
+<tr>
+<td><code>Random</code></td>
+<td>Random transition per navigation</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Transition Parameters</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SlideTransition</code></td>
+<td><code>FlowerySlideTransition</code></td>
+<td><code>None</code></td>
+<td>Active transition</td>
+</tr>
+<tr>
+<td><code>TransitionDuration</code></td>
+<td><code>double</code></td>
+<td><code>0.4</code></td>
+<td>Duration in seconds</td>
+</tr>
+<tr>
+<td><code>TransitionSliceCount</code></td>
+<td><code>int</code></td>
+<td><code>8</code></td>
+<td>Slices for Blinds/Slices</td>
+</tr>
+<tr>
+<td><code>TransitionStaggerSlices</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Stagger slice animations</td>
+</tr>
+<tr>
+<td><code>TransitionSliceStaggerMs</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Stagger delay (ms)</td>
+</tr>
+<tr>
+<td><code>TransitionCheckerboardSize</code></td>
+<td><code>int</code></td>
+<td><code>6</code></td>
+<td>Grid size for Checkerboard</td>
+</tr>
+<tr>
+<td><code>TransitionBlurRadius</code></td>
+<td><code>double</code></td>
+<td><code>20</code></td>
+<td>Blur for blur transitions</td>
+</tr>
+<tr>
+<td><code>TransitionPixelateSize</code></td>
+<td><code>int</code></td>
+<td><code>20</code></td>
+<td>Pixel block size</td>
+</tr>
+<tr>
+<td><code>TransitionDissolveDensity</code></td>
+<td><code>double</code></td>
+<td><code>0.5</code></td>
+<td>Noise density for Dissolve</td>
+</tr>
+<tr>
+<td><code>TransitionFlipAngle</code></td>
+<td><code>double</code></td>
+<td><code>90</code></td>
+<td>Rotation angle for flips</td>
+</tr>
+<tr>
+<td><code>TransitionPerspectiveDepth</code></td>
+<td><code>double</code></td>
+<td><code>1000</code></td>
+<td>3D perspective depth</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Transition Usage</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisyCarousel SlideTransition="Fade"
+                        TransitionDuration="0.6"
+                        WrapAround="True"&gt;
+    &lt;Image Source="slide1.jpg" /&gt;
+    &lt;Image Source="slide2.jpg" /&gt;
+&lt;/controls:DaisyCarousel&gt;</code></pre>
+
+<h3>Slideshow Modes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Manual</code></td>
+<td>User navigates via buttons/swipe</td>
+</tr>
+<tr>
+<td><code>Slideshow</code></td>
+<td>Auto-advance sequentially (loops)</td>
+</tr>
+<tr>
+<td><code>Random</code></td>
+<td>Auto-advance in random order</td>
+</tr>
+<tr>
+<td><code>Kiosk</code></td>
+<td>Random order + random effects (screensaver)</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-xml">&lt;controls:DaisyCarousel Mode="Kiosk"
+                        SlideInterval="4"
+                        SlideTransition="Random"&gt;
+    &lt;!-- Slides --&gt;
+&lt;/controls:DaisyCarousel&gt;</code></pre>
+<hr>
+<h2>Helper Classes & APIs</h2>
+
+<h3>Slide Effect Helpers</h3>
+
+<p>Located in <code>Flowery.Helpers</code> namespace:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FlowerySlideEffects</code></td>
+<td>Attached properties for applying slide effects to any <code>UIElement</code></td>
+</tr>
+<tr>
+<td><code>FlowerySlideEffectParams</code></td>
+<td>Record for configuring effect parameters</td>
+</tr>
+<tr>
+<td><code>FlowerySlideEffectParser</code></td>
+<td>Parses string names to <code>FlowerySlideEffect</code> enum</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Attached Property Usage:</strong>
+
+<pre><code class="language-xml">xmlns:helpers="using:Flowery.Helpers"
+
+&lt;Image Source="photo.jpg"
+       helpers:FlowerySlideEffects.Effect="PanAndZoom"
+       helpers:FlowerySlideEffects.Duration="5"
+       helpers:FlowerySlideEffects.ZoomIntensity="0.15"
+       helpers:FlowerySlideEffects.AutoStart="True" /&gt;</code></pre>
+
+<strong>Programmatic Usage:</strong>
+
+<pre><code class="language-csharp">using Flowery.Helpers;
+
+// Apply effect to any UIElement
+FlowerySlideEffects.SetEffect(myImage, FlowerySlideEffect.PanAndZoom);
+FlowerySlideEffects.SetDuration(myImage, 5.0);
+FlowerySlideEffects.SetAutoStart(myImage, true);
+
+// Start/stop manually
+FlowerySlideEffect applied = FlowerySlideEffects.StartEffect(myImage);
+FlowerySlideEffects.StopEffect(myImage);
+
+// Preserve transform during stop (for smooth transitions)
+FlowerySlideEffects.StopEffectPreservingTransform(myImage);</code></pre>
+
+<h3>Slide Transition Helpers</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FlowerySlideTransitionHelpers</code></td>
+<td>Applies transitions between two slide elements</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitionParams</code></td>
+<td>Record for configuring transition parameters</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitionParser</code></td>
+<td>Parses string names to <code>FlowerySlideTransition</code> enum</td>
+</tr>
+<tr>
+<td><code>FloweryTransitionTier</code></td>
+<td>Enum categorizing transitions (Transform/Clip/Skia)</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Programmatic Transition:</strong>
+
+<pre><code class="language-csharp">using Flowery.Helpers;
+
+var transitionParams = new FlowerySlideTransitionParams
+{
+    Duration = TimeSpan.FromMilliseconds(500),
+    SliceCount = 10,
+    StaggerSlices = true
+};
+
+FlowerySlideTransition applied = FlowerySlideTransitionHelpers.ApplyTransition(
+    container,
+    oldSlideWrapper,
+    newSlideWrapper,
+    FlowerySlideTransition.Checkerboard,
+    transitionParams,
+    onComplete: () =&gt; { /* cleanup */ });</code></pre>
+
+<h3>Slideshow Controller</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FlowerySlideshowController</code></td>
+<td>Manages auto-advance timing for slideshow/kiosk modes</td>
+</tr>
+<tr>
+<td><code>FlowerySlideshowMode</code></td>
+<td>Enum: <code>Manual</code>, <code>Slideshow</code>, <code>Random</code>, <code>Kiosk</code></td>
+</tr>
+<tr>
+<td><code>FlowerySlideChangedEventArgs</code></td>
+<td>Event args with old/new index, applied effect, current element</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Carousel GL Effects (Browser Only)</h3>
+
+<p>Located in <code>Flowery.Effects</code> namespace:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CarouselGlEffectHost</code></td>
+<td>Control that hosts Skia carousel previews (browser only)</td>
+</tr>
+<tr>
+<td><code>CarouselGlEffectRegistry</code></td>
+<td>Maps <code>CarouselGlEffectKind</code> to effect definitions</td>
+</tr>
+<tr>
+<td><code>CarouselGlRuntime</code></td>
+<td>Selects browser Skia runtime or no-op</td>
+</tr>
+<tr>
+<td><code>CarouselGlEffectKind</code></td>
+<td>Enum of all GL effect types</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Browser Skia Usage:</strong>
+
+<pre><code class="language-xml">xmlns:fx="using:Flowery.Effects"
+
+&lt;fx:CarouselGlEffectHost Effect="MatrixRain"
+                         OverlayEffect="Dissolve"
+                         IntervalSeconds="4"&gt;
+    &lt;Image Source="slide.jpg" /&gt;
+&lt;/fx:CarouselGlEffectHost&gt;</code></pre>
+
+<strong>Available Carousel GL Effects:</strong>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Category</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Shader Transitions</strong></td>
+<td><code>MaskTransition</code>, <code>Dissolve</code>, <code>Pixelate</code>, <code>FlipPlane</code></td>
+</tr>
+<tr>
+<td><strong>Grid Patterns</strong></td>
+<td><code>BlindsHorizontal/Vertical</code>, <code>SlicesHorizontal/Vertical</code>, <code>Checkerboard</code>, <code>Spiral</code>, <code>MatrixRain</code>, <code>Wormhole</code></td>
+</tr>
+<tr>
+<td><strong>3D Transforms</strong></td>
+<td><code>FlipHorizontal/Vertical</code>, <code>CubeLeft/Right</code></td>
+</tr>
+<tr>
+<td><strong>Motion Effects</strong></td>
+<td><code>EffectPanAndZoom</code>, <code>EffectZoomIn/Out</code>, <code>EffectPan*</code>, <code>EffectDrift</code>, <code>EffectPulse</code>, <code>EffectBreath</code>, <code>EffectThrow</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Skia Infrastructure</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SkiaImageProcessor</code></td>
+<td>Core image blur, saturation, glass effect processing</td>
+</tr>
+<tr>
+<td><code>SkiaBackdropCapture</code></td>
+<td>Captures WinUI elements and processes with Skia</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Direct Skia Processing:</strong>
+
+<pre><code class="language-csharp">using Flowery.Skia;
+
+// Apply blur to image bytes
+byte[]? blurred = SkiaImageProcessor.ApplyBlur(pngBytes, sigmaX: 5, sigmaY: 5);
+
+// Apply glass effect to bitmap
+byte[]? glass = SkiaImageProcessor.ApplyGlassEffect(
+    skBitmap,
+    blurSigma: 4.0f,
+    saturation: 0.8f,
+    tintColor: SKColors.White,
+    tintOpacity: 0.3f,
+    cornerRadius: 16f);</code></pre>
+<hr>
+<h2>Platform Support Matrix</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>Windows</th>
+<th>Desktop (Skia)</th>
+<th>Browser (WASM)</th>
+<th>Android</th>
+<th>iOS</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>DaisyGlass Simulated</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>DaisyGlass BitmapCapture</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>DaisyGlass SkiaSharp</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Tier 1 Transitions</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Tier 2 Transitions</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Tier 3 Transitions</strong></td>
+<td>⚠️</td>
+<td>✅</td>
+<td>✅</td>
+<td>⚠️</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td><strong>Slide Effects</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Carousel GL Effects</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Legend: ✅ Full support | ⚠️ Experimental/Limited | ❌ Not supported</p>
+<hr>
+<h2>Performance Considerations</h2>
+
+<h3>DaisyGlass</h3>
+
+<ul><li><strong>Simulated mode</strong> is always the fastest; use for high-frequency scenarios</li>
+<li><strong>BitmapCapture</strong> captures once on load; call <code>RefreshBackdrop()</code> sparingly</li>
+<li><strong>SkiaSharp</strong> blur sigma scales with CPU cost; keep <code>GlassBlur</code> under 50 for smooth performance</li>
+<li>Backdrop capture temporarily hides the element; avoid during animations</li>
+</ul>
+<h3>Carousel Effects</h3>
+
+<ul><li><strong>Slide effects</strong> run continuously; prefer lower <code>ZoomIntensity</code> and <code>PanDistance</code> for smooth 60fps</li>
+<li><strong>PanAndZoom</strong> is the most versatile but most complex; test on target devices</li>
+<li><strong>Tier 3 transitions</strong> require Skia rendering; may not work on all platforms</li>
+</ul>
+<h3>Memory</h3>
+
+<ul><li>SkiaSharp bitmaps are disposed after processing</li>
+<li><code>RenderTargetBitmap</code> captures can be large; scale factor (0.75) reduces memory</li>
+<li>Clear <code>ImageSource</code> on Unloaded to free resources</li>
+</ul><hr>
+<h2>Future Enhancements</h2>
+
+<ul><li><strong>Real-time blur</strong> via <code>SKCanvasElement</code> (live backdrop sampling)</li>
+<li><strong>Composition API blur</strong> using <code>GaussianBlurEffect</code> where available</li>
+<li><strong>Hardware backdrop</strong> on platforms that support native acrylic</li>
+<li><strong>Animated glass</strong> with continuous background sampling</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

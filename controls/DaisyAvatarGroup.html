@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyAvatarGroup</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyAvatarGroup</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyAvatarGroup arranges multiple <code>DaisyAvatar</code> items in an overlapping row. It uses a custom panel that offsets each avatar by a configurable overlap while keeping earlier items on top (higher z-order). Ideal for showing participants, teams, or contributors in a compact space.</p>
+
+<h2>Layout Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>, default <code>Medium</code>)</td>
+<td>Controls the group sizing behavior used by the theme (currently: overlap presets) and the built-in overflow avatar (<code>+N</code>). Note: this does <strong>not</strong> automatically set the <code>Size</code> of child <code>DaisyAvatar</code> items.</td>
+</tr>
+<tr>
+<td><code>Overlap</code> (double, default 24)</td>
+<td>How much each avatar overlaps the previous one. Higher values create tighter stacks; lower values show more of each avatar.</td>
+</tr>
+<tr>
+<td><code>MaxVisible</code> (int)</td>
+<td>Maximum number of avatars to show before collapsing. If the group has more items than this limit, the last visible slot becomes a placeholder showing the remaining count (e.g., "+5"). Default is 0 (show all).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple stacked avatars --&gt;
+&lt;controls:DaisyAvatarGroup&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#FFCDD2"&gt;
+        &lt;TextBlock Text="AL" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#C8E6C9" HasRing="True" RingColor="Success"&gt;
+        &lt;TextBlock Text="BK" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#BBDEFB"&gt;
+        &lt;TextBlock Text="CM" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+&lt;/controls:DaisyAvatarGroup&gt;
+
+&lt;!-- MaxVisible: Automatically collapses overflow --&gt;
+&lt;!-- Shows first 3 avatars, and a "+7" placeholder for the rest --&gt;
+&lt;controls:DaisyAvatarGroup Overlap="16" MaxVisible="4"&gt;
+    &lt;!-- Imagine 10 items here --&gt;
+    &lt;controls:DaisyAvatar ... /&gt; 
+    &lt;controls:DaisyAvatar ... /&gt;
+    ...
+&lt;/controls:DaisyAvatarGroup&gt;
+
+&lt;!-- Tighter overlap for larger avatars --&gt;
+&lt;controls:DaisyAvatarGroup Size="Large"&gt;
+    &lt;controls:DaisyAvatar Size="Large" Status="Online"&gt;
+        &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/logo.png" Stretch="UniformToFill" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Large" Status="Offline" Shape="Rounded"&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconDog}" Width="56" Height="56" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+&lt;/controls:DaisyAvatarGroup&gt;
+
+&lt;!-- Showing overflow with a placeholder --&gt;
+&lt;controls:DaisyAvatarGroup Overlap="14"&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#FFE082"&gt;
+        &lt;TextBlock Text="A" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#B3E5FC"&gt;
+        &lt;TextBlock Text="B" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" IsPlaceholder="True"&gt;
+        &lt;TextBlock Text="+5" FontWeight="SemiBold"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+&lt;/controls:DaisyAvatarGroup&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep all child avatars the same size for a clean stack; mix sizes only when intentionally highlighting one person.</li>
+<li>Set <code>Overlap</code> to roughly one-third to one-half of the avatar width (e.g., 12–20 for 32px avatars) so names/initials remain legible.</li>
+<li>Order matters: earlier items sit on top of later ones; place priority users first.</li>
+<li>Use <code>MaxVisible</code> to automatically handle overflow counts, or add a manual <code>IsPlaceholder="True"</code> avatar if you need custom logic.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyAvatar.html">← Avatar</a></div>
+    <div class="nav-right"><a href="DaisyBadge.html">Badge →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

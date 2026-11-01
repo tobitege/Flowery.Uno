@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorCollection</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>ColorCollection</h1>
+
+<h2>Overview</h2>
+
+<p>ColorCollection is a collection class for managing colors with support for predefined palettes. It implements <code>IList<Color></code> and provides factory methods for creating standard color palettes like Named Colors, Office 2010, MS Paint, Web Safe, and custom grayscale gradients.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Count</code></td>
+<td><code>int</code></td>
+<td>Number of colors in the collection</td>
+</tr>
+<tr>
+<td><code>IsReadOnly</code></td>
+<td><code>bool</code></td>
+<td>Always <code>false</code></td>
+</tr>
+<tr>
+<td><code>this[int]</code></td>
+<td><code>Color</code></td>
+<td>Indexer for accessing colors</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CollectionChanged</code></td>
+<td>Fired when the collection is modified</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Constructors</h2>
+
+<pre><code class="language-csharp">// Empty collection
+var colors = new ColorCollection();
+
+// From existing colors
+var colors = new ColorCollection(new[] 
+{ 
+    Colors.Red, 
+    Colors.Green, 
+    Colors.Blue 
+});
+
+// From another collection
+var colors = new ColorCollection(existingColorList);</code></pre>
+
+<h2>Factory Methods (Built-in Palettes)</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Colors</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CreateNamedColors()</code></td>
+<td>140+</td>
+<td>All CSS/HTML named colors</td>
+</tr>
+<tr>
+<td><code>CreateOffice2010()</code></td>
+<td>70</td>
+<td>Microsoft Office 2010 theme colors</td>
+</tr>
+<tr>
+<td><code>CreatePaint()</code></td>
+<td>48</td>
+<td>MS Paint default palette</td>
+</tr>
+<tr>
+<td><code>CreateWebSafe()</code></td>
+<td>216</td>
+<td>Web-safe 216-color palette</td>
+</tr>
+<tr>
+<td><code>CreateGrayscale(n)</code></td>
+<td>n</td>
+<td>Custom grayscale gradient with n steps</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-csharp">// Create built-in palettes
+var named = ColorCollection.CreateNamedColors();
+var office = ColorCollection.CreateOffice2010();
+var paint = ColorCollection.CreatePaint();
+var webSafe = ColorCollection.CreateWebSafe();
+
+// Create grayscale palette
+var grays16 = ColorCollection.CreateGrayscale(16);   // 16 shades
+var grays256 = ColorCollection.CreateGrayscale(256); // Full grayscale</code></pre>
+
+<h2>Collection Methods</h2>
+
+<pre><code class="language-csharp">var colors = new ColorCollection();
+
+// Add colors
+colors.Add(Colors.Red);
+colors.AddRange(new[] { Colors.Green, Colors.Blue });
+
+// Remove colors
+colors.Remove(Colors.Red);
+colors.RemoveAt(0);
+colors.Clear();
+
+// Query
+bool hasRed = colors.Contains(Colors.Red);
+int index = colors.IndexOf(Colors.Blue);
+
+// Find with tolerance
+int index = colors.Find(someColor);           // Exact match
+int index = colors.Find(someColor, 10);       // Within tolerance
+
+// Insert
+colors.Insert(0, Colors.Yellow);
+
+// Copy
+var array = new Color[colors.Count];
+colors.CopyTo(array, 0);</code></pre>
+
+<h2>Find Method</h2>
+
+<p>The <code>Find</code> method locates a color in the collection with optional tolerance:</p>
+
+<pre><code class="language-csharp">// Exact match
+int index = colors.Find(Colors.Red);  // Returns -1 if not found
+
+// With tolerance (useful for similar colors)
+int index = colors.Find(someColor, tolerance: 10);
+// Tolerance compares R, G, B, A components within ±tolerance</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-csharp">// Use with DaisyColorGrid
+var grid = new DaisyColorGrid
+{
+    Palette = ColorCollection.CreateOffice2010()
+};
+
+// Custom palette for a specific app
+var brandColors = new ColorCollection(new[]
+{
+    Color.FromRgb(0x1E, 0x90, 0xFF),  // Brand blue
+    Color.FromRgb(0xFF, 0x69, 0xB4),  // Brand pink
+    Color.FromRgb(0x32, 0xCD, 0x32),  // Brand green
+});
+
+// Combine palettes
+var combined = new ColorCollection();
+combined.AddRange(ColorCollection.CreatePaint());
+combined.AddRange(brandColors);
+
+// React to changes
+colors.CollectionChanged += (s, e) =&gt;
+{
+    RefreshColorGrid();
+};
+
+// XAML binding (static palettes)
+// &lt;colorpicker:DaisyColorGrid Palette="{x:Static colorpicker:ColorCollection.Office2010}" /&gt;</code></pre>
+
+<h2>Palette Previews</h2>
+
+<h3>Named Colors (140+)</h3>
+
+<p>Standard CSS/HTML color names: AliceBlue, AntiqueWhite, Aqua, Aquamarine, Azure, Beige, Bisque, Black, BlanchedAlmond, Blue, BlueViolet, Brown, BurlyWood, CadetBlue, Chartreuse, Chocolate, Coral, CornflowerBlue, Cornsilk, Crimson, Cyan, DarkBlue, DarkCyan, DarkGoldenrod, DarkGray, DarkGreen, DarkKhaki, DarkMagenta, DarkOliveGreen, DarkOrange, DarkOrchid, DarkRed, DarkSalmon, DarkSeaGreen, DarkSlateBlue, DarkSlateGray, DarkTurquoise, DarkViolet, DeepPink, DeepSkyBlue, DimGray, DodgerBlue, Firebrick, FloralWhite, ForestGreen, Fuchsia, Gainsboro, GhostWhite, Gold, Goldenrod, Gray, Green, GreenYellow, Honeydew, HotPink, IndianRed, Indigo, Ivory, Khaki, Lavender, LavenderBlush, LawnGreen, LemonChiffon, LightBlue, LightCoral, LightCyan, LightGoldenrodYellow, LightGray, LightGreen, LightPink, LightSalmon, LightSeaGreen, LightSkyBlue, LightSlateGray, LightSteelBlue, LightYellow, Lime, LimeGreen, Linen, Magenta, Maroon, MediumAquamarine, MediumBlue, MediumOrchid, MediumPurple, MediumSeaGreen, MediumSlateBlue, MediumSpringGreen, MediumTurquoise, MediumVioletRed, MidnightBlue, MintCream, MistyRose, Moccasin, NavajoWhite, Navy, OldLace, Olive, OliveDrab, Orange, OrangeRed, Orchid, PaleGoldenrod, PaleGreen, PaleTurquoise, PaleVioletRed, PapayaWhip, PeachPuff, Peru, Pink, Plum, PowderBlue, Purple, Red, RosyBrown, RoyalBlue, SaddleBrown, Salmon, SandyBrown, SeaGreen, SeaShell, Sienna, Silver, SkyBlue, SlateBlue, SlateGray, Snow, SpringGreen, SteelBlue, Tan, Teal, Thistle, Tomato, Turquoise, Violet, Wheat, White, WhiteSmoke, Yellow, YellowGreen</p>
+
+<h3>Office 2010 (70)</h3>
+
+<p>Professional theme colors organized in rows: base colors, tints, and shades matching Microsoft Office 2010 color themes.</p>
+
+<h3>Paint (48)</h3>
+
+<p>Classic MS Paint palette with primary colors, secondary colors, and common variations.</p>
+
+<h3>Web Safe (216)</h3>
+
+<p>The 216 colors that display consistently across all browsers and systems (6×6×6 RGB cube).</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Named Colors</strong> for general-purpose color selection.</li>
+<li>Use <strong>Office 2010</strong> for professional/business applications.</li>
+<li>Use <strong>Paint</strong> for simple, familiar color selection.</li>
+<li>Use <strong>Web Safe</strong> when colors must be web-compatible.</li>
+<li>Use <code>CreateGrayscale()</code> for monochrome/grayscale applications.</li>
+<li>The <code>Find</code> method with tolerance is useful when colors might have slight variations.</li>
+<li>Subscribe to <code>CollectionChanged</code> to refresh UI when custom colors are modified.</li>
+<li>Reuse <code>ColorCollection</code> instances across dialog sessions to persist custom colors.</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

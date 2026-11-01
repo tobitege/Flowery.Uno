@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyMask</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyMask</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyMask.png" alt="DaisyMask" class="doc-image">
+
+<p>DaisyMask clips its content to preset shapes: squircle, heart, hexagon, circle, square, diamond, or triangle. It scales vector paths to the control's bounds on arrange, making it easy to mask images or backgrounds into decorative silhouettes.</p>
+
+<h2>Shape Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Squircle (default)</td>
+<td>Soft superellipse corners; balanced for avatars/cards.</td>
+</tr>
+<tr>
+<td>Circle</td>
+<td>Full ellipse.</td>
+</tr>
+<tr>
+<td>Square</td>
+<td>Hard edges.</td>
+</tr>
+<tr>
+<td>Heart</td>
+<td>Heart silhouette.</td>
+</tr>
+<tr>
+<td>Hexagon</td>
+<td>Six-sided mask.</td>
+</tr>
+<tr>
+<td>Diamond</td>
+<td>45° rotated square.</td>
+</tr>
+<tr>
+<td>Triangle</td>
+<td>Equilateral triangle.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Squircle mask --&gt;
+&lt;controls:DaisyMask Variant="Squircle" Width="100" Height="100"&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/logo.png" Stretch="UniformToFill" /&gt;
+&lt;/controls:DaisyMask&gt;
+
+&lt;!-- Hexagon badge --&gt;
+&lt;controls:DaisyMask Variant="Hexagon" Width="120" Height="120" Background="{ThemeResource DaisyPrimaryBrush}"&gt;
+    &lt;TextBlock Text="Hex" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+&lt;/controls:DaisyMask&gt;
+
+&lt;!-- Heart photo --&gt;
+&lt;controls:DaisyMask Variant="Heart" Width="140" Height="140"&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo.jpg" Stretch="UniformToFill" /&gt;
+&lt;/controls:DaisyMask&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set explicit <code>Width</code>/<code>Height</code> for predictable aspect ratios; masks scale the 100×100 path to fit bounds.</li>
+<li>Use <code>Stretch="UniformToFill"</code> on images to avoid blank areas when clipped.</li>
+<li>Combine with <code>BorderBrush</code>/<code>BorderThickness</code> to outline the shape; <code>ClipToBounds=True</code> is set by default.</li>
+<li>For interactive elements, ensure hit-testing works for your layout; the mask affects visuals, not hit area.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyLoginButton.html">← LoginButton</a></div>
+    <div class="nav-right"><a href="DaisyMaskInput.html">MaskInput →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DesignTokens</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div><h1>Design Tokens</h1>
+
+<p>Flowery.Uno uses centralized design tokens to ensure consistent sizing across all controls. Tokens are defined in code via <code>DaisyTokenDefaults.cs</code> and can be accessed programmatically through <code>DaisyResourceLookup</code>.</p>
+
+<p>> <strong>Note:</strong> This document covers <strong>sizing and layout tokens</strong>. For color and brush customization, see <a href="StylingResources.html"><code>StylingResources.md</code></a>.</p>
+
+<h2>Overview</h2>
+
+<p>Design tokens provide a single source of truth for:</p>
+
+<ul><li><strong>Control Heights</strong> - Standard heights for buttons, inputs, selects</li>
+<li><strong>Font Sizes</strong> - Typography scale across controls  </li>
+<li><strong>Corner Radius</strong> - Rounded corners for controls</li>
+<li><strong>Padding</strong> - Internal spacing for different control types</li>
+<li><strong>Spacing</strong> - Layout spacing values</li>
+<li><strong>Border Thickness</strong> - Standard border widths</li>
+</ul>
+<h2>Uno Platform Implementation</h2>
+
+<p>Flowery.Uno implements design tokens in C#:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTokenDefaults.cs</code></td>
+<td>Ensures default tokens are present in <code>Application.Current.Resources</code></td>
+</tr>
+<tr>
+<td><code>DaisyResourceLookup.cs</code></td>
+<td>Provides helper methods to read tokens and get fallback values</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>How It Works</h3>
+
+<p>1. Controls call <code>DaisyTokenDefaults.EnsureDefaults(resources)</code> on load</p>
+<p>2. This populates <code>Application.Current.Resources</code> with default token values</p>
+<p>3. Controls use <code>DaisyResourceLookup.GetDouble()</code>, <code>GetThickness()</code>, etc. to read tokens</p>
+<p>4. If a token is missing, centralized <code>GetDefault*()</code> methods provide fallbacks</p>
+
+<h3>Ensuring Tokens at Startup (Recommended)</h3>
+
+<p>If you need token values before any Daisy control loads (e.g., for layout math at app startup),</p>
+<p>call the public helper once during app initialization:</p>
+
+<pre><code class="language-csharp">using Flowery.Theming;
+
+// App startup (e.g., App.OnLaunched)
+DaisyResourceLookup.EnsureTokens();</code></pre>
+
+<h2>Programmatic Access via DaisyResourceLookup</h2>
+
+<p>For custom controls or code-behind, use <code>DaisyResourceLookup</code> helper methods:</p>
+
+<pre><code class="language-csharp">using Flowery.Theming;
+using Flowery.Controls;
+
+// Get default values based on DaisySize
+double height = DaisyResourceLookup.GetDefaultHeight(DaisySize.Medium);        // 28
+double fontSize = DaisyResourceLookup.GetDefaultFontSize(DaisySize.Medium);    // 12
+Thickness padding = DaisyResourceLookup.GetDefaultPadding(DaisySize.Medium);   // 10,0,10,0
+CornerRadius radius = DaisyResourceLookup.GetDefaultCornerRadius(DaisySize.Medium); // 8
+
+// Read from ResourceDictionary with fallback
+var resources = Application.Current?.Resources;
+double actualHeight = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", 28);</code></pre>
+
+<h3>Available Helper Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GetDefaultHeight(size)</code></td>
+<td>double</td>
+<td>Standard control height (22-36)</td>
+</tr>
+<tr>
+<td><code>GetDefaultFloatingInputHeight(size)</code></td>
+<td>double</td>
+<td>Taller input height (28-46)</td>
+</tr>
+<tr>
+<td><code>GetDefaultFontSize(size)</code></td>
+<td>double</td>
+<td>Primary font size (9-16)</td>
+</tr>
+<tr>
+<td><code>GetDefaultHeaderFontSize(size)</code></td>
+<td>double</td>
+<td>Large display font size (12-24)</td>
+</tr>
+<tr>
+<td><code>GetDefaultPadding(size)</code></td>
+<td>Thickness</td>
+<td>Horizontal button padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultCornerRadius(size)</code></td>
+<td>CornerRadius</td>
+<td>Rounded corners (4-12)</td>
+</tr>
+<tr>
+<td><code>GetDefaultIconSize(size)</code></td>
+<td>double</td>
+<td>Icon dimensions (10-18)</td>
+</tr>
+<tr>
+<td><code>GetDefaultIconSpacing(size)</code></td>
+<td>double</td>
+<td>Gap between icon and text (3-8)</td>
+</tr>
+<tr>
+<td><code>GetDefaultMenuPadding(size)</code></td>
+<td>Thickness</td>
+<td>Menu/list item padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultTagPadding(size)</code></td>
+<td>Thickness</td>
+<td>Tag/chip padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultRangeTrackHeight(size)</code></td>
+<td>double</td>
+<td>Range slider track (4-16)</td>
+</tr>
+<tr>
+<td><code>GetDefaultRangeThumbSize(size)</code></td>
+<td>double</td>
+<td>Range slider thumb (12-36)</td>
+</tr>
+<tr>
+<td><code>GetDefaultRatingStarSize(size)</code></td>
+<td>double</td>
+<td>Rating star dimensions (16-40)</td>
+</tr>
+<tr>
+<td><code>GetDefaultRatingSpacing(size)</code></td>
+<td>double</td>
+<td>Rating star gap (2-8)</td>
+</tr>
+<tr>
+<td><code>GetDefaultRadialProgressSize(size)</code></td>
+<td>double</td>
+<td>Radial progress dimensions (24-128)</td>
+</tr>
+<tr>
+<td><code>GetDefaultOtpSlotSize(size)</code></td>
+<td>double</td>
+<td>OTP input slot size (32-56)</td>
+</tr>
+<tr>
+<td><code>GetDefaultOtpSpacing(size)</code></td>
+<td>double</td>
+<td>OTP slot spacing (4-10)</td>
+</tr>
+<tr>
+<td><code>GetDefaultSwatchSize(size)</code></td>
+<td>double</td>
+<td>Color swatch/dot size for theme pickers (6-14)</td>
+</tr>
+<tr>
+<td><code>GetAvatarSize(size)</code></td>
+<td>double</td>
+<td>Avatar dimensions (20-80)</td>
+</tr>
+<tr>
+<td><code>GetAvatarStatusSize(size)</code></td>
+<td>double</td>
+<td>Status indicator size (5-16)</td>
+</tr>
+<tr>
+<td><code>GetAvatarFontSize(size)</code></td>
+<td>double</td>
+<td>Avatar placeholder font (7-20)</td>
+</tr>
+<tr>
+<td><code>GetAvatarIconSize(size)</code></td>
+<td>double</td>
+<td>Avatar icon size (10-34)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Token Reference</h2>
+
+<h3>Control Heights</h3>
+
+<p>Used for buttons, inputs, selects, and other fixed-height controls.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+<th>Used By</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}Height</code></td>
+<td>22</td>
+<td>24</td>
+<td>28</td>
+<td>32</td>
+<td>36</td>
+<td>DaisyButton, DaisyInput, DaisySelect</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Floating Input Heights</h3>
+
+<p>Specific heights for taller input controls like <code>DaisyNumericUpDown</code> and <code>DaisyFileInput</code>.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyInputFloating{Size}Height</code></td>
+<td>28</td>
+<td>34</td>
+<td>38</td>
+<td>42</td>
+<td>46</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Font Sizes</h3>
+
+<h4>Primary Font Sizes</h4>
+
+<p>Typography scale used across controls for main content.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}FontSize</code></td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Secondary Font Sizes</h4>
+
+<p>For hint text, helper text, captions, labels (~0.8x of primary).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}SecondaryFontSize</code></td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Tertiary Font Sizes</h4>
+
+<p>For very small captions, counters (~0.7x of primary).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}TertiaryFontSize</code></td>
+<td>8</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Section Header Font Sizes</h4>
+
+<p>For section titles within pages.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}SectionHeaderFontSize</code></td>
+<td>10</td>
+<td>12</td>
+<td>13</td>
+<td>15</td>
+<td>17</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Header Font Sizes</h4>
+
+<p>For large display headings (~1.4x of primary).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}HeaderFontSize</code></td>
+<td>12</td>
+<td>14</td>
+<td>17</td>
+<td>20</td>
+<td>24</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Corner Radius</h3>
+
+<p>Rounded corners for controls.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySize{Size}CornerRadius</code></td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Button Padding</h3>
+
+<p>Horizontal-only padding (vertical is controlled by Height).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyButton{Size}Padding</code></td>
+<td>8,0</td>
+<td>12,0</td>
+<td>14,0</td>
+<td>16,0</td>
+<td>16,0</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Input Padding</h3>
+
+<p>Full padding for text inputs.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyInput{Size}Padding</code></td>
+<td>8,4</td>
+<td>12,5</td>
+<td>12,6</td>
+<td>14,6</td>
+<td>14,7</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Tab Padding</h3>
+
+<p>Both horizontal and vertical padding (tabs don't use fixed height).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTab{Size}Padding</code></td>
+<td>10,2</td>
+<td>12,4</td>
+<td>12,5</td>
+<td>12,5</td>
+<td>12,5</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Badge Tokens</h3>
+
+<p>Badges use a separate, more compact scale.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyBadge{Size}Height</code></td>
+<td>14</td>
+<td>16</td>
+<td>20</td>
+<td>22</td>
+</tr>
+<tr>
+<td><code>DaisyBadge{Size}FontSize</code></td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>DaisyBadge{Size}Padding</code></td>
+<td>4,0</td>
+<td>6,0</td>
+<td>8,0</td>
+<td>12,0</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Card Padding</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyCardLargePadding</code></td>
+<td>24</td>
+</tr>
+<tr>
+<td><code>DaisyCardMediumPadding</code></td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>DaisyCardSmallPadding</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>DaisyCardCompactPadding</code></td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Spacing</h3>
+
+<p>General spacing values for layouts.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySpacingXL</code></td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>DaisySpacingLarge</code></td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>DaisySpacingMedium</code></td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>DaisySpacingSmall</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>DaisySpacingXS</code></td>
+<td>3</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Border Thickness</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyBorderThicknessNone</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>DaisyBorderThicknessThin</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>DaisyBorderThicknessMedium</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>DaisyBorderThicknessThick</code></td>
+<td>3</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Checkbox/Radio Indicator Sizes</h2>
+
+<p>Outer border size for checkboxes and radio buttons.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyCheckbox{Size}Size</code></td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+<td>24</td>
+<td>28</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Checkmark Icon Sizes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyCheckmark{Size}Size</code></td>
+<td>7</td>
+<td>10</td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Radio Inner Dot Sizes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyRadioDot{Size}Size</code></td>
+<td>5</td>
+<td>8</td>
+<td>10</td>
+<td>14</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Toggle Switch Sizes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyToggle{Size}Width</code></td>
+<td>24</td>
+<td>28</td>
+<td>36</td>
+<td>42</td>
+<td>48</td>
+</tr>
+<tr>
+<td><code>DaisyToggle{Size}Height</code></td>
+<td>14</td>
+<td>16</td>
+<td>20</td>
+<td>24</td>
+<td>28</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Toggle Knob Sizes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyToggleKnob{Size}Size</code></td>
+<td>10</td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+<td>22</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Progress Bar Heights</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyProgress{Size}Height</code></td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Progress Corner Radius</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyProgress{Size}CornerRadius</code></td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Avatar Sizes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyAvatar{Size}Size</code></td>
+<td>20</td>
+<td>28</td>
+<td>40</td>
+<td>56</td>
+<td>80</td>
+</tr>
+<tr>
+<td><code>DaisyAvatarStatus{Size}Size</code></td>
+<td>5</td>
+<td>7</td>
+<td>10</td>
+<td>14</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>DaisyAvatarFont{Size}Size</code></td>
+<td>7</td>
+<td>9</td>
+<td>12</td>
+<td>16</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>DaisyAvatarIcon{Size}Size</code></td>
+<td>10</td>
+<td>14</td>
+<td>18</td>
+<td>24</td>
+<td>34</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Menu Item Padding</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyMenu{Size}Padding</code></td>
+<td>6,3</td>
+<td>8,4</td>
+<td>8,5</td>
+<td>10,6</td>
+<td>10,6</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Menu Font Sizes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyMenu{Size}FontSize</code></td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>13</td>
+<td>15</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Kbd (Keyboard) Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyKbd{Size}Height</code></td>
+<td>12</td>
+<td>16</td>
+<td>20</td>
+<td>24</td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>DaisyKbd{Size}Padding</code></td>
+<td>2,0</td>
+<td>3,0</td>
+<td>4,0</td>
+<td>6,0</td>
+<td>8,0</td>
+</tr>
+<tr>
+<td><code>DaisyKbd{Size}FontSize</code></td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>DaisyKbd{Size}CornerRadius</code></td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>TextArea Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTextArea{Size}MinHeight</code></td>
+<td>40</td>
+<td>48</td>
+<td>64</td>
+<td>96</td>
+<td>128</td>
+</tr>
+<tr>
+<td><code>DaisyTextArea{Size}Padding</code></td>
+<td>6</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>DateTimeline Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyDateTimeline{Size}Height</code></td>
+<td>48</td>
+<td>56</td>
+<td>64</td>
+<td>80</td>
+<td>104</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}ItemWidth</code></td>
+<td>48</td>
+<td>56</td>
+<td>64</td>
+<td>80</td>
+<td>96</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}CornerRadius</code></td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>16</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}DayNumberFontSize</code></td>
+<td>14</td>
+<td>16</td>
+<td>20</td>
+<td>26</td>
+<td>32</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}DayNameFontSize</code></td>
+<td>9</td>
+<td>10</td>
+<td>10</td>
+<td>13</td>
+<td>15</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}MonthNameFontSize</code></td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>DaisyDateTimeline{Size}HeaderFontSize</code></td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>20</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>OTP Input Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyOtp{Size}SlotSize</code></td>
+<td>32</td>
+<td>40</td>
+<td>48</td>
+<td>56</td>
+<td>56</td>
+</tr>
+<tr>
+<td><code>DaisyOtp{Size}FontSize</code></td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>22</td>
+<td>24</td>
+</tr>
+<tr>
+<td><code>DaisyOtp{Size}Spacing</code></td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Tag Picker Tokens</h2>
+
+<p>Tag chip text uses the shared <code>DaisySize{Size}FontSize</code> tokens. Tag-specific tokens cover padding and close icon size:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTag{Size}Padding</code></td>
+<td>4,2</td>
+<td>6,3</td>
+<td>8,4</td>
+<td>10,5</td>
+<td>12,6</td>
+</tr>
+<tr>
+<td><code>DaisyTagClose{Size}Size</code></td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Divider Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyDivider{Size}Thickness</code></td>
+<td>1</td>
+<td>1.5</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>DaisyDivider{Size}FontSize</code></td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>DaisyDivider{Size}TextPadding</code></td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>DaisyDivider{Size}Margin</code></td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>SlideToConfirm Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySlideToConfirm{Size}TrackWidth</code> (MinWidth)</td>
+<td>60</td>
+<td>70</td>
+<td>80</td>
+<td>90</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}TrackHeight</code></td>
+<td>20</td>
+<td>24</td>
+<td>28</td>
+<td>32</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}HandleSize</code></td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>22</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}IconSize</code></td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}FontSize</code></td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}CornerRadius</code></td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> Track width auto-sizes to fit text content. The token value is used as MinWidth.</p>
+<hr>
+<h2>Dock Tokens</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyDock{Size}ItemSize</code></td>
+<td>16</td>
+<td>24</td>
+<td>32</td>
+<td>48</td>
+<td>64</td>
+</tr>
+<tr>
+<td><code>DaisyDock{Size}Spacing</code></td>
+<td>2</td>
+<td>2</td>
+<td>4</td>
+<td>4</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>DaisyDockIconSizeRatio</code></td>
+<td>0.6</td>
+<td>0.6</td>
+<td>0.6</td>
+<td>0.6</td>
+<td>0.6</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Large Display Tokens</h2>
+
+<p>Used by <code>DaisyNumberFlow</code> and similar large-format controls.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>LargeDisplayFontSize</code></td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementHeight</code></td>
+<td>86</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementWidth</code></td>
+<td>58</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementCornerRadius</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementSpacing</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonSize</code></td>
+<td>42</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonFontSize</code></td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonCornerRadius</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonSpacing</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>LargeDisplayContainerPadding</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>LargeDisplayContainerCornerRadius</code></td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Making Custom Controls Token-Aware</h2>
+
+<h3>Pattern 1: Use DaisyResourceLookup (Recommended)</h3>
+
+<p>For custom controls, use <code>DaisyResourceLookup</code> methods instead of hardcoded values:</p>
+
+<pre><code class="language-csharp">public class MyCustomControl : ContentControl
+{
+    public DaisySize Size { get; set; } = DaisySize.Medium;
+
+    private void ApplySizing()
+    {
+        var resources = Application.Current?.Resources;
+        if (resources != null)
+            DaisyTokenDefaults.EnsureDefaults(resources);
+
+        // Use centralized defaults - single source of truth
+        Height = DaisyResourceLookup.GetDefaultHeight(Size);
+        FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+        Padding = DaisyResourceLookup.GetDefaultPadding(Size);
+    }
+}</code></pre>
+
+<h3>Pattern 2: Read from ResourceDictionary with Fallback</h3>
+
+<p>For maximum flexibility (allows token overrides):</p>
+
+<pre><code class="language-csharp">private void ApplySizing()
+{
+    var resources = Application.Current?.Resources;
+    if (resources != null)
+        DaisyTokenDefaults.EnsureDefaults(resources);
+
+    string sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size); // "Medium", "Large", etc.
+
+    // Try resource dictionary first, fallback to centralized default
+    Height = DaisyResourceLookup.GetDouble(resources, $"DaisySize{sizeKey}Height",
+        DaisyResourceLookup.GetDefaultHeight(Size));
+    FontSize = DaisyResourceLookup.GetDouble(resources, $"DaisySize{sizeKey}FontSize",
+        DaisyResourceLookup.GetDefaultFontSize(Size));
+}</code></pre>
+<hr>
+<h2>Controls Using Tokens</h2>
+
+<p>Most Daisy controls use the token system for consistent sizing:</p>
+
+<ul><li><strong>DaisyButton</strong> - Heights, font sizes, padding, corner radius</li>
+<li><strong>DaisyInput</strong> - Heights, font sizes, padding, corner radius</li>
+<li><strong>DaisySelect</strong> - Heights, font sizes, corner radius</li>
+<li><strong>DaisyNumericUpDown</strong> - Floating heights, font sizes, corner radius</li>
+<li><strong>DaisyTabs</strong> - Font sizes, padding, corner radius</li>
+<li><strong>DaisyBadge</strong> - Badge-specific heights, font sizes, padding</li>
+<li><strong>DaisyFileInput</strong> - Floating heights, font sizes, corner radius</li>
+<li><strong>DaisyCheckBox</strong> - Indicator sizes, checkmark sizes</li>
+<li><strong>DaisyRadio</strong> - Indicator sizes, inner dot sizes</li>
+<li><strong>DaisyToggle</strong> - Switch dimensions, knob sizes</li>
+<li><strong>DaisyProgress</strong> - Bar heights, corner radius</li>
+<li><strong>DaisyAvatar</strong> - Avatar dimensions, status indicators</li>
+<li><strong>DaisyMenu</strong> - Item padding, font sizes</li>
+<li><strong>DaisyKbd</strong> - Heights, padding, font sizes, corner radius</li>
+<li><strong>DaisyTextArea</strong> - MinHeight, padding</li>
+<li><strong>DaisyRange</strong> - Track height, thumb size</li>
+<li><strong>DaisyRating</strong> - Star size, spacing</li>
+<li><strong>DaisyRadialProgress</strong> - Circle dimensions</li>
+<li><strong>DaisyOtpInput</strong> - Slot size, font size, spacing</li>
+<li><strong>DaisyTagPicker</strong> - Tag padding, font size, icon sizes</li>
+<li><strong>DaisyDateTimeline</strong> - Height, item width, font sizes, corner radius</li>
+<li><strong>DaisyDivider</strong> - Thickness, font size, text padding, margin</li>
+<li><strong>DaisySlideToConfirm</strong> - Track dimensions, handle size, icon size, font size</li>
+<li><strong>DaisyDock</strong> - Item size, spacing, icon ratio</li>
+<li>And more...</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

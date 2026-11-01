@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCheckBox</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCheckBox</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCheckBox.png" alt="DaisyCheckBox" class="doc-image">
+
+<p>DaisyCheckBox is a styled checkbox with <strong>9 color variants</strong> and <strong>5 size presets</strong>. It uses a filled box with a checkmark when checked and inherits WinUI's <code>IsChecked</code>/<code>IsThreeState</code> behavior. Use variants for semantic meaning and sizes to match surrounding controls.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Neutral base styling.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Brand-aligned colors for emphasis.</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>Muted neutral fill.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic colors for statuses.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Box (approx)</th>
+<th>Check</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>8px</td>
+<td>5px</td>
+<td>Dense tables/toolbars.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>10px</td>
+<td>6px</td>
+<td>Compact forms.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>12px</td>
+<td>8px</td>
+<td>General usage.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>14px</td>
+<td>10px</td>
+<td>Spacious layouts, cards.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>16px</td>
+<td>12px</td>
+<td>Hero sections or touch targets.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic variants --&gt;
+&lt;controls:DaisyCheckBox Content="Default" /&gt;
+&lt;controls:DaisyCheckBox Content="Primary" Variant="Primary" IsChecked="True" /&gt;
+&lt;controls:DaisyCheckBox Content="Warning" Variant="Warning" IsChecked="True" /&gt;
+&lt;controls:DaisyCheckBox Content="Error" Variant="Error" IsChecked="True" /&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;StackPanel Spacing="6"&gt;
+    &lt;controls:DaisyCheckBox Content="Extra Small" Size="ExtraSmall" IsChecked="True" /&gt;
+    &lt;controls:DaisyCheckBox Content="Small" Size="Small" IsChecked="True" /&gt;
+    &lt;controls:DaisyCheckBox Content="Medium" Size="Medium" IsChecked="True" /&gt;
+    &lt;controls:DaisyCheckBox Content="Large" Size="Large" IsChecked="True" /&gt;
+    &lt;controls:DaisyCheckBox Content="Extra Large" Size="ExtraLarge" IsChecked="True" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Disabled states --&gt;
+&lt;controls:DaisyCheckBox Content="Disabled unchecked" IsEnabled="False" /&gt;
+&lt;controls:DaisyCheckBox Content="Disabled checked" IsEnabled="False" IsChecked="True" /&gt;
+&lt;controls:DaisyCheckBox Content="Disabled Primary" Variant="Primary" IsEnabled="False" IsChecked="True" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Pair sizes with neighboring controls (Small for dense forms; Large for card layouts or touch devices).</li>
+<li>Use semantic variants to reinforce status (Success/Warning/Error) without extra icons.</li>
+<li>Keep content concise; longer labels may need additional left padding if you override <code>Padding</code>.</li>
+<li>Respect accessibility: ensure checked/unchecked colors have sufficient contrast against backgrounds.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyChatBubble.html">← ChatBubble</a></div>
+    <div class="nav-right"><a href="DaisyClock.html">Clock →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

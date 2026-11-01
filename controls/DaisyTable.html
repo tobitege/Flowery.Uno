@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTable</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTable</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisytable">
+  <input type="radio" name="daisytable_tabs" id="daisytable_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisytable_tabs" id="daisytable_tab1" class="tab-radio">
+  <input type="radio" name="daisytable_tabs" id="daisytable_tab2" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisytable_tab0" class="tab-label">Part 1</label>
+    <label for="daisytable_tab1" class="tab-label">Part 2</label>
+    <label for="daisytable_tab2" class="tab-label">Part 3</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyTable_a.png" alt="DaisyTable - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyTable_b.png" alt="DaisyTable - Part 2" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyTable_c.png" alt="DaisyTable - Part 3" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyTable provides a styled table layout with header, body, and footer sections plus row/cell primitives. It supports <strong>zebra striping</strong>, <strong>pinned headers/columns</strong> (via the template), <strong>row active/hover states</strong>, and <strong>size presets</strong> that adjust padding and font size. Use <code>DaisyTableHead</code>, <code>DaisyTableBody</code>, and <code>DaisyTableFoot</code> to structure content; rows/cells handle layout and styling.</p>
+
+<h2>Structure</h2>
+
+<ul><li><code>DaisyTable</code> (root ItemsControl)</li>
+</ul>  - <code>DaisyTableHead</code> → <code>DaisyTableRow</code> → <code>DaisyTableHeaderCell</code>
+<p>- <code>DaisyTableBody</code> → <code>DaisyTableRow</code> → <code>DaisyTableCell</code></p>
+<p>- <code>DaisyTableFoot</code> → <code>DaisyTableRow</code> → <code>DaisyTableCell</code></p>
+
+<h2>Table Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code></td>
+<td>ExtraSmall, Small, Medium (default), Large, ExtraLarge; adjusts padding/font via converters.</td>
+</tr>
+<tr>
+<td><code>Zebra</code> (bool)</td>
+<td>Applies alternate row backgrounds in <code>DaisyTableBody</code>.</td>
+</tr>
+<tr>
+<td><code>PinRows</code> / <code>PinCols</code> (bool)</td>
+<td>Exposed for sticky headers/columns; template groundwork present.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Row & Cell Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Element</th>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyTableRow</code></td>
+<td><code>IsActive</code></td>
+<td>Highlights the row as selected/active.</td>
+</tr>
+<tr>
+<td><code>DaisyTableRow</code></td>
+<td><code>HighlightOnHover</code></td>
+<td>Enables hover highlighting.</td>
+</tr>
+<tr>
+<td><code>DaisyTableHeaderCell</code></td>
+<td><code>ColumnWidth</code></td>
+<td>GridLength for the column (Star/Absolute/Auto).</td>
+</tr>
+<tr>
+<td><code>DaisyTableCell</code></td>
+<td>-</td>
+<td>Standard content cell.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;controls:DaisyTable Size="Small" Zebra="True"&gt;
+    &lt;controls:DaisyTableHead&gt;
+        &lt;controls:DaisyTableRow&gt;
+            &lt;controls:DaisyTableHeaderCell Content="Name" ColumnWidth="2*" /&gt;
+            &lt;controls:DaisyTableHeaderCell Content="Role" ColumnWidth="*" /&gt;
+            &lt;controls:DaisyTableHeaderCell Content="Actions" ColumnWidth="Auto" /&gt;
+        &lt;/controls:DaisyTableRow&gt;
+    &lt;/controls:DaisyTableHead&gt;
+
+    &lt;controls:DaisyTableBody&gt;
+        &lt;controls:DaisyTableRow HighlightOnHover="True"&gt;
+            &lt;controls:DaisyTableCell Content="Alice" /&gt;
+            &lt;controls:DaisyTableCell Content="Engineer" /&gt;
+            &lt;controls:DaisyTableCell&gt;
+                &lt;controls:DaisyButton Variant="Ghost" Size="Small" Content="Edit" /&gt;
+            &lt;/controls:DaisyTableCell&gt;
+        &lt;/controls:DaisyTableRow&gt;
+        &lt;controls:DaisyTableRow HighlightOnHover="True" IsActive="True"&gt;
+            &lt;controls:DaisyTableCell Content="Bob" /&gt;
+            &lt;controls:DaisyTableCell Content="Designer" /&gt;
+            &lt;controls:DaisyTableCell&gt;
+                &lt;controls:DaisyButton Variant="Ghost" Size="Small" Content="Edit" /&gt;
+            &lt;/controls:DaisyTableCell&gt;
+        &lt;/controls:DaisyTableRow&gt;
+    &lt;/controls:DaisyTableBody&gt;
+&lt;/controls:DaisyTable&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>ColumnWidth</code> on header cells to control column sizing across body rows (star widths distribute remaining space).</li>
+<li>Enable <code>Zebra</code> for dense data tables to improve scanability.</li>
+<li>Mark important rows with <code>IsActive=True</code>; combine with <code>HighlightOnHover</code> for interactivity.</li>
+<li>Keep padding/font consistent by using the <code>Size</code> presets instead of manual per-cell tweaks.</li>
+<li>If you need sticky headers/columns, leverage <code>PinRows/PinCols</code> alongside template adjustments for your layout.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisySwap.html">← Swap</a></div>
+    <div class="nav-right"><a href="DaisyTabs.html">Tabs →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

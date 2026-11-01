@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MigrationExample</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div><h1>Migration Guide: Integrating Flowery.Uno into Existing Apps</h1>
+
+<p>This guide explains when and how to use <code>CustomThemeApplicator</code> to integrate Flowery.Uno's theme controls into apps with existing theming architectures. For general theme management, see <a href="controls/DaisyThemeManager.html">DaisyThemeManager</a>.</p>
+
+<h2>When You Need CustomThemeApplicator</h2>
+
+<p>The default <code>DaisyThemeManager.ApplyTheme()</code> works by adding/removing palette resources from <code>Application.Resources.MergedDictionaries</code>. This works great for simple apps, but you may need <code>CustomThemeApplicator</code> if:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Scenario</th>
+<th>Why Default Doesn't Work</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Custom MergedDictionaries</strong> in <code>Application.Resources</code></td>
+<td>Resource resolution conflicts; bindings don't refresh</td>
+</tr>
+<tr>
+<td><strong>Theme persistence</strong> needed</td>
+<td>Default doesn't save to settings</td>
+</tr>
+<tr>
+<td><strong>Additional actions</strong> on theme change</td>
+<td>Logging, analytics, UI updates, etc.</td>
+</tr>
+<tr>
+<td><strong>Complex resource hierarchies</strong></td>
+<td>Multiple ResourceDictionaries that need coordinated updates</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>If your app works fine with the default behavior, you don't need <code>CustomThemeApplicator</code>.</p>
+<hr>
+<h2>Example: App with Custom Resources</h2>
+
+<h3>The Starting Point</h3>
+
+<p>You have an Uno/WinUI app with custom resources in <code>Application.Resources</code>:</p>
+
+<pre><code class="language-xml">&lt;!-- App.xaml (before Flowery.Uno) --&gt;
+&lt;Application ...&gt;
+    &lt;Application.Resources&gt;
+        &lt;ResourceDictionary&gt;
+            &lt;ResourceDictionary.MergedDictionaries&gt;
+                &lt;ResourceDictionary Source="ms-appx:///Themes/CustomResources.xaml" /&gt;
+                &lt;ResourceDictionary Source="ms-appx:///Themes/Icons.xaml" /&gt;
+            &lt;/ResourceDictionary.MergedDictionaries&gt;
+            &lt;SolidColorBrush x:Key="MyCustomBrush" Color="#808080"/&gt;
+        &lt;/ResourceDictionary&gt;
+    &lt;/Application.Resources&gt;
+&lt;/Application&gt;</code></pre>
+
+<h3>Step 1: Add Flowery.Uno</h3>
+
+<p>Add the Flowery.Uno library reference and include the theme resources:</p>
+
+<p>> <strong>Namespace Note:</strong> Flowery.Uno uses the namespace <code>Flowery.Controls</code> for all controls.</p>
+
+<pre><code class="language-xml">&lt;!-- App.xaml (with Flowery.Uno added) --&gt;
+&lt;Application ...
+             xmlns:controls="using:Flowery.Controls"&gt;
+    &lt;Application.Resources&gt;
+        &lt;ResourceDictionary&gt;
+            &lt;ResourceDictionary.MergedDictionaries&gt;
+                &lt;!-- Your existing resources --&gt;
+                &lt;ResourceDictionary Source="ms-appx:///Themes/CustomResources.xaml" /&gt;
+                &lt;ResourceDictionary Source="ms-appx:///Themes/Icons.xaml" /&gt;
+                &lt;!-- Add Flowery.Uno resources --&gt;
+                &lt;ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/Generic.xaml" /&gt;
+            &lt;/ResourceDictionary.MergedDictionaries&gt;
+        &lt;/ResourceDictionary&gt;
+    &lt;/Application.Resources&gt;
+&lt;/Application&gt;</code></pre>
+
+<p>Initialize the theme in your <code>App.xaml.cs</code>:</p>
+
+<pre><code class="language-csharp">// App.xaml.cs
+protected override void OnLaunched(LaunchActivatedEventArgs args)
+{
+    // Initialize default tokens and apply a theme
+    DaisyTokenDefaults.EnsureDefaults();
+    DaisyThemeManager.ApplyTheme("Dark");
+
+    // ... rest of your startup code
+}</code></pre>
+
+<p>Your views now use Daisy resources:</p>
+
+<pre><code class="language-xml">&lt;Border Background="{ThemeResource DaisyBase200Brush}"
+        BorderBrush="{ThemeResource DaisyBase300Brush}"&gt;
+    &lt;TextBlock Foreground="{ThemeResource DaisyBaseContentBrush}" 
+               Text="Hello Flowery!"/&gt;
+&lt;/Border&gt;</code></pre>
+
+<h3>Step 2: Add Theme Dropdown - The Problem Appears</h3>
+
+<p>You add <code>DaisyThemeDropdown</code> for runtime theme switching:</p>
+
+<pre><code class="language-xml">&lt;controls:DaisyThemeDropdown Width="220"/&gt;</code></pre>
+
+<strong>What happens:</strong>
+
+<ul><li>The dropdown appears ✓</li>
+<li>You select "Synthwave" from the list ✓</li>
+<li><strong>Nothing changes</strong> ✗</li>
+</ul>
+<p>The colors don't update. If you restart the app, it's still using the old theme.</p>
+
+<h3>Why It Doesn't Work</h3>
+
+<code>DaisyThemeDropdown</code> internally calls <code>DaisyThemeManager.ApplyTheme()</code>, which modifies <code>Application.Resources.MergedDictionaries</code>.
+
+<strong>If your app has complex resource hierarchies</strong>, the new palette may not refresh properly because:
+
+<p>1. WinUI/Uno resource resolution may not trigger a full refresh for MergedDictionaries changes</p>
+<p>2. Controls may still see cached brush values from <code>ThemeResource</code> bindings</p>
+<p>3. The theme change doesn't automatically persist across app restarts</p>
+
+<strong>Note:</strong> This issue depends on your specific resource setup. Many apps work fine with the default; others need custom handling.
+<hr>
+<h2>The Solution: CustomThemeApplicator</h2>
+
+<h3>Step 1: Create Your Custom Applicator</h3>
+
+<p>Write a method that applies themes the way your app needs:</p>
+
+<pre><code class="language-csharp">// App.xaml.cs
+public static bool ApplyThemeCustom(string themeName)
+{
+    var themeInfo = DaisyThemeManager.GetThemeInfo(themeName);
+    if (themeInfo == null) return false;
+
+    var app = Application.Current;
+    if (app?.Resources == null) return false;
+
+    // Get the palette from DaisyPaletteFactory
+    var palette = DaisyPaletteFactory.CreatePalette(themeInfo.Name);
+    if (palette == null) return false;
+
+    // Remove existing Daisy palette if present
+    var existingPalette = app.Resources.MergedDictionaries
+        .FirstOrDefault(d =&gt; d.ContainsKey("DaisyBase100Brush"));
+    if (existingPalette != null)
+    {
+        app.Resources.MergedDictionaries.Remove(existingPalette);
+    }
+
+    // Add new palette
+    app.Resources.MergedDictionaries.Add(palette);
+
+    // Optional: Persist to settings
+    // Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] = themeName;
+
+    // Notify any listeners
+    DaisyThemeManager.RaiseThemeChanged(themeName);
+
+    return true;
+}</code></pre>
+
+<h3>Step 2: Wire It Up at Startup</h3>
+
+<pre><code class="language-csharp">// App.xaml.cs
+protected override void OnLaunched(LaunchActivatedEventArgs args)
+{
+    // Tell Flowery.Uno to use your custom applicator
+    DaisyThemeManager.CustomThemeApplicator = ApplyThemeCustom;
+
+    // Initialize tokens
+    DaisyTokenDefaults.EnsureDefaults();
+
+    // Load saved theme or use default
+    var savedTheme = Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] as string;
+    DaisyThemeManager.ApplyTheme(savedTheme ?? "Dark");
+
+    // ... rest of your startup code
+}</code></pre>
+
+<h3>Result</h3>
+
+<strong>Now all Flowery.Uno theme controls work with your custom logic:</strong>
+
+<ul><li><code>DaisyThemeDropdown</code> works ✓</li>
+<li><code>DaisyThemeController</code> works ✓  </li>
+<li><code>DaisyThemeRadio</code> works ✓</li>
+<li>Theme persists across restarts ✓</li>
+<li>All theme brushes refresh properly ✓</li>
+</ul><hr>
+<h2>Other Use Cases</h2>
+
+<h3>Persistence Only</h3>
+
+<p>If the default theme application works but you want to save the selected theme:</p>
+
+<pre><code class="language-csharp">DaisyThemeManager.CustomThemeApplicator = themeName =&gt;
+{
+    // Apply theme using default logic
+    var result = DaisyThemeManager.ApplyThemeInternal(themeName);
+    if (result)
+    {
+        // Persist the theme
+        Windows.Storage.ApplicationData.Current.LocalSettings.Values["Theme"] = themeName;
+    }
+    return result;
+};</code></pre>
+
+<h3>Logging/Analytics</h3>
+
+<pre><code class="language-csharp">DaisyThemeManager.CustomThemeApplicator = themeName =&gt;
+{
+    // Use your logging framework
+    Debug.WriteLine($"Theme changing to: {themeName}");
+
+    // Optional: track with your analytics service
+    // Analytics.Track("theme_changed", new { theme = themeName });
+
+    // Do the actual theme application
+    return ApplyThemeCustom(themeName);
+};</code></pre>
+
+<h3>Chained Actions</h3>
+
+<pre><code class="language-csharp">DaisyThemeManager.CustomThemeApplicator = themeName =&gt;
+{
+    var result = ApplyThemeCustom(themeName);
+    if (result)
+    {
+        // Update other UI elements
+        MainViewModel.Instance?.RefreshColors();
+
+        // Notify plugins or other components
+        EventAggregator.Publish(new ThemeChangedEvent(themeName));
+    }
+    return result;
+};</code></pre>
+<hr>
+<h2>Summary</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Before CustomThemeApplicator</th>
+<th>After</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Built-in theme controls may not work with custom resource setups</td>
+<td>All controls work seamlessly</td>
+</tr>
+<tr>
+<td>Had to build custom theme UI</td>
+<td>Use <code>DaisyThemeDropdown</code> etc. directly</td>
+</tr>
+<tr>
+<td>Theme persistence required separate handling</td>
+<td>Persistence built into your applicator</td>
+</tr>
+<tr>
+<td>Complex workarounds</td>
+<td>Single line of setup</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The <code>CustomThemeApplicator</code> pattern gives you full control over how themes are applied while still benefiting from Flowery.Uno's theme UI controls.</p>
+<hr>
+<h2>Platform-Specific Notes</h2>
+
+<h3>Windows (WinUI)</h3>
+
+<ul><li>Use <code>Windows.Storage.ApplicationData.Current.LocalSettings</code> for theme persistence</li>
+<li><code>ThemeResource</code> bindings work but may need explicit refresh for dynamic changes</li>
+</ul>
+<h3>Future Platforms (Browser, Android, iOS)</h3>
+
+<p>When Flowery.Uno adds support for additional platforms:</p>
+
+<ul><li>Browser (WebAssembly): Use browser localStorage for persistence</li>
+<li>Mobile: Use platform-specific settings APIs</li>
+<li>Consider using <code>Preferences</code> from MAUI Essentials if available</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

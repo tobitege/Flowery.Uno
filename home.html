@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <h1>Flowery.Uno Component Library</h1>
+
+<p>Flowery.Uno is an Uno Platform / WinUI component library inspired by DaisyUI.</p>
+<p>It provides styled controls for building modern cross-platform applications.</p>
+
+<h2>Quick Start</h2>
+
+<p>Add the namespace to your XAML:</p>
+<pre><code class="language-xml">xmlns:daisy="using:Flowery.Controls"</code></pre>
+<div class="llm-link">
+    <h2>For AI Assistants</h2>
+    <p>📄 <a href="llms.txt"><strong>llms.txt</strong></a> - Machine-readable documentation in plain markdown format, optimized for LLMs and AI code assistants.</p>
+</div>
+
+
+<h2>Controls Overview</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Control</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="controls/DaisyAccordion.html">DaisyAccordion</a></td>
+<td>DaisyAccordion is an ItemsControl for stacked, single-open sections built from <code>DaisyAccordionItem</code>. It offers <strong>two indicator variants</strong> (arrow or plus) and enforces <strong>one expanded item at a time</strong> through the <code>ExpandedIndex</code> property. Use it to organize FAQ-style content or any list of collapsible panels where only one section should stay open.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyAlert.html">DaisyAlert</a></td>
+<td>DaisyAlert is a compact callout for inline status messages. It provides <strong>4 semantic variants</strong> (Info, Success, Warning, Error), optional icon content, and a simple two-column layout that keeps messages readable without dominating the page. Use it for persistent notices inside forms, cards, or panels; pair with DaisyToast for transient alerts.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyAnimatedNumber.html">DaisyAnimatedNumber</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyAnimatedNumber is a numeric text display that animates value changes with a vertical slide transition. It's useful for counters, KPIs, and any UI where you want motion feedback when the number updates.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyAvatar.html">DaisyAvatar</a></td>
+<td>DaisyAvatar renders user/profile images or initials with <strong>5 sizes</strong>, <strong>3 shapes</strong>, optional <strong>status dot</strong>, and <strong>ring accent</strong> colors. It accepts any content (images, icons, initials) and can show placeholders while real media loads. Pair with <code>DaisyAvatarGroup</code> to overlap multiple avatars.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyAvatarGroup.html">DaisyAvatarGroup</a></td>
+<td>DaisyAvatarGroup arranges multiple <code>DaisyAvatar</code> items in an overlapping row. It uses a custom panel that offsets each avatar by a configurable overlap while keeping earlier items on top (higher z-order). Ideal for showing participants, teams, or contributors in a compact space.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyBadge.html">DaisyBadge</a></td>
+<td>DaisyBadge is a compact label for counts, statuses, or tags. It supports <strong>10 color variants</strong>, <strong>4 size presets</strong>, and an <strong>outline</strong> mode for low-emphasis contexts. Works standalone or nested inside other controls (e.g., buttons, lists) to highlight small bits of information without overwhelming the layout.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyBaseContentControl.html">DaisyBaseContentControl</a></td>
+<td><code>DaisyBaseContentControl</code> is the internal base class for Flowery.Uno components. It centralizes lifecycle management, theme integration, sizing systems, and provides hardware-accelerated visual effects like neumorphism.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyBreadcrumbBar.html">DaisyBreadcrumbBar</a></td>
+<td>DaisyBreadcrumbBar is a themed wrapper around WinUI's <code>BreadcrumbBar</code>. It aligns typography</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyBreadcrumbs.html">DaisyBreadcrumbs</a></td>
+<td>DaisyBreadcrumbs shows a horizontal trail of navigation steps. Provide a <code>Panel</code> (typically a horizontal <code>StackPanel</code>) as <code>Content</code> containing <code>DaisyBreadcrumbItem</code> children; the control re-parents those items into its internal layout, applies separators between items, and marks only the trailing item as non-clickable. Supports custom separators, icons, and command execution on intermediate items.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyButton.html">DaisyButton</a></td>
+<td>DaisyButton delivers DaisyUI-styled actions with <strong>11 color variants</strong>, <strong>4 visual styles</strong>, <strong>5 sizes</strong>, and <strong>shape modifiers</strong> for wide, block, square, or circular buttons. It supports active state scaling, optional shadows, and link/ghost modes for text-like actions. Use it for everything from primary calls-to-action to subtle icon buttons.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyButtonGroup.html">DaisyButtonGroup</a></td>
+<td><code>DaisyButtonGroup</code> arranges multiple segments (typically <code>Button</code> / <code>ToggleButton</code>) into a single joined control with shared borders and unified rounding, similar to shadcn's “Button Group”.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCalendarDatePicker.html">DaisyCalendarDatePicker</a></td>
+<td>DaisyCalendarDatePicker provides a themed CalendarDatePicker that matches Daisy input surfaces while keeping the native calendar flyout behavior.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCard.html">DaisyCard</a></td>
+<td>DaisyCard provides a panel for grouping content with padding, rounded corners, and optional glass effects. It supports <strong>3 layout variants</strong> (Normal, Compact, Side), <strong>color variants</strong> for semantic styling, configurable body/title typography, and an opt-in glassmorphism stack with tint/blur controls. You can also use the built-in header API (Title/Description/Icon) for a ready-made card layout. Use it for dashboards, feature tiles, or content groupings; compose headers, bodies, and action rows inside.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCarousel.html">DaisyCarousel</a></td>
+<td>DaisyCarousel is a slide container with built-in previous/next buttons and directional slide transitions. Supports manual navigation, automatic slideshow modes, and cinematic visual effects like Pan And Zoom pan/zoom. Perfect for galleries, hero banners, or featured content.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyChatBubble.html">DaisyChatBubble</a></td>
+<td>DaisyChatBubble renders chat-style message bubbles with alignment control, optional avatar image, header/footer text, and <strong>9 color variants</strong>. <code>IsEnd</code> flips the bubble to the right side and mirrors the tail rounding for responder messages. Use it for conversation threads, comments, or inline messaging UIs.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCheckBox.html">DaisyCheckBox</a></td>
+<td>DaisyCheckBox is a styled checkbox with <strong>9 color variants</strong> and <strong>5 size presets</strong>. It uses a filled box with a checkmark when checked and inherits WinUI's <code>IsChecked</code>/<code>IsThreeState</code> behavior. Use variants for semantic meaning and sizes to match surrounding controls.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyClock.html">DaisyClock</a></td>
+<td>DaisyClock is a comprehensive "batteries included" clock control that displays time with three visual styles (Segmented, Flip, Text), optional labels, and supports Clock, Timer, and Stopwatch modes. It provides localized labels, 12/24-hour formats, RTL support, and events for timer/stopwatch interaction. Designed as a full replacement for manual DaisyCountdown composition.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCollapse.html">DaisyCollapse</a></td>
+<td>DaisyCollapse is an <code>Expander</code>-based container for revealing content under a clickable header. It offers <strong>Arrow</strong> and <strong>Plus</strong> indicator variants with a 0.2s rotation animation, uses configurable padding/corners from the theme, and hides content when collapsed. Ideal for short disclosures, FAQs, or inline details.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyColorEditor.html">DaisyColorEditor</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyColorEditor is a comprehensive color editing control that combines RGB and HSL sliders with numeric inputs and a hex color field. It provides precise color manipulation through multiple input methods, making it ideal for professional color selection interfaces.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyColorGrid.html">DaisyColorGrid</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyColorGrid is a grid control for displaying and selecting colors from predefined or custom palettes. It supports multiple built-in palettes (Named Colors, Office 2010, Paint, Web Safe), configurable cell sizes, and a separate custom colors section for user-defined colors.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyColorPickerDialog.html">DaisyColorPickerDialog</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyColorPickerDialog is a comprehensive color picker dialog that combines all color picker components into a single, professional interface.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyColorSlider.html">DaisyColorSlider</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyColorSlider is a slider control for selecting individual color channel values. It supports <strong>7 color channels</strong> (RGB + Alpha + HSL) with automatic gradient rendering and a draggable thumb indicator. The slider displays a visual gradient representing the channel's range and supports both horizontal and vertical orientations.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyColorWheel.html">DaisyColorWheel</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyColorWheel is a circular color wheel control for selecting hue and saturation values in the HSL color space. It renders a full-spectrum color wheel with a draggable selection marker, allowing intuitive color picking through mouse interaction. The wheel displays colors at a configurable lightness level.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyContributionGraph.html">DaisyContributionGraph</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyContributionGraph is a GitHub-style contribution heatmap graph (7 rows × 53 weeks). Provide day entries via <code>Contributions</code>, and the control renders a compact year overview with optional month/day labels, hover tooltips, and a “Less/More” legend.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCopyButton.html">DaisyCopyButton</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyCopyButton is a <code>DaisyButton</code> that copies text to the clipboard on click and briefly switches to a success state. It's ideal for “copy invite link”, “copy token”, and similar flows where immediate feedback matters.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyCountdown.html">DaisyCountdown</a></td>
+<td>DaisyCountdown is a versatile time display and timing control that can:</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDateTimeline.html">DaisyDateTimeline</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyDateTimeline is a <strong>horizontal scrollable date picker</strong> inspired by FadyFayezYounan's <a href="https://github.com/FadyFayezYounan/easy_date_timeline" target="_blank" rel="noopener">easy_date_timeline</a> package. It displays dates in a horizontal strip where each date appears as a card showing the day name, day number, and month. Perfect for booking systems, scheduling apps, calendars, and any UI requiring date selection from a visible range.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDateTimelineItem.html">DaisyDateTimelineItem</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyDateTimelineItem represents a single date card within the <code>DaisyDateTimeline</code> control. While typically auto-generated by the parent container, understanding its properties helps with custom styling and advanced scenarios.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDiff.html">DaisyDiff</a></td>
+<td>DaisyDiff is a before/after comparison control with a draggable grip. It overlays <code>Image1</code> atop <code>Image2</code> and clips the top layer based on <code>Offset</code> (0–100%). Users can drag the grip to reveal more or less of each side; layout adjusts automatically on resize. Supports both horizontal (left-right) and vertical (top-bottom) split orientations.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDivider.html">DaisyDivider</a></td>
+<td>DaisyDivider separates content with a line that can run horizontally (default) or vertically (<code>Horizontal=True</code>). It supports <strong>10 visual styles</strong>, <strong>9 color options</strong>, <strong>start/end placement</strong>, optional inline content, <strong>ornament decorations</strong>, and <strong>responsive sizing</strong> via the global Size system.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDock.html">DaisyDock</a></td>
+<td>DaisyDock arranges items in a pill-shaped bar, similar to a macOS dock. It supports <strong>5 sizes</strong> via the standard <code>DaisySize</code> enum, responds to global size changes via <code>FlowerySizeManager</code>, and raises an <code>ItemSelected</code> event when an item is clicked. Commonly used for app bars or compact nav strips.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDrawer.html">DaisyDrawer</a></td>
+<td>DaisyDrawer wraps WinUI's <code>SplitView</code> to create a sidebar drawer. Defaults to an inline drawer on the left with a 300px open width and no compact pane. The template includes a slide-in animation and optional overlay support for overlay mode. Use it to host navigation or settings panels that toggle in/out of view.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyDropdown.html">DaisyDropdown</a></td>
+<td>DaisyDropdown is a lightweight dropdown menu control built on a <code>Popup</code>. It displays a trigger area with a placeholder/selection, and shows a menu (via <code>DaisyMenu</code>) when opened. Use it for compact menu-style pickers and small action lists.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyExpandableCard.html">DaisyExpandableCard</a></td>
+<td>DaisyExpandableCard is a versatile card component that can reveal a secondary content area when triggered. It is ideal for "Showcase" or "Detail" views where initial high-level information is presented, and additional details are revealed on demand (e.g., clicking a "Learn More" or "Play" button).</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyExpander.html">DaisyExpander</a></td>
+<td>A custom expander control that works reliably on all platforms including Skia/WASM. Unlike the built-in Expander which has known issues on non-Windows platforms, this control uses simple visibility toggling with a clickable header.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyFab.html">DaisyFab</a></td>
+<td>DaisyFab is a Floating Action Button container with a trigger button and expandable action buttons. It supports <strong>Vertical</strong>, <strong>Horizontal</strong>, or <strong>Flower</strong> layouts, auto-closes when an action is clicked, and lets you customize trigger content, size, and variant. Ideal for exposing a small set of secondary actions from a single FAB.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyFileInput.html">DaisyFileInput</a></td>
+<td>DaisyFileInput is a button-styled file selector that displays a “Choose File” affordance with the current file name beside it. It supports DaisyButton variants, size presets, and a customizable <code>FileName</code> placeholder. Use it when you need a themed file picker entry point; wire it up to your file dialog logic in code-behind.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyGlass.html">DaisyGlass</a></td>
+<td>DaisyGlass is a frosted-glass container with multiple blur strategies: simulated gradients, bitmap capture, or SkiaSharp GPU blur. It exposes tint/opacity controls, saturation, reflection parameters, and a toggle for real backdrop capture. Use it to create translucent panels over imagery or colorful backgrounds.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyHero.html">DaisyHero</a></td>
+<td>DaisyHero is a full-width banner container for impactful headlines. It provides padding, a large minimum height, and centers its content over a background color or image you provide. Use it for marketing hero sections, page intros, or prominent callouts.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyHoverGallery.html">DaisyHoverGallery</a></td>
+<td>DaisyHoverGallery displays one item at a time from an item collection, switching the visible item based on horizontal pointer position. It optionally renders vertical divider lines to hint at each region. Great for “hover to preview” galleries or swatches without clicks.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyIconText.html">DaisyIconText</a></td>
+<td>DaisyIconText is a <strong>single-purpose display control</strong> that combines an icon (path data or Symbol) with optional text, handling all the scaling mechanics under the hood. It wraps icons in a <code>Viewbox</code> for proper proportional scaling and applies size-based font sizes for text - eliminating the need to manually manage <code>Width</code>/<code>Height</code> or <code>FontSize</code> math.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyIndicator.html">DaisyIndicator</a></td>
+<td>DaisyIndicator overlays a marker on top of any content (icon, button, card, avatar). You provide the main content as a child and a <code>Marker</code> slot for the overlay element. The marker can be any control—commonly a <code>DaisyBadge</code>, but also a colored dot, image, or custom element. Use it for notification counts, status indicators, or promotional labels.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyInput.html">DaisyInput</a></td>
+<td>DaisyInput is a styled TextBox with <strong>10 variants</strong> and <strong>4 size presets</strong>. It supports bordered, ghost, filled, and semantic colored borders, plus labels, helper text, icons, and inner content slots. Defaults to a padded, rounded text field that matches DaisyUI forms.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyJoin.html">DaisyJoin</a></td>
+<td>DaisyJoin groups adjacent controls into a seamless, connected set by trimming internal corners and overlapping borders. It works horizontally by default and supports vertical orientation. Ideal for segmented buttons, grouped inputs, pagination, or stacked radio/button groups.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyKbd.html">DaisyKbd</a></td>
+<td>DaisyKbd renders keyboard keycaps for inline hints (e.g., shortcuts). It provides <strong>5 size presets</strong>, monospace text, a subtle 3D border, and centered content. Use it to display keys like <code>Ctrl</code>, <code>Shift</code>, or <code>Cmd</code> in docs and tooltips.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyList.html">DaisyList</a></td>
+<td>DaisyList is a vertical list container with row and column primitives for structured content. <code>DaisyListRow</code> uses a custom panel that can designate a grow column and wrap specific columns onto new lines. Use it for media lists, stats rows, or mixed text/icon layouts with consistent spacing.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyLoading.html">DaisyLoading</a></td>
+<td>DaisyLoading provides animated loading indicators with <strong>27 different animation styles</strong>, <strong>5 size options</strong>, and <strong>9 color variants</strong>. The control includes standard DaisyUI animations, creative terminal-inspired variants, Matrix/retro variants, and unique special effect variants. All animations scale properly across all sizes using Viewbox-based rendering.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyLoginButton.html">DaisyLoginButton</a></td>
+<td>DaisyLoginButton is a <strong>batteries-included</strong> login button derived from DaisyButton. It bundles a brand icon, localized label, and optional brand styling in a single control. Use it to avoid verbose XAML when rendering OAuth-style login buttons.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyMask.html">DaisyMask</a></td>
+<td>DaisyMask clips its content to preset shapes: squircle, heart, hexagon, circle, square, diamond, or triangle. It scales vector paths to the control's bounds on arrange, making it easy to mask images or backgrounds into decorative silhouettes.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyMaskInput.html">DaisyMaskInput</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyMaskInput is a <code>MaskedTextBox</code> styled like <code>DaisyInput</code>, intended for <strong>structured input</strong> such as times, dates, IDs, and payment details. It supports the same Daisy input API (variants, sizes, labels, helper text, and icons) and adds masked-editing via the built-in <code>Mask</code> property.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyMenu.html">DaisyMenu</a></td>
+<td>DaisyMenu is a styled menu control for navigation menus. It supports vertical or horizontal layout, size presets, and customizable active colors for selected items. Submenus can be nested via another DaisyMenu or Expander. Use it for sidebars, nav bars, and contextual menus that need DaisyUI styling.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyMnemonicText.html">DaisyMnemonicText</a></td>
+<td>DaisyMnemonicText shows WinForms-style mnemonic labels: <code>&</code> marks the access character, which is underlined, and <code>&&</code> shows a literal <code>&</code>. It is display only. Your app handles Alt+key itself, for example with <code>KeyboardAccelerator</code> or a <code>KeyDown</code> handler.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyMockup.html">DaisyMockup</a></td>
+<td>DaisyMockup frames content in simulated shells: <strong>Code</strong>, <strong>Window</strong>, or <strong>Browser</strong>. It provides the chrome (dots, toolbar/address bar) and padding so you can showcase code, UI previews, or pages in a themed wrapper.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyModal.html">DaisyModal</a></td>
+<td>DaisyModal is an overlay dialog container with backdrop and configurable corner radii. It toggles visibility via <code>IsOpen</code> and centers its content with a max width of 500px, default padding, and drop shadow. Use it for confirmations, forms, or focused flows that require blocking UI beneath.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyModifierKeys.html">DaisyModifierKeys</a> <sup class="custom-badge">✦</sup></td>
+<td>A visual indicator that displays the current state of keyboard modifier keys (Shift, Ctrl, Alt) and lock keys (Caps Lock, Num Lock, Scroll Lock). Automatically syncs with the OS keyboard state.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyNavbar.html">DaisyNavbar</a></td>
+<td>DaisyNavbar is a top navigation bar with optional start, center, and end slots. It provides padding, corner radius, and an optional shadow. If no slots are set, it renders its <code>Content</code> as a simple fallback. Use it for headers, app bars, or hero-top navigation.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyNumberFlow.html">DaisyNumberFlow</a></td>
+<td>> <strong>Added in v1.7.1</strong></td>
+</tr>
+<tr>
+<td><a href="controls/DaisyNumericUpDown.html">DaisyNumericUpDown</a> <sup class="custom-badge">✦</sup></td>
+<td><code>DaisyNumericUpDown</code> is a numeric input control that extends WinUI's <code>NumberBox</code> with DaisyUI styling. It provides increment/decrement buttons (spin buttons) for adjusting numeric values, along with direct text entry support. The control follows the same visual style and variant system as <code>DaisyInput</code>.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyOtpInput.html">DaisyOtpInput</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyOtpInput is an OTP / verification code input composed of multiple single-character slots. It features <strong>animated focus states</strong>, auto-advance, backspace support, and digit-only filtering. It is designed for high-fidelity "Verify Code" screens with support for grouping (separators) and varying sizes.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyPagination.html">DaisyPagination</a></td>
+<td>DaisyPagination renders joined page navigation buttons using <code>DaisyJoin</code> internally. It automatically generates page buttons based on <code>TotalPages</code>, handles prev/next navigation, and highlights the current page. The control responds to global size changes via <code>FlowerySizeManager</code>.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyPasswordBox.html">DaisyPasswordBox</a></td>
+<td>DaisyPasswordBox is a specialized password input field that manages its own reveal button and masked input. It inherits from <code>ContentControl</code> but behaves like a <code>PasswordBox</code>, providing <strong>10 variants</strong> and <strong>4 size presets</strong>. It supports bordered, ghost, filled, and semantic colored borders, plus labels, helper text, and icons.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyPatternedCard.html">DaisyPatternedCard</a></td>
+<td>A DaisyCard with pattern and ornament layer support. Extends DaisyCard with decorative pattern backgrounds and corner ornaments.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyPopover.html">DaisyPopover</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyPopover is a lightweight popover control that hosts content inside a <code>Popup</code> anchored to a trigger. It's useful for rich tooltips, small forms, contextual menus, and “more actions” surfaces.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a></td>
+<td>DaisyProductThemeDropdown is a specialized theme dropdown that provides <strong>96 industry-specific color palettes</strong> from the <a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener">UI UX Pro Max Skill</a> project. Unlike the standard <code>DaisyThemeDropdown</code> (which uses the 35+ DaisyUI themes), this control uses professionally crafted palettes designed for specific product types and industries.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyProgress.html">DaisyProgress</a></td>
+<td>DaisyProgress is a styled progress bar with <strong>8 color variants</strong>, <strong>4 size presets</strong>, <strong>optional shimmer animation</strong>, and indeterminate support. It inherits <code>ProgressBar</code> behavior for <code>Value</code>, <code>Minimum</code>, <code>Maximum</code>, and <code>IsIndeterminate</code>, using theme colors for the indicator fill.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyRadialProgress.html">DaisyRadialProgress</a></td>
+<td>DaisyRadialProgress is a circular progress indicator with <strong>8 color variants</strong>, <strong>5 size presets</strong>, <strong>optional shimmer animation</strong>, and configurable stroke thickness. It converts the <code>Minimum</code>–<code>Maximum</code> range to a 0–360° sweep. Shows a percentage label by default with <strong>auto-sizing</strong> to ensure text fits within the circle.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyRadio.html">DaisyRadio</a></td>
+<td>DaisyRadio is a styled <code>RadioButton</code> with <strong>8 color variants</strong> and <strong>5 size presets</strong>. It shows a filled inner circle when checked and supports standard radio grouping via <code>GroupName</code>. Use variants for semantic meaning or brand alignment in forms and option groups.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyRange.html">DaisyRange</a></td>
+<td>DaisyRange is a styled slider with <strong>8 color variants</strong>, <strong>4 size presets</strong>, and customizable thumb/track colors. It exposes thumb size and optional progress fill properties while inheriting standard <code>Control</code> behavior including <code>IsEnabled</code>. It supports step-based value snapping and full keyboard navigation.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyRating.html">DaisyRating</a></td>
+<td>DaisyRating is a star rating control built on <code>RangeBase</code>. It supports <strong>precision modes</strong> (full/half/0.1), <strong>3 size presets</strong>, and respects <code>Minimum/Maximum/Value</code> (default 0–5).</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyResizableColumnsHost.html">DaisyResizableColumnsHost</a></td>
+<td><code>DaisyResizableColumnsHost</code> is a reusable horizontal multi-column host that provides a shared resize gripper between columns. It is designed to decouple column widths from content sizing, allowing all columns in a collection to be resized simultaneously.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyScreenColorPicker.html">DaisyScreenColorPicker</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyScreenColorPicker is an eyedropper tool that allows picking colors from anywhere on the screen using a <strong>click-and-drag</strong> interaction. Unlike traditional color pickers that require clicking to start and clicking again to select, this control uses a more intuitive drag gesture: click and hold to start, drag anywhere on screen while watching the live color preview, then release to capture the color.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySelect.html">DaisySelect</a></td>
+<td>DaisySelect is a styled ComboBox with <strong>9 variants</strong> and <strong>4 size presets</strong>. It provides a chevron toggle, placeholder text, and themed dropdown. Use it for single-select dropdowns that need DaisyUI styling.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySkeleton.html">DaisySkeleton</a></td>
+<td>DaisySkeleton provides loading placeholders with a pulsing animation. It can render as a block (default) or animate text color when <code>IsTextMode=True</code>. Use it to indicate content is loading for avatars, text lines, cards, or any element you want to reserve space for.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySlideToConfirm.html">DaisySlideToConfirm</a></td>
+<td>DaisySlideToConfirm is a "slide to confirm" control that requires the user to drag a handle across a track to confirm an action. This pattern prevents accidental triggers for destructive or important operations like power-off, delete, or payment confirmation.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyStack.html">DaisyStack</a></td>
+<td>DaisyStack displays children in a stacked arrangement with optional navigation. It inherits from <code>ItemsControl</code> so children overlap in a Grid panel. In static mode (default), theme styles apply Z-index, translation, scale, and opacity per child order creating a deck-of-cards effect. When navigation is enabled, only one item is visible at a time with animated transitions.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyStat.html">DaisyStat</a></td>
+<td>DaisyStat displays a metric with title, value, optional description, figure (icon/media), and action slot. <code>DaisyStats</code> groups multiple stats horizontally or vertically, adding separators between items. Variants color the value text; <code>DescriptionVariant</code> colors the description independently.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyStatusIndicator.html">DaisyStatusIndicator</a></td>
+<td>DaisyStatusIndicator shows a status dot with <strong>27 animation variants</strong>. It supports <strong>9 colors</strong> and <strong>5 sizes</strong>, making it suitable for online/offline markers, alerts, or activity indicators.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySteps.html">DaisySteps</a></td>
+<td>DaisySteps renders a sequence of step items with lines and circles. It supports horizontal or vertical layouts, <strong>5 sizes</strong>, colored states per step, and an <code>SelectedIndex</code> to mark completed/active steps. Each <code>DaisyStepItem</code> can show custom text or icons via <code>Content</code>/<code>DataContent</code>.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySwap.html">DaisySwap</a></td>
+<td>DaisySwap is a toggle that swaps between <code>OnContent</code>, <code>OffContent</code>, and optional <code>IndeterminateContent</code>. It supports transition effects (none, rotate, flip) to animate the content change. Use it for icon toggles, play/pause, theme switches, or stateful actions.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTable.html">DaisyTable</a></td>
+<td>DaisyTable provides a styled table layout with header, body, and footer sections plus row/cell primitives. It supports <strong>zebra striping</strong>, <strong>pinned headers/columns</strong> (via the template), <strong>row active/hover states</strong>, and <strong>size presets</strong> that adjust padding and font size. Use <code>DaisyTableHead</code>, <code>DaisyTableBody</code>, and <code>DaisyTableFoot</code> to structure content; rows/cells handle layout and styling.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTabs.html">DaisyTabs</a></td>
+<td>DaisyTabs is a styled <code>TabControl</code> with four header variants (None, Bordered, Lifted, Boxed) and size presets. It uses a WrapPanel for tab headers and supports standard tab behaviors (<code>SelectedIndex</code>, <code>Items</code>, <code>TabItem</code> content).</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTabsHeaderButtons.html">DaisyTabsHeaderButtons</a></td>
+<td>DaisyTabsHeaderButtons provides optional previous and next buttons and a menu of named views.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTagPicker.html">DaisyTagPicker</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyTagPicker is an organized tag selection component inspired by "Animated Tags". It separates selected tags into a distinct, bordered area with "remove" icons, while keeping available tags in a separate list with "add" icons.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTextArea.html">DaisyTextArea</a></td>
+<td>DaisyTextArea is a multiline variant of DaisyInput. It inherits all input variants/sizes/properties, sets <code>AcceptsReturn</code>/<code>AcceptsTab=True</code>, and enables <code>TextWrapping</code>. It additionally supports textarea-specific features like character counters, auto-growing, and action buttons.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTextRotate.html">DaisyTextRotate</a></td>
+<td>DaisyTextRotate cycles through its items with fade transitions, auto-advancing on a timer. It supports custom duration, per-transition timing, easing, pause-on-hover, and manual pausing. Ideal for rotating taglines or small sets of text snippets.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyThemeController.html">DaisyThemeController</a></td>
+<td>DaisyThemeController is a toggle-based switch for applying Daisy themes via <code>DaisyThemeManager</code>. It supports multiple display modes (toggle, checkbox, swap, text/icon variants) and syncs <code>IsChecked</code> with the current theme. Switching updates <code>CheckedTheme</code>/<code>UncheckedTheme</code> and can auto-adopt new themes.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyThemeDropdown.html">DaisyThemeDropdown</a></td>
+<td>DaisyThemeDropdown is a ComboBox listing available themes from <code>DaisyThemeManager</code>. It previews theme colors in a 2×2 dot grid and applies the selected theme. It syncs selection with the current theme when themes change externally. Preview brushes come from <code>DaisyThemeManager.TryCreatePalette</code>, including themes registered at runtime.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyThemeManager.html">DaisyThemeManager</a></td>
+<td>DaisyThemeManager is the central theme loader/applicator for the <strong>35+ built-in DaisyUI themes</strong>. It tracks available themes, applies palette ResourceDictionaries, and notifies listeners via <code>ThemeChanged</code>. Helpers expose current/alternate theme names and light/dark metadata.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyThemeRadio.html">DaisyThemeRadio</a></td>
+<td>DaisyThemeRadio is a theme-selecting RadioButton. When checked, it applies its <code>ThemeName</code> via <code>DaisyThemeManager</code>. It can render as a standard radio or styled button (<code>Mode=Button</code>) and supports Daisy size presets. It syncs checked state when themes change externally.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyThemeSwap.html">DaisyThemeSwap</a></td>
+<td>DaisyThemeSwap is a themed variant of DaisySwap for toggling light/dark (or any two) themes. It defaults to a rotate transition and keeps <code>IsChecked</code> in sync with the current theme's light/dark status. Clicking applies <code>LightTheme</code> or <code>DarkTheme</code> via <code>DaisyThemeManager</code>.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTimeline.html">DaisyTimeline</a></td>
+<td>DaisyTimeline lays out timeline items horizontally or vertically. Each <code>DaisyTimelineItem</code> can show start/end content (labels), an optional middle icon, lines before/after, boxed styles, and active states. Supports compact mode and icon snapping for consistent alignment.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyToast.html">DaisyToast</a></td>
+<td>DaisyToast is a simple toast container (ItemsControl) that stacks toast items such as <code>DaisyAlert</code>. You control its screen position via alignment and offset properties. Place it in an overlay/top layer to float above other content; set <code>ZIndex</code> accordingly.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyToggle.html">DaisyToggle</a></td>
+<td>DaisyToggle is a styled <code>ToggleSwitch</code> with <strong>8 color variants</strong> and <strong>5 size presets</strong>. It offers customizable thumb size via <code>TogglePadding</code> (knob margin) and uses smooth knob animation on state changes. Use it for binary on/off controls.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyTooltip.html">DaisyTooltip</a></td>
+<td>A tooltip control styled after DaisyUI's Tooltip component. Wraps content and shows a tooltip on hover.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherCard.html">DaisyWeatherCard</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyWeatherCard is a flexible container that combines multiple weather display components. You can show/hide sections as needed and either bind data manually or provide an <code>IWeatherService</code> implementation for automatic fetching.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherCurrent.html">DaisyWeatherCurrent</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyWeatherCurrent is a standalone widget for showing the current weather state. It features a large animated weather icon, prominent temperature display, and supporting information like "feels like" and sun times.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherForecast.html">DaisyWeatherForecast</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyWeatherForecast is an <code>ItemsControl</code> that renders a row of forecast cards. Each card shows the day name, an animated weather icon, and the temperature range. Ideal for showing 5-7 day forecasts.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherForecastItem.html">DaisyWeatherForecastItem</a> <sup class="custom-badge">✦</sup></td>
+<td>Represents a single day in the weather forecast strip. This control supports Size-based visual states for responsive sizing.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherIcon.html">DaisyWeatherIcon</a> <sup class="custom-badge">✦</sup></td>
+<td>Animated weather condition icon with unique animations per weather type. Supports 21 weather conditions with condition-appropriate animations that can be toggled on/off.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyWeatherMetrics.html">DaisyWeatherMetrics</a> <sup class="custom-badge">✦</sup></td>
+<td>DaisyWeatherMetrics shows supplementary weather data in a structured grid. Each metric displays a label, icon, current value, and a progress bar showing the value relative to a maximum.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Helper Classes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Class</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="controls/ColorCollection.html">ColorCollection</a> <sup class="custom-badge">✦</sup></td>
+<td>ColorCollection is a collection class for managing colors with support for predefined palettes. It implements <code>IList<Color></code> and provides factory methods for creating standard color palettes like Named Colors, Office 2010, MS Paint, Web Safe, and custom grayscale gradients.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyAccessibility.html">DaisyAccessibility</a></td>
+<td>A static helper class providing accessibility utilities for Daisy controls. It simplifies setting up screen reader support across all controls.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyPaginationItem.html">DaisyPaginationItem</a></td>
+<td>A button control representing a single page in a <code>DaisyPagination</code> control. This is a helper class created automatically by the parent pagination control.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisyResourceLookup.html">DaisyResourceLookup</a></td>
+<td>A static helper class providing centralized access to design tokens, resource lookups, and default sizing values for all Flowery.Uno controls.</td>
+</tr>
+<tr>
+<td><a href="controls/DaisySizeDropdown.html">DaisySizeDropdown</a></td>
+<td>A dropdown control for selecting a global size (<code>DaisySize</code>) that affects (almost) all Flowery.Uno controls.</td>
+</tr>
+<tr>
+<td><a href="controls/FloweryAnimationHelpers.html">FloweryAnimationHelpers</a> <sup class="custom-badge">✦</sup></td>
+<td>FloweryAnimationHelpers provides a comprehensive, reusable animation and slideshow infrastructure for building cinematic UI experiences. It includes enums for visual effects, a controller for slideshow logic, and attached properties for declarative animations.</td>
+</tr>
+<tr>
+<td><a href="controls/FloweryComponentSidebar.html">FloweryComponentSidebar</a> <sup class="custom-badge">✦</sup></td>
+<td>FloweryComponentSidebar is a high-performance, navigational sidebar designed for the Gallery and complex app layouts. It features collapsible categories, clickable items with selection persistence, live search filtering, and deep integration with the project's global sizing and localization systems.</td>
+</tr>
+<tr>
+<td><a href="controls/FloweryResponsive.html">FloweryResponsive</a> <sup class="custom-badge">✦</sup></td>
+<td>FloweryResponsive provides responsive layout functionality via attached properties. It calculates responsive widths based on available container space and exposes standard breakpoint constants for consistent responsive behavior across your app.</td>
+</tr>
+<tr>
+<td><a href="controls/FloweryScaleConverter.html">FloweryScaleConverter</a> <sup class="custom-badge">✦</sup></td>
+<td>Flowery.Uno provides two approaches for responsive scaling based on window size:</td>
+</tr>
+<tr>
+<td><a href="controls/FloweryScaleManager.html">FloweryScaleManager</a> <sup class="custom-badge">✦</sup></td>
+<td>Opt-in automatic font scaling for Daisy controls based on window size. Set <code>EnableScaling="True"</code> on any container to make all child Daisy controls automatically scale their fonts as the window resizes.</td>
+</tr>
+<tr>
+<td><a href="controls/FlowerySizeManager.html">FlowerySizeManager</a> <sup class="custom-badge">✦</sup></td>
+<td>Static service for global size management across all Daisy controls. Provides discrete size tiers (ExtraSmall to ExtraLarge) that all controls respond to simultaneously.</td>
+</tr>
+<tr>
+<td><a href="controls/Graphics.html">Graphics</a></td>
+<td>This document describes the graphics rendering capabilities, visual effects, and animation systems in Flowery.Uno.</td>
+</tr>
+<tr>
+<td><a href="controls/HslColor.html">HslColor</a></td>
+<td>HslColor is a struct representing colors in the HSL (Hue, Saturation, Lightness) color space. It provides seamless conversion between HSL and RGB color spaces, making it essential for color picker controls that need intuitive color manipulation.</td>
+</tr>
+<tr>
+<td><a href="controls/neumorphic.html">neumorphic</a></td>
+<td>Neumorphic (Soft UI) mode is a design style that uses highlights and shadows to create elements that appear to extrude from or be inset into the background surface.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Common Patterns</h2>
+
+<h3>Shared Enums</h3>
+
+<strong>DaisyColor</strong> - Theme colors used across many controls:
+<pre><code class="language-text">Default, Primary, Secondary, Accent, Neutral, Info, Success, Warning, Error</code></pre>
+
+<strong>DaisySize</strong> - Size variants:
+<pre><code class="language-text">ExtraSmall, Small, Medium (default), Large, ExtraLarge</code></pre>
+
+<strong>DaisyPlacement</strong> - Position options:
+<pre><code class="language-text">Top, Bottom, Start, End</code></pre>
+
+<h3>Control-Specific Enums</h3>
+
+<strong>Input Controls:</strong>
+<ul><li><strong>DaisyInputVariant</strong>: 'Bordered', 'Ghost', 'Filled', 'Primary', 'Secondary', 'Accent', 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>DaisySelectVariant</strong>: 'Bordered', 'Ghost', 'Filled', 'Primary', 'Secondary', 'Accent', ...'</li>
+<li><strong>DaisyCheckBoxVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Neutral', 'Success', 'Warning', 'Info', 'Error'</li>
+<li><strong>DaisyRadioVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Success', 'Warning', 'Info', 'Error'</li>
+<li><strong>DaisyToggleVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Success', 'Warning', 'Info', 'Error'</li>
+<li><strong>DaisyRangeVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Success', 'Warning', 'Info', 'Error'</li>
+<li><strong>DaisyLabelPosition</strong>: 'None', 'Top', 'Floating', 'Inset'</li>
+<li><strong>DaisyNumberBase</strong>: 'Decimal', 'Hexadecimal', 'Binary', 'Octal', 'ColorHex', 'IPAddress'</li>
+<li><strong>DaisyHexCase</strong>: 'Upper', 'Lower'</li>
+<li><strong>RatingPrecision</strong>: 'Full', 'Half', 'Precise'</li>
+</ul>
+<strong>Display Controls:</strong>
+<ul><li><strong>DaisyBadgeVariant</strong>: 'Default', 'Neutral', 'Primary', 'Secondary', 'Accent', 'Ghost', 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>DaisyAlertVariant</strong>: 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>DaisyProgressVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>DaisyCardVariant</strong>: 'Normal', 'Compact', 'Side'</li>
+<li><strong>DaisyStatVariant</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>DaisyAvatarShape</strong>: 'Square', 'Rounded', 'Circle'</li>
+<li><strong>DaisyStatus</strong>: 'None', 'Online', 'Offline'</li>
+<li><strong>DaisyMaskVariant</strong>: 'Squircle', 'Heart', 'Hexagon', 'Circle', 'Square', 'Diamond', 'Triangle'</li>
+<li><strong>DaisyMockupVariant</strong>: 'Phone', 'Code', 'Window', 'Browser'</li>
+<li><strong>DaisyLoadingVariant</strong>: 'Spinner', 'Dots', 'Ring', 'Ball', 'Bars', 'Infinity', 'Orbit', 'Snake', 'Pulse', 'Wave', 'Bounce', 'Matrix', 'Hourglass', 'Heartbeat', 'CursorBlink', ...</li>
+<li><strong>DaisyStatusIndicatorVariant</strong>: 'Default', 'Ping', 'Bounce', 'Pulse', 'Blink', 'Ripple', 'Heartbeat', 'Spin', 'Wave', 'Glow', 'Radar', 'Sonar', 'Beacon', ...</li>
+<li><strong>CountdownClockUnit</strong>: 'Seconds', 'Minutes', 'Hours', 'Days'</li>
+<li><strong>WeatherCondition</strong>: 'Sunny', 'PartlyCloudy', 'Cloudy', 'Rain', 'Snow', 'Thunderstorm', ...</li>
+</ul>
+<strong>Navigation & Layout:</strong>
+<ul><li><strong>DaisyTabVariant</strong>: 'Bordered', 'Lifted', 'Boxed'</li>
+<li><strong>DaisyStepColor</strong>: 'Default', 'Primary', 'Secondary', 'Accent', 'Info', 'Success', 'Warning', 'Error'</li>
+<li><strong>TimelineItemPosition</strong>: 'Start', 'End', 'Alternate'</li>
+<li><strong>DaisyDividerColor</strong>: 'Default', 'Neutral', 'Primary', 'Secondary', 'Accent', 'Success', 'Warning', 'Info', 'Error'</li>
+<li><strong>DaisyDividerPlacement</strong>: 'Default', 'Start', 'End'</li>
+<li><strong>DaisyPopoverPlacement</strong>: 'Top', 'Bottom', 'Left', 'Right', 'TopStart', 'TopEnd', 'BottomStart', 'BottomEnd'</li>
+<li><strong>DaisyStackNavigation</strong>: 'None', 'Arrows', 'Dots', 'Both'</li>
+<li><strong>FabLayout</strong>: 'Horizontal', 'Vertical'</li>
+<li><strong>DockSize</strong>: 'Small', 'Medium', 'Large'</li>
+</ul>
+<strong>Theme Controls:</strong>
+<ul><li><strong>ThemeControllerMode</strong>: 'Toggle', 'Checkbox', 'Swap', 'ToggleWithText', 'ToggleWithIcons'</li>
+<li><strong>ThemeRadioMode</strong>: 'Radio', 'Button'</li>
+<li><strong>SwapEffect</strong>: 'None', 'Rotate', 'Flip'</li>
+</ul>
+<strong>Date/Time:</strong>
+<ul><li><strong>DateSelectionMode</strong>: 'Single', 'Range', 'Multiple'</li>
+<li><strong>DateDisableStrategy</strong>: 'None', 'Weekends', 'Weekdays', 'Past', 'Future', 'Custom'</li>
+<li><strong>DateElementDisplay</strong>: 'DayNumber', 'DayName', 'MonthName', 'Full'</li>
+<li><strong>DateItemLayout</strong>: 'Vertical', 'Horizontal'</li>
+<li><strong>DateTimelineHeaderType</strong>: 'None', 'Day', 'Week', 'Month'</li>
+</ul>
+<strong>Toast Positioning:</strong>
+<ul><li><strong>ToastHorizontalPosition</strong>: 'Start', 'Center', 'End'</li>
+<li><strong>ToastVerticalPosition</strong>: 'Top', 'Bottom'</li>
+</ul>
+<strong>Effects & Behaviors:</strong>
+<ul><li><strong>ScrambleMode</strong>: 'Characters', 'Words', 'Lines'</li>
+<li><strong>RevealStyle</strong>: 'Fade', 'Slide', 'Scale', 'Typewriter'</li>
+<li><strong>RevealMode</strong>: 'OnLoad', 'OnScroll', 'Manual'</li>
+<li><strong>RevealDirection</strong>: 'Up', 'Down', 'Left', 'Right'</li>
+<li><strong>FollowerShape</strong>: 'Circle', 'Square', 'Ring'</li>
+</ul>
+<strong>Button Styling:</strong>
+<ul><li><strong>DaisyButtonStyle</strong>: 'Default', 'Outline', 'Dash', 'Soft'</li>
+<li><strong>DaisyButtonShape</strong>: 'Default', 'Wide', 'Block', 'Square', 'Circle'</li>
+</ul>
+<strong>Color Picker:</strong>
+<ul><li><strong>ColorSliderChannel</strong>: 'Red', 'Green', 'Blue', 'Alpha', 'Hue', 'Saturation', 'Lightness'</li>
+</ul>
+<strong>Sizing:</strong>
+<ul><li><strong>ResponsiveFontTier</strong>: 'Primary', 'Secondary', 'Tertiary', 'Header'</li>
+</ul>
+<h3>Theming</h3>
+
+<p>Use <code>DaisyThemeManager</code> to switch themes:</p>
+<pre><code class="language-csharp">DaisyThemeManager.ApplyTheme("dracula");</code></pre>
+
+<strong>Light themes:</strong> acid, autumn, bumblebee, cmyk, corporate, cupcake, emerald, fantasy, garden, lemonade, light, lofi, nord, pastel, retro, valentine, winter, wireframe
+
+<strong>Dark themes:</strong> aqua, black, business, coffee, cyberpunk, dark, dim, dracula, forest, halloween, luxury, night, smooth, sunset, synthwave
+
+<hr class="footer-separator">
+<footer class="index-footer">
+    <p class="disclaimer">This project is not affiliated with, endorsed by, or sponsored by DaisyUI or Uno Platform.</p>
+    <p>Built with inspiration from:</p>
+    <div class="footer-links">
+        <a href="https://daisyui.com" target="_blank" rel="noopener" title="DaisyUI">
+            <svg class="footer-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            <span>DaisyUI</span>
+        </a>
+        <a href="https://platform.uno" target="_blank" rel="noopener" title="Uno Platform">
+            <svg class="footer-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2L2 19h20L12 2zm0 4l7 11H5l7-11z"/></svg>
+            <span>Uno Platform</span>
+        </a>
+        <a href="https://github.com/saadeghi/daisyui" target="_blank" rel="noopener" title="DaisyUI GitHub">
+            <svg class="footer-icon" viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span>daisyui</span>
+        </a>
+        <a href="https://github.com/unoplatform/uno" target="_blank" rel="noopener" title="Uno Platform GitHub">
+            <svg class="footer-icon" viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span>Uno</span>
+        </a>
+    </div>
+</footer>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

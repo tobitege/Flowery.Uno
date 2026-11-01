@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyScreenColorPicker</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyScreenColorPicker</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyScreenColorPicker.png" alt="DaisyScreenColorPicker" class="doc-image">
+
+<p>DaisyScreenColorPicker is an eyedropper tool that allows picking colors from anywhere on the screen using a <strong>click-and-drag</strong> interaction. Unlike traditional color pickers that require clicking to start and clicking again to select, this control uses a more intuitive drag gesture: click and hold to start, drag anywhere on screen while watching the live color preview, then release to capture the color.</p>
+
+<h2>Interaction Model</h2>
+
+<strong>Click-and-Drag to Pick:</strong>
+
+<p>1. <strong>Click and hold</strong> the left mouse button on the control</p>
+<p>2. <strong>Drag</strong> the cursor anywhere on screen (even outside the application window)</p>
+<p>3. Watch the <strong>live color preview</strong> update as you move</p>
+<p>4. <strong>Release</strong> the mouse button to capture the color at the cursor position</p>
+
+<p>This interaction model is similar to how eyedropper tools work in professional design software like Photoshop or Figma.</p>
+
+<strong>Cancellation:</strong>
+
+<ul><li>Release the mouse button outside the control while not over a desired color</li>
+<li>Press <strong>Escape</strong> while dragging</li>
+<li>If pointer capture is lost (e.g., window loses focus), picking is automatically cancelled</li>
+</ul>
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Color</code></td>
+<td><code>Color</code></td>
+<td><code>Black</code></td>
+<td>The selected/captured color</td>
+</tr>
+<tr>
+<td><code>IsCapturing</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether the picker is currently in drag-capture mode (read-only)</td>
+</tr>
+<tr>
+<td><code>OnColorChanged</code></td>
+<td><code>Action<Color>?</code></td>
+<td><code>null</code></td>
+<td>Optional callback when a color is captured</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ColorChanged</code></td>
+<td>Fired when a color is successfully captured (on mouse release)</td>
+</tr>
+<tr>
+<td><code>PickingCompleted</code></td>
+<td>Fired when picking is completed successfully</td>
+</tr>
+<tr>
+<td><code>PickingCancelled</code></td>
+<td>Fired when picking is cancelled (Escape or capture lost)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Visual Display</h2>
+
+<p>The control displays a compact panel (140×80 pixels) showing:</p>
+
+<ul><li><strong>Color swatch</strong> - Large preview of the current/preview color with checkerboard for transparency</li>
+<li><strong>Hex value</strong> - Color in #RRGGBB format</li>
+<li><strong>RGB values</strong> - Individual R, G, B component values</li>
+<li><strong>Status text</strong> - "Click & drag to pick" or "Release to pick" during capture</li>
+<li><strong>Eyedropper icon</strong> - Visual indicator when not capturing</li>
+<li><strong>Green border</strong> - Indicates active capture mode</li>
+</ul>
+<h2>Platform Support</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Platform</th>
+<th>Support</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Windows</strong></td>
+<td>✅ Full support using GDI32 <code>GetPixel</code> API</td>
+</tr>
+<tr>
+<td><strong>macOS</strong></td>
+<td>⚠️ Limited - drag works but color capture may not function</td>
+</tr>
+<tr>
+<td><strong>Linux</strong></td>
+<td>⚠️ Limited - drag works but color capture may not function</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The control uses Windows-specific P/Invoke calls (<code>GetCursorPos</code>, <code>GetDC</code>, <code>GetPixel</code>) for screen color capture. On non-Windows platforms, the drag interaction works but the color value won't update.</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic eyedropper --&gt;
+&lt;colorpicker:DaisyScreenColorPicker 
+    Color="{Binding SelectedColor, Mode=TwoWay}" /&gt;
+
+&lt;!-- With callback --&gt;
+&lt;colorpicker:DaisyScreenColorPicker 
+    OnColorChanged="{Binding OnScreenColorPicked}" /&gt;
+
+&lt;!-- In a color picker toolbar --&gt;
+&lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+    &lt;colorpicker:DaisyScreenColorPicker x:Name="Eyedropper" /&gt;
+    &lt;TextBlock Text="Drag to pick a color from screen" 
+               VerticalAlignment="Center" 
+               Opacity="0.7" /&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<h2>Events and Callbacks</h2>
+
+<h3>Event-Based</h3>
+
+<pre><code class="language-csharp">picker.ColorChanged += (sender, e) =&gt; 
+{
+    Console.WriteLine($"Captured: {e.Color}");
+    // e.Color contains the picked color
+};
+
+picker.PickingCompleted += (sender, e) =&gt; 
+{
+    Console.WriteLine("Color picking finished");
+    // Good place to close dialogs or apply the color
+};
+
+picker.PickingCancelled += (sender, e) =&gt; 
+{
+    Console.WriteLine("Color picking cancelled");
+    // User cancelled - restore previous state if needed
+};</code></pre>
+
+<h3>Callback-Based</h3>
+
+<pre><code class="language-csharp">var picker = new DaisyScreenColorPicker
+{
+    OnColorChanged = color =&gt; 
+    {
+        Debug.WriteLine($"Picked: #{color.R:X2}{color.G:X2}{color.B:X2}");
+        SelectedColor = color;
+    }
+};</code></pre>
+
+<h2>Code-Behind Usage</h2>
+
+<pre><code class="language-csharp">// Create picker
+var picker = new DaisyScreenColorPicker();
+
+// Handle successful pick
+picker.ColorChanged += (s, e) =&gt;
+{
+    var capturedColor = e.Color;
+    ApplyColor(capturedColor);
+};
+
+// Handle cancellation
+picker.PickingCancelled += (s, e) =&gt;
+{
+    // User cancelled - no action needed
+};
+
+// Read the current color
+Color currentColor = picker.Color;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Explain the interaction</strong> to users - the click-and-drag model may be unfamiliar</li>
+<li>The control shows a <strong>live preview</strong> of the color under the cursor while dragging</li>
+<li><strong>Hex and RGB values</strong> update in real-time during drag</li>
+<li>Works best on <strong>Windows</strong> - other platforms have limited color capture support</li>
+<li>Combine with <code>DaisyColorEditor</code> or <code>DaisyColorGrid</code> for a complete color picker interface</li>
+<li>The <code>IsCapturing</code> property can be used to conditionally show/hide UI elements</li>
+<li>Use <code>PickingCompleted</code> event to trigger actions after successful color selection</li>
+</ul>
+<h2>Comparison with Traditional Eyedroppers</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Traditional</th>
+<th>DaisyScreenColorPicker</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Click to start, click to select</td>
+<td>Click-hold-drag-release</td>
+</tr>
+<tr>
+<td>Two separate click actions</td>
+<td>Single continuous gesture</td>
+</tr>
+<tr>
+<td>May show floating preview window</td>
+<td>Inline preview in control</td>
+</tr>
+<tr>
+<td>Can accidentally click wrong spot</td>
+<td>Release when you see the right color</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Acknowledgments</h2>
+
+<p>This control is part of the Flowery.Uno color picker suite, inspired by the <a href="https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker" target="_blank" rel="noopener">Cyotek ColorPicker</a> library (MIT License).</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyResizableColumnsHost.html">← ResizableColumnsHost</a></div>
+    <div class="nav-right"><a href="DaisySelect.html">Select →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

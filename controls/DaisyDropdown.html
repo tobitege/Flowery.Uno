@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDropdown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDropdown</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyDropdown is a lightweight dropdown menu control built on a <code>Popup</code>. It displays a trigger area with a placeholder/selection, and shows a menu (via <code>DaisyMenu</code>) when opened. Use it for compact menu-style pickers and small action lists.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ItemsSource</code> (<code>IEnumerable?</code>)</td>
+<td>Items displayed in the dropdown menu.</td>
+</tr>
+<tr>
+<td><code>SelectedItem</code> (object?)</td>
+<td>Currently selected item. When set/bound, the trigger shows this item.</td>
+</tr>
+<tr>
+<td><code>PlaceholderText</code> (string?)</td>
+<td>Text shown when <code>SelectedItem</code> is null (default <code>Select</code>).</td>
+</tr>
+<tr>
+<td><code>IsOpen</code> (bool)</td>
+<td>Controls whether the popup is open.</td>
+</tr>
+<tr>
+<td><code>PlacementMode</code> (<code>PlacementMode</code>)</td>
+<td>Popup placement relative to the trigger (default <code>Bottom</code>).</td>
+</tr>
+<tr>
+<td><code>CloseOnSelection</code> (bool)</td>
+<td>Closes the dropdown after selecting an item (default <code>True</code>).</td>
+</tr>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>)</td>
+<td>Size preset (affects height and font size).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedItemChanged</code></td>
+<td>Raised when the selected item changes. Handler signature: <code>void OnSelectedItemChanged(object? sender, DaisyDropdownSelectionChangedEventArgs e)</code> (use <code>e.SelectedItem</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple string list --&gt;
+&lt;controls:DaisyDropdown PlaceholderText="Pick one"
+                       ItemsSource="{Binding Options}"
+                       SelectedItem="{Binding SelectedOption, Mode=TwoWay}" /&gt;
+
+&lt;!-- Keep open after selection --&gt;
+&lt;controls:DaisyDropdown CloseOnSelection="False"
+                       ItemsSource="{Binding Actions}" /&gt;
+
+&lt;!-- Compact size --&gt;
+&lt;controls:DaisyDropdown Size="Small" ItemsSource="{Binding Options}" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>DaisySelect</code> for a ComboBox-style selection control; use DaisyDropdown when you want a menu-like popup.</li>
+<li>For action menus, handle <code>SelectedItemChanged</code> and then reset <code>SelectedItem</code> back to <code>null</code> to return to the placeholder.</li>
+<li>For highly customized menu content, prefer <code>DaisyPopover</code> and place your own layout inside <code>PopoverContent</code>.</li>
+<li>If you bind <code>SelectedItem</code>, ensure your items have a meaningful <code>ToString()</code> or are UI elements you want displayed as-is.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyDrawer.html">← Drawer</a></div>
+    <div class="nav-right"><a href="DaisyExpandableCard.html">ExpandableCard →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

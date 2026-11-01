@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCountdown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCountdown</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCountdown.png" alt="DaisyCountdown" class="doc-image">
+
+<p>DaisyCountdown is a versatile time display and timing control that can:</p>
+
+<p>1. <strong>Display a single time segment</strong> (hours, minutes, or seconds) for use as a digit cell</p>
+<p>2. <strong>Run a countdown timer</strong> from a specified duration to zero</p>
+<p>3. <strong>Work as a stopwatch</strong> with lap recording and precise TimeSpan tracking</p>
+<p>4. <strong>Show live clock units</strong> (hours/minutes/seconds of current time)</p>
+
+<p>It supports TimeSpan-based timing with millisecond precision, lap recording with timestamps, and integrates seamlessly with DaisyClock for composite displays.</p>
+
+<h2>Modes & Properties</h2>
+
+<h3>Operating Modes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Display</code></td>
+<td>Static display - shows Value or Duration</td>
+</tr>
+<tr>
+<td><code>Countdown</code></td>
+<td>Timer - counts down from Duration to zero</td>
+</tr>
+<tr>
+<td><code>Stopwatch</code></td>
+<td>Elapsed time - counts up from zero with lap support</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Core Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Value</code></td>
+<td><code>int</code> (0-999)</td>
+<td>Displayed value for digit cell mode</td>
+</tr>
+<tr>
+<td><code>Digits</code></td>
+<td><code>int</code> (1-3)</td>
+<td>Number of digits to display</td>
+</tr>
+<tr>
+<td><code>ClockUnit</code></td>
+<td><code>Hours</code>/<code>Minutes</code>/<code>Seconds</code>/<code>None</code></td>
+<td>When set, shows that component of current time</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td><code>CountdownMode</code></td>
+<td>Operating mode: Display, Countdown, or Stopwatch</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>TimeSpan-Based Timing</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Duration</code></td>
+<td><code>TimeSpan</code></td>
+<td>Starting duration for countdown mode</td>
+</tr>
+<tr>
+<td><code>Remaining</code></td>
+<td><code>TimeSpan</code></td>
+<td>Time remaining (read-only)</td>
+</tr>
+<tr>
+<td><code>Elapsed</code></td>
+<td><code>TimeSpan</code></td>
+<td>Elapsed time in stopwatch mode (read-only)</td>
+</tr>
+<tr>
+<td><code>IsRunning</code></td>
+<td><code>bool</code></td>
+<td>Whether timer/stopwatch is active</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Simple Countdown</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsCountingDown</code></td>
+<td><code>bool</code></td>
+<td>Starts simple countdown (decrements Value)</td>
+</tr>
+<tr>
+<td><code>Interval</code></td>
+<td><code>TimeSpan</code></td>
+<td>Tick interval (default 1s)</td>
+</tr>
+<tr>
+<td><code>Loop</code></td>
+<td><code>bool</code></td>
+<td>When true, resets to LoopFrom at zero</td>
+</tr>
+<tr>
+<td><code>LoopFrom</code></td>
+<td><code>int</code></td>
+<td>Value to reset to when looping</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Events</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CountdownCompleted</code></td>
+<td>Simple countdown (Value-based) reached zero</td>
+</tr>
+<tr>
+<td><code>TimerCompleted</code></td>
+<td>TimeSpan-based countdown reached zero</td>
+</tr>
+<tr>
+<td><code>Tick</code></td>
+<td>Raised on each timer tick with current time value</td>
+</tr>
+<tr>
+<td><code>LapRecorded</code></td>
+<td>A lap was recorded (stopwatch mode)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Lap Recording</h2>
+
+<p>DaisyCountdown supports lap recording in Stopwatch mode:</p>
+
+<pre><code class="language-csharp">// Access recorded laps
+foreach (var lap in countdown.Laps)
+{
+    Console.WriteLine($"Lap {lap.Number}: {lap.LapDuration:mm\\:ss\\.fff}");
+    Console.WriteLine($"  Total: {lap.TotalElapsed:hh\\:mm\\:ss}");
+    Console.WriteLine($"  Recorded at: {lap.Timestamp:HH:mm:ss}");
+}
+
+// Record a new lap
+countdown.RecordLap();
+
+// Clear all laps
+countdown.ClearLaps();</code></pre>
+
+<p>The <code>LapTime</code> class contains:</p>
+
+<ul><li><code>Number</code> - Lap number (1-based)</li>
+<li><code>Timestamp</code> - When recorded (DateTimeOffset for data exchange)</li>
+<li><code>TotalElapsed</code> - Total time from start</li>
+<li><code>LapDuration</code> - Duration of this specific lap</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Live clock: HH:MM:SS using DaisyJoin --&gt;
+&lt;daisy:DaisyJoin&gt;
+    &lt;controls:DaisyCountdown ClockUnit="Hours" Digits="2" Size="Large" /&gt;
+    &lt;TextBlock Text=":" FontSize="24" VerticalAlignment="Center" /&gt;
+    &lt;controls:DaisyCountdown ClockUnit="Minutes" Digits="2" Size="Large" /&gt;
+    &lt;TextBlock Text=":" FontSize="24" VerticalAlignment="Center" /&gt;
+    &lt;controls:DaisyCountdown ClockUnit="Seconds" Digits="2" Size="Large" /&gt;
+&lt;/daisy:DaisyJoin&gt;
+
+&lt;!-- Simple looping countdown (59...0...59...) --&gt;
+&lt;controls:DaisyCountdown Value="59"
+                         Digits="2"
+                         IsCountingDown="True"
+                         Loop="True"
+                         LoopFrom="59"
+                         Size="Large" /&gt;
+
+&lt;!-- TimeSpan-based countdown timer (5 minutes) --&gt;
+&lt;controls:DaisyCountdown x:Name="Timer"
+                         Mode="Countdown"
+                         Duration="0:05:00"
+                         ShowHours="False"
+                         ShowSeconds="True"
+                         Size="Large" /&gt;
+
+&lt;!-- Stopwatch with milliseconds --&gt;
+&lt;controls:DaisyCountdown x:Name="Stopwatch"
+                         Mode="Stopwatch"
+                         ShowMilliseconds="True"
+                         Size="Large" /&gt;</code></pre>
+
+<h2>Code-Behind Control</h2>
+
+<pre><code class="language-csharp">// Start/Pause/Reset work for both Countdown and Stopwatch modes
+Timer.Start();
+Timer.Pause();
+Timer.Reset();
+
+// Set duration from string (multiple formats supported)
+Timer.TrySetDuration("5:30");      // 5 minutes 30 seconds
+Timer.TrySetDuration("PT5M30S");   // ISO 8601 format
+Timer.TrySetDuration("330");       // 330 seconds
+
+// Get display values in various formats
+var display = Timer.GetDisplayString();           // "05:30.000"
+var milliseconds = Timer.GetDisplayMilliseconds(); // 330000
+var seconds = Timer.GetDisplaySeconds();           // 330.0
+
+// Lap recording (Stopwatch mode)
+Stopwatch.RecordLap();
+foreach (var lap in Stopwatch.Laps)
+{
+    Debug.WriteLine($"Lap {lap.Number}: {lap.LapDuration}");
+}
+
+// Event handling
+Timer.TimerCompleted += (s, e) =&gt; ShowNotification("Timer done!");
+Timer.Tick += (s, remaining) =&gt; UpdateProgress(remaining);
+Stopwatch.LapRecorded += (s, lap) =&gt; AddLapToList(lap);</code></pre>
+
+<h2>Data Exchange</h2>
+
+<p>DaisyCountdown works with <code>FloweryTimeHelpers</code> for data exchange:</p>
+
+<pre><code class="language-csharp">// Convert to portable formats
+var ms = FloweryTimeHelpers.ToMilliseconds(timer.Elapsed);
+var iso = FloweryTimeHelpers.ToIso8601Duration(timer.Elapsed);
+
+// Parse from strings
+if (FloweryTimeHelpers.TryParseDurationPrecise("01:30:45.500", out var duration))
+    timer.Duration = duration;
+
+// Lap timestamps are DateTimeOffset for serialization
+var lapJson = JsonSerializer.Serialize(stopwatch.Laps);</code></pre>
+
+<h2>Accessibility Support</h2>
+
+<p>DaisyCountdown includes built-in accessibility for screen readers via the <code>AccessibleText</code> property.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AccessibleText</code></td>
+<td><code>string</code></td>
+<td><code>"Countdown"</code></td>
+<td>Context text for screen readers</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-xml">&lt;!-- Custom context: announces "Time remaining: 10" --&gt;
+&lt;controls:DaisyCountdown Value="10" AccessibleText="Time remaining" IsCountingDown="True" /&gt;
+
+&lt;!-- With unit: announces "Session expires in: 5 minutes" --&gt;
+&lt;controls:DaisyCountdown ClockUnit="Minutes" AccessibleText="Session expires in" Digits="2" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Digits="2"</code> for clock displays to maintain consistent width</li>
+<li>For precise timing, use <code>Mode="Countdown"</code> or <code>Mode="Stopwatch"</code> with TimeSpan properties</li>
+<li>Use <code>ShowMilliseconds="True"</code> for sub-second precision (updates at 100ms intervals)</li>
+<li>Record laps with <code>RecordLap()</code> - each lap includes an absolute timestamp for data export</li>
+<li>Use <code>TrySetDuration()</code> to accept user input in various formats</li>
+<li>Stop timers when hiding/disposing the control to prevent memory leaks</li>
+<li>For composite clock displays, use <code>DaisyCountdown</code> cells inside <code>DaisyClock</code> (Segmented style)</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCopyButton.html">← CopyButton</a></div>
+    <div class="nav-right"><a href="DaisyDateTimeline.html">DateTimeline →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

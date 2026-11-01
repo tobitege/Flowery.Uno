@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyButtonGroup</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyButtonGroup</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyButtonGroup.png" alt="DaisyButtonGroup" class="doc-image">
+
+<code>DaisyButtonGroup</code> arranges multiple segments (typically <code>Button</code> / <code>ToggleButton</code>) into a single joined control with shared borders and unified rounding, similar to shadcn's “Button Group”.
+
+<p>It also supports non-clickable segments (for counters/labels) by using a <code>Border</code> as an item inside the group.</p>
+
+<code>DaisyButtonGroup</code> does not provide any icons/content by default; icons (if any) should be supplied via XAML content or set in code-behind.
+
+<h2>Properties & Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Variant</code> (<code>DaisyButtonVariant</code>)</td>
+<td>Applies a unified color variant to all segments (Default, Primary, Secondary, Accent, etc.).</td>
+</tr>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>)</td>
+<td>Applies size tokens to all segments (height, padding, font size).</td>
+</tr>
+<tr>
+<td><code>ButtonStyle</code> (<code>DaisyButtonStyle</code>)</td>
+<td>Segment style: <code>Default</code>, <code>Outline</code>, <code>Soft</code>, <code>Dash</code> (outer dashed border).</td>
+</tr>
+<tr>
+<td><code>Shape</code> (<code>DaisyButtonGroupShape</code>)</td>
+<td>Corner rounding: <code>Default</code>, <code>Square</code>, <code>Rounded</code>, <code>Pill</code>.</td>
+</tr>
+<tr>
+<td><code>Orientation</code> (<code>Orientation</code>)</td>
+<td>Layout direction (<code>Horizontal</code> or <code>Vertical</code>).</td>
+</tr>
+<tr>
+<td><code>AutoSelect</code> (<code>bool</code>)</td>
+<td>When <code>True</code>, clicking a button segment applies the <code>button-group-active</code> class to it and removes it from sibling buttons.</td>
+</tr>
+<tr>
+<td><code>ShowShadow</code> (<code>bool</code>)</td>
+<td>When <code>True</code>, renders a subtle shadow around the group.</td>
+</tr>
+<tr>
+<td><code>ItemSelected</code> event</td>
+<td>Raised when a button segment is clicked; provides the clicked <code>Control</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Download button with non-clickable counter --&gt;
+&lt;controls:DaisyButtonGroup ShowShadow="True"&gt;
+  &lt;Button Content="Download" /&gt;
+  &lt;Border&gt;
+    &lt;TextBlock Text="15k" /&gt;
+  &lt;/Border&gt;
+&lt;/controls:DaisyButtonGroup&gt;
+
+&lt;!-- Pill-shaped primary icon group --&gt;
+&lt;controls:DaisyButtonGroup Variant="Primary" Shape="Pill" ShowShadow="True"&gt;
+  &lt;Button Padding="0" Width="40"&gt;
+    &lt;PathIcon Data="{StaticResource DaisyIconChevronLeft}" Width="18" Height="18" /&gt;
+  &lt;/Button&gt;
+  &lt;Button Padding="0" Width="40"&gt;
+    &lt;PathIcon Data="M8 5v14l11-7z" Width="18" Height="18" /&gt;
+  &lt;/Button&gt;
+  &lt;Button Padding="0" Width="40"&gt;
+    &lt;PathIcon Data="{StaticResource DaisyIconChevronRight}" Width="18" Height="18" /&gt;
+  &lt;/Button&gt;
+&lt;/controls:DaisyButtonGroup&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Border</code> items for label/counter segments so the group can apply borders and padding consistently.</li>
+<li>For icon-only segments, set <code>Padding="0"</code> and a fixed <code>Width</code> (e.g. <code>40</code>) to get square buttons.</li>
+<li>If you enable <code>AutoSelect</code>, style <code>.button-group-active</code> for your segment buttons if you want a stronger visual “selected” state.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyButton.html">← Button</a></div>
+    <div class="nav-right"><a href="DaisyCalendarDatePicker.html">CalendarDatePicker →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

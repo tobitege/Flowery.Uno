@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16275a"/>
+      <stop offset="1" stop-color="#0a0f1f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="512" cy="512" r="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pBlue" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2a6ff2"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="pIndigo" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#4338ca"/>
+      <stop offset="1" stop-color="#2a6ff2"/>
+    </linearGradient>
+    <linearGradient id="pCyan" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2a6ff2"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="pCoral" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ff5a4d"/>
+      <stop offset="1" stop-color="#ffc15e"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#cfe0ff"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(512 512) scale(0.8)" stroke="#0a0f1f" stroke-width="6" stroke-linejoin="round">
+    <path transform="rotate(120)" fill="url(#pIndigo)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <path transform="rotate(240)" fill="url(#pIndigo)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <path transform="rotate(60)" fill="url(#pBlue)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <path transform="rotate(300)" fill="url(#pBlue)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <path transform="rotate(180)" fill="url(#pCyan)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <path transform="rotate(0)" fill="url(#pCoral)" d="M0,-40 C100,-100 135,-230 105,-310 C85,-370 40,-395 0,-395 C-40,-395 -85,-370 -105,-310 C-135,-230 -100,-100 0,-40 Z"/>
+    <circle r="58" fill="url(#core)"/>
+  </g>
+</svg>

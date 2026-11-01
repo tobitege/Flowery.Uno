@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyMnemonicText</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyMnemonicText</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyMnemonicText shows WinForms-style mnemonic labels: <code>&</code> marks the access character, which is underlined, and <code>&&</code> shows a literal <code>&</code>. It is display only. Your app handles Alt+key itself, for example with <code>KeyboardAccelerator</code> or a <code>KeyDown</code> handler.</p>
+
+<code>DaisyButton</code>, <code>DaisyTabs</code>, <code>DaisyMenuItem</code> and <code>DaisyIconText</code> use the same parsing for their string labels, so you rarely need DaisyMnemonicText directly. Ported from Flowery.NET 2.3.1.
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Text</code></td>
+<td><code>string</code></td>
+<td><code>null</code></td>
+<td>Label including <code>&</code> markers.</td>
+</tr>
+<tr>
+<td><code>ShowMnemonic</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether the access character is underlined. When <code>false</code>, the display text is shown without underline.</td>
+</tr>
+<tr>
+<td><code>MnemonicChar</code></td>
+<td><code>char?</code></td>
+<td><code>null</code></td>
+<td>Read-only. The access character parsed from <code>Text</code>, or <code>null</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Font properties and <code>Foreground</code> are inherited, as for any text inside a control.</p>
+
+<h2>Parsing Rules</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Label</th>
+<th>Display</th>
+<th>Access character</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>&Save</code></td>
+<td>Save (S underlined)</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td><code>E&xit</code></td>
+<td>Exit (x underlined)</td>
+<td><code>x</code></td>
+</tr>
+<tr>
+<td><code>Save && Exit</code></td>
+<td>Save & Exit</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>A&B&C</code></td>
+<td>ABC (B underlined)</td>
+<td><code>B</code> (only the first marker counts)</td>
+</tr>
+<tr>
+<td><code>Trailing&</code></td>
+<td>Trailing</td>
+<td>none (a trailing <code>&</code> is dropped)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Where Mnemonics Apply</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Control</th>
+<th>Label</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyButton</code></td>
+<td>String <code>Content</code></td>
+<td><code>Content</code> keeps the markers. While <code>Content</code> is a string with <code>&</code> and no <code>ContentTemplate</code> is set, the button uses <code>StringContentTemplate</code>. Strings without <code>&</code> keep the default text presentation. Works with icon buttons too.</td>
+</tr>
+<tr>
+<td><code>DaisyTabs</code></td>
+<td>Tab <code>Header</code></td>
+<td>The header button's automation name is the display text.</td>
+</tr>
+<tr>
+<td><code>DaisyMenuItem</code></td>
+<td>String <code>Content</code></td>
+<td>The automation name is the display text.</td>
+</tr>
+<tr>
+<td><code>DaisyIconText</code></td>
+<td><code>Text</code></td>
+<td>Always parsed; there is no <code>ShowMnemonic</code> switch.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Labels that should show a plain <code>&</code> in these controls must use <code>&&</code>, for example <code>Content="Save &amp;&amp; Exit"</code> in XAML or <code>"Save && Exit"</code> in C#.</p>
+
+<h2>Helpers</h2>
+
+<code>FloweryMnemonicHelpers</code> (namespace <code>Flowery.Helpers</code>) exposes the parser and the presentation pieces:
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Parse(text)</code></td>
+<td>Returns <code>FloweryMnemonicInfo</code> with <code>DisplayText</code>, <code>MnemonicIndex</code> and <code>MnemonicChar</code>.</td>
+</tr>
+<tr>
+<td><code>GetDisplayText(text)</code> / <code>GetMnemonicChar(text)</code></td>
+<td>Shortcuts for <code>Parse</code>.</td>
+</tr>
+<tr>
+<td><code>ApplyMnemonicText(textBlock, text, showMnemonic)</code></td>
+<td>Shows a label in an existing <code>TextBlock</code>: plain <code>Text</code> when nothing is underlined, otherwise runs with the access character underlined.</td>
+</tr>
+<tr>
+<td><code>StringContentTemplate</code></td>
+<td><code>DataTemplate</code> (resource <code>DaisyMnemonicStringTemplate</code>) that renders a string as DaisyMnemonicText. Assign it as <code>ContentTemplate</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Flowery.NET's <code>EnsureStringContentTemplate</code> has no counterpart: Avalonia adds the template to a control's <code>DataTemplates</code>, and WinUI did not apply a <code>ContentTemplateSelector</code> to string content in our tests. The built-in controls set <code>ContentTemplate</code> directly instead.</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Standalone label --&gt;
+&lt;daisy:DaisyMnemonicText Text="&amp;amp;File" /&gt;
+
+&lt;!-- Hide the underline until the user presses Alt --&gt;
+&lt;daisy:DaisyMnemonicText x:Name="FileLabel" Text="&amp;amp;File" ShowMnemonic="False" /&gt;
+
+&lt;!-- Built-in controls --&gt;
+&lt;daisy:DaisyButton Content="&amp;amp;Save" Variant="Primary" /&gt;
+&lt;daisy:DaisyButton Content="Save &amp;amp;&amp;amp; Exit" /&gt;</code></pre>
+
+<pre><code class="language-csharp">// Use mnemonics on your own ContentControl with string content
+myContentControl.ContentTemplate = FloweryMnemonicHelpers.StringContentTemplate;
+
+// Read the access character to wire up your own Alt+key handling
+char? key = FloweryMnemonicHelpers.GetMnemonicChar("&amp;Save"); // 'S'</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep one access character per label; only the first <code>&</code> marker is used.</li>
+<li>Check existing labels for a plain <code>&</code> (for example "Terms & Conditions") and write it as <code>&&</code>, otherwise the character after <code>&</code> is underlined and the <code>&</code> disappears.</li>
+<li>WinUI's <code>TextBlock</code> is sealed, so unlike the Flowery.NET version DaisyMnemonicText hosts a <code>TextBlock</code> instead of deriving from it. Set text layout options such as wrapping on a surrounding element, or use <code>ApplyMnemonicText</code> on your own <code>TextBlock</code>.</li>
+<li>Uno's Skia text renderer (Desktop, iOS) does not draw <code>TextDecorations</code>. On Skia, <code>ApplyMnemonicText</code> draws the underline as a composition child visual of the <code>TextBlock</code>, placed from the measured text and the current font and foreground. The line is shown only when the access character is on the first line of left-to-right text.</li>
+</ul><hr><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyMenu.html">← Menu</a></div>
+    <div class="nav-right"><a href="DaisyMockup.html">Mockup →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

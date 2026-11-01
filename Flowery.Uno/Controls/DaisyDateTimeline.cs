@@ -139,12 +139,17 @@ namespace Flowery.Controls
         protected override void OnThemeChanged(string themeName)
         {
             base.OnThemeChanged(themeName);
-            ApplyAll();
+            // The items follow the theme themselves; only the header color comes from the timeline.
+            ApplyHeader();
         }
 
         protected override void OnResolvedSizeChanged()
         {
             base.OnResolvedSizeChanged();
+            // FlowerySizeManager refreshes every control on Loaded, right after OnLoaded built the items with this size.
+            if (!IsLoaded || ResolvedSize == _itemsBuiltSize)
+                return;
+
             ApplyAll();
             ScrollToSelectedDate(defer: true);
         }
@@ -619,6 +624,7 @@ namespace Flowery.Controls
                 return;
 
             _headerTextBlock.Text = HeaderText;
+            _headerTextBlock.Foreground = DaisyResourceLookup.GetBrush("DaisyBaseContentBrush");
 
             // Header visibility
             _headerGrid.Visibility = HeaderType == DateTimelineHeaderType.None ? Visibility.Collapsed : Visibility.Visible;
@@ -826,11 +832,18 @@ namespace Flowery.Controls
             AutomationProperties.SetName(this, name);
         }
 
+        // How often the date items were generated; runtime tests count the rebuilds with it.
+        internal int ItemBuildCount { get; private set; }
+
+        // The resolved size the current items were built with; OnResolvedSizeChanged rebuilds only when it differs.
+        private DaisySize? _itemsBuiltSize;
+
         private void GenerateDateItems()
         {
             if (_itemsPanel == null)
                 return;
 
+            ItemBuildCount++;
             _itemsPanel.Children.Clear();
 
             var first = FirstDate.Date;
@@ -845,6 +858,7 @@ namespace Flowery.Controls
             }
 
             var effectiveSize = ResolvedSize;
+            _itemsBuiltSize = effectiveSize;
             var itemWidth = _effectiveItemWidth > 0 ? _effectiveItemWidth : ItemWidth;
             var itemSpacing = _effectiveItemSpacing > 0 ? _effectiveItemSpacing : ItemSpacing;
 

@@ -1261,6 +1261,120 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public async Task When_DateTimeline_Loads_BuildsItemsOnce()
+        {
+            var timeline = new DaisyDateTimeline
+            {
+                FirstDate = DateTime.Today.AddDays(-3),
+                LastDate = DateTime.Today.AddDays(6),
+                HeaderType = DateTimelineHeaderType.None,
+                Size = DaisySize.Large
+            };
+            FlowerySizeManager.SetIgnoreGlobalSize(timeline, true);
+            Assert.AreEqual(0, timeline.ItemBuildCount, "Properties set before loading must not build the items.");
+
+            RuntimeTestHelpers.AttachToHost(timeline);
+            await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
+
+            Assert.AreEqual(1, timeline.ItemBuildCount, "Loading must build the items once.");
+        }
+
+        [TestMethod]
+        public async Task When_DateTimeline_ThemeChanges_ColorsFollowWithoutRebuild()
+        {
+            // A theme switch changes the color of the brushes in Application.Resources in place, so a control that keeps
+            // its brush follows it without doing anything. The test puts new brush instances there first: the header and
+            // the items follow only if they fetch their brushes again on the theme change.
+            const string headerKey = "DaisyBaseContentBrush";
+            const string itemKey = "DaisyBase200Brush";
+            var resources = Application.Current.Resources;
+            var previous = DaisyThemeManager.CurrentThemeName;
+            var originalHeaderBrush = resources[headerKey];
+            var originalItemBrush = resources[itemKey];
+            try
+            {
+                Assert.IsTrue(DaisyThemeManager.ApplyTheme("Light"));
+                var timeline = new DaisyDateTimeline
+                {
+                    FirstDate = DateTime.Today.AddDays(-3),
+                    LastDate = DateTime.Today.AddDays(6),
+                    SelectedDate = DateTime.Today.AddDays(1)
+                };
+                RuntimeTestHelpers.AttachToHost(timeline);
+                await RuntimeTestHelpers.CompleteLayoutAsync(timeline);
+
+                var header = FindDescendants<TextBlock>(timeline).Single(text => text.Text == timeline.HeaderText);
+                var item = FindDescendants<DaisyDateTimelineItem>(timeline).First(candidate => !candidate.IsSelected && !candidate.IsToday);
+                // Each item builds its background in its own Loaded handler, which can follow the timeline's layout.
+                for (var attempt = 0; attempt < 100 && item.Content is not Border { Background: SolidColorBrush }; attempt++)
+                    await Task.Delay(20);
+                Assert.IsInstanceOfType<Border>(item.Content, "The date item must build its background.");
+                var itemBackground = (Border)item.Content;
+                var builds = timeline.ItemBuildCount;
+
+                var headerBrush = new SolidColorBrush(((SolidColorBrush)originalHeaderBrush).Color);
+                var itemBrush = new SolidColorBrush(((SolidColorBrush)originalItemBrush).Color);
+                resources[headerKey] = headerBrush;
+                resources[itemKey] = itemBrush;
+                Assert.IsTrue(DaisyThemeManager.ApplyTheme("Dark"));
+                await RuntimeTestHelpers.CompleteLayoutAsync(timeline);
+
+                Assert.AreEqual(builds, timeline.ItemBuildCount, "A theme change must not rebuild the items.");
+                Assert.IsTrue(FindDescendants<DaisyDateTimelineItem>(timeline).Contains(item), "The items must stay.");
+                Assert.AreSame(headerBrush, header.Foreground, "The header must fetch its brush again on a theme change.");
+                Assert.AreSame(itemBrush, itemBackground.Background, "The items must fetch their brushes again on a theme change.");
+            }
+            finally
+            {
+                RuntimeTestHelpers.GetHostPanel().Children.Clear();
+                resources[headerKey] = originalHeaderBrush;
+                resources[itemKey] = originalItemBrush;
+                // ApplyTheme skips the current theme; switching away first sets the colors of the restored brushes.
+                var restore = previous ?? "Light";
+                DaisyThemeManager.ApplyTheme(string.Equals(restore, "Dark", StringComparison.OrdinalIgnoreCase) ? "Light" : "Dark");
+                DaisyThemeManager.ApplyTheme(restore);
+            }
+        }
+
+        [TestMethod]
+        public async Task When_DateTimeline_GlobalSizeChanges_ItemsTakeTheNewSize()
+        {
+            var previousSize = FlowerySizeManager.CurrentSize;
+            var previousDefault = FlowerySizeManager.UseGlobalSizeByDefault;
+            try
+            {
+                FlowerySizeManager.UseGlobalSizeByDefault = true;
+                FlowerySizeManager.ApplySize(DaisySize.Small);
+                var timeline = new DaisyDateTimeline
+                {
+                    FirstDate = DateTime.Today.AddDays(-3),
+                    LastDate = DateTime.Today.AddDays(6)
+                };
+                RuntimeTestHelpers.AttachToHost(timeline);
+                await RuntimeTestHelpers.EnsureLoadedAsync(timeline);
+
+                Assert.IsTrue(FindDescendants<DaisyDateTimelineItem>(timeline).All(item => item.Size == DaisySize.Small));
+                var smallWidth = timeline.ItemWidth;
+                var builds = timeline.ItemBuildCount;
+
+                FlowerySizeManager.ApplySize(DaisySize.ExtraLarge);
+
+                Assert.AreEqual(builds + 1, timeline.ItemBuildCount, "A new resolved size must rebuild the items once.");
+                Assert.AreNotEqual(smallWidth, timeline.ItemWidth, "ExtraLarge must resolve another item width than Small.");
+                var items = FindDescendants<DaisyDateTimelineItem>(timeline).ToList();
+                Assert.HasCount(10, items);
+                Assert.IsTrue(items.All(item => item.Size == DaisySize.ExtraLarge), "Every item must take the new size.");
+                Assert.IsTrue(items.All(item => item.Width == timeline.ItemWidth), "Every item must take the new width.");
+            }
+            finally
+            {
+                RuntimeTestHelpers.GetHostPanel().Children.Clear();
+                FlowerySizeManager.ApplySize(previousSize);
+                FlowerySizeManager.UseGlobalSizeByDefault = previousDefault;
+            }
+        }
+
+        [TestMethod]
         public async Task When_DateTimeline_PropertiesSetBeforeLoad_LoadAppliesThem()
         {
             // The timeline builds its items once on Loaded instead of for each property set from XAML.

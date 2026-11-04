@@ -47,6 +47,12 @@ namespace Flowery.Uno.Photos.Services.Platform
 
         /// <summary>The unit and area of the rectangles returned by <see cref="GetDisplays"/>.</summary>
         DisplayGeometry DisplayGeometry { get; }
+
+        /// <summary>
+        /// Full bounds, in physical pixels, of the monitor that shows <paramref name="window"/> (also physical pixels),
+        /// or null when the OS gives no answer. Used to keep full screen content on the screen (Windows).
+        /// </summary>
+        DisplayRect? GetMonitorBounds(DisplayRect window);
     }
 
     [Flags]
@@ -93,4 +99,16 @@ namespace Flowery.Uno.Photos.Services.Platform
     public readonly record struct SystemAccent(byte R, byte G, byte B);
 
     public readonly record struct DisplayRect(int X, int Y, int Width, int Height, bool IsPrimary);
+
+    /// <summary>How far a window reaches past its monitor on each side, in physical pixels (never negative).</summary>
+    public readonly record struct ScreenOverhang(int Left, int Top, int Right, int Bottom)
+    {
+        public bool IsEmpty => Left == 0 && Top == 0 && Right == 0 && Bottom == 0;
+
+        public static ScreenOverhang Between(DisplayRect window, DisplayRect monitor) => new(
+            Math.Max(0, monitor.X - window.X),
+            Math.Max(0, monitor.Y - window.Y),
+            Math.Max(0, window.X + window.Width - (monitor.X + monitor.Width)),
+            Math.Max(0, window.Y + window.Height - (monitor.Y + monitor.Height)));
+    }
 }

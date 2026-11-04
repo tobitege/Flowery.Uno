@@ -20,6 +20,16 @@ namespace Flowery.Uno.Photos.Localization
         public static event EventHandler<string>? CultureChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Skia desktop does not refresh every {Binding [Key]} on a language change, so the data context of the element that
+        /// carries the localization bindings is set again (the fallback described in LOCALIZATION.md).
+        /// </summary>
+        public static void RefreshBindings(Microsoft.UI.Xaml.FrameworkElement element)
+        {
+            element.DataContext = null;
+            element.DataContext = Instance;
+        }
+
         static PhotosLocalization()
         {
             foreach (var lang in FloweryLocalization.SupportedLanguages)

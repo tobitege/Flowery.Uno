@@ -1108,6 +1108,7 @@ namespace Flowery.Uno.Photos.Views
 
         private void OnLanguageChanged()
         {
+            PhotosLocalization.RefreshBindings(RootGrid);
             BuildMenus();
             BuildCollectionMenu();
             UpdateTooltips();

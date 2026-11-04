@@ -84,6 +84,8 @@ namespace Flowery.Uno.Photos.Services.Platform
 
         public override DisplayGeometry DisplayGeometry => DisplayGeometry.WorkAreaPixels;
 
+        public override DisplayRect? GetMonitorBounds(DisplayRect window) => Native.GetMonitorBounds(window);
+
         /// <summary>The DWM accent is stored as 0xAABBGGRR.</summary>
         public static SystemAccent ParseAccent(uint abgr) =>
             new((byte)(abgr & 0xFF), (byte)((abgr >> 8) & 0xFF), (byte)((abgr >> 16) & 0xFF));
@@ -128,6 +130,7 @@ namespace Flowery.Uno.Photos.Services.Platform
             private const uint GmemMoveable = 0x0002;
             private const uint GmemZeroInit = 0x0040;
             private const uint MonitorInfoPrimary = 1;
+            private const uint MonitorDefaultToNearest = 2;
             private static readonly IntPtr HwndMessage = new(-3);
 
             private static IntPtr _clipboardOwner;
@@ -154,6 +157,7 @@ namespace Flowery.Uno.Photos.Services.Platform
 
             [DllImport("user32.dll")] private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr clip, MonitorEnumProc callback, IntPtr data);
             [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern bool GetMonitorInfoW(IntPtr monitor, ref MonitorInfo info);
+            [DllImport("user32.dll")] private static extern IntPtr MonitorFromRect(ref Rect rect, uint flags);
             [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
             private static extern IntPtr CreateWindowExW(uint exStyle, string className, string? windowName, uint style, int x, int y, int width, int height, IntPtr parent, IntPtr menu, IntPtr instance, IntPtr param);
             [DllImport("user32.dll", SetLastError = true)] private static extern bool OpenClipboard(IntPtr owner);
@@ -187,6 +191,25 @@ namespace Flowery.Uno.Photos.Services.Platform
                     return [];
                 }
                 return displays;
+            }
+
+            public static DisplayRect? GetMonitorBounds(DisplayRect window)
+            {
+                try
+                {
+                    var rect = new Rect { Left = window.X, Top = window.Y, Right = window.X + window.Width, Bottom = window.Y + window.Height };
+                    var monitor = MonitorFromRect(ref rect, MonitorDefaultToNearest);
+                    var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
+                    if (monitor == IntPtr.Zero || !GetMonitorInfoW(monitor, ref info))
+                        return null;
+                    return new DisplayRect(info.Monitor.Left, info.Monitor.Top,
+                        info.Monitor.Right - info.Monitor.Left, info.Monitor.Bottom - info.Monitor.Top,
+                        (info.Flags & MonitorInfoPrimary) != 0);
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             public static bool SetClipboardFileDrop(byte[] dropFiles)

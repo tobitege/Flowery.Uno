@@ -27,6 +27,7 @@ namespace Flowery.Uno.Photos.Views
         private PhotosShell? _shell;
         private CancellationTokenSource? _thumbCts;
         private double _lastWidth;
+        private double _heroWidth;
         private bool _refreshQueued;
 
         public HomeView()
@@ -88,26 +89,33 @@ namespace Flowery.Uno.Photos.Views
             HeroActions.Orientation = Orientation.Horizontal;
             HeroArt.Visibility = width >= ArtMinWidth ? Visibility.Visible : Visibility.Collapsed;
             FillHero(library, hasPhotos);
+            _heroWidth = width;
             LayoutHeroActions(width);
         }
 
         /// <summary>
-        /// Stacks the quick actions when their labels (longer in some languages) would not fit next to the illustration.
+        /// Stacks the quick actions when they would not fit next to the illustration. The buttons are measured rather than
+        /// estimated from their labels, because their width also follows the app size (Small to Extra large) and the font.
         /// </summary>
         private void LayoutHeroActions(double width)
         {
-            const double ButtonChrome = 64;
-            const double CharWidth = 8.5;
-            const double Spacing = 8;
             const double HeroPadding = 64;
             const double ArtColumn = 250 + 24;
 
             var needed = 0.0;
+            var count = 0;
             foreach (var child in HeroActions.Children)
             {
-                if (child is DaisyButton { Content: string text })
-                    needed += text.Length * CharWidth + ButtonChrome + Spacing;
+                if (child is not FrameworkElement element)
+                    continue;
+                // DaisyButton adds its icon when it is loaded, so the measure is repeated then.
+                if (!element.IsLoaded)
+                    element.Loaded += HeroAction_Loaded;
+                element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                needed += element.DesiredSize.Width;
+                count++;
             }
+            needed += Math.Max(0, count - 1) * HeroActions.Spacing;
 
             var available = width - HeroPadding - (HeroArt.Visibility == Visibility.Visible ? ArtColumn : 0);
             var vertical = width < NarrowWidth || needed > available;
@@ -117,6 +125,12 @@ namespace Flowery.Uno.Photos.Views
                 if (child is FrameworkElement element)
                     element.HorizontalAlignment = vertical ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
             }
+        }
+
+        private void HeroAction_Loaded(object sender, RoutedEventArgs e)
+        {
+            ((FrameworkElement)sender).Loaded -= HeroAction_Loaded;
+            LayoutHeroActions(_heroWidth);
         }
 
         private void FillHero(PhotoLibrary library, bool hasPhotos)

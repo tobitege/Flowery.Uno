@@ -200,6 +200,7 @@ namespace Flowery.Uno.Photos.Views
 
         private void UpdateLocalizedChrome()
         {
+            PhotosLocalization.RefreshBindings(RootGrid);
             var viewText = PhotosLocalization.GetString("Photos_View");
             ToolTipService.SetToolTip(TitleViewButton, viewText);
             AutomationProperties.SetName(TitleViewButton, viewText);

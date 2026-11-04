@@ -85,7 +85,7 @@ namespace Flowery.Uno.Photos
             var overhang = default(ScreenOverhang);
             if (GetSafeAppWindow() is { Presenter.Kind: AppWindowPresenterKind.FullScreen } appWindow)
             {
-                var window = new DisplayRect(appWindow.Position.X, appWindow.Position.Y, appWindow.Size.Width, appWindow.Size.Height, false);
+                var window = new RectInt32 { X = appWindow.Position.X, Y = appWindow.Position.Y, Width = appWindow.Size.Width, Height = appWindow.Size.Height };
                 if (PlatformServices.Current.GetMonitorBounds(window) is { } monitor)
                     overhang = ScreenOverhang.Between(window, monitor);
             }

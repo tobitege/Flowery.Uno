@@ -108,9 +108,6 @@ namespace Flowery.Uno.Photos.Views
             {
                 if (child is not FrameworkElement element)
                     continue;
-                // DaisyButton adds its icon when it is loaded, so the measure is repeated then.
-                if (!element.IsLoaded)
-                    element.Loaded += HeroAction_Loaded;
                 element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 needed += element.DesiredSize.Width;
                 count++;
@@ -185,6 +182,8 @@ namespace Flowery.Uno.Photos.Views
             else if (iconData != null)
                 button.IconData = iconData;
             button.Click += (_, _) => onClick();
+            // DaisyButton adds its icon when it is loaded, which makes it wider, so the actions are laid out again then.
+            button.Loaded += HeroAction_Loaded;
             HeroActions.Children.Add(button);
         }
 

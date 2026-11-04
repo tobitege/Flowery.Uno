@@ -31,9 +31,7 @@ namespace Flowery.Uno.RuntimeTests.Controls
         [TestMethod]
         public async Task When_BoundLabelIsRebound_TheIconStaysAndShowsTheNewText()
         {
-            var button = new DaisyButton { IconSymbol = Symbol.NewFolder };
-            button.SetBinding(ContentControl.ContentProperty, new Binding { Path = new PropertyPath(nameof(LabelSource.Label)) });
-            button.DataContext = new LabelSource("Add folder");
+            var button = CreateBoundIconButton("Add folder");
             RuntimeTestHelpers.AttachToHost(button);
             await RuntimeTestHelpers.EnsureLoadedAsync(button);
 
@@ -43,6 +41,34 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await NextDispatcherTurnAsync(button);
 
             AssertIconThenLabel(button, "Ordner hinzufügen");
+        }
+
+        [TestMethod]
+        public async Task When_IconChangesAtRuntime_BoundLabelKeepsUpdating()
+        {
+            var button = CreateBoundIconButton("Add folder");
+            RuntimeTestHelpers.AttachToHost(button);
+            await RuntimeTestHelpers.EnsureLoadedAsync(button);
+
+            button.IconSymbol = Symbol.Folder;
+            button.DataContext = new LabelSource("Ordner hinzufügen");
+            await NextDispatcherTurnAsync(button);
+
+            AssertIconThenLabel(button, "Ordner hinzufügen");
+        }
+
+        [TestMethod]
+        public async Task When_IconIsRemovedAtRuntime_BoundLabelKeepsUpdating()
+        {
+            var button = CreateBoundIconButton("Add folder");
+            RuntimeTestHelpers.AttachToHost(button);
+            await RuntimeTestHelpers.EnsureLoadedAsync(button);
+
+            button.IconSymbol = null;
+            button.DataContext = new LabelSource("Ordner hinzufügen");
+            await NextDispatcherTurnAsync(button);
+
+            Assert.AreEqual("Ordner hinzufügen", button.Content, "Without an icon the bound label should be the plain content again.");
         }
 
         [TestMethod]
@@ -76,6 +102,14 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsNotNull(panel, "The icon layout should still be the button content.");
             Assert.AreEqual(1, panel.Children.Count);
             Assert.IsInstanceOfType<Viewbox>((panel.Children[0] as ContentPresenter)?.Content);
+        }
+
+        private static DaisyButton CreateBoundIconButton(string label)
+        {
+            var button = new DaisyButton { IconSymbol = Symbol.NewFolder };
+            button.SetBinding(ContentControl.ContentProperty, new Binding { Path = new PropertyPath(nameof(LabelSource.Label)) });
+            button.DataContext = new LabelSource(label);
+            return button;
         }
 
         private static Task NextDispatcherTurnAsync(DaisyButton button)

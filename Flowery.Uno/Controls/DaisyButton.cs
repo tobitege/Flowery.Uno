@@ -200,6 +200,23 @@ namespace Flowery.Controls
             }
         }
 
+        /// <summary>
+        /// Receives a binding that targeted Content once the icon layout took Content over, so a bound label (for example a
+        /// localized text) keeps updating next to the icon. On WinUI the icon layout would otherwise replace the binding.
+        /// </summary>
+        private static readonly DependencyProperty IconLabelProperty =
+            DependencyProperty.Register(
+                "IconLabel",
+                typeof(object),
+                typeof(DaisyButton),
+                new PropertyMetadata(null, OnIconLabelChanged));
+
+        private static void OnIconLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DaisyButton { _iconLayoutBuilt: true } button)
+                button.SetIconLabel(e.NewValue);
+        }
+
         #endregion
         protected const string ShadowContainerPartName = "PART_ShadowContainer";
         private bool _isPointerOver;
@@ -426,23 +443,6 @@ namespace Flowery.Controls
                 panel.Children.Add(_textPresenter);
             else
                 panel.Children.Insert(0, _textPresenter);
-        }
-
-        /// <summary>
-        /// Receives a binding that targeted Content once the icon layout took Content over, so a bound label (for example a
-        /// localized text) keeps updating next to the icon. On WinUI the icon layout would otherwise replace the binding.
-        /// </summary>
-        private static readonly DependencyProperty IconLabelProperty =
-            DependencyProperty.Register(
-                "IconLabel",
-                typeof(object),
-                typeof(DaisyButton),
-                new PropertyMetadata(null, OnIconLabelChanged));
-
-        private static void OnIconLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is DaisyButton { _iconLayoutBuilt: true } button)
-                button.SetIconLabel(e.NewValue);
         }
 
         /// <summary>
@@ -935,7 +935,16 @@ namespace Flowery.Controls
             }
 
             if (iconElement == null)
+            {
+                // The icon was removed at runtime: a label binding that moved to IconLabel goes back to Content, where it
+                // keeps updating the plain label.
+                if (GetBindingExpression(IconLabelProperty)?.ParentBinding is { } iconLabelBinding)
+                {
+                    ClearValue(IconLabelProperty);
+                    SetBinding(ContentProperty, iconLabelBinding);
+                }
                 return;
+            }
 
             _iconLayoutBuilt = true;
 

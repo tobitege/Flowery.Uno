@@ -84,7 +84,7 @@ namespace Flowery.Uno.Photos.Services.Platform
 
         public override DisplayGeometry DisplayGeometry => DisplayGeometry.WorkAreaPixels;
 
-        public override DisplayRect? GetMonitorBounds(DisplayRect window) => Native.GetMonitorBounds(window);
+        public override DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window) => Native.GetMonitorBounds(window);
 
         /// <summary>The DWM accent is stored as 0xAABBGGRR.</summary>
         public static SystemAccent ParseAccent(uint abgr) =>
@@ -193,7 +193,7 @@ namespace Flowery.Uno.Photos.Services.Platform
                 return displays;
             }
 
-            public static DisplayRect? GetMonitorBounds(DisplayRect window)
+            public static DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window)
             {
                 try
                 {

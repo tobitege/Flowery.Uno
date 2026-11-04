@@ -36,7 +36,7 @@ namespace Flowery.Uno.Photos.Services.Platform
 
         public virtual DisplayGeometry DisplayGeometry => DisplayGeometry.None;
 
-        public virtual DisplayRect? GetMonitorBounds(DisplayRect window) => null;
+        public virtual DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window) => null;
 
         public Task<bool> CopyBitmapToClipboardAsync(byte[] pngBytes)
         {

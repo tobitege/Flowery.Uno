@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "縮小",
   "Photos_Edited": "編集済み",
   "Photos_LoadFailed": "\"{0}\" を開けませんでした: {1}",
+  "Photos_FormatNotSupported": "サポートされていない形式です",
 
   "Photos_SaveCopy": "コピーを保存",
   "Photos_Save": "保存",

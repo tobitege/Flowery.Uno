@@ -28,7 +28,7 @@ namespace Flowery.Uno.Photos.Editing
 
         /// <summary>
         /// Decodes a file with its EXIF orientation applied. Bitmaps with an edge above <see cref="MaxBitmapEdge"/> are
-        /// downscaled. Throws <see cref="InvalidDataException"/> for files SkiaSharp cannot decode (HEIC, AVIF, TIFF, JXR).
+        /// downscaled. Throws <see cref="UnsupportedFormatException"/> for files SkiaSharp cannot decode (HEIC, AVIF, TIFF, JXR).
         /// The caller owns the bitmap.
         /// </summary>
         public static SKBitmap LoadOriented(string path)
@@ -37,7 +37,7 @@ namespace Flowery.Uno.Photos.Editing
             using (var codec = SKCodec.Create(path))
             {
                 if (codec == null)
-                    throw new InvalidDataException("Format not supported");
+                    throw new UnsupportedFormatException();
 
                 var swap = ThumbnailDecoder.SwapsAxes(codec.EncodedOrigin);
                 var width = swap ? codec.Info.Height : codec.Info.Width;
@@ -48,7 +48,7 @@ namespace Flowery.Uno.Photos.Editing
                     : height;
             }
 
-            return ThumbnailDecoder.Decode(path, targetHeight) ?? throw new InvalidDataException("Format not supported");
+            return ThumbnailDecoder.Decode(path, targetHeight) ?? throw new UnsupportedFormatException();
         }
 
         /// <summary>

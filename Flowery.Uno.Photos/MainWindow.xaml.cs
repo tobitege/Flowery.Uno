@@ -55,7 +55,15 @@ namespace Flowery.Uno.Photos
                 overlapped.Restore();
             }
 
+            // Windows: in full screen the caption buttons of the extended title bar would stay drawn half above the screen edge
+            // and the content would start a few pixels too high, so the extension is given up while full screen lasts.
+            if (UsesExtendedTitleBar && !fullScreen)
+                ExtendsContentIntoTitleBar = true;
+
             appWindow.SetPresenter(fullScreen ? AppWindowPresenterKind.FullScreen : AppWindowPresenterKind.Overlapped);
+
+            if (UsesExtendedTitleBar && fullScreen)
+                ExtendsContentIntoTitleBar = false;
         }
 
         private AppWindow? GetSafeAppWindow()

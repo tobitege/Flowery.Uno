@@ -40,7 +40,7 @@ namespace Flowery.Uno.Photos.Editing
 
         public bool HasSeparatePreview => !ReferenceEquals(Full, Preview);
 
-        /// <summary>Decodes <paramref name="path"/> with its EXIF orientation applied. Throws <see cref="InvalidDataException"/> if it cannot be decoded.</summary>
+        /// <summary>Decodes <paramref name="path"/> with its EXIF orientation applied. Throws <see cref="UnsupportedFormatException"/> if it cannot be decoded.</summary>
         public static LoadedImage Load(string path)
         {
             var full = EditRenderer.LoadOriented(path);

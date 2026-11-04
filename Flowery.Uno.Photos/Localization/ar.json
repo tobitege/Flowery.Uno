@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "تصغير",
   "Photos_Edited": "معدّلة",
   "Photos_LoadFailed": "تعذّر فتح \"{0}\": {1}",
+  "Photos_FormatNotSupported": "التنسيق غير مدعوم",
 
   "Photos_SaveCopy": "حفظ نسخة",
   "Photos_Save": "حفظ",

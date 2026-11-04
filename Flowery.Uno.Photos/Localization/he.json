@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "הקטן",
   "Photos_Edited": "נערכה",
   "Photos_LoadFailed": "לא ניתן לפתוח את \"{0}\": {1}",
+  "Photos_FormatNotSupported": "הפורמט אינו נתמך",
 
   "Photos_SaveCopy": "שמור עותק",
   "Photos_Save": "שמור",

@@ -751,8 +751,9 @@ namespace Flowery.Uno.Photos.Views
             if (items.Count == 0)
                 return;
 
-            // A single external file: browse its siblings like the Windows Photos app does.
-            if (items.Count == 1 && !PhotoLibrary.Instance.IsInLibrary(items[0].Path))
+            // A single file: browse its siblings like the Windows Photos app does, also when the file is already in the library
+            // (opened on its own it would have no previous/next photo and the slideshow would stay on it).
+            if (items.Count == 1)
             {
                 var folder = items[0].FolderPath;
                 try

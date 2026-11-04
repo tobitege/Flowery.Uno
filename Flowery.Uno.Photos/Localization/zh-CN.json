@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "缩小",
   "Photos_Edited": "已编辑",
   "Photos_LoadFailed": "无法打开“{0}”：{1}",
+  "Photos_FormatNotSupported": "不支持的格式",
 
   "Photos_SaveCopy": "保存副本",
   "Photos_Save": "保存",

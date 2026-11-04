@@ -69,9 +69,11 @@ namespace Flowery.Uno.Photos.Views
             var scale = _zoom is { } z && !IsCropMode ? z * sourceToFull : fit;
 
             var pan = IsCropMode ? Vector2.Zero : _pan;
+            // Snap to whole device pixels: a fractional offset blends neighbouring pixels and makes 100 % look soft.
+            var raster = RasterScale;
             var offset = new Vector2(
-                (float)(inset + areaW / 2 + pan.X - imageSize.Width * scale / 2),
-                (float)(inset + areaH / 2 + pan.Y - imageSize.Height * scale / 2));
+                (float)(Math.Round((inset + areaW / 2 + pan.X - imageSize.Width * scale / 2) * raster) / raster),
+                (float)(Math.Round((inset + areaH / 2 + pan.Y - imageSize.Height * scale / 2) * raster) / raster));
 
             transform = new ViewTransform(source, sourceSize, imageSize, scale, offset);
             return true;

@@ -85,8 +85,42 @@ namespace Flowery.Uno.Photos.Views
         private void UpdateHero(PhotoLibrary library, bool hasPhotos, double width)
         {
             HeroActions.Children.Clear();
-            HeroActions.Orientation = width < NarrowWidth ? Orientation.Vertical : Orientation.Horizontal;
+            HeroActions.Orientation = Orientation.Horizontal;
             HeroArt.Visibility = width >= ArtMinWidth ? Visibility.Visible : Visibility.Collapsed;
+            FillHero(library, hasPhotos);
+            LayoutHeroActions(width);
+        }
+
+        /// <summary>
+        /// Stacks the quick actions when their labels (longer in some languages) would not fit next to the illustration.
+        /// </summary>
+        private void LayoutHeroActions(double width)
+        {
+            const double ButtonChrome = 64;
+            const double CharWidth = 8.5;
+            const double Spacing = 8;
+            const double HeroPadding = 64;
+            const double ArtColumn = 250 + 24;
+
+            var needed = 0.0;
+            foreach (var child in HeroActions.Children)
+            {
+                if (child is DaisyButton { Content: string text })
+                    needed += text.Length * CharWidth + ButtonChrome + Spacing;
+            }
+
+            var available = width - HeroPadding - (HeroArt.Visibility == Visibility.Visible ? ArtColumn : 0);
+            var vertical = width < NarrowWidth || needed > available;
+            HeroActions.Orientation = vertical ? Orientation.Vertical : Orientation.Horizontal;
+            foreach (var child in HeroActions.Children)
+            {
+                if (child is FrameworkElement element)
+                    element.HorizontalAlignment = vertical ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
+            }
+        }
+
+        private void FillHero(PhotoLibrary library, bool hasPhotos)
+        {
 
             if (hasPhotos)
             {

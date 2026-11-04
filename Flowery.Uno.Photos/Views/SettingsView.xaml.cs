@@ -17,7 +17,7 @@ namespace Flowery.Uno.Photos.Views
         {
             InitializeComponent();
             LanguageSelect.SelectionChanged += LanguageSelect_SelectionChanged;
-            PhotosLocalization.Instance.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(Refresh);
+            PhotosLocalization.Instance.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(OnLanguageChanged);
             FlowerySizeManager.SizeChanged += (_, _) => DispatcherQueue.TryEnqueue(() =>
             {
                 ApplyScale();
@@ -86,6 +86,17 @@ namespace Flowery.Uno.Photos.Views
             AboutIcon.Width = AboutIcon.Height = 56 * f;
             PageStack.Spacing = 16 * f;
             PageStack.MaxWidth = 860 * f;
+        }
+
+        /// <summary>
+        /// Skia desktop does not refresh every {Binding [Key]} on a language change, so the Localization data context is set again
+        /// (the fallback described in LOCALIZATION.md).
+        /// </summary>
+        private void OnLanguageChanged()
+        {
+            RootScroller.DataContext = null;
+            RootScroller.DataContext = Localization;
+            Refresh();
         }
 
         public void Refresh()

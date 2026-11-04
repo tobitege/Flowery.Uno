@@ -58,7 +58,7 @@ namespace Flowery.Uno.UnitTests.Photos
             var path = Path.Combine(_dir, "photo.heic");
             File.WriteAllBytes(path, [0, 0, 0, 24, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63]);
 
-            Assert.ThrowsExactly<InvalidDataException>(() => LoadedImage.Load(path));
+            Assert.ThrowsExactly<UnsupportedFormatException>(() => LoadedImage.Load(path));
         }
 
         [TestMethod]

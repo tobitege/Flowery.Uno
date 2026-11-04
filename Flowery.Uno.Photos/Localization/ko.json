@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "축소",
   "Photos_Edited": "편집됨",
   "Photos_LoadFailed": "\"{0}\"을(를) 열 수 없습니다: {1}",
+  "Photos_FormatNotSupported": "지원되지 않는 형식입니다",
 
   "Photos_SaveCopy": "사본 저장",
   "Photos_Save": "저장",

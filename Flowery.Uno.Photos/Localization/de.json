@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "Verkleinern",
   "Photos_Edited": "Bearbeitet",
   "Photos_LoadFailed": "\"{0}\" konnte nicht geöffnet werden: {1}",
+  "Photos_FormatNotSupported": "Format wird nicht unterstützt",
 
   "Photos_SaveCopy": "Kopie speichern",
   "Photos_Save": "Speichern",

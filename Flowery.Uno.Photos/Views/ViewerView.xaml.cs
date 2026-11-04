@@ -29,6 +29,7 @@ namespace Flowery.Uno.Photos.Views
         private DispatcherQueueTimer? _slideshowTimer;
         private bool _wasFullScreenBeforeSlideshow;
         private bool _syncingZoom;
+        private PhotoItem? _imageItem;
 
         public ViewerView()
         {
@@ -36,6 +37,21 @@ namespace Flowery.Uno.Photos.Views
             _history.Changed += OnHistoryChanged;
             ZoomRange.RegisterPropertyChangedCallback(DaisyRange.ValueProperty, (_, _) => OnZoomRangeChanged());
             PhotosLocalization.Instance.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(OnLanguageChanged);
+            Loaded += OnLoadedForScale;
+        }
+
+        /// <summary>Moving the window to a screen with another scaling changes the percentages shown, so they are refreshed.</summary>
+        private void OnLoadedForScale(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnLoadedForScale;
+            if (XamlRoot is { } root)
+            {
+                root.Changed += (_, _) =>
+                {
+                    UpdateZoomUi();
+                    Canvas.Invalidate();
+                };
+            }
         }
 
         public PhotosLocalization Localization => PhotosLocalization.Instance;
@@ -138,13 +154,15 @@ namespace Flowery.Uno.Photos.Views
 
                 DisposeImage();
                 _image = loaded;
+                _imageItem = item;
             }
             catch (Exception ex)
             {
                 if (version != _loadVersion)
                     return;
                 DisposeImage();
-                ErrorText.Text = PhotosLocalization.Format("Photos_LoadFailed", item.FileName, ex.Message);
+                var reason = ex is UnsupportedFormatException ? L("Photos_FormatNotSupported") : ex.Message;
+                ErrorText.Text = PhotosLocalization.Format("Photos_LoadFailed", item.FileName, reason);
                 ErrorPanel.Visibility = Visibility.Visible;
             }
             finally
@@ -163,6 +181,7 @@ namespace Flowery.Uno.Photos.Views
         {
             _image?.Dispose();
             _image = null;
+            _imageItem = null;
         }
 
         private void UpdateItemChrome()
@@ -177,9 +196,11 @@ namespace Flowery.Uno.Photos.Views
                 return;
 
             FormatBadge.BadgeContent = item.Extension;
-            var w = _image?.Width ?? Math.Max(0, item.PixelWidth);
-            var h = _image?.Height ?? Math.Max(0, item.PixelHeight);
-            if (State.HasGeometry && _image != null)
+            // While the next photo loads the old image is still shown: its size must not sit next to the new file size.
+            var current = _image != null && ReferenceEquals(_imageItem, item) ? _image : null;
+            var w = current?.Width ?? Math.Max(0, item.PixelWidth);
+            var h = current?.Height ?? Math.Max(0, item.PixelHeight);
+            if (State.HasGeometry && current != null)
             {
                 var output = EditRenderer.GetOutputSize(new Size(w, h), State);
                 DimensionsText.Text = $"{w} × {h} → {output.Width:0} × {output.Height:0}";

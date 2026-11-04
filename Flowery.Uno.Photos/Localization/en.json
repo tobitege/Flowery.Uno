@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "Zoom out",
   "Photos_Edited": "Edited",
   "Photos_LoadFailed": "Couldn't open \"{0}\": {1}",
+  "Photos_FormatNotSupported": "Format not supported",
 
   "Photos_SaveCopy": "Save copy",
   "Photos_Save": "Save",

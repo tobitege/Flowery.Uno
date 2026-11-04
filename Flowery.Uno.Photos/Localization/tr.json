@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "Uzaklaştır",
   "Photos_Edited": "Düzenlendi",
   "Photos_LoadFailed": "\"{0}\" açılamadı: {1}",
+  "Photos_FormatNotSupported": "Biçim desteklenmiyor",
 
   "Photos_SaveCopy": "Kopya kaydet",
   "Photos_Save": "Kaydet",

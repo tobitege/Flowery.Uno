@@ -159,6 +159,7 @@
   "Photos_ZoomOut": "Зменшити",
   "Photos_Edited": "Змінено",
   "Photos_LoadFailed": "Не вдалося відкрити \"{0}\": {1}",
+  "Photos_FormatNotSupported": "Формат не підтримується",
 
   "Photos_SaveCopy": "Зберегти копію",
   "Photos_Save": "Зберегти",

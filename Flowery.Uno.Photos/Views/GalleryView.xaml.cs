@@ -536,15 +536,11 @@ namespace Flowery.Uno.Photos.Views
             if (targets.Count == 1)
             {
                 menu.Items.Add(MenuItem("Photos_Open", Symbol.OpenFile, () => OnTileInvoked(item, false, false)));
-                // Skia: editing arrives in a later phase.
-                if (PhotosShell.EditingAvailable)
+                menu.Items.Add(MenuItem("Photos_Edit", null, async () =>
                 {
-                    menu.Items.Add(MenuItem("Photos_Edit", null, async () =>
-                    {
-                        if (_shell != null)
-                            await _shell.OpenViewerAsync(_items, _items.IndexOf(item), edit: true);
-                    }, Icon("PhotosIconTune")));
-                }
+                    if (_shell != null)
+                        await _shell.OpenViewerAsync(_items, _items.IndexOf(item), edit: true);
+                }, Icon("PhotosIconTune")));
                 menu.Items.Add(new MenuFlyoutSeparator());
             }
 

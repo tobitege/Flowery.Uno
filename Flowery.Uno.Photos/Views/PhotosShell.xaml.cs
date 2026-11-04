@@ -56,9 +56,6 @@ namespace Flowery.Uno.Photos.Views
 
         public static PhotosShell? Current { get; private set; }
 
-        /// <summary>Skia: editing comes after the viewer; the actions that start it stay hidden until then.</summary>
-        public static bool EditingAvailable => false;
-
         public PhotosLocalization Localization => PhotosLocalization.Instance;
 
         public UIElement TitleBarElement => AppTitleBar;

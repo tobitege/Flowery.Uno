@@ -285,28 +285,26 @@ namespace Flowery.Uno.Photos.Views
 
         private void BuildShortcuts()
         {
-            // Skia: the shortcuts that need the editor (marked true) are listed once the editing phase ships it.
-            (string Keys, string TextKey, bool NeedsEditor)[] allShortcuts =
+            (string Keys, string TextKey)[] shortcuts =
             [
-                ("Ctrl+F", "Photos_Shortcut_Search", false),
-                ("Ctrl+,", "Photos_Shortcut_Settings", false),
-                ("Ctrl+A", "Photos_Shortcut_SelectAll", false),
-                ("Ctrl+Wheel", "Photos_Shortcut_ZoomTiles", false),
-                ("← →", "Photos_Shortcut_Navigate", false),
-                ("Ctrl+E", "Photos_Shortcut_Edit", true),
-                ("Ctrl+Z", "Photos_Shortcut_Undo", true),
-                ("Ctrl+Y", "Photos_Shortcut_Redo", true),
-                ("Ctrl+S", "Photos_Shortcut_Save", true),
-                ("+ / −", "Photos_Shortcut_Zoom", false),
-                ("0", "Photos_Shortcut_Fit", false),
-                ("F", "Photos_Shortcut_Favorite", false),
-                ("X", "Photos_Shortcut_SwapColors", true),
-                ("Del", "Photos_Shortcut_Delete", false),
-                ("F5", "Photos_Shortcut_Slideshow", false),
-                ("F11", "Photos_Shortcut_FullScreen", false),
-                ("Esc", "Photos_Shortcut_Back", false)
+                ("Ctrl+F", "Photos_Shortcut_Search"),
+                ("Ctrl+,", "Photos_Shortcut_Settings"),
+                ("Ctrl+A", "Photos_Shortcut_SelectAll"),
+                ("Ctrl+Wheel", "Photos_Shortcut_ZoomTiles"),
+                ("← →", "Photos_Shortcut_Navigate"),
+                ("Ctrl+E", "Photos_Shortcut_Edit"),
+                ("Ctrl+Z", "Photos_Shortcut_Undo"),
+                ("Ctrl+Y", "Photos_Shortcut_Redo"),
+                ("Ctrl+S", "Photos_Shortcut_Save"),
+                ("+ / −", "Photos_Shortcut_Zoom"),
+                ("0", "Photos_Shortcut_Fit"),
+                ("F", "Photos_Shortcut_Favorite"),
+                ("X", "Photos_Shortcut_SwapColors"),
+                ("Del", "Photos_Shortcut_Delete"),
+                ("F5", "Photos_Shortcut_Slideshow"),
+                ("F11", "Photos_Shortcut_FullScreen"),
+                ("Esc", "Photos_Shortcut_Back")
             ];
-            var shortcuts = allShortcuts.Where(s => PhotosShell.EditingAvailable || !s.NeedsEditor).ToArray();
 
             ShortcutsGrid.Children.Clear();
             ShortcutsGrid.RowDefinitions.Clear();

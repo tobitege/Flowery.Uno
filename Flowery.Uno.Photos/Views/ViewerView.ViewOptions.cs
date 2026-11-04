@@ -262,7 +262,11 @@ namespace Flowery.Uno.Photos.Views
 
             using var frame = Fill(Color.FromArgb(235, backgroundColor.R, backgroundColor.G, backgroundColor.B));
             canvas.DrawRoundRect(ToSk(new Rect(thumb.X - 4, thumb.Y - 4, thumb.Width + 8, thumb.Height + 8)), 8, 8, frame);
-            canvas.DrawImage(t.Source, new SKRect(0, 0, t.Source.Width, t.Source.Height), ToSk(thumb), MinifySampling);
+            canvas.Save();
+            canvas.Translate((float)thumb.X, (float)thumb.Y);
+            canvas.Scale((float)(thumb.Width / t.ImageSize.Width), (float)(thumb.Height / t.ImageSize.Height));
+            DrawEdited(canvas, t, DisplayState, MinifySampling);
+            canvas.Restore();
 
             // Dim everything outside the visible viewport.
             using var shade = Fill(Color.FromArgb(110, 0, 0, 0));

@@ -55,6 +55,12 @@ namespace Flowery.Uno.Photos.Editing
             }
         }
 
+        /// <summary>
+        /// A second image on the same pixels for work off the UI thread: it stays valid after this object is disposed.
+        /// <paramref name="image"/> is <see cref="Full"/> or <see cref="Preview"/>. The caller owns the result.
+        /// </summary>
+        public SKImage Share(SKImage image) => SKImage.FromBitmap(ReferenceEquals(image, Full) ? FullBitmap : PreviewBitmap);
+
         public void Dispose()
         {
             if (HasSeparatePreview)

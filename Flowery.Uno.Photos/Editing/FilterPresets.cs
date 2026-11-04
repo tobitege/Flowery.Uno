@@ -94,11 +94,23 @@ namespace Flowery.Uno.Photos.Editing
             return new ColorMatrix(result);
         }
 
-        /// <summary>
-        /// The 20 values in row order (R, G, B, A rows, then the offset row). Skia: replaces Win2D's ToMatrix5x4; phase 5
-        /// turns it into an SKColorFilter.
-        /// </summary>
+        /// <summary>The 20 values in row order (R, G, B, A rows, then the offset row).</summary>
         public float[] ToArray() => [.. _m];
+
+        /// <summary>
+        /// The matrix in the layout of SKColorFilter.CreateColorMatrix. Skia: replaces Win2D's ToMatrix5x4. Win2D has one row
+        /// per input channel and the offsets last; Skia has one row per output channel with its offset as fifth value.
+        /// </summary>
+        public float[] ToSkiaMatrix()
+        {
+            var result = new float[20];
+            for (var output = 0; output < 4; output++)
+            {
+                for (var input = 0; input < 5; input++)
+                    result[output * 5 + input] = this[input, output];
+            }
+            return result;
+        }
     }
 
     public sealed record FilterPreset(string Id, string LocalizationKey, ColorMatrix Matrix);

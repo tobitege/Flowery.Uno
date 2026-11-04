@@ -88,14 +88,9 @@ namespace Flowery.Uno.Photos.Views
             PageStack.MaxWidth = 860 * f;
         }
 
-        /// <summary>
-        /// Skia desktop does not refresh every {Binding [Key]} on a language change, so the Localization data context is set again
-        /// (the fallback described in LOCALIZATION.md).
-        /// </summary>
         private void OnLanguageChanged()
         {
-            RootScroller.DataContext = null;
-            RootScroller.DataContext = Localization;
+            PhotosLocalization.RefreshBindings(RootScroller);
             Refresh();
         }
 

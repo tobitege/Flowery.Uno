@@ -200,6 +200,23 @@ namespace Flowery.Controls
             }
         }
 
+        /// <summary>
+        /// Receives a binding that targeted Content once the icon layout took Content over, so a bound label (for example a
+        /// localized text) keeps updating next to the icon. On WinUI the icon layout would otherwise replace the binding.
+        /// </summary>
+        private static readonly DependencyProperty IconLabelProperty =
+            DependencyProperty.Register(
+                "IconLabel",
+                typeof(object),
+                typeof(DaisyButton),
+                new PropertyMetadata(null, OnIconLabelChanged));
+
+        private static void OnIconLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DaisyButton { _iconLayoutBuilt: true } button)
+                button.SetIconLabel(e.NewValue);
+        }
+
         #endregion
         protected const string ShadowContainerPartName = "PART_ShadowContainer";
         private bool _isPointerOver;
@@ -300,6 +317,9 @@ namespace Flowery.Controls
         private ContentPresenter? _textPresenter;
         private object? _userContent;
         private bool _iconLayoutBuilt;
+        private bool _labelAfterIcon = true;
+        private bool _isSwappingIconLabel;
+        private bool _iconLabelRewrapPending;
         private bool _isStylePending = true;
         private bool _hasAppliedTemplate;
         private bool _isHandlingLoaded;
@@ -362,7 +382,67 @@ namespace Flowery.Controls
         protected override void OnContentChanged(object oldContent, object newContent)
         {
             base.OnContentChanged(oldContent, newContent);
+            if (_iconLayoutBuilt && !_isSwappingIconLabel && _iconContentPanel != null && !ReferenceEquals(newContent, _iconContentPanel)
+                && !_iconLabelRewrapPending)
+            {
+                // Code set a new label after the icon layout took over Content. Without this the label would replace the
+                // icon layout and the icon would be lost. WinUI does not allow setting Content again from this callback,
+                // so the label is moved next to the icon on the next dispatcher turn.
+                _iconLabelRewrapPending = DispatcherQueue?.TryEnqueue(TakeContentAsIconLabel) == true;
+                if (!_iconLabelRewrapPending)
+                    TakeContentAsIconLabel();
+            }
             UpdateMnemonicContentTemplate(newContent);
+        }
+
+        private void TakeContentAsIconLabel()
+        {
+            _iconLabelRewrapPending = false;
+            if (_iconContentPanel is not { } panel || ReferenceEquals(Content, panel))
+                return;
+
+            var label = Content;
+            _isSwappingIconLabel = true;
+            try
+            {
+                // The icon layout first, so a UIElement label is released by the button before the panel takes it.
+                Content = panel;
+            }
+            finally
+            {
+                _isSwappingIconLabel = false;
+            }
+            SetIconLabel(label);
+            UpdateMnemonicContentTemplate(panel);
+        }
+
+        /// <summary>Puts <paramref name="label"/> next to the icon in the icon layout (or removes the label when it is null).</summary>
+        private void SetIconLabel(object? label)
+        {
+            if (_iconContentPanel is not { } panel)
+                return;
+
+            if (_textPresenter != null)
+            {
+                _textPresenter.Content = null;
+                panel.Children.Remove(_textPresenter);
+                _textPresenter = null;
+            }
+
+            _userContent = label;
+            if (label == null)
+                return;
+
+            _textPresenter = new ContentPresenter
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            FloweryMnemonicHelpers.SetPresenterContent(_textPresenter, label);
+            if (_labelAfterIcon)
+                panel.Children.Add(_textPresenter);
+            else
+                panel.Children.Insert(0, _textPresenter);
         }
 
         /// <summary>
@@ -855,13 +935,34 @@ namespace Flowery.Controls
             }
 
             if (iconElement == null)
+            {
+                // The icon was removed at runtime: a label binding that moved to IconLabel goes back to Content, where it
+                // keeps updating the plain label.
+                if (GetBindingExpression(IconLabelProperty)?.ParentBinding is { } iconLabelBinding)
+                {
+                    ClearValue(IconLabelProperty);
+                    SetBinding(ContentProperty, iconLabelBinding);
+                }
                 return;
+            }
 
             _iconLayoutBuilt = true;
 
-            // Capture user content before replacing
+            // Capture user content before replacing. A bound label moves to IconLabel, because the icon layout below replaces
+            // Content (and with it the binding on WinUI); IconLabel then keeps the label next to the icon up to date.
+            var labelBinding = GetBindingExpression(ContentProperty)?.ParentBinding;
             _userContent = Content;
-            Content = null; // Clear Content to avoid parentage issues
+            _isSwappingIconLabel = true;
+            try
+            {
+                if (labelBinding != null)
+                    ClearValue(ContentProperty);
+                Content = null; // Clear Content to avoid parentage issues
+            }
+            finally
+            {
+                _isSwappingIconLabel = false;
+            }
 
             // Get layout settings
             var placement = attachedIcon != null
@@ -901,7 +1002,8 @@ namespace Flowery.Controls
             }
 
             // Add in correct order based on placement
-            if (placement == IconPlacement.Right || placement == IconPlacement.Bottom)
+            _labelAfterIcon = placement != IconPlacement.Right && placement != IconPlacement.Bottom;
+            if (!_labelAfterIcon)
             {
                 if (_textPresenter != null)
                     _iconContentPanel.Children.Add(_textPresenter);
@@ -916,6 +1018,11 @@ namespace Flowery.Controls
 
             // Replace button content with the icon+content panel
             Content = _iconContentPanel;
+
+            if (labelBinding != null)
+                SetBinding(IconLabelProperty, labelBinding);
+            else if (GetBindingExpression(IconLabelProperty) != null)
+                SetIconLabel(GetValue(IconLabelProperty)); // rebuilt layout: the bound label is still the current one
         }
 
         /// <summary>
@@ -928,14 +1035,15 @@ namespace Flowery.Controls
             {
                 _iconContentPanel.Children.Clear();
 
-                // Restore original user content if it was captured
-                if (_userContent != null)
+                // Restore original user content if it was captured (not a new label: the layout is rebuilt around it below)
+                _isSwappingIconLabel = true;
+                try
                 {
                     Content = _userContent;
                 }
-                else
+                finally
                 {
-                    Content = null;
+                    _isSwappingIconLabel = false;
                 }
             }
 

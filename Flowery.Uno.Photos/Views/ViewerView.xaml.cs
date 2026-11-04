@@ -403,11 +403,13 @@ namespace Flowery.Uno.Photos.Views
 
         private void OnLanguageChanged()
         {
+            PhotosLocalization.RefreshBindings(RootGrid);
             BuildMenus();
             UpdateTooltips();
             BuildEditPanel();
             BuildViewPanel();
             UpdateItemChrome();
+            UpdateZoomUi();
             EditedBadge.BadgeContent = L("Photos_Edited");
             if (_panelOpen && _tab == EditTab.Info)
                 _ = RefreshInfoAsync();

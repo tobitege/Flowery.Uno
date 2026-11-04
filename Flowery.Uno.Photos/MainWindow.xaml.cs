@@ -23,7 +23,15 @@ namespace Flowery.Uno.Photos
                 && AppWindowTitleBar.IsCustomizationSupported();
             ExtendsContentIntoTitleBar = UsesExtendedTitleBar;
 
-            GetSafeAppWindow()?.Resize(DefaultSize);
+            if (GetSafeAppWindow() is { } appWindow)
+            {
+                appWindow.Resize(DefaultSize);
+                appWindow.Changed += (_, args) =>
+                {
+                    if (args.DidPresenterChange || args.DidSizeChange || args.DidPositionChange)
+                        UpdateFullScreenInset();
+                };
+            }
 
             Shell.Initialize(this, startupFile);
 
@@ -64,6 +72,26 @@ namespace Flowery.Uno.Photos
 
             if (UsesExtendedTitleBar && fullScreen)
                 ExtendsContentIntoTitleBar = false;
+
+            UpdateFullScreenInset();
+        }
+
+        /// <summary>
+        /// Windows: Uno shows full screen as a maximized window without caption, and that window, client area included, reaches
+        /// past the monitor by the resize border on every side. The shell is inset by that overhang so nothing is cut off.
+        /// </summary>
+        private void UpdateFullScreenInset()
+        {
+            var overhang = default(ScreenOverhang);
+            if (GetSafeAppWindow() is { Presenter.Kind: AppWindowPresenterKind.FullScreen } appWindow)
+            {
+                var window = new RectInt32 { X = appWindow.Position.X, Y = appWindow.Position.Y, Width = appWindow.Size.Width, Height = appWindow.Size.Height };
+                if (PlatformServices.Current.GetMonitorBounds(window) is { } monitor)
+                    overhang = ScreenOverhang.Between(window, monitor);
+            }
+
+            var scale = Shell.XamlRoot?.RasterizationScale ?? 1.0;
+            Shell.Margin = new Thickness(overhang.Left / scale, overhang.Top / scale, overhang.Right / scale, overhang.Bottom / scale);
         }
 
         private AppWindow? GetSafeAppWindow()

@@ -1,0 +1,288 @@
+<UserControl
+    x:Class="Flowery.Uno.Photos.Views.ViewerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls"
+    xmlns:views="using:Flowery.Uno.Photos.Views"
+    IsTabStop="True"
+    UseSystemFocusVisuals="False"
+    KeyDown="ViewerView_KeyDown">
+
+    <Grid x:Name="RootGrid"
+          Background="{ThemeResource DaisyBase200Brush}"
+          RowDefinitions="Auto,*,Auto"
+          DataContext="{x:Bind Localization, Mode=OneWay}">
+
+        <!-- Toolbar -->
+        <Grid x:Name="Toolbar" Padding="8,2,8,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                <!-- Skia: the editing controls (rotate, edit, save, undo/redo, compare, revert, tabs) stay in the tree but are
+                     hidden until the editing phase. -->
+                <daisy:DaisyButton x:Name="RotateButton"
+                                   Visibility="Collapsed"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconRotateRight}" />
+                <daisy:DaisyButton x:Name="FavoriteButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconHeartOutline}"
+                                   Click="FavoriteButton_Click" />
+                <daisy:DaisyButton x:Name="DeleteButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="Delete"
+                                   Click="DeleteButton_Click" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <daisy:DaisyBadge x:Name="EditedBadge"
+                                  Variant="Primary"
+                                  Size="Small"
+                                  VerticalAlignment="Center"
+                                  Visibility="Collapsed" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                <daisy:DaisyButton x:Name="InfoButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconInfo}"
+                                   Click="InfoButton_Click" />
+                <daisy:DaisyButton x:Name="CopyButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="Copy"
+                                   Click="CopyButton_Click" />
+                <daisy:DaisyButton x:Name="SlideshowButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconSlideshow}"
+                                   Click="SlideshowButton_Click" />
+                <daisy:DaisyButton x:Name="FullScreenButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="FullScreen"
+                                   Click="FullScreenButton_Click" />
+                <daisy:DaisyButton x:Name="ViewButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconData="{StaticResource PhotosIconView}">
+                    <daisy:DaisyButton.Flyout>
+                        <Flyout x:Name="ViewFlyout" Placement="BottomEdgeAlignedRight" Opening="ViewFlyout_Opening">
+                            <StackPanel x:Name="ViewPanel" Width="290" Spacing="10" />
+                        </Flyout>
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <daisy:DaisyButton x:Name="MoreButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   IconSymbol="More">
+                    <daisy:DaisyButton.Flyout>
+                        <MenuFlyout x:Name="MoreMenu" Placement="BottomEdgeAlignedRight" Opening="MoreMenu_Opening" />
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <Border x:Name="EditSeparator" Visibility="Collapsed" Width="1" Height="20" Margin="6,0" Opacity="0.25" Background="{ThemeResource DaisyBaseContentBrush}" />
+                <daisy:DaisyButton x:Name="EditButton"
+                                   Visibility="Collapsed"
+                                   Variant="Neutral"
+                                   IconData="{StaticResource PhotosIconTune}"
+                                   Content="{Binding [Photos_Edit]}" />
+                <StackPanel x:Name="SaveGroup" Orientation="Horizontal" Spacing="1" Margin="6,0,0,0" Visibility="Collapsed">
+                    <daisy:DaisyButton x:Name="SaveButton"
+                                       Variant="Primary"
+                                       Content="{Binding [Photos_SaveCopy]}"
+                                       CornerRadius="8,0,0,8" />
+                    <daisy:DaisyButton x:Name="SaveMenuButton"
+                                       Variant="Primary"
+                                       Shape="Square"
+                                       CornerRadius="0,8,8,0"
+                                       IconData="{StaticResource DaisyIconChevronDown}">
+                        <daisy:DaisyButton.Flyout>
+                            <MenuFlyout x:Name="SaveMenu" Placement="BottomEdgeAlignedRight" />
+                        </daisy:DaisyButton.Flyout>
+                    </daisy:DaisyButton>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- Image + edit panel -->
+        <Grid x:Name="MainArea" Grid.Row="1" ColumnDefinitions="*,Auto">
+            <views:CursorGrid x:Name="CanvasHost"
+                  Margin="8,0,8,0"
+                  CornerRadius="12"
+                  Background="{ThemeResource DaisyBase100Brush}"
+                  PointerEntered="CanvasHost_PointerEntered"
+                  PointerExited="CanvasHost_PointerExited"
+                  PointerPressed="Canvas_PointerPressed"
+                  PointerMoved="Canvas_PointerMoved"
+                  PointerReleased="Canvas_PointerReleased"
+                  PointerCanceled="Canvas_PointerReleased"
+                  PointerCaptureLost="Canvas_PointerCaptureLost"
+                  PointerWheelChanged="Canvas_PointerWheelChanged"
+                  DoubleTapped="Canvas_DoubleTapped">
+                <!-- Skia: SKCanvasElement instead of the Win2D CanvasControl. The pointer events sit on the host (above). -->
+                <views:ViewerCanvas x:Name="Canvas"
+                                    Draw="Canvas_Draw"
+                                    SizeChanged="Canvas_SizeChanged" />
+
+                <daisy:DaisyLoading x:Name="LoadingIndicator"
+                                    Size="Large"
+                                    Variant="Spinner"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False"
+                                    Visibility="Collapsed" />
+
+                <StackPanel x:Name="ErrorPanel"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8"
+                            Visibility="Collapsed">
+                    <SymbolIcon Symbol="Important" Foreground="{ThemeResource DaisyErrorBrush}" />
+                    <TextBlock x:Name="ErrorText"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               MaxWidth="420"
+                               Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                </StackPanel>
+
+                <daisy:DaisyButton x:Name="PrevButton"
+                                   Shape="Circle"
+                                   Variant="Neutral"
+                                   IconData="{StaticResource DaisyIconChevronLeft}"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Margin="16,0,0,0"
+                                   Opacity="0"
+                                   Click="PrevButton_Click" />
+                <daisy:DaisyButton x:Name="NextButton"
+                                   Shape="Circle"
+                                   Variant="Neutral"
+                                   IconData="{StaticResource DaisyIconChevronRight}"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   Opacity="0"
+                                   Click="NextButton_Click" />
+
+                <Border x:Name="SlideshowHint"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,24"
+                        Padding="14,6"
+                        CornerRadius="16"
+                        Background="#99000000"
+                        IsHitTestVisible="False"
+                        Visibility="Collapsed">
+                    <TextBlock Text="{Binding [Photos_SlideshowHint]}" Foreground="White" FontSize="13" />
+                </Border>
+            </views:CursorGrid>
+
+            <!-- Edit panel -->
+            <Border x:Name="EditPanel"
+                    Grid.Column="1"
+                    Width="{StaticResource PhotosEditPanelWidth}"
+                    Margin="0,0,8,0"
+                    CornerRadius="12"
+                    Background="{ThemeResource DaisyBase100Brush}"
+                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                    BorderThickness="1"
+                    Visibility="Collapsed">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <!-- Edit history: undo/redo, before/after compare and revert act only on the edits in this panel. -->
+                    <Grid x:Name="EditActions"
+                          Visibility="Collapsed"
+                          Padding="8,8,10,6"
+                          ColumnDefinitions="Auto,Auto,Auto,*,Auto"
+                          ColumnSpacing="2"
+                          BorderBrush="{ThemeResource DaisyBase300Brush}"
+                          BorderThickness="0,0,0,1">
+                        <daisy:DaisyButton x:Name="UndoButton"
+                                           Variant="Ghost"
+                                           Shape="Square"
+                                           IconSymbol="Undo" />
+                        <daisy:DaisyButton x:Name="RedoButton"
+                                           Grid.Column="1"
+                                           Variant="Ghost"
+                                           Shape="Square"
+                                           IconSymbol="Redo" />
+                        <daisy:DaisyButton x:Name="CompareButton"
+                                           Grid.Column="2"
+                                           Margin="6,0,0,0"
+                                           Variant="Ghost"
+                                           Shape="Square"
+                                           IconData="{StaticResource PhotosIconCompare}" />
+                        <daisy:DaisyButton x:Name="RevertButton"
+                                           Grid.Column="4"
+                                           Variant="Primary"
+                                           Content="{Binding [Photos_Revert]}" />
+                    </Grid>
+                    <Grid x:Name="TabBar" Grid.Row="1" Padding="6,8,6,0" Visibility="Collapsed" />
+                    <ScrollViewer Grid.Row="2"
+                                  Padding="14,10,14,16"
+                                  HorizontalScrollMode="Disabled"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <Grid>
+                            <StackPanel x:Name="CropPanel" Spacing="12" Visibility="Collapsed" />
+                            <StackPanel x:Name="AdjustPanel" Spacing="10" Visibility="Collapsed" />
+                            <StackPanel x:Name="FilterPanel" Spacing="12" Visibility="Collapsed" />
+                            <StackPanel x:Name="MarkupPanel" Spacing="12" Visibility="Collapsed" />
+                            <StackPanel x:Name="InfoPanel" Spacing="10" Visibility="Collapsed" />
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status bar -->
+        <Grid x:Name="StatusBar" Grid.Row="2" Padding="16,6,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                <daisy:DaisyBadge x:Name="FormatBadge" Variant="Ghost" Size="Small" VerticalAlignment="Center" />
+                <TextBlock x:Name="DimensionsText" VerticalAlignment="Center" Opacity="0.75" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock x:Name="FileSizeText" VerticalAlignment="Center" Opacity="0.75" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+                <TextBlock x:Name="PositionText" VerticalAlignment="Center" Opacity="0.55" Foreground="{ThemeResource DaisyBaseContentBrush}" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <daisy:DaisyButton x:Name="FitButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   Size="Small"
+                                   IconData="{StaticResource PhotosIconFitScreen}"
+                                   Click="FitButton_Click" />
+                <daisy:DaisyButton x:Name="ZoomPercentButton"
+                                   Variant="Ghost"
+                                   Size="Small"
+                                   MinWidth="64">
+                    <daisy:DaisyButton.Flyout>
+                        <MenuFlyout x:Name="ZoomMenu" Placement="Top" />
+                    </daisy:DaisyButton.Flyout>
+                </daisy:DaisyButton>
+                <daisy:DaisyButton x:Name="ZoomOutButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   Size="Small"
+                                   IconSymbol="ZoomOut"
+                                   Click="ZoomOutButton_Click" />
+                <daisy:DaisyRange x:Name="ZoomRange"
+                                  Width="140"
+                                  Minimum="5"
+                                  Maximum="800"
+                                  Size="ExtraSmall"
+                                  Variant="Primary"
+                                  ShowProgress="True"
+                                  VerticalAlignment="Center" />
+                <daisy:DaisyButton x:Name="ZoomInButton"
+                                   Variant="Ghost"
+                                   Shape="Square"
+                                   Size="Small"
+                                   IconSymbol="ZoomIn"
+                                   Click="ZoomInButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

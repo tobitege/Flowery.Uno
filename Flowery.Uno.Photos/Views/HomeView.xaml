@@ -1,0 +1,123 @@
+<UserControl
+    x:Class="Flowery.Uno.Photos.Views.HomeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:daisy="using:Flowery.Controls">
+
+    <ScrollViewer x:Name="Scroller"
+                  DataContext="{x:Bind Localization, Mode=OneWay}"
+                  HorizontalScrollMode="Disabled"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="Root" Padding="28,20,28,32" Spacing="28">
+
+            <!-- Hero: greeting, library summary, quick actions and a small photo-themed illustration -->
+            <Grid x:Name="Hero"
+                  CornerRadius="16"
+                  BorderThickness="1"
+                  Background="{ThemeResource DaisyBase200Brush}"
+                  BorderBrush="{ThemeResource DaisyBase300Brush}"
+                  SizeChanged="Hero_SizeChanged">
+                <!-- Soft color blobs; they only cross the straight edges, so a rectangular clip keeps the rounded corners clean. -->
+                <Canvas x:Name="HeroBlobs" IsHitTestVisible="False">
+                    <Ellipse x:Name="BlobPrimary" Width="190" Height="190" Fill="{ThemeResource DaisyPrimaryBrush}" Opacity="0.14" />
+                    <Ellipse x:Name="BlobSecondary" Width="150" Height="150" Fill="{ThemeResource DaisySecondaryBrush}" Opacity="0.12" />
+                </Canvas>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" Padding="32,28">
+                    <StackPanel VerticalAlignment="Center" Spacing="6">
+                        <TextBlock x:Name="GreetingText"
+                                   Style="{StaticResource PhotosPageTitleTextStyle}"
+                                   TextTrimming="None"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="SummaryText"
+                                   Opacity="0.75"
+                                   TextWrapping="Wrap"
+                                   Foreground="{ThemeResource DaisyBaseContentBrush}"
+                                   daisy:FlowerySizeManager.ResponsiveFont="Primary" />
+                        <StackPanel x:Name="HeroActions"
+                                    Orientation="Horizontal"
+                                    Spacing="8"
+                                    Margin="0,14,0,0"
+                                    HorizontalAlignment="Left" />
+                    </StackPanel>
+
+                    <Viewbox x:Name="HeroArt"
+                             Grid.Column="1"
+                             Width="250"
+                             Height="176"
+                             VerticalAlignment="Center"
+                             IsHitTestVisible="False">
+                        <Canvas Width="250" Height="176">
+                            <!-- Back photo -->
+                            <Border Canvas.Left="112" Canvas.Top="12" Width="118" Height="90"
+                                    Padding="7" CornerRadius="12" BorderThickness="1.5"
+                                    Background="{ThemeResource DaisyBase100Brush}"
+                                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="9" />
+                                </Border.RenderTransform>
+                                <Grid>
+                                    <Border CornerRadius="7" Background="{ThemeResource DaisySecondaryBrush}" Opacity="0.22" />
+                                    <Viewbox Margin="16,12">
+                                        <Path Data="{StaticResource PhotosIconLandscape}" Fill="{ThemeResource DaisySecondaryBrush}" />
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+
+                            <!-- Front photo -->
+                            <Border Canvas.Left="30" Canvas.Top="38" Width="134" Height="102"
+                                    Padding="7" CornerRadius="12" BorderThickness="1.5"
+                                    Background="{ThemeResource DaisyBase100Brush}"
+                                    BorderBrush="{ThemeResource DaisyBase300Brush}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="-7" />
+                                </Border.RenderTransform>
+                                <Grid>
+                                    <Border CornerRadius="7" Background="{ThemeResource DaisyPrimaryBrush}" Opacity="0.22" />
+                                    <Viewbox Margin="18,14">
+                                        <Path Data="{StaticResource PhotosIconLandscape}" Fill="{ThemeResource DaisyPrimaryBrush}" />
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+
+                            <!-- Camera badge -->
+                            <Grid Canvas.Left="150" Canvas.Top="98" Width="66" Height="66">
+                                <Ellipse Fill="{ThemeResource DaisyPrimaryBrush}"
+                                         Stroke="{ThemeResource DaisyBase200Brush}"
+                                         StrokeThickness="4" />
+                                <Viewbox Margin="18">
+                                    <Path Data="{StaticResource PhotosIconCamera}" Fill="{ThemeResource DaisyPrimaryContentBrush}" />
+                                </Viewbox>
+                            </Grid>
+
+                            <!-- Aperture, heart, sparkle and dots -->
+                            <Grid Canvas.Left="10" Canvas.Top="122" Width="42" Height="42">
+                                <Ellipse Fill="{ThemeResource DaisyAccentBrush}" Opacity="0.2" />
+                                <Viewbox Margin="7">
+                                    <Path Data="{StaticResource PhotosIconAperture}" Fill="{ThemeResource DaisyAccentBrush}" />
+                                </Viewbox>
+                            </Grid>
+                            <Viewbox Canvas.Left="216" Canvas.Top="2" Width="28" Height="28">
+                                <Path Data="{StaticResource PhotosIconHeart}" Fill="{ThemeResource DaisyErrorBrush}" />
+                            </Viewbox>
+                            <Viewbox Canvas.Left="4" Canvas.Top="8" Width="24" Height="24" Opacity="0.85">
+                                <Path Data="{StaticResource PhotosIconAutoFix}" Fill="{ThemeResource DaisyAccentBrush}" />
+                            </Viewbox>
+                            <Ellipse Canvas.Left="234" Canvas.Top="122" Width="9" Height="9" Fill="{ThemeResource DaisyPrimaryBrush}" Opacity="0.5" />
+                            <Ellipse Canvas.Left="98" Canvas.Top="158" Width="7" Height="7" Fill="{ThemeResource DaisySecondaryBrush}" Opacity="0.6" />
+                            <Ellipse Canvas.Left="70" Canvas.Top="14" Width="6" Height="6" Fill="{ThemeResource DaisyAccentBrush}" Opacity="0.6" />
+                        </Canvas>
+                    </Viewbox>
+                </Grid>
+            </Grid>
+
+            <!-- Library statistics (built in code) -->
+            <Grid x:Name="StatsGrid" ColumnSpacing="16" RowSpacing="16" />
+
+            <!-- Recent photos, favorites, folders and albums (built in code) -->
+            <StackPanel x:Name="Sections" Spacing="28" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

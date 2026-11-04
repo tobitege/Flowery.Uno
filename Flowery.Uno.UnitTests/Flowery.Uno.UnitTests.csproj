@@ -32,4 +32,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
   </ItemGroup>
+
+  <!-- Flowery.Uno.Photos is a Skia desktop app: its tests (Photos\) run on the desktop head only. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'desktop'">
+    <ProjectReference Include="..\Flowery.Uno.Photos\Flowery.Uno.Photos.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'desktop'">
+    <Compile Remove="Photos\**" />
+  </ItemGroup>
 </Project>

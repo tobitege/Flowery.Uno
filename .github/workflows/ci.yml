@@ -107,6 +107,34 @@ jobs:
       - name: Build Library
         run: dotnet build Flowery.Uno/Flowery.Uno.csproj -c Release -p:CheckEolWorkloads=false
 
+  unit-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # Restore evaluates the library's Android and WASM targets (and iOS on macOS).
+      - name: Install required workloads
+        run: dotnet workload install android wasm-tools ${{ runner.os == 'macOS' && 'ios' || '' }}
+
+      - name: Install Linux runtime dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1 libgl1 libegl1 fonts-dejavu-core
+
+      # Microsoft.Testing.Platform: `dotnet test` is not supported on the .NET 10 SDK, so the test project is run directly.
+      - name: Run unit tests (Skia desktop)
+        run: dotnet run --project Flowery.Uno.UnitTests -f net10.0-desktop
+
   build-gallery:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}

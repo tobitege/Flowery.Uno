@@ -58,10 +58,6 @@ namespace Flowery.Uno.Photos.Views
 
         public PhotosLocalization Localization => PhotosLocalization.Instance;
 
-        public UIElement TitleBarElement => AppTitleBar;
-
-        public MainWindow? HostWindow => _window;
-
         public PhotosPage CurrentPage => _currentPage;
 
         public void Initialize(MainWindow window, string? startupFile)

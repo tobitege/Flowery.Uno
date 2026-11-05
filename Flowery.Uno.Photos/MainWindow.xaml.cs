@@ -27,11 +27,13 @@ namespace Flowery.Uno.Photos
 
             if (GetSafeAppWindow() is { } appWindow)
             {
-                appWindow.Resize(DefaultSize);
+                RestoreBounds(appWindow);
                 appWindow.Changed += (_, args) =>
                 {
                     if (args.DidPresenterChange || args.DidSizeChange || args.DidPositionChange)
                         UpdateFullScreenInset();
+                    if (!args.DidPresenterChange && (args.DidSizeChange || args.DidPositionChange))
+                        SaveBounds(appWindow);
                 };
                 appWindow.Closing += OnAppWindowClosing;
             }
@@ -96,6 +98,26 @@ namespace Flowery.Uno.Photos
 
             var scale = Shell.XamlRoot?.RasterizationScale ?? 1.0;
             Shell.Margin = new Thickness(overhang.Left / scale, overhang.Top / scale, overhang.Right / scale, overhang.Bottom / scale);
+        }
+
+        /// <summary>Reopens the window with the size it had, where the system places it; see <see cref="WindowPlacement"/>.</summary>
+        private static void RestoreBounds(AppWindow appWindow)
+        {
+            var current = new RectInt32 { X = appWindow.Position.X, Y = appWindow.Position.Y, Width = appWindow.Size.Width, Height = appWindow.Size.Height };
+            var restored = WindowPlacement.Restore(PhotosSettings.LoadWindowBounds(), PlatformServices.Current.GetWorkArea(current));
+            appWindow.Resize(restored is { } r ? new SizeInt32 { Width = r.Width, Height = r.Height } : DefaultSize);
+        }
+
+        /// <summary>
+        /// Remembers the bounds of the normal window (only the size is used when it reopens); maximized and full screen
+        /// bounds are not kept.
+        /// </summary>
+        private static void SaveBounds(AppWindow appWindow)
+        {
+            if (appWindow.Presenter is not OverlappedPresenter { State: OverlappedPresenterState.Restored })
+                return;
+            if (appWindow.Size is { Width: > 0, Height: > 0 } size)
+                PhotosSettings.SaveWindowBounds(new WindowBounds(appWindow.Position.X, appWindow.Position.Y, size.Width, size.Height));
         }
 
         /// <summary>Closing the window with unsaved edits asks first, like closing the viewer.</summary>

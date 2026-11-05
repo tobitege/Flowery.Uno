@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.Graphics;
 
 namespace Flowery.Uno.Photos.Services.Platform
@@ -54,6 +54,12 @@ namespace Flowery.Uno.Photos.Services.Platform
         /// or null when the OS gives no answer. Used to keep full screen content on the screen (Windows).
         /// </summary>
         DisplayRect? GetMonitorBounds(RectInt32 window);
+
+        /// <summary>
+        /// Work area (the monitor without taskbar and docks), in physical pixels, of the monitor nearest to
+        /// <paramref name="window"/>, or null when the OS gives no answer. Keeps a reopened window within the screen (Windows).
+        /// </summary>
+        DisplayRect? GetWorkArea(RectInt32 window);
     }
 
     [Flags]

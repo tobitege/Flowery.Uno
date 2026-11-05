@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Models;
@@ -43,6 +43,8 @@ namespace Flowery.Uno.Photos.Views
         private CancellationTokenSource? _loadCts;
         private string? _loadedKey;
         private bool _hover;
+        // Own ToolTip object: a tap closes it and keeps it shut until the pointer comes back (see OnTapped).
+        private readonly ToolTip _toolTip = new();
 
         public PhotoTile()
         {
@@ -179,7 +181,12 @@ namespace Flowery.Uno.Photos.Views
             _root.Children.Add(_check);
             Content = _root;
 
-            PointerEntered += (_, _) => SetHover(true);
+            ToolTipService.SetToolTip(this, _toolTip);
+            PointerEntered += (_, _) =>
+            {
+                _toolTip.IsEnabled = true;
+                SetHover(true);
+            };
             PointerExited += (_, _) => SetHover(false);
             PointerCanceled += (_, _) => SetHover(false);
             Tapped += OnTapped;
@@ -283,7 +290,7 @@ namespace Flowery.Uno.Photos.Views
             _checkMark.Opacity = selected ? 1 : 0.55;
             _shade.Opacity = _hover || selectionMode ? 1 : 0;
 
-            ToolTipService.SetToolTip(this, BuildTooltip(_item));
+            _toolTip.Content = BuildTooltip(_item);
         }
 
         private static string BuildTooltip(PhotoItem item)
@@ -310,6 +317,10 @@ namespace Flowery.Uno.Photos.Views
             if (_item == null || _host == null)
                 return;
             e.Handled = true;
+            // Skia: the tooltip opened after the tap and stayed over the viewer, which covers the tile, so the tile never
+            // saw the pointer leave. It stays shut until the pointer enters the tile again.
+            _toolTip.IsOpen = false;
+            _toolTip.IsEnabled = false;
             _host.OnTileInvoked(_item, IsKeyDown(VirtualKey.Control), IsKeyDown(VirtualKey.Shift));
         }
 

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -37,6 +37,8 @@ namespace Flowery.Uno.Photos.Services.Platform
         public virtual DisplayGeometry DisplayGeometry => DisplayGeometry.None;
 
         public virtual DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window) => null;
+
+        public virtual DisplayRect? GetWorkArea(Windows.Graphics.RectInt32 window) => null;
 
         public Task<bool> CopyBitmapToClipboardAsync(byte[] pngBytes)
         {

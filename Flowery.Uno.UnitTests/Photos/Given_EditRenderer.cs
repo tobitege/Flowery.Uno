@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Numerics;
 using Flowery.Uno.Photos.Editing;
@@ -322,6 +322,58 @@ namespace Flowery.Uno.UnitTests.Photos
             AssertNear(new SKColor((byte)red, (byte)green, (byte)blue), Pixel(result, 32, 32), tolerance);
         }
 
+        /// <summary>
+        /// Win2D 1.3.2 highlights on flat colors. Saturated colors change much less than a grey of the same luminance, and
+        /// white stays white while light grey darkens.
+        /// </summary>
+        [TestMethod]
+        [DataRow(128, 128, 128, -100.0, 50, 50, 50, 3)]
+        [DataRow(128, 128, 128, 100.0, 184, 184, 184, 3)]
+        [DataRow(248, 248, 248, -100.0, 204, 204, 204, 4)]
+        [DataRow(255, 255, 255, -100.0, 255, 255, 255, 2)]
+        // Two full channels and one empty one are the weakest corner of the fit (the earlier curve was 85 off here).
+        [DataRow(204, 0, 204, -100.0, 197, 0, 197, 14)]
+        [DataRow(204, 0, 204, -50.0, 199, 0, 199, 8)]
+        [DataRow(153, 0, 153, 100.0, 166, 0, 166, 14)]
+        [DataRow(255, 255, 0, -50.0, 205, 206, 0, 8)]
+        [DataRow(255, 0, 0, -100.0, 250, 0, 0, 8)]
+        public void When_HighlightsAreSet_ColorsFollowWin2D(int r, int g, int b, double highlights, int red, int green, int blue, int tolerance)
+        {
+            using var surface = SKSurface.Create(new SKImageInfo(64, 64, SKColorType.Bgra8888, SKAlphaType.Premul));
+            surface.Canvas.Clear(new SKColor((byte)r, (byte)g, (byte)b));
+            using var source = surface.Snapshot();
+
+            using var result = EditRenderer.Render(source, EditState.Original with { Highlights = highlights });
+
+            AssertNear(new SKColor((byte)red, (byte)green, (byte)blue), Pixel(result, 32, 32), tolerance);
+        }
+
+        /// <summary>
+        /// Win2D 1.3.2 vignette on a white photo: the band is measured from each edge in units of the short side, so a wide
+        /// photo darkens its long edges like its short ones, and corners blend the two distances. The steep bands near the
+        /// corners are the least exact part of the fit.
+        /// </summary>
+        [TestMethod]
+        [DataRow(500, 500, 30.0, 0, 250, 50, 4)]
+        [DataRow(500, 500, 30.0, 50, 250, 242, 4)]
+        [DataRow(500, 500, 30.0, 25, 25, 49, 6)]
+        [DataRow(500, 500, 100.0, 0, 250, 124, 4)]
+        [DataRow(500, 500, 100.0, 0, 0, 4, 6)]
+        [DataRow(500, 500, 100.0, 50, 250, 212, 4)]
+        [DataRow(500, 500, 100.0, 25, 25, 41, 6)]
+        [DataRow(500, 500, 100.0, 250, 250, 255, 4)]
+        [DataRow(1200, 400, 100.0, 600, 0, 124, 4)]
+        [DataRow(1200, 400, 100.0, 60, 200, 242, 4)]
+        [DataRow(1200, 400, 30.0, 60, 200, 255, 4)]
+        public void When_VignetteIsSet_TheEdgesFollowWin2D(int width, int height, double vignette, int x, int y, int grey, int tolerance)
+        {
+            using var source = Flat(255, width, height);
+
+            using var result = EditRenderer.Render(source, EditState.Original with { Vignette = vignette });
+
+            AssertNear(new SKColor((byte)grey, (byte)grey, (byte)grey), Pixel(result, x, y), tolerance);
+        }
+
         [TestMethod]
         public void When_BlurredInBands_TheBandEdgesDoNotShow()
         {
@@ -432,7 +484,7 @@ namespace Flowery.Uno.UnitTests.Photos
         [DataRow("a.png", true)]
         [DataRow("a.gif", false)]
         [DataRow("a.bmp", false)]
-        [DataRow("a.webp", false)]
+        [DataRow("a.webp", true)]
         public void When_FormatIsChecked_OnlyEncodableFormatsCanBeReplaced(string path, bool expected)
         {
             Assert.AreEqual(expected, EditRenderer.CanWriteFormat(path));
@@ -445,9 +497,12 @@ namespace Flowery.Uno.UnitTests.Photos
 
             var png = EditRenderer.Encode(source, "a.png", 90);
             var jpeg = EditRenderer.Encode(source, "a.jpg", 90);
+            var webp = EditRenderer.Encode(source, "a.webp", 90);
 
             Assert.AreEqual(0x89, png[0]);
             Assert.AreEqual(0xFF, jpeg[0]);
+            Assert.AreEqual("RIFF", System.Text.Encoding.ASCII.GetString(webp, 0, 4));
+            Assert.AreEqual("WEBP", System.Text.Encoding.ASCII.GetString(webp, 8, 4));
         }
 
         [TestMethod]

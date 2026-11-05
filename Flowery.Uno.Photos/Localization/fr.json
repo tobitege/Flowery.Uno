@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "La molette change de photo (Ctrl+molette pour zoomer)",
   "Photos_Settings_ConfirmDelete": "Demander avant de supprimer",
   "Photos_Settings_SlideshowInterval": "Intervalle du diaporama",
-  "Photos_Settings_JpegQuality": "Qualité JPEG à l'enregistrement",
+  "Photos_Settings_JpegQuality": "Qualité JPEG/WebP à l'enregistrement",
   "Photos_SecondsFormat": "{0:0} s",
   "Photos_Settings_Shortcuts": "Raccourcis clavier",
   "Photos_Settings_AboutText": "Une visionneuse et un éditeur de photos rapides, conçus avec les contrôles Daisy de Flowery.WinUI, Win2D et WinUI 3.",

@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Models;
@@ -77,9 +77,11 @@ namespace Flowery.Uno.Photos.Views
             ApplyChromeLayout();
         }
 
+        /// <summary>The window is closing: stops the slideshow timer and frees the image, without touching the window chrome.</summary>
         public void Shutdown()
         {
-            StopSlideshow();
+            _slideshow = false;
+            _slideshowTimer?.Stop();
             DisposeImage();
         }
 
@@ -101,10 +103,6 @@ namespace Flowery.Uno.Photos.Views
             if (!await ConfirmDiscardAsync())
                 return;
 
-            MoreMenu.Items.Add(MenuItem("Photos_RotateLeft", null, () => Rotate(-1), Icon("PhotosIconRotateLeft")));
-            MoreMenu.Items.Add(MenuItem("Photos_RotateRight", null, () => Rotate(1), Icon("PhotosIconRotateRight")));
-            MoreMenu.Items.Add(new MenuFlyoutSeparator());
-
             StopSlideshow();
             if (_immersive)
                 SetImmersive(false);
@@ -116,7 +114,10 @@ namespace Flowery.Uno.Photos.Views
             Closed?.Invoke(this, last);
         }
 
-        private async Task<bool> ConfirmDiscardAsync()
+        public bool HasUnsavedEdits => State.HasChanges;
+
+        /// <summary>Asks whether to save the edits as a copy or discard them; true when nothing is left to lose.</summary>
+        public async Task<bool> ConfirmDiscardAsync()
         {
             if (!State.HasChanges || _shell == null)
                 return true;
@@ -276,8 +277,12 @@ namespace Flowery.Uno.Photos.Views
 
         private void RevertButton_Click(object sender, RoutedEventArgs e)
         {
+            // Revert starts over, without the aspect lock the crop had.
+            _cropAspect = default;
             if (State.HasChanges)
                 ApplyState(EditState.Original);
+            else
+                SyncPanelsFromState();
         }
 
         private void UndoButton_Click(object sender, RoutedEventArgs e) => _history.Undo();
@@ -393,6 +398,10 @@ namespace Flowery.Uno.Photos.Views
             MoreMenu.Items.Clear();
             if (Current is not { } item)
                 return;
+
+            MoreMenu.Items.Add(MenuItem("Photos_RotateLeft", null, () => Rotate(-1), Icon("PhotosIconRotateLeft")));
+            MoreMenu.Items.Add(MenuItem("Photos_RotateRight", null, () => Rotate(1), Icon("PhotosIconRotateRight")));
+            MoreMenu.Items.Add(new MenuFlyoutSeparator());
 
             var albumMenu = new MenuFlyoutSubItem { Text = L("Photos_AddToAlbum"), Icon = new SymbolIcon(Symbol.Library) };
             albumMenu.Items.Add(MenuItem("Photos_NewAlbum", Symbol.Add, async () =>
@@ -553,16 +562,17 @@ namespace Flowery.Uno.Photos.Views
 
                 var state = State;
                 var quality = PhotosSettings.JpegQuality;
+                var sourcePath = item.Path;
                 using var source = _image.Share(_image.Full);
                 var bytes = await Task.Run(() =>
                 {
                     using var final = EditRenderer.RenderFinal(source, state);
-                    return EditRenderer.Encode(final, destination, quality);
+                    var encoded = EditRenderer.Encode(final, destination, quality);
+                    // Read before the original is replaced: camera, date and GPS stay with the edited JPEG.
+                    return ExifTransfer.CarryOver(sourcePath, destination, encoded, final.Width, final.Height);
                 });
 
-                var temp = destination + ".saving";
-                await File.WriteAllBytesAsync(temp, bytes);
-                File.Move(temp, destination, overwrite: true);
+                await FileOperations.WriteFileSafelyAsync(destination, bytes);
 
                 _history.Reset();
                 var saved = PhotoLibrary.Instance.Refresh(destination) ?? PhotoLibrary.Instance.GetOrCreateItem(destination);

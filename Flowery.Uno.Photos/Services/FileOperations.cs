@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Flowery.Uno.Photos.Services.Platform;
 
@@ -27,6 +27,38 @@ namespace Flowery.Uno.Photos.Services
                     return candidate;
             }
             return System.IO.Path.Combine(dir, $"{name} ({Guid.NewGuid():N}){ext}");
+        }
+
+        /// <summary>
+        /// Writes <paramref name="bytes"/> to a temporary file next to <paramref name="destination"/> and moves it into place,
+        /// so a failed write never leaves a half-written photo. When the write or the move fails, the temporary file is
+        /// removed and the exception is passed on.
+        /// </summary>
+        public static async Task WriteFileSafelyAsync(string destination, byte[] bytes)
+        {
+            var temp = destination + ".saving";
+            try
+            {
+                await File.WriteAllBytesAsync(temp, bytes);
+                File.Move(temp, destination, overwrite: true);
+            }
+            catch
+            {
+                DeleteQuietly(temp);
+                throw;
+            }
+        }
+
+        private static void DeleteQuietly(string path)
+        {
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // The error of the save matters more than a leftover temporary file.
+            }
         }
 
         /// <summary>

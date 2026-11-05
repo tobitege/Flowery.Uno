@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "Fare tekerleği fotoğraf değiştirir (Ctrl+tekerlek yakınlaştırır)",
   "Photos_Settings_ConfirmDelete": "Silmeden önce sor",
   "Photos_Settings_SlideshowInterval": "Slayt gösterisi aralığı",
-  "Photos_Settings_JpegQuality": "Kaydederken JPEG kalitesi",
+  "Photos_Settings_JpegQuality": "Kaydederken JPEG/WebP kalitesi",
   "Photos_SecondsFormat": "{0:0} sn",
   "Photos_Settings_Shortcuts": "Klavye kısayolları",
   "Photos_Settings_AboutText": "Flowery.WinUI Daisy denetimleri, Win2D ve WinUI 3 ile oluşturulmuş hızlı bir fotoğraf görüntüleyici ve düzenleyici.",

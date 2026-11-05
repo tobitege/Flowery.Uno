@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using Flowery.Services;
 using Flowery.Theming;
@@ -44,7 +44,8 @@ namespace Flowery.Helpers
     }
 
     /// <summary>
-    /// WinForms-style mnemonic parsing helpers (<c>&amp;</c> marks the access character, <c>&amp;&amp;</c> is a literal <c>&amp;</c>).
+    /// WinForms-style mnemonic parsing helpers (<c>&amp;</c> marks the access character, <c>&amp;&amp;</c> is a literal <c>&amp;</c>,
+    /// and an <c>&amp;</c> before whitespace stays literal, so "Crop &amp; rotate" needs no escaping).
     /// Display-only: applications must implement their own Alt+key handling.
     /// </summary>
     public static class FloweryMnemonicHelpers
@@ -110,6 +111,13 @@ namespace Flowery.Helpers
                 {
                     builder.Append('&');
                     i++;
+                    continue;
+                }
+
+                if (char.IsWhiteSpace(next))
+                {
+                    // "Crop & rotate": an '&' before whitespace cannot mark an access key, so it stays literal.
+                    builder.Append('&');
                     continue;
                 }
 

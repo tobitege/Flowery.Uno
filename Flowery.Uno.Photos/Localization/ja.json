@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "マウス ホイールで写真を切り替える (Ctrl+ホイールでズーム)",
   "Photos_Settings_ConfirmDelete": "削除する前に確認する",
   "Photos_Settings_SlideshowInterval": "スライドショーの間隔",
-  "Photos_Settings_JpegQuality": "保存時の JPEG 品質",
+  "Photos_Settings_JpegQuality": "保存時の JPEG/WebP 品質",
   "Photos_SecondsFormat": "{0:0} 秒",
   "Photos_Settings_Shortcuts": "キーボード ショートカット",
   "Photos_Settings_AboutText": "Flowery.WinUI Daisy コントロール、Win2D、WinUI 3 で構築された高速な写真ビューアー兼エディターです。",

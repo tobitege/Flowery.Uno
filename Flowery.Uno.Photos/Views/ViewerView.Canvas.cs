@@ -1,4 +1,4 @@
-using Flowery.Uno.Photos.Editing;
+﻿using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Services;
 using Microsoft.UI.Input;
 using SkiaSharp;
@@ -33,7 +33,7 @@ namespace Flowery.Uno.Photos.Views
         private CropHandle _cropHandle;
         private Rect _cropStart;
         private Rect? _liveCrop;
-        private double? _cropAspect;
+        private CropAspectLock _cropAspect;
         private List<Vector2>? _currentStroke;
         private Color _penColor = Color.FromArgb(255, 239, 68, 68);
         private Color _currentStrokeColor;
@@ -120,6 +120,8 @@ namespace Flowery.Uno.Photos.Views
             _pan = Vector2.Zero;
             _liveCrop = null;
             _currentStroke = null;
+            // The aspect lock belongs to the photo it was chosen for.
+            _cropAspect = default;
         }
 
         private void ZoomToFit()
@@ -494,82 +496,82 @@ namespace Flowery.Uno.Photos.Views
             var point = e.GetCurrentPoint(Canvas);
             var p = point.Position;
             _pointerStart = p;
+            var right = point.Properties.IsRightButtonPressed;
 
-            if ((point.Properties.IsLeftButtonPressed || point.Properties.IsRightButtonPressed) && IsEyedropperActive)
-            {
-                // Left click picks the primary color, right click the secondary color.
-                if (SampleColor(t, p) is { } sampled)
-                {
-                    if (point.Properties.IsRightButtonPressed)
-                        SetSecondaryColor(sampled);
-                    else
-                        SetPenColor(sampled);
-                    SetEyedropper(false);
-                }
-                e.Handled = true;
-                return;
-            }
+            var press = ViewerMath.ChoosePress(new CanvasPressInput(
+                Left: point.Properties.IsLeftButtonPressed,
+                Right: right,
+                Middle: point.Properties.IsMiddleButtonPressed,
+                Eyedropper: IsEyedropperActive,
+                OnNavigator: IsInNavigator(t, p),
+                CropMode: IsCropMode,
+                OnSplitHandle: IsOnSplitHandle(t, p),
+                MarkupMode: IsMarkupMode,
+                ImageLargerThanView: t.ScreenRect.Width > Canvas.ActualWidth || t.ScreenRect.Height > Canvas.ActualHeight));
 
-            if (point.Properties.IsLeftButtonPressed && IsInNavigator(t, p))
+            switch (press)
             {
-                _draggingNavigator = CanvasHost.CapturePointer(e.Pointer);
-                PanFromNavigator(t, p);
-                e.Handled = true;
-                return;
-            }
-
-            if (point.Properties.IsLeftButtonPressed && IsCropMode)
-            {
-                _cropHandle = CropMath.HitTest(t.ScreenRect, State.Crop, p);
-                if (_cropHandle != CropHandle.None)
-                {
-                    _cropStart = State.Crop;
-                    _liveCrop = State.Crop;
-                    CanvasHost.CapturePointer(e.Pointer);
+                case CanvasPress.PickColor:
+                    // Left click picks the primary color, right click the secondary color.
+                    if (SampleColor(t, p) is { } sampled)
+                    {
+                        if (right)
+                            SetSecondaryColor(sampled);
+                        else
+                            SetPenColor(sampled);
+                        SetEyedropper(false);
+                    }
                     e.Handled = true;
-                }
-                return;
-            }
+                    break;
 
-            if ((point.Properties.IsLeftButtonPressed || point.Properties.IsRightButtonPressed) && IsMarkupMode)
-            {
-                if (ScreenToTransformedNormalized(t, p) is { } n)
-                {
-                    // Like Paint Shop Pro: the right mouse button draws with the secondary color.
-                    _currentStrokeColor = point.Properties.IsRightButtonPressed ? _secondaryColor : _penColor;
-                    _currentStroke = [n];
-                    CanvasHost.CapturePointer(e.Pointer);
-                    Canvas.Invalidate();
+                case CanvasPress.Navigator:
+                    _draggingNavigator = CanvasHost.CapturePointer(e.Pointer);
+                    PanFromNavigator(t, p);
                     e.Handled = true;
-                }
-                return;
-            }
+                    break;
 
-            if (point.Properties.IsLeftButtonPressed && _compareSplit)
-            {
-                var splitX = t.ScreenRect.X + t.ScreenRect.Width * _split;
-                if (Math.Abs(p.X - splitX) < 20)
-                {
+                case CanvasPress.Crop:
+                    _cropHandle = CropMath.HitTest(t.ScreenRect, State.Crop, p);
+                    if (_cropHandle != CropHandle.None)
+                    {
+                        _cropStart = State.Crop;
+                        _liveCrop = State.Crop;
+                        CanvasHost.CapturePointer(e.Pointer);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case CanvasPress.Split:
                     _draggingSplit = true;
                     CanvasHost.CapturePointer(e.Pointer);
                     e.Handled = true;
-                    return;
-                }
-            }
+                    break;
 
-            if (point.Properties.IsLeftButtonPressed || point.Properties.IsMiddleButtonPressed)
-            {
-                var r = t.ScreenRect;
-                if (r.Width > Canvas.ActualWidth || r.Height > Canvas.ActualHeight)
-                {
+                case CanvasPress.Markup:
+                    if (ScreenToTransformedNormalized(t, p) is { } n)
+                    {
+                        // Like Paint Shop Pro: the right mouse button draws with the secondary color.
+                        _currentStrokeColor = right ? _secondaryColor : _penColor;
+                        _currentStroke = [n];
+                        CanvasHost.CapturePointer(e.Pointer);
+                        Canvas.Invalidate();
+                        e.Handled = true;
+                    }
+                    break;
+
+                case CanvasPress.Pan:
                     _panning = true;
                     _panStart = _pan;
                     CanvasHost.CapturePointer(e.Pointer);
                     CanvasHost.SetCursor(InputSystemCursorShape.SizeAll);
                     e.Handled = true;
-                }
+                    break;
             }
         }
+
+        /// <summary>Whether <paramref name="p"/> is on the before/after divider; false while the split is not shown.</summary>
+        private bool IsOnSplitHandle(ViewTransform t, Point p) =>
+            _compareSplit && !IsCropMode && ViewerMath.IsOnSplitHandle(t.ScreenRect.X, t.ScreenRect.Width, _split, p.X);
 
         private void Canvas_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
@@ -590,7 +592,7 @@ namespace Flowery.Uno.Photos.Views
             {
                 var dx = (p.X - _pointerStart.X) / t.ScreenRect.Width;
                 var dy = (p.Y - _pointerStart.Y) / t.ScreenRect.Height;
-                _liveCrop = CropMath.Resize(_cropStart, _cropHandle, dx, dy, t.ImageSize, _cropAspect);
+                _liveCrop = CropMath.Resize(_cropStart, _cropHandle, dx, dy, t.ImageSize, _cropAspect.AspectAt(State.Rotation));
                 Canvas.Invalidate();
                 return;
             }
@@ -643,13 +645,14 @@ namespace Flowery.Uno.Photos.Views
                     _ => InputSystemCursorShape.Arrow
                 };
             }
+            else if (IsOnSplitHandle(t, p))
+            {
+                // Same order as a press: the divider before drawing.
+                shape = InputSystemCursorShape.SizeWestEast;
+            }
             else if (IsMarkupMode)
             {
                 shape = InputSystemCursorShape.Cross;
-            }
-            else if (_compareSplit && Math.Abs(p.X - (t.ScreenRect.X + t.ScreenRect.Width * _split)) < 20)
-            {
-                shape = InputSystemCursorShape.SizeWestEast;
             }
             else if (t.ScreenRect.Width > Canvas.ActualWidth || t.ScreenRect.Height > Canvas.ActualHeight)
             {

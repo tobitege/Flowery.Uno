@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "Mouse wheel switches photos (Ctrl+wheel zooms)",
   "Photos_Settings_ConfirmDelete": "Ask before deleting",
   "Photos_Settings_SlideshowInterval": "Slideshow interval",
-  "Photos_Settings_JpegQuality": "JPEG quality when saving",
+  "Photos_Settings_JpegQuality": "JPEG/WebP quality when saving",
   "Photos_SecondsFormat": "{0:0} s",
   "Photos_Settings_Shortcuts": "Keyboard shortcuts",
   "Photos_Settings_AboutText": "A fast photo viewer and editor built with Flowery.WinUI Daisy controls, Win2D and WinUI 3.",

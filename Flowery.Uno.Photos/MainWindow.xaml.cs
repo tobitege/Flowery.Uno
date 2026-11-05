@@ -1,5 +1,6 @@
-using Flowery.Uno.Photos.Services;
+﻿using Flowery.Uno.Photos.Services;
 using Flowery.Uno.Photos.Services.Platform;
+using Flowery.Uno.Photos.Views;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
 using Windows.UI.Core;
@@ -9,6 +10,7 @@ namespace Flowery.Uno.Photos
     public sealed partial class MainWindow : Window
     {
         private static readonly SizeInt32 DefaultSize = new() { Width = 1280, Height = 800 };
+        private readonly WindowCloseGuard _closeGuard = new();
 
         public MainWindow(string? startupFile)
         {
@@ -31,9 +33,11 @@ namespace Flowery.Uno.Photos
                     if (args.DidPresenterChange || args.DidSizeChange || args.DidPositionChange)
                         UpdateFullScreenInset();
                 };
+                appWindow.Closing += OnAppWindowClosing;
             }
 
             Shell.Initialize(this, startupFile);
+            Closed += (_, _) => Shell.Shutdown();
 
             WindowsAccent.Initialize(DispatcherQueue);
             Activated += (_, args) =>
@@ -92,6 +96,38 @@ namespace Flowery.Uno.Photos
 
             var scale = Shell.XamlRoot?.RasterizationScale ?? 1.0;
             Shell.Margin = new Thickness(overhang.Left / scale, overhang.Top / scale, overhang.Right / scale, overhang.Bottom / scale);
+        }
+
+        /// <summary>Closing the window with unsaved edits asks first, like closing the viewer.</summary>
+        private void OnAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
+        {
+            switch (_closeGuard.OnClosing(Shell.HasUnsavedEdits))
+            {
+                case CloseDecision.Cancel:
+                    args.Cancel = true;
+                    break;
+                case CloseDecision.CancelAndAsk:
+                    args.Cancel = true;
+                    DispatcherQueue.TryEnqueue(AskBeforeClosing);
+                    break;
+            }
+        }
+
+        private async void AskBeforeClosing()
+        {
+            bool close;
+            try
+            {
+                close = await Shell.ConfirmDiscardEditsAsync();
+            }
+            catch (Exception ex)
+            {
+                // An event handler must not end the app; with the edits in doubt the window stays open.
+                System.Diagnostics.Debug.WriteLine(ex);
+                close = false;
+            }
+            if (_closeGuard.OnAnswer(close))
+                Close();
         }
 
         private AppWindow? GetSafeAppWindow()

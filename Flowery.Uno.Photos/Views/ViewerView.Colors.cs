@@ -1,4 +1,4 @@
-using Flowery.Controls.ColorPicker;
+﻿using Flowery.Controls.ColorPicker;
 using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Services;
@@ -206,6 +206,7 @@ namespace Flowery.Uno.Photos.Views
             ]));
 
             content.Children.Add(Caption("Photos_Palette"));
+            // The palette actions have the longest labels ("Effacer les couleurs personnalisées"): one per row, so none is cut off.
             content.Children.Add(ButtonGrid(
             [
                 ("Photos_Palette_Extract", ExtractPaletteFromPhoto),
@@ -213,7 +214,7 @@ namespace Flowery.Uno.Photos.Views
                 ("Photos_Palette_Import", () => _ = ImportPaletteAsync()),
                 ("Photos_Palette_Export", () => _ = ExportPaletteAsync()),
                 ("Photos_Palette_Clear", ClearCustomColors)
-            ]));
+            ], columns: 1));
 
             content.Children.Add(Caption("Photos_ColorEditor"));
             _colorWheel = new DaisyColorWheel
@@ -259,14 +260,14 @@ namespace Flowery.Uno.Photos.Views
             };
         }
 
-        private static Grid ButtonGrid(IReadOnlyList<(string Key, Action Action)> items)
+        private static Grid ButtonGrid(IReadOnlyList<(string Key, Action Action)> items, int columns = 2)
         {
             var grid = new Grid { ColumnSpacing = 6, RowSpacing = 6 };
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            for (var c = 0; c < columns; c++)
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             for (var i = 0; i < items.Count; i++)
             {
-                if (i % 2 == 0)
+                if (i % columns == 0)
                     grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 var (key, action) = items[i];
                 var button = new DaisyButton
@@ -278,8 +279,8 @@ namespace Flowery.Uno.Photos.Views
                 };
                 Tip(button, L(key));
                 button.Click += (_, _) => action();
-                Grid.SetRow(button, i / 2);
-                Grid.SetColumn(button, i % 2);
+                Grid.SetRow(button, i / columns);
+                Grid.SetColumn(button, i % columns);
                 grid.Children.Add(button);
             }
             return grid;

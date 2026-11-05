@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Flowery.Uno.Photos.Editing.Effects;
 using Flowery.Uno.Photos.Services;
 using SkiaSharp;
@@ -169,17 +169,21 @@ namespace Flowery.Uno.Photos.Editing
         }
 
         /// <summary>The encoder for a file name; everything that is not PNG is written as JPEG.</summary>
-        public static SKEncodedImageFormat GetFormatForPath(string path) =>
-            System.IO.Path.GetExtension(path).ToLowerInvariant() == ".png" ? SKEncodedImageFormat.Png : SKEncodedImageFormat.Jpeg;
+        public static SKEncodedImageFormat GetFormatForPath(string path) => System.IO.Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".png" => SKEncodedImageFormat.Png,
+            ".webp" => SKEncodedImageFormat.Webp,
+            _ => SKEncodedImageFormat.Jpeg
+        };
 
         /// <summary>
         /// True if the format can be written back; otherwise edits are saved as JPEG copies.
-        /// Skia: SkiaSharp cannot encode BMP, GIF, TIFF and JPEG XR, which Win2D could.
+        /// Skia: SkiaSharp cannot encode BMP, GIF, TIFF and JPEG XR, which Win2D could, but it writes WebP, which Win2D could not.
         /// </summary>
         public static bool CanWriteFormat(string path) =>
-            System.IO.Path.GetExtension(path).ToLowerInvariant() is ".jpg" or ".jpeg" or ".jpe" or ".jfif" or ".png";
+            System.IO.Path.GetExtension(path).ToLowerInvariant() is ".jpg" or ".jpeg" or ".jpe" or ".jfif" or ".png" or ".webp";
 
-        /// <summary>Encodes for <paramref name="path"/>; <paramref name="quality"/> (0 to 100) applies to JPEG.</summary>
+        /// <summary>Encodes for <paramref name="path"/>; <paramref name="quality"/> (0 to 100) applies to JPEG and WebP.</summary>
         public static byte[] Encode(SKImage image, string path, int quality)
         {
             using var data = image.Encode(GetFormatForPath(path), quality)

@@ -1,4 +1,4 @@
-using Flowery.Uno.Photos.Editing;
+﻿using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Services;
 using static Flowery.Uno.Photos.Views.UiHelpers;
@@ -228,7 +228,7 @@ namespace Flowery.Uno.Photos.Views
 
                 foreach (var (aspect, button) in _aspectButtons)
                 {
-                    var active = Nullable.Equals(aspect, _cropAspect);
+                    var active = _cropAspect.IsSelected(aspect, state.Rotation);
                     button.Variant = active ? DaisyButtonVariant.Primary : DaisyButtonVariant.Neutral;
                     button.ButtonStyle = DaisyButtonStyle.Default;
                 }
@@ -300,7 +300,7 @@ namespace Flowery.Uno.Photos.Views
             (double? Aspect, string Label)[] presets =
             [
                 (null, L("Photos_AspectFree")),
-                (-1, L("Photos_AspectOriginal")),
+                (CropAspectLock.OriginalPreset, L("Photos_AspectOriginal")),
                 (1, "1:1"),
                 (4.0 / 3, "4:3"),
                 (3.0 / 4, "3:4"),
@@ -335,7 +335,7 @@ namespace Flowery.Uno.Photos.Views
             };
             reset.Click += (_, _) =>
             {
-                _cropAspect = null;
+                _cropAspect = default;
                 ApplyState(State.ResetGeometry() with { Strokes = State.Strokes });
             };
             CropPanel.Children.Add(reset);
@@ -350,17 +350,18 @@ namespace Flowery.Uno.Photos.Views
             });
         }
 
-        private void SetCropAspect(double? aspect)
+        private void SetCropAspect(double? preset)
         {
             if (_image == null)
                 return;
-            if (aspect is < 0)
+            var aspect = preset;
+            if (preset == CropAspectLock.OriginalPreset)
             {
                 // Original: aspect of the transformed source.
                 var t = EditRenderer.GetTransformedSize(new Size(_image.Width, _image.Height), State);
                 aspect = t.Width / t.Height;
             }
-            _cropAspect = aspect;
+            _cropAspect = new CropAspectLock(preset, aspect, State.Rotation);
             if (aspect != null)
                 ApplyState(State with { Crop = CreateAspectCrop(aspect) });
             SyncPanelsFromState();

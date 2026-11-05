@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "גלגל העכבר מחליף תמונות (Ctrl+גלגל לזום)",
   "Photos_Settings_ConfirmDelete": "שאל לפני מחיקה",
   "Photos_Settings_SlideshowInterval": "מרווח זמן במצגת",
-  "Photos_Settings_JpegQuality": "איכות JPEG בשמירה",
+  "Photos_Settings_JpegQuality": "איכות JPEG/WebP בשמירה",
   "Photos_SecondsFormat": "{0:0} שנ'",
   "Photos_Settings_Shortcuts": "קיצורי מקשים",
   "Photos_Settings_AboutText": "מציג ועורך תמונות מהיר שנבנה עם פקדי Daisy של Flowery.WinUI, Win2D ו-WinUI 3.",

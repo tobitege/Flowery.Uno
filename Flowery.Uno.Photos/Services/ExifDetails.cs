@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Text;
 
 namespace Flowery.Uno.Photos.Services
@@ -31,9 +31,22 @@ namespace Flowery.Uno.Photos.Services
         {
             try
             {
+                return ReadTiff(path) is { } tiff ? Parse(tiff) : null;
+            }
+            catch (ArgumentException)
+            {
+                // A broken offset inside the block.
+                return null;
+            }
+        }
+
+        /// <summary>The TIFF part of the Exif APP1 segment of a JPEG, or null. Never throws for unreadable files.</summary>
+        internal static byte[]? ReadTiff(string path)
+        {
+            try
+            {
                 using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                var tiff = FindExifSegment(fs);
-                return tiff == null ? null : Parse(tiff);
+                return FindExifSegment(fs);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
             {

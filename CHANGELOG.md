@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - 2026-11-04
+## [1.6.0] - 2026-11-05
 
 - **Breaking:** Kanban: removed the user-provider API that the board no longer used since 1.5.0, as Flowery.NET did: the
   `FlowKanbanUserManagement` control (with `FlowKanbanProviderSummary`, `FlowKanbanUserItem`, its GitHub connect,
@@ -78,6 +78,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DaisyButton` with an icon (`IconSymbol`, `IconData` or the attached `Icon`) keeps it when its label changes after it
   was loaded, for example through a binding that refreshes after a language change. The new label replaced the icon
   layout, so only the text was left.
+- `DaisyButton` gives screen readers its label as name when `AutomationProperties.Name` is not set, also when the label
+  sits next to an icon, and without `&` markers. With an icon the button had no name at all, because its content is
+  then the icon layout panel.
+- Mnemonics: an `&` before whitespace stays literal, so labels such as "Crop & rotate" need no `&&`. It made the space
+  the access character and dropped the `&` (`FloweryMnemonicHelpers.Parse`, used by `DaisyButton`, `DaisyTabs`,
+  `DaisyMenuItem`, `DaisyIconText` and `DaisyMnemonicText`).
+- `DaisyAlert` wraps a long text `Message` within its width, for example a toast with `MaxWidth`, instead of cutting it
+  off.
 - `DaisyResourceLookup.TryGetResource` no longer searches the merged dictionaries again after a miss. `TryGetValue`
   already searches nested merged and theme dictionaries, in WinUI and in Uno, whose lookup is the same code on Skia,
   WebAssembly and Android, so the result is the same, and lookups of optional keys that do not exist, which every Daisy

@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "La rueda del ratón cambia de foto (Ctrl+rueda para zoom)",
   "Photos_Settings_ConfirmDelete": "Preguntar antes de eliminar",
   "Photos_Settings_SlideshowInterval": "Intervalo de la presentación",
-  "Photos_Settings_JpegQuality": "Calidad JPEG al guardar",
+  "Photos_Settings_JpegQuality": "Calidad JPEG/WebP al guardar",
   "Photos_SecondsFormat": "{0:0} s",
   "Photos_Settings_Shortcuts": "Métodos abreviados de teclado",
   "Photos_Settings_AboutText": "Un visor y editor de fotos rápido creado con los controles Daisy de Flowery.WinUI, Win2D y WinUI 3.",

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Models;
@@ -129,6 +129,12 @@ namespace Flowery.Uno.Photos.Views
         {
             Viewer.Shutdown();
         }
+
+        /// <summary>True while the viewer shows a photo with edits that are not saved.</summary>
+        public bool HasUnsavedEdits => Viewer.IsOpen && Viewer.HasUnsavedEdits;
+
+        /// <summary>Asks whether to save the edits as a copy or discard them; false when the user stays.</summary>
+        public Task<bool> ConfirmDiscardEditsAsync() => Viewer.ConfirmDiscardAsync();
 
         private static KeyboardAccelerator CreateAccelerator(VirtualKey key, VirtualKeyModifiers modifiers, TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs> handler)
         {

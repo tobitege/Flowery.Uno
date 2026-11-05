@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "Коліщатко миші перемикає фото (Ctrl+коліщатко – масштаб)",
   "Photos_Settings_ConfirmDelete": "Запитувати перед видаленням",
   "Photos_Settings_SlideshowInterval": "Інтервал слайд-шоу",
-  "Photos_Settings_JpegQuality": "Якість JPEG під час збереження",
+  "Photos_Settings_JpegQuality": "Якість JPEG/WebP під час збереження",
   "Photos_SecondsFormat": "{0:0} с",
   "Photos_Settings_Shortcuts": "Сполучення клавіш",
   "Photos_Settings_AboutText": "Швидкий переглядач і редактор фото на основі елементів керування Daisy з Flowery.WinUI, Win2D і WinUI 3.",

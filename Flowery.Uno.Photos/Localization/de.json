@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "Mausrad wechselt Fotos (Ctrl+Mausrad zoomt)",
   "Photos_Settings_ConfirmDelete": "Vor dem Löschen fragen",
   "Photos_Settings_SlideshowInterval": "Diashow-Intervall",
-  "Photos_Settings_JpegQuality": "JPEG-Qualität beim Speichern",
+  "Photos_Settings_JpegQuality": "JPEG/WebP-Qualität beim Speichern",
   "Photos_SecondsFormat": "{0:0} s",
   "Photos_Settings_Shortcuts": "Tastenkombinationen",
   "Photos_Settings_AboutText": "Ein schneller Fotobetrachter und -editor, gebaut mit Flowery.WinUI Daisy-Steuerelementen, Win2D und WinUI 3.",

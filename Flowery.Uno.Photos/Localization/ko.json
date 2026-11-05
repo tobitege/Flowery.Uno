@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "마우스 휠로 사진 전환(Ctrl+휠로 확대/축소)",
   "Photos_Settings_ConfirmDelete": "삭제하기 전에 확인",
   "Photos_Settings_SlideshowInterval": "슬라이드 쇼 간격",
-  "Photos_Settings_JpegQuality": "저장 시 JPEG 품질",
+  "Photos_Settings_JpegQuality": "저장 시 JPEG/WebP 품질",
   "Photos_SecondsFormat": "{0:0}초",
   "Photos_Settings_Shortcuts": "바로 가기 키",
   "Photos_Settings_AboutText": "Flowery.WinUI Daisy 컨트롤, Win2D 및 WinUI 3로 만든 빠른 사진 뷰어 겸 편집기입니다.",

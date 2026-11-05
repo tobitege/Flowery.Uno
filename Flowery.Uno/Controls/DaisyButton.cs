@@ -1,5 +1,7 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Flowery.Services;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Media;
 using Uno.Toolkit.UI;
 using Windows.Foundation.Metadata;
@@ -393,6 +395,18 @@ namespace Flowery.Controls
                     TakeContentAsIconLabel();
             }
             UpdateMnemonicContentTemplate(newContent);
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer() => new DaisyButtonAutomationPeer(this);
+
+        /// <summary>
+        /// The label a screen reader should hear: the string next to the icon (Content is then the icon layout panel, which
+        /// has no name) or string Content, without &amp; markers. Null when the label is not a string.
+        /// </summary>
+        internal string? GetAutomationLabel()
+        {
+            var label = _iconContentPanel != null && ReferenceEquals(Content, _iconContentPanel) ? _userContent : Content;
+            return label is string text ? FloweryMnemonicHelpers.GetDisplayText(text) : null;
         }
 
         private void TakeContentAsIconLabel()
@@ -1883,6 +1897,19 @@ namespace Flowery.Controls
                 _dashedBorder.RadiusY = CornerRadius.TopLeft;
             }
         }
+    }
 
+    /// <summary>
+    /// Names a <see cref="DaisyButton"/> after its label when no AutomationProperties.Name is set, also when the label
+    /// sits next to an icon, and without &amp; mnemonic markers.
+    /// </summary>
+    internal sealed partial class DaisyButtonAutomationPeer(DaisyButton owner) : ButtonAutomationPeer(owner)
+    {
+        protected override string GetNameCore()
+        {
+            if (!string.IsNullOrEmpty(AutomationProperties.GetName(owner)))
+                return base.GetNameCore() ?? string.Empty;
+            return owner.GetAutomationLabel() ?? base.GetNameCore() ?? string.Empty;
+        }
     }
 }

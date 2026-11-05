@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -251,7 +251,8 @@ namespace Flowery.Uno.Photos.Services
         internal static List<IfdEntry> EnumerateIfd(ReadOnlySpan<byte> tiff, uint offset, bool little)
         {
             List<IfdEntry> result = [];
-            if (offset + 2 > tiff.Length)
+            // long: a broken offset near uint.MaxValue must not wrap around and pass the check.
+            if ((long)offset + 2 > tiff.Length)
                 return result;
             var entries = ReadU16(tiff, (int)offset, little);
             for (var i = 0; i < entries; i++)
@@ -275,7 +276,7 @@ namespace Flowery.Uno.Photos.Services
             ReadOnlySpan<byte> bytes;
             if (count <= 4)
                 bytes = raw[..(int)count];
-            else if (valueOffset + count <= tiff.Length)
+            else if ((long)valueOffset + count <= tiff.Length)
                 bytes = tiff.Slice((int)valueOffset, (int)count);
             else
                 return null;

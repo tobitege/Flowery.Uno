@@ -16,13 +16,11 @@
         <!-- Toolbar -->
         <Grid x:Name="Toolbar" Padding="8,2,8,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
             <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
-                <!-- Skia: the editing controls (rotate, edit, save, undo/redo, compare, revert, tabs) stay in the tree but are
-                     hidden until the editing phase. -->
                 <daisy:DaisyButton x:Name="RotateButton"
-                                   Visibility="Collapsed"
                                    Variant="Ghost"
                                    Shape="Square"
-                                   IconData="{StaticResource PhotosIconRotateRight}" />
+                                   IconData="{StaticResource PhotosIconRotateRight}"
+                                   Click="RotateButton_Click" />
                 <daisy:DaisyButton x:Name="FavoriteButton"
                                    Variant="Ghost"
                                    Shape="Square"
@@ -86,17 +84,18 @@
                         <MenuFlyout x:Name="MoreMenu" Placement="BottomEdgeAlignedRight" Opening="MoreMenu_Opening" />
                     </daisy:DaisyButton.Flyout>
                 </daisy:DaisyButton>
-                <Border x:Name="EditSeparator" Visibility="Collapsed" Width="1" Height="20" Margin="6,0" Opacity="0.25" Background="{ThemeResource DaisyBaseContentBrush}" />
+                <Border Width="1" Height="20" Margin="6,0" Opacity="0.25" Background="{ThemeResource DaisyBaseContentBrush}" />
                 <daisy:DaisyButton x:Name="EditButton"
-                                   Visibility="Collapsed"
                                    Variant="Neutral"
                                    IconData="{StaticResource PhotosIconTune}"
-                                   Content="{Binding [Photos_Edit]}" />
+                                   Content="{Binding [Photos_Edit]}"
+                                   Click="EditButton_Click" />
                 <StackPanel x:Name="SaveGroup" Orientation="Horizontal" Spacing="1" Margin="6,0,0,0" Visibility="Collapsed">
                     <daisy:DaisyButton x:Name="SaveButton"
                                        Variant="Primary"
                                        Content="{Binding [Photos_SaveCopy]}"
-                                       CornerRadius="8,0,0,8" />
+                                       CornerRadius="8,0,0,8"
+                                       Click="SaveButton_Click" />
                     <daisy:DaisyButton x:Name="SaveMenuButton"
                                        Variant="Primary"
                                        Shape="Square"
@@ -196,7 +195,6 @@
                 <Grid RowDefinitions="Auto,Auto,*">
                     <!-- Edit history: undo/redo, before/after compare and revert act only on the edits in this panel. -->
                     <Grid x:Name="EditActions"
-                          Visibility="Collapsed"
                           Padding="8,8,10,6"
                           ColumnDefinitions="Auto,Auto,Auto,*,Auto"
                           ColumnSpacing="2"
@@ -205,24 +203,28 @@
                         <daisy:DaisyButton x:Name="UndoButton"
                                            Variant="Ghost"
                                            Shape="Square"
-                                           IconSymbol="Undo" />
+                                           IconSymbol="Undo"
+                                           Click="UndoButton_Click" />
                         <daisy:DaisyButton x:Name="RedoButton"
                                            Grid.Column="1"
                                            Variant="Ghost"
                                            Shape="Square"
-                                           IconSymbol="Redo" />
+                                           IconSymbol="Redo"
+                                           Click="RedoButton_Click" />
                         <daisy:DaisyButton x:Name="CompareButton"
                                            Grid.Column="2"
                                            Margin="6,0,0,0"
                                            Variant="Ghost"
                                            Shape="Square"
-                                           IconData="{StaticResource PhotosIconCompare}" />
+                                           IconData="{StaticResource PhotosIconCompare}"
+                                           Click="CompareButton_Click" />
                         <daisy:DaisyButton x:Name="RevertButton"
                                            Grid.Column="4"
                                            Variant="Primary"
-                                           Content="{Binding [Photos_Revert]}" />
+                                           Content="{Binding [Photos_Revert]}"
+                                           Click="RevertButton_Click" />
                     </Grid>
-                    <Grid x:Name="TabBar" Grid.Row="1" Padding="6,8,6,0" Visibility="Collapsed" />
+                    <Grid x:Name="TabBar" Grid.Row="1" Padding="6,8,6,0" />
                     <ScrollViewer Grid.Row="2"
                                   Padding="14,10,14,16"
                                   HorizontalScrollMode="Disabled"

@@ -1,4 +1,4 @@
-using Flowery.Uno.Photos.Editing;
+﻿using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Services;
 using Microsoft.UI.Input;
 using SkiaSharp;
@@ -7,8 +7,9 @@ using static Flowery.Uno.Photos.Views.UiHelpers;
 namespace Flowery.Uno.Photos.Views
 {
     /// <summary>
-    /// Viewer canvas: rendering, zoom/pan and the pointer interaction. Skia: SKCanvas instead of Win2D. Crop handles,
-    /// markup drawing and the before/after split need the edit renderer and come with the editing phase.
+    /// Viewer canvas: rendering, zoom/pan, before/after split, crop handles and markup drawing. Skia: SKCanvas instead of
+    /// Win2D. Geometry and strokes are drawn directly; color edits come from <see cref="PreviewRenderer"/> and appear
+    /// when the render is ready, so sliders do not wait for it.
     /// </summary>
     public sealed partial class ViewerView
     {
@@ -26,12 +27,28 @@ namespace Flowery.Uno.Photos.Views
         private bool _panning;
         private Point _pointerStart;
         private Vector2 _panStart;
+        private bool _compareSplit;
+        private double _split = 0.5;
+        private bool _draggingSplit;
+        private CropHandle _cropHandle;
+        private Rect _cropStart;
+        private Rect? _liveCrop;
+        private CropAspectLock _cropAspect;
+        private List<Vector2>? _currentStroke;
+        private Color _penColor = Color.FromArgb(255, 239, 68, 68);
+        private Color _currentStrokeColor;
+        private double _penSize = 6;
+        private bool _highlighter;
+        private readonly PreviewRenderer _previewRenderer = new();
+        private SKImage? _edited;
+        private PreviewRequest? _editedRequest;
+        private PreviewRequest? _pendingRequest;
 
         private bool IsCropMode => _panelOpen && _tab == EditTab.Crop && !_slideshow;
 
         private bool IsMarkupMode => _panelOpen && _tab == EditTab.Markup && !_slideshow;
 
-        private EditState DisplayState => State;
+        private EditState DisplayState => _liveCrop is { } crop ? State with { Crop = crop } : State;
 
         private double RasterScale => XamlRoot?.RasterizationScale ?? 1.0;
 
@@ -101,6 +118,10 @@ namespace Flowery.Uno.Photos.Views
         {
             _zoom = null;
             _pan = Vector2.Zero;
+            _liveCrop = null;
+            _currentStroke = null;
+            // The aspect lock belongs to the photo it was chosen for.
+            _cropAspect = default;
         }
 
         private void ZoomToFit()
@@ -215,19 +236,238 @@ namespace Flowery.Uno.Photos.Views
             if (!TryGetTransform(out var t))
                 return;
 
+            var state = DisplayState;
+            var cropMode = IsCropMode;
             var sampling = t.Scale < 1 ? MinifySampling : MagnifySampling;
 
             canvas.Save();
             canvas.Translate(t.Offset.X, t.Offset.Y);
             canvas.Scale((float)t.Scale);
-            canvas.DrawImage(t.Source, 0, 0, sampling);
+
+            if (_compareSplit && !cropMode)
+            {
+                var splitX = (float)(t.ImageSize.Width * _split);
+                canvas.Save();
+                canvas.ClipRect(new SKRect(0, 0, splitX, (float)t.ImageSize.Height));
+                DrawGeometry(canvas, t, state, sampling);
+                canvas.Restore();
+                canvas.Save();
+                canvas.ClipRect(new SKRect(splitX, 0, (float)t.ImageSize.Width, (float)t.ImageSize.Height));
+                DrawEdited(canvas, t, state, sampling);
+                DrawAllStrokes(canvas, t, state, cropMode);
+                canvas.Restore();
+            }
+            else
+            {
+                DrawEdited(canvas, t, state, sampling);
+                DrawAllStrokes(canvas, t, state, cropMode);
+            }
+
             canvas.Restore();
 
-            if (PhotosSettings.ShowGrid && !_slideshow)
+            if (PhotosSettings.ShowGrid && !cropMode && !_slideshow)
                 DrawGridlines(canvas, t);
+            if (cropMode)
+                DrawCropOverlay(canvas, t, state.Crop);
+            if (_compareSplit && !cropMode)
+                DrawSplitOverlay(canvas, t);
             DrawNavigator(canvas, t);
             if (RulersVisible)
                 DrawRulers(canvas, t);
+        }
+
+        /// <summary>Draws the image without color edits; the canvas is in image space.</summary>
+        private void DrawGeometry(SKCanvas canvas, ViewTransform t, EditState state, SKSamplingOptions sampling)
+        {
+            canvas.Save();
+            canvas.ClipRect(new SKRect(0, 0, (float)t.ImageSize.Width, (float)t.ImageSize.Height));
+            canvas.Concat(EditRenderer.GetGeometryMatrix(t.SourceSize, state, applyCrop: !IsCropMode));
+            canvas.DrawImage(t.Source, 0, 0, sampling);
+            canvas.Restore();
+        }
+
+        /// <summary>Draws the image with its edits, or the closest picture at hand while the render runs.</summary>
+        private void DrawEdited(SKCanvas canvas, ViewTransform t, EditState state, SKSamplingOptions sampling)
+        {
+            if (!state.HasColorEdits)
+            {
+                DrawGeometry(canvas, t, state, sampling);
+                return;
+            }
+
+            RequestPreview(t, state);
+            if (_edited is { } edited && CanStandIn(edited, t, state))
+                canvas.DrawImage(edited, new SKRect(0, 0, (float)t.ImageSize.Width, (float)t.ImageSize.Height), sampling);
+            else
+                DrawGeometry(canvas, t, state, sampling);
+        }
+
+        /// <summary>An older render may stay on screen while the next one runs, unless it would show the photo turned or stretched.</summary>
+        private bool CanStandIn(SKImage edited, ViewTransform t, EditState state)
+        {
+            var shown = _editedRequest?.State;
+            var aspect = t.ImageSize.Width / t.ImageSize.Height;
+            return shown != null
+                && shown.Rotation == state.Rotation && shown.FlipH == state.FlipH && shown.FlipV == state.FlipV
+                && Math.Abs((double)edited.Width / edited.Height / aspect - 1) < 0.02;
+        }
+
+        private void RequestPreview(ViewTransform t, EditState state)
+        {
+            if (_image == null)
+                return;
+
+            var applyCrop = !IsCropMode;
+            // Strokes are drawn on top, and without the crop its rectangle changes nothing in the picture.
+            var picture = state with { Strokes = [], Crop = applyCrop ? state.Crop : EditState.FullCrop };
+            var request = new PreviewRequest(t.Source, picture, applyCrop, EditRenderer.GetPreviewScale(t.Scale * RasterScale));
+            if (request == _editedRequest || request == _pendingRequest)
+                return;
+
+            _pendingRequest = request;
+            _previewRenderer.Request(request, _image.Share(t.Source));
+        }
+
+        private void OnPreviewRendered(PreviewRequest request, SKImage image)
+        {
+            if (!DispatcherQueue.TryEnqueue(() => ShowPreview(request, image)))
+                image.Dispose();
+        }
+
+        private void ShowPreview(PreviewRequest request, SKImage image)
+        {
+            // The photo may have changed while the render ran.
+            if (_image == null || !(ReferenceEquals(request.Source, _image.Preview) || ReferenceEquals(request.Source, _image.Full)))
+            {
+                image.Dispose();
+                return;
+            }
+
+            _edited?.Dispose();
+            _edited = image;
+            _editedRequest = request;
+            if (request == _pendingRequest)
+                _pendingRequest = null;
+            Canvas.Invalidate();
+        }
+
+        private void ClearPreview()
+        {
+            _edited?.Dispose();
+            _edited = null;
+            _editedRequest = null;
+            _pendingRequest = null;
+        }
+
+        private void DrawAllStrokes(SKCanvas canvas, ViewTransform t, EditState state, bool cropMode)
+        {
+            var strokes = state.Strokes;
+            if (_currentStroke is { Count: > 0 } current)
+            {
+                strokes = strokes.Add(new MarkupStroke(_currentStrokeColor, (float)(_penSize / 1000), _highlighter, [.. current]));
+            }
+            if (strokes.IsEmpty)
+                return;
+
+            var transformed = EditRenderer.GetTransformedSize(t.SourceSize, state);
+            var visible = cropMode ? EditState.FullCrop : state.Crop;
+            canvas.Save();
+            canvas.ClipRect(new SKRect(0, 0, (float)t.ImageSize.Width, (float)t.ImageSize.Height));
+            EditRenderer.DrawStrokes(canvas, strokes, transformed, visible, t.ImageSize);
+            canvas.Restore();
+        }
+
+        private static void DrawCropOverlay(SKCanvas canvas, ViewTransform t, Rect crop)
+        {
+            var r = t.ScreenRect;
+            var c = new Rect(r.X + crop.X * r.Width, r.Y + crop.Y * r.Height, crop.Width * r.Width, crop.Height * r.Height);
+            using var shade = Fill(Color.FromArgb(150, 0, 0, 0));
+
+            canvas.DrawRect(ToSk(new Rect(r.X, r.Y, r.Width, Math.Max(0, c.Y - r.Y))), shade);
+            canvas.DrawRect(ToSk(new Rect(r.X, c.Bottom, r.Width, Math.Max(0, r.Bottom - c.Bottom))), shade);
+            canvas.DrawRect(ToSk(new Rect(r.X, c.Y, Math.Max(0, c.X - r.X), c.Height)), shade);
+            canvas.DrawRect(ToSk(new Rect(c.Right, c.Y, Math.Max(0, r.Right - c.Right), c.Height)), shade);
+
+            using var white = Fill(Color.FromArgb(255, 255, 255, 255));
+            using var outline = Stroke(Color.FromArgb(255, 255, 255, 255), 1.5f);
+            using var grid = Stroke(Color.FromArgb(90, 255, 255, 255), 1);
+            for (var i = 1; i < 3; i++)
+            {
+                var x = (float)(c.X + c.Width * i / 3);
+                var y = (float)(c.Y + c.Height * i / 3);
+                canvas.DrawLine(x, (float)c.Y, x, (float)c.Bottom, grid);
+                canvas.DrawLine((float)c.X, y, (float)c.Right, y, grid);
+            }
+            canvas.DrawRect(ToSk(c), outline);
+
+            const float len = 20;
+            const float thick = 4;
+            var l = (float)c.X;
+            var tp = (float)c.Y;
+            var rt = (float)c.Right;
+            var b = (float)c.Bottom;
+            void Bar(float x, float y, float w, float h) => canvas.DrawRect(x, y, w, h, white);
+            // Corners
+            Bar(l - thick / 2, tp - thick / 2, len, thick);
+            Bar(l - thick / 2, tp - thick / 2, thick, len);
+            Bar(rt - len + thick / 2, tp - thick / 2, len, thick);
+            Bar(rt - thick / 2, tp - thick / 2, thick, len);
+            Bar(l - thick / 2, b - thick / 2, len, thick);
+            Bar(l - thick / 2, b - len + thick / 2, thick, len);
+            Bar(rt - len + thick / 2, b - thick / 2, len, thick);
+            Bar(rt - thick / 2, b - len + thick / 2, thick, len);
+            // Edge midpoints
+            var mx = (l + rt) / 2;
+            var my = (tp + b) / 2;
+            Bar(mx - len / 2, tp - thick / 2, len, thick);
+            Bar(mx - len / 2, b - thick / 2, len, thick);
+            Bar(l - thick / 2, my - len / 2, thick, len);
+            Bar(rt - thick / 2, my - len / 2, thick, len);
+        }
+
+        private void DrawSplitOverlay(SKCanvas canvas, ViewTransform t)
+        {
+            var r = t.ScreenRect;
+            var x = (float)(r.X + r.Width * _split);
+            var top = (float)Math.Max(r.Y, 0);
+            var bottom = (float)Math.Min(r.Bottom, Canvas.ActualHeight);
+            using var line = Stroke(Color.FromArgb(220, 255, 255, 255), 2);
+            using var knob = Fill(Color.FromArgb(230, 255, 255, 255));
+            using var arrow = Stroke(Color.FromArgb(255, 30, 30, 30), 2);
+            canvas.DrawLine(x, top, x, bottom, line);
+            var cy = (top + bottom) / 2;
+            canvas.DrawCircle(x, cy, 16, knob);
+            canvas.DrawLine(x - 6, cy - 5, x - 10, cy, arrow);
+            canvas.DrawLine(x - 10, cy, x - 6, cy + 5, arrow);
+            canvas.DrawLine(x + 6, cy - 5, x + 10, cy, arrow);
+            canvas.DrawLine(x + 10, cy, x + 6, cy + 5, arrow);
+
+            using var font = new SKFont(SKTypeface.Default, 13) { Embolden = true };
+            DrawLabel(canvas, L("Photos_Before"), new Vector2(x - 12, top + 12), font, rightAligned: true);
+            DrawLabel(canvas, L("Photos_After"), new Vector2(x + 12, top + 12), font, rightAligned: false);
+        }
+
+        private static void DrawLabel(SKCanvas canvas, string text, Vector2 position, SKFont font, bool rightAligned)
+        {
+            var w = font.MeasureText(text);
+            var h = font.Size * 1.3f;
+            var x = rightAligned ? position.X - w - 16 : position.X;
+            using var background = Fill(Color.FromArgb(160, 0, 0, 0));
+            using var foreground = Fill(Color.FromArgb(255, 255, 255, 255));
+            canvas.DrawRoundRect(new SKRect(x, position.Y, x + w + 16, position.Y + h + 8), 10, 10, background);
+            canvas.DrawText(text, x + 8, position.Y + 4 + font.Size, SKTextAlign.Left, font, foreground);
+        }
+
+        private void ToggleCompare()
+        {
+            _compareSplit = !_compareSplit;
+            _split = 0.5;
+            // Comparing only makes sense with edits at hand: show the edit panel alongside the split.
+            if (_compareSplit && !_panelOpen && !_slideshow)
+                SetPanelOpen(true, _lastEditTab);
+            CompareButton.Variant = _compareSplit ? DaisyButtonVariant.Primary : DaisyButtonVariant.Ghost;
+            CompareButton.ButtonStyle = _compareSplit ? DaisyButtonStyle.Soft : DaisyButtonStyle.Default;
+            Canvas.Invalidate();
         }
 
         #endregion
@@ -256,28 +496,82 @@ namespace Flowery.Uno.Photos.Views
             var point = e.GetCurrentPoint(Canvas);
             var p = point.Position;
             _pointerStart = p;
+            var right = point.Properties.IsRightButtonPressed;
 
-            if (point.Properties.IsLeftButtonPressed && IsInNavigator(t, p))
-            {
-                _draggingNavigator = CanvasHost.CapturePointer(e.Pointer);
-                PanFromNavigator(t, p);
-                e.Handled = true;
-                return;
-            }
+            var press = ViewerMath.ChoosePress(new CanvasPressInput(
+                Left: point.Properties.IsLeftButtonPressed,
+                Right: right,
+                Middle: point.Properties.IsMiddleButtonPressed,
+                Eyedropper: IsEyedropperActive,
+                OnNavigator: IsInNavigator(t, p),
+                CropMode: IsCropMode,
+                OnSplitHandle: IsOnSplitHandle(t, p),
+                MarkupMode: IsMarkupMode,
+                ImageLargerThanView: t.ScreenRect.Width > Canvas.ActualWidth || t.ScreenRect.Height > Canvas.ActualHeight));
 
-            if (point.Properties.IsLeftButtonPressed || point.Properties.IsMiddleButtonPressed)
+            switch (press)
             {
-                var r = t.ScreenRect;
-                if (r.Width > Canvas.ActualWidth || r.Height > Canvas.ActualHeight)
-                {
+                case CanvasPress.PickColor:
+                    // Left click picks the primary color, right click the secondary color.
+                    if (SampleColor(t, p) is { } sampled)
+                    {
+                        if (right)
+                            SetSecondaryColor(sampled);
+                        else
+                            SetPenColor(sampled);
+                        SetEyedropper(false);
+                    }
+                    e.Handled = true;
+                    break;
+
+                case CanvasPress.Navigator:
+                    _draggingNavigator = CanvasHost.CapturePointer(e.Pointer);
+                    PanFromNavigator(t, p);
+                    e.Handled = true;
+                    break;
+
+                case CanvasPress.Crop:
+                    _cropHandle = CropMath.HitTest(t.ScreenRect, State.Crop, p);
+                    if (_cropHandle != CropHandle.None)
+                    {
+                        _cropStart = State.Crop;
+                        _liveCrop = State.Crop;
+                        CanvasHost.CapturePointer(e.Pointer);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case CanvasPress.Split:
+                    _draggingSplit = true;
+                    CanvasHost.CapturePointer(e.Pointer);
+                    e.Handled = true;
+                    break;
+
+                case CanvasPress.Markup:
+                    if (ScreenToTransformedNormalized(t, p) is { } n)
+                    {
+                        // Like Paint Shop Pro: the right mouse button draws with the secondary color.
+                        _currentStrokeColor = right ? _secondaryColor : _penColor;
+                        _currentStroke = [n];
+                        CanvasHost.CapturePointer(e.Pointer);
+                        Canvas.Invalidate();
+                        e.Handled = true;
+                    }
+                    break;
+
+                case CanvasPress.Pan:
                     _panning = true;
                     _panStart = _pan;
                     CanvasHost.CapturePointer(e.Pointer);
                     CanvasHost.SetCursor(InputSystemCursorShape.SizeAll);
                     e.Handled = true;
-                }
+                    break;
             }
         }
+
+        /// <summary>Whether <paramref name="p"/> is on the before/after divider; false while the split is not shown.</summary>
+        private bool IsOnSplitHandle(ViewTransform t, Point p) =>
+            _compareSplit && !IsCropMode && ViewerMath.IsOnSplitHandle(t.ScreenRect.X, t.ScreenRect.Width, _split, p.X);
 
         private void Canvas_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
@@ -294,6 +588,37 @@ namespace Flowery.Uno.Photos.Views
                 return;
             }
 
+            if (_cropHandle != CropHandle.None)
+            {
+                var dx = (p.X - _pointerStart.X) / t.ScreenRect.Width;
+                var dy = (p.Y - _pointerStart.Y) / t.ScreenRect.Height;
+                _liveCrop = CropMath.Resize(_cropStart, _cropHandle, dx, dy, t.ImageSize, _cropAspect.AspectAt(State.Rotation));
+                Canvas.Invalidate();
+                return;
+            }
+
+            if (_currentStroke != null)
+            {
+                if (ScreenToTransformedNormalized(t, p, clamp: true) is { } n)
+                {
+                    var last = _currentStroke[^1];
+                    var minDistance = 1.5 / Math.Max(t.ScreenRect.Width, 1);
+                    if (Vector2.Distance(last, n) > minDistance)
+                    {
+                        _currentStroke.Add(n);
+                        Canvas.Invalidate();
+                    }
+                }
+                return;
+            }
+
+            if (_draggingSplit)
+            {
+                _split = Math.Clamp((p.X - t.ScreenRect.X) / t.ScreenRect.Width, 0.02, 0.98);
+                Canvas.Invalidate();
+                return;
+            }
+
             if (_panning)
             {
                 _pan = _panStart + new Vector2((float)(p.X - _pointerStart.X), (float)(p.Y - _pointerStart.Y));
@@ -302,14 +627,37 @@ namespace Flowery.Uno.Photos.Views
                 return;
             }
 
-            UpdateHoverCursor(t);
+            UpdateHoverCursor(t, p);
         }
 
-        private void UpdateHoverCursor(ViewTransform t)
+        private void UpdateHoverCursor(ViewTransform t, Point p)
         {
             var shape = InputSystemCursorShape.Arrow;
-            if (t.ScreenRect.Width > Canvas.ActualWidth || t.ScreenRect.Height > Canvas.ActualHeight)
+            if (IsCropMode)
+            {
+                shape = CropMath.HitTest(t.ScreenRect, State.Crop, p) switch
+                {
+                    CropHandle.TopLeft or CropHandle.BottomRight => InputSystemCursorShape.SizeNorthwestSoutheast,
+                    CropHandle.TopRight or CropHandle.BottomLeft => InputSystemCursorShape.SizeNortheastSouthwest,
+                    CropHandle.Left or CropHandle.Right => InputSystemCursorShape.SizeWestEast,
+                    CropHandle.Top or CropHandle.Bottom => InputSystemCursorShape.SizeNorthSouth,
+                    CropHandle.Move => InputSystemCursorShape.SizeAll,
+                    _ => InputSystemCursorShape.Arrow
+                };
+            }
+            else if (IsOnSplitHandle(t, p))
+            {
+                // Same order as a press: the divider before drawing.
+                shape = InputSystemCursorShape.SizeWestEast;
+            }
+            else if (IsMarkupMode)
+            {
+                shape = InputSystemCursorShape.Cross;
+            }
+            else if (t.ScreenRect.Width > Canvas.ActualWidth || t.ScreenRect.Height > Canvas.ActualHeight)
+            {
                 shape = InputSystemCursorShape.Hand;
+            }
             CanvasHost.SetCursor(shape);
         }
 
@@ -324,6 +672,29 @@ namespace Flowery.Uno.Photos.Views
         private void EndPointerInteraction()
         {
             _draggingNavigator = false;
+            if (_cropHandle != CropHandle.None)
+            {
+                _cropHandle = CropHandle.None;
+                if (_liveCrop is { } crop)
+                {
+                    _liveCrop = null;
+                    ApplyState(State with { Crop = crop });
+                    _history.Commit();
+                }
+            }
+
+            if (_currentStroke is { Count: > 0 } stroke)
+            {
+                _currentStroke = null;
+                ApplyState(State with
+                {
+                    Strokes = State.Strokes.Add(new MarkupStroke(_currentStrokeColor, (float)(_penSize / 1000), _highlighter, [.. stroke]))
+                });
+                AddRecentColor(_currentStrokeColor);
+            }
+            _currentStroke = null;
+
+            _draggingSplit = false;
             if (_panning)
             {
                 _panning = false;
@@ -368,6 +739,32 @@ namespace Flowery.Uno.Photos.Views
                 SetZoom(1 / RasterScale, e.GetPosition(Canvas));
             else
                 ZoomToFit();
+        }
+
+        private Vector2? ScreenToTransformedNormalized(ViewTransform t, Point p, bool clamp = false)
+        {
+            var r = t.ScreenRect;
+            var nx = (p.X - r.X) / r.Width;
+            var ny = (p.Y - r.Y) / r.Height;
+            if (!clamp && (nx < 0 || ny < 0 || nx > 1 || ny > 1))
+                return null;
+            nx = Math.Clamp(nx, 0, 1);
+            ny = Math.Clamp(ny, 0, 1);
+
+            // Displayed image is the cropped output (outside crop mode); map back to the uncropped transformed space.
+            var crop = IsCropMode ? EditState.FullCrop : DisplayState.Crop;
+            return new Vector2((float)(crop.X + nx * crop.Width), (float)(crop.Y + ny * crop.Height));
+        }
+
+        /// <summary>
+        /// Largest centered crop with the given output aspect inside the current crop.
+        /// </summary>
+        private Rect CreateAspectCrop(double? aspect)
+        {
+            if (aspect is not { } a || _image == null)
+                return State.Crop;
+            var transformed = EditRenderer.GetTransformedSize(new Size(_image.Width, _image.Height), State);
+            return CropMath.CreateAspectCrop(State.Crop, a, transformed);
         }
 
         #endregion

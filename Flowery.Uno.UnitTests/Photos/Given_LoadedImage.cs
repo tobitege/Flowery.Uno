@@ -28,6 +28,19 @@ namespace Flowery.Uno.UnitTests.Photos
         }
 
         [TestMethod]
+        public void When_ImageIsShared_ItOutlivesTheLoadedImage()
+        {
+            var path = TestImages.Write(Path.Combine(_dir, "shared.png"), 200, 100, SKEncodedImageFormat.Png);
+            SKImage shared;
+            using (var image = LoadedImage.Load(path))
+                shared = image.Share(image.Full);
+
+            using (shared)
+            using (var result = EditRenderer.Render(shared, EditState.Original with { Exposure = 10 }))
+                Assert.AreEqual((200, 100), (result.Width, result.Height));
+        }
+
+        [TestMethod]
         public void When_PhotoIsLargerThanThePreview_PreviewIsScaledDownAndKeepsTheAspect()
         {
             var path = TestImages.Write(Path.Combine(_dir, "large.png"), 3200, 1600, SKEncodedImageFormat.Png);

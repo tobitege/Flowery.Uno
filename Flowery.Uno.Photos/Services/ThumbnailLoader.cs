@@ -112,7 +112,7 @@ namespace Flowery.Uno.Photos.Services
             return bitmap == null ? null : ToImageSource(bitmap);
         }
 
-        private static WriteableBitmap ToImageSource(SKBitmap bitmap)
+        internal static WriteableBitmap ToImageSource(SKBitmap bitmap)
         {
             var image = new WriteableBitmap(bitmap.Width, bitmap.Height);
             using (var stream = image.PixelBuffer.AsStream())

@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Flowery.Uno.Photos.Editing;
 using Flowery.Uno.Photos.Localization;
 using Flowery.Uno.Photos.Models;
@@ -13,9 +13,8 @@ using static Flowery.Uno.Photos.Views.UiHelpers;
 namespace Flowery.Uno.Photos.Views
 {
     /// <summary>
-    /// Full-window photo viewer. Skia: the editing part (panel tabs, save, compare, crop and markup) arrives with the
-    /// editing phase; its controls are hidden until then.
-    /// Core: lifecycle, navigation, toolbar actions, slideshow and keyboard handling.
+    /// Full-window photo viewer and non-destructive editor (SkiaSharp).
+    /// Core: lifecycle, navigation, toolbar actions, saving, slideshow and keyboard handling.
     /// </summary>
     public sealed partial class ViewerView : UserControl
     {
@@ -30,11 +29,14 @@ namespace Flowery.Uno.Photos.Views
         private bool _wasFullScreenBeforeSlideshow;
         private bool _syncingZoom;
         private PhotoItem? _imageItem;
+        private bool _saving;
+        private MenuFlyoutItem? _saveOverwriteItem;
 
         public ViewerView()
         {
             InitializeComponent();
             _history.Changed += OnHistoryChanged;
+            _previewRenderer.Rendered += OnPreviewRendered;
             ZoomRange.RegisterPropertyChangedCallback(DaisyRange.ValueProperty, (_, _) => OnZoomRangeChanged());
             PhotosLocalization.Instance.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(OnLanguageChanged);
             Loaded += OnLoadedForScale;
@@ -75,9 +77,11 @@ namespace Flowery.Uno.Photos.Views
             ApplyChromeLayout();
         }
 
+        /// <summary>The window is closing: stops the slideshow timer and frees the image, without touching the window chrome.</summary>
         public void Shutdown()
         {
-            StopSlideshow();
+            _slideshow = false;
+            _slideshowTimer?.Stop();
             DisposeImage();
         }
 
@@ -87,8 +91,7 @@ namespace Flowery.Uno.Photos.Views
         {
             IsOpen = true;
             _items = [.. items];
-            // Skia: no editing yet, so the side panel starts closed whatever "edit" asks for.
-            SetPanelOpen(false);
+            SetPanelOpen(edit, edit ? EditTab.Adjust : null);
             Focus(FocusState.Programmatic);
             await LoadIndexAsync(index, checkUnsaved: false);
         }
@@ -111,8 +114,27 @@ namespace Flowery.Uno.Photos.Views
             Closed?.Invoke(this, last);
         }
 
-        // Skia: there is nothing to discard until the editing phase (the edit state never changes).
-        private Task<bool> ConfirmDiscardAsync() => Task.FromResult(true);
+        public bool HasUnsavedEdits => State.HasChanges;
+
+        /// <summary>Asks whether to save the edits as a copy or discard them; true when nothing is left to lose.</summary>
+        public async Task<bool> ConfirmDiscardAsync()
+        {
+            if (!State.HasChanges || _shell == null)
+                return true;
+
+            var result = await _shell.ShowDialogAsync(
+                L("Photos_UnsavedTitle"),
+                L("Photos_UnsavedText"),
+                L("Photos_SaveCopy"),
+                L("Photos_Discard"));
+
+            return result switch
+            {
+                DialogResult.Primary => await SaveAsync(overwrite: false, openResult: false),
+                DialogResult.Secondary => true,
+                _ => false
+            };
+        }
 
         private async Task NavigateAsync(int delta, bool wrap = false)
         {
@@ -179,6 +201,7 @@ namespace Flowery.Uno.Photos.Views
 
         private void DisposeImage()
         {
+            ClearPreview();
             _image?.Dispose();
             _image = null;
             _imageItem = null;
@@ -196,6 +219,9 @@ namespace Flowery.Uno.Photos.Views
                 return;
 
             FormatBadge.BadgeContent = item.Extension;
+            // Skia: SkiaSharp cannot write GIF and BMP back, so these only save as a copy.
+            if (_saveOverwriteItem != null)
+                _saveOverwriteItem.IsEnabled = EditRenderer.CanWriteFormat(item.Path);
             // While the next photo loads the old image is still shown: its size must not sit next to the new file size.
             var current = _image != null && ReferenceEquals(_imageItem, item) ? _image : null;
             var w = current?.Width ?? Math.Max(0, item.PixelWidth);
@@ -232,7 +258,10 @@ namespace Flowery.Uno.Photos.Views
             EditedBadge.Visibility = changed ? Visibility.Visible : Visibility.Collapsed;
             EditedBadge.BadgeContent = L("Photos_Edited");
             UpdateItemChrome();
+            SyncPanelsFromState();
             Canvas.Invalidate();
+            if (_panelOpen && _tab == EditTab.Filters)
+                _ = RenderFilterThumbnailsAsync();
         }
 
         private void ApplyState(EditState state, string? coalesceKey = null)
@@ -243,6 +272,26 @@ namespace Flowery.Uno.Photos.Views
         #endregion
 
         #region Toolbar actions
+
+        private void CompareButton_Click(object sender, RoutedEventArgs e) => ToggleCompare();
+
+        private void RevertButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Revert starts over, without the aspect lock the crop had.
+            _cropAspect = default;
+            if (State.HasChanges)
+                ApplyState(EditState.Original);
+            else
+                SyncPanelsFromState();
+        }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e) => _history.Undo();
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e) => _history.Redo();
+
+        private void RotateButton_Click(object sender, RoutedEventArgs e) => Rotate(1);
+
+        private void Rotate(int quarterTurns) => ApplyState(CropMath.Rotate(State, quarterTurns));
 
         private async void PrevButton_Click(object sender, RoutedEventArgs e) => await NavigateAsync(-1);
 
@@ -288,6 +337,14 @@ namespace Flowery.Uno.Photos.Views
             await LoadIndexAsync(Math.Min(_index, _items.Count - 1), checkUnsaved: false);
         }
 
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_panelOpen && _tab != EditTab.Info)
+                SetPanelOpen(false);
+            else
+                SetPanelOpen(true, _lastEditTab);
+        }
+
         private void InfoButton_Click(object sender, RoutedEventArgs e)
         {
             if (_panelOpen && _tab == EditTab.Info)
@@ -303,8 +360,22 @@ namespace Flowery.Uno.Photos.Views
             if (Current is not { } item || _shell == null)
                 return;
 
-            // Skia: copying the edited image (RenderFinal) arrives with the editing phase.
-            var ok = await FileOperations.CopyFilesToClipboardAsync([item.Path]);
+            bool ok;
+            if (State.HasChanges && _image != null)
+            {
+                var state = State;
+                using var source = _image.Share(_image.Full);
+                var bytes = await Task.Run(() =>
+                {
+                    using var final = EditRenderer.RenderFinal(source, state);
+                    return EditRenderer.Encode(final, "edited.png", 100);
+                });
+                ok = await FileOperations.CopyBitmapToClipboardAsync(bytes);
+            }
+            else
+            {
+                ok = await FileOperations.CopyFilesToClipboardAsync([item.Path]);
+            }
 
             _shell.ShowToast(L(ok ? "Photos_CopiedImage" : "Photos_ActionFailed"), ok ? DaisyAlertVariant.Success : DaisyAlertVariant.Error);
         }
@@ -327,6 +398,10 @@ namespace Flowery.Uno.Photos.Views
             MoreMenu.Items.Clear();
             if (Current is not { } item)
                 return;
+
+            MoreMenu.Items.Add(MenuItem("Photos_RotateLeft", null, () => Rotate(-1), Icon("PhotosIconRotateLeft")));
+            MoreMenu.Items.Add(MenuItem("Photos_RotateRight", null, () => Rotate(1), Icon("PhotosIconRotateRight")));
+            MoreMenu.Items.Add(new MenuFlyoutSeparator());
 
             var albumMenu = new MenuFlyoutSubItem { Text = L("Photos_AddToAlbum"), Icon = new SymbolIcon(Symbol.Library) };
             albumMenu.Items.Add(MenuItem("Photos_NewAlbum", Symbol.Add, async () =>
@@ -375,6 +450,13 @@ namespace Flowery.Uno.Photos.Views
 
         private void BuildMenus()
         {
+            SaveMenu.Items.Clear();
+            SaveMenu.Items.Add(MenuItem("Photos_SaveCopy", Symbol.SaveLocal, () => _ = SaveAsync(overwrite: false, openResult: true)));
+            _saveOverwriteItem = MenuItem("Photos_SaveOverwrite", Symbol.Save, () => _ = ConfirmOverwriteAsync());
+            SaveMenu.Items.Add(_saveOverwriteItem);
+            SaveMenu.Items.Add(new MenuFlyoutSeparator());
+            SaveMenu.Items.Add(MenuItem("Photos_CopyEdited", Symbol.Copy, () => _ = CopyAsync()));
+
             ZoomMenu.Items.Clear();
             ZoomMenu.Items.Add(MenuItem("Photos_ZoomFit", null, ZoomToFit, Icon("PhotosIconFitScreen")));
             foreach (var percent in new[] { 25, 50, 100, 200, 400, 800 })
@@ -386,6 +468,11 @@ namespace Flowery.Uno.Photos.Views
 
         private void UpdateTooltips()
         {
+            Tip(CompareButton, L("Photos_Compare"));
+            Tip(UndoButton, L("Photos_Undo"));
+            Tip(RedoButton, L("Photos_Redo"));
+            Tip(RotateButton, L("Photos_RotateRight"));
+            Tip(SaveMenuButton, L("Photos_SaveOptions"));
             Tip(DeleteButton, L("Photos_Delete"));
             Tip(InfoButton, L("Photos_Info"));
             Tip(CopyButton, L("Photos_Copy"));
@@ -434,6 +521,99 @@ namespace Flowery.Uno.Photos.Views
 
         #endregion
 
+        #region Saving
+
+        private async Task ConfirmOverwriteAsync()
+        {
+            if (_shell == null || Current is not { } item)
+                return;
+            if (!EditRenderer.CanWriteFormat(item.Path))
+            {
+                _shell.ShowToast(L("Photos_FormatSavedAsCopy"), DaisyAlertVariant.Info);
+                await SaveAsync(overwrite: false, openResult: true);
+                return;
+            }
+            var result = await _shell.ShowDialogAsync(L("Photos_SaveOverwrite"), L("Photos_OverwriteWarning"), L("Photos_Save"), null, primaryIsDanger: true);
+            if (result == DialogResult.Primary)
+                await SaveAsync(overwrite: true, openResult: true);
+        }
+
+        /// <summary>
+        /// Renders the edit at full resolution and writes it to disk.
+        /// </summary>
+        private async Task<bool> SaveAsync(bool overwrite, bool openResult)
+        {
+            if (Current is not { } item || _image == null || _shell == null || !State.HasChanges || _saving)
+                return false;
+
+            // Skia: the CPU render takes a moment, so input waits; the state below belongs to this photo.
+            _saving = true;
+            IsHitTestVisible = false;
+            LoadingIndicator.Visibility = Visibility.Visible;
+            try
+            {
+                var canWrite = EditRenderer.CanWriteFormat(item.Path);
+                var directory = System.IO.Path.GetDirectoryName(item.Path) ?? Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                var extension = canWrite ? System.IO.Path.GetExtension(item.Path) : ".jpg";
+                var destination = overwrite && canWrite
+                    ? item.Path
+                    : FileOperations.GetUniquePath(System.IO.Path.Combine(directory,
+                        $"{System.IO.Path.GetFileNameWithoutExtension(item.Path)} ({L("Photos_EditedSuffix")}){extension}"));
+
+                var state = State;
+                var quality = PhotosSettings.JpegQuality;
+                var sourcePath = item.Path;
+                using var source = _image.Share(_image.Full);
+                var bytes = await Task.Run(() =>
+                {
+                    using var final = EditRenderer.RenderFinal(source, state);
+                    var encoded = EditRenderer.Encode(final, destination, quality);
+                    // Read before the original is replaced: camera, date and GPS stay with the edited JPEG.
+                    return ExifTransfer.CarryOver(sourcePath, destination, encoded, final.Width, final.Height);
+                });
+
+                await FileOperations.WriteFileSafelyAsync(destination, bytes);
+
+                _history.Reset();
+                var saved = PhotoLibrary.Instance.Refresh(destination) ?? PhotoLibrary.Instance.GetOrCreateItem(destination);
+
+                if (overwrite)
+                {
+                    ThumbnailLoader.Invalidate(item);
+                    if (saved != null && !ReferenceEquals(saved, item))
+                        _items[_index] = saved;
+                    _shell.ShowToast(L("Photos_Saved"), DaisyAlertVariant.Success);
+                    if (openResult)
+                        await LoadIndexAsync(_index, checkUnsaved: false);
+                }
+                else
+                {
+                    _shell.ShowToast(PhotosLocalization.Format("Photos_SavedAs", System.IO.Path.GetFileName(destination)), DaisyAlertVariant.Success);
+                    if (openResult && saved != null)
+                    {
+                        _items.Insert(_index + 1, saved);
+                        await LoadIndexAsync(_index + 1, checkUnsaved: false);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _shell.ShowToast(PhotosLocalization.Format("Photos_SaveFailed", ex.Message), DaisyAlertVariant.Error);
+                return false;
+            }
+            finally
+            {
+                _saving = false;
+                IsHitTestVisible = true;
+                LoadingIndicator.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void SaveButton_Click(object sender, RoutedEventArgs e) => await SaveAsync(overwrite: false, openResult: true);
+
+        #endregion
+
         #region Slideshow
 
         public void StartSlideshow()
@@ -446,6 +626,7 @@ namespace Flowery.Uno.Photos.Views
                 SetImmersive(false);
             _slideshow = true;
             SetPanelOpen(false);
+            _compareSplit = false;
             Toolbar.Visibility = Visibility.Collapsed;
             StatusBar.Visibility = Visibility.Collapsed;
             PrevButton.Opacity = 0;
@@ -538,12 +719,13 @@ namespace Flowery.Uno.Photos.Views
 
         private async void ViewerView_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Handled || !IsOpen)
+            if (e.Handled || !IsOpen || _saving)
                 return;
             if (e.OriginalSource is TextBox)
                 return;
 
             var ctrl = IsDown(VirtualKey.Control);
+            var shift = IsDown(VirtualKey.Shift);
             var fromSlider = e.OriginalSource is DaisyRange;
 
             if (_slideshow)
@@ -590,10 +772,33 @@ namespace Flowery.Uno.Photos.Views
                     e.Handled = true;
                     if (_immersive)
                         SetImmersive(false);
+                    else if (_compareSplit)
+                        ToggleCompare();
                     else if (_panelOpen)
                         SetPanelOpen(false);
                     else
                         await RequestCloseAsync();
+                    break;
+                case VirtualKey.Z when ctrl && shift:
+                case VirtualKey.Y when ctrl:
+                    e.Handled = true;
+                    _history.Redo();
+                    break;
+                case VirtualKey.Z when ctrl:
+                    e.Handled = true;
+                    _history.Undo();
+                    break;
+                case VirtualKey.S when ctrl && shift:
+                    e.Handled = true;
+                    await ConfirmOverwriteAsync();
+                    break;
+                case VirtualKey.S when ctrl:
+                    e.Handled = true;
+                    await SaveAsync(overwrite: false, openResult: true);
+                    break;
+                case VirtualKey.E when ctrl:
+                    e.Handled = true;
+                    EditButton_Click(this, new RoutedEventArgs());
                     break;
                 case VirtualKey.C when ctrl:
                     e.Handled = true;
@@ -626,6 +831,14 @@ namespace Flowery.Uno.Photos.Views
                 case VirtualKey.I when !ctrl:
                     e.Handled = true;
                     InfoButton_Click(this, new RoutedEventArgs());
+                    break;
+                case VirtualKey.R when !ctrl:
+                    e.Handled = true;
+                    Rotate(shift ? -1 : 1);
+                    break;
+                case VirtualKey.X when !ctrl && IsMarkupMode:
+                    e.Handled = true;
+                    SwapColors();
                     break;
                 case VirtualKey.Delete:
                     e.Handled = true;

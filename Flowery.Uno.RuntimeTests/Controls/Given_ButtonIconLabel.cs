@@ -1,8 +1,10 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Flowery.Controls;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,6 +28,24 @@ namespace Flowery.Uno.RuntimeTests.Controls
             await NextDispatcherTurnAsync(button);
 
             AssertIconThenLabel(button, "Neu scannen");
+        }
+
+        [TestMethod]
+        public async Task When_IconButtonHasALabel_ScreenReadersHearTheLabel()
+        {
+            var button = CreateBoundIconButton("&Edit");
+            RuntimeTestHelpers.AttachToHost(button);
+            await RuntimeTestHelpers.EnsureLoadedAsync(button);
+
+            // Content is the icon layout panel now, which has no name of its own.
+            Assert.AreEqual("Edit", AutomationNameOf(button));
+
+            button.DataContext = new LabelSource("Bearbeiten");
+            await NextDispatcherTurnAsync(button);
+            Assert.AreEqual("Bearbeiten", AutomationNameOf(button));
+
+            AutomationProperties.SetName(button, "Edit photo");
+            Assert.AreEqual("Edit photo", AutomationNameOf(button), "an explicit name wins over the label");
         }
 
         [TestMethod]
@@ -130,6 +150,9 @@ namespace Flowery.Uno.RuntimeTests.Controls
             Assert.IsInstanceOfType<Viewbox>(presenters[0].Content, "The icon should stay in front of the label.");
             Assert.AreEqual(label, presenters[1].Content);
         }
+
+        private static string AutomationNameOf(DaisyButton button) =>
+            FrameworkElementAutomationPeer.CreatePeerForElement(button).GetName();
 
         public sealed class LabelSource(string label)
         {

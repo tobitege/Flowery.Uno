@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "عجلة الماوس تبدّل الصور (Ctrl+العجلة للتكبير)",
   "Photos_Settings_ConfirmDelete": "السؤال قبل الحذف",
   "Photos_Settings_SlideshowInterval": "الفاصل الزمني لعرض الشرائح",
-  "Photos_Settings_JpegQuality": "جودة JPEG عند الحفظ",
+  "Photos_Settings_JpegQuality": "جودة JPEG/WebP عند الحفظ",
   "Photos_SecondsFormat": "{0:0} ث",
   "Photos_Settings_Shortcuts": "اختصارات لوحة المفاتيح",
   "Photos_Settings_AboutText": "عارض ومحرر صور سريع مبني باستخدام عناصر تحكم Daisy من Flowery.WinUI وWin2D وWinUI 3.",

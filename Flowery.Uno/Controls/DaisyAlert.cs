@@ -1,4 +1,4 @@
-namespace Flowery.Controls
+﻿namespace Flowery.Controls
 {
     /// <summary>
     /// An Alert control styled after DaisyUI's Alert component.
@@ -192,6 +192,8 @@ namespace Flowery.Controls
             {
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Left,
+                // A long text message wraps inside the alert's width (a toast with MaxWidth) instead of being cut off.
+                TextWrapping = TextWrapping.Wrap,
                 Content = _userContent
             };
             Grid.SetColumn(_contentPresenter, 1);

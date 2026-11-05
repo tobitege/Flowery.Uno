@@ -311,7 +311,7 @@
   "Photos_Settings_WheelNavigates": "鼠标滚轮切换照片（Ctrl+滚轮缩放）",
   "Photos_Settings_ConfirmDelete": "删除前询问",
   "Photos_Settings_SlideshowInterval": "幻灯片放映间隔",
-  "Photos_Settings_JpegQuality": "保存时的 JPEG 质量",
+  "Photos_Settings_JpegQuality": "保存时的 JPEG/WebP 质量",
   "Photos_SecondsFormat": "{0:0} 秒",
   "Photos_Settings_Shortcuts": "键盘快捷方式",
   "Photos_Settings_AboutText": "一款快速的照片查看和编辑应用，基于 Flowery.WinUI Daisy 控件、Win2D 和 WinUI 3 构建。",

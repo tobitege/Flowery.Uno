@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Globalization;
 using System.Text;
 using Flowery.Uno.Photos.Services;
@@ -106,7 +106,7 @@ namespace Flowery.Uno.UnitTests.Photos
         /// Little endian TIFF: IFD0 (make, model, Exif and GPS pointers), the Exif IFD (exposure, aperture, ISO, date, focal length, lens)
         /// and the GPS IFD (45° 30' 36" and 9° 15' 0").
         /// </summary>
-        private static byte[] BuildTiff(string make = "Acme", string model = "Cam 9", string latRef = "N", string lonRef = "E")
+        internal static byte[] BuildTiff(string make = "Acme", string model = "Cam 9", string latRef = "N", string lonRef = "E")
         {
             const int ifd0 = 8;
             const int exifIfd = ifd0 + 2 + 4 * 12 + 4;

@@ -55,6 +55,28 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public async Task When_AlertMessageIsLongerThanMaxWidth_ItWraps()
+        {
+            var alert = new DaisyAlert
+            {
+                Message = "Automatische Verbesserung angewendet – mit den Reglern feinabstimmen",
+                MaxWidth = 240,
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+            var oneLine = new DaisyAlert { Message = "Gespeichert", MaxWidth = 240, HorizontalAlignment = HorizontalAlignment.Left };
+
+            var stack = new StackPanel { Width = 600 };
+            stack.Children.Add(alert);
+            stack.Children.Add(oneLine);
+            RuntimeTestHelpers.AttachToHost(stack);
+            await RuntimeTestHelpers.CompleteLayoutAsync(stack, alert, oneLine);
+
+            Assert.IsTrue(alert.ActualWidth <= 240.5, $"width {alert.ActualWidth}");
+            Assert.IsTrue(alert.ActualHeight > oneLine.ActualHeight + 8,
+                $"the long message should take more than one line: {alert.ActualHeight} vs {oneLine.ActualHeight}");
+        }
+
+        [TestMethod]
         public void When_Divider_Constructed_DefaultsHold()
         {
             var divider = new DaisyDivider();

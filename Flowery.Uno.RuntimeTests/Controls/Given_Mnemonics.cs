@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -32,6 +32,8 @@ namespace Flowery.Uno.RuntimeTests.Controls
                 ("&&&A", "&A", 1, 'A'),
                 ("A&B&C", "ABC", 1, 'B'),
                 ("Trailing&", "Trailing", -1, null),
+                ("Reset crop & rotation", "Reset crop & rotation", -1, null),
+                ("A & &B", "A & B", 4, 'B'),
                 ("Plain", "Plain", -1, null),
                 ("", "", -1, null),
                 (null, "", -1, null)

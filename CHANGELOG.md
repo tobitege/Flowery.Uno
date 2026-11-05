@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assignees through `FlowKanban.AssigneeAdapter`. The language files drop the `Kanban_Users_*` texts, except
   `Kanban_Users_Unresolved`, which the assignee filter shows, and `Common_Connect` and `Common_Disconnect`. State the
   removed providers saved (`FlowKanban.LocalUserId`, `FlowKanban.IdentityLinks`) stays where it is; nothing reads it.
+- **New:** Photos: `Flowery.Uno.Photos`, a demo app for viewing and editing photos on the Skia desktop head (Windows,
+  macOS, Linux), ported from Flowery.WinUI.Photos (#108, #133, #134). See its
+  [README](Flowery.Uno.Photos/README.md) and [CHANGELOG](Flowery.Uno.Photos/CHANGELOG.md).
 - **New:** Scheduler: `DaisyScheduler`, ported from Flowery.NET 3.10.0 and adapted from the MIT-licensed
   Xtreme.Components scheduler (#103). Day, Week, Month, Agenda, Calendar, resource Planner and horizontal Timeline
   views; typed resources with resource kinds, named and collapsible Timeline groups and occupancy queries; selection,
@@ -81,6 +84,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DaisyButton` gives screen readers its label as name when `AutomationProperties.Name` is not set, also when the label
   sits next to an icon, and without `&` markers. With an icon the button had no name at all, because its content is
   then the icon layout panel.
+- `DaisyButton` with an icon measures a label set after loading at once with the icon. The label moved next to the icon
+  only on the next dispatcher turn, so code that set a label and measured right away, such as a toolbar that drops
+  labels when space is short, saw the size without the icon and could switch back and forth on every frame.
 - Mnemonics: an `&` before whitespace stays literal, so labels such as "Crop & rotate" need no `&&`. It made the space
   the access character and dropped the `&` (`FloweryMnemonicHelpers.Parse`, used by `DaisyButton`, `DaisyTabs`,
   `DaisyMenuItem`, `DaisyIconText` and `DaisyMnemonicText`).

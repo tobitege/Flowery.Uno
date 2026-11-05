@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,6 +85,8 @@ namespace Flowery.Uno.Photos.Services.Platform
         public override DisplayGeometry DisplayGeometry => DisplayGeometry.WorkAreaPixels;
 
         public override DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window) => Native.GetMonitorBounds(window);
+
+        public override DisplayRect? GetWorkArea(Windows.Graphics.RectInt32 window) => Native.GetWorkArea(window);
 
         /// <summary>The DWM accent is stored as 0xAABBGGRR.</summary>
         public static SystemAccent ParseAccent(uint abgr) =>
@@ -193,7 +195,12 @@ namespace Flowery.Uno.Photos.Services.Platform
                 return displays;
             }
 
-            public static DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window)
+            public static DisplayRect? GetMonitorBounds(Windows.Graphics.RectInt32 window) => GetMonitorRect(window, workArea: false);
+
+            public static DisplayRect? GetWorkArea(Windows.Graphics.RectInt32 window) => GetMonitorRect(window, workArea: true);
+
+            /// <summary>The full rectangle or the work area (without the taskbar) of the monitor nearest to <paramref name="window"/>.</summary>
+            private static DisplayRect? GetMonitorRect(Windows.Graphics.RectInt32 window, bool workArea)
             {
                 try
                 {
@@ -202,8 +209,8 @@ namespace Flowery.Uno.Photos.Services.Platform
                     var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
                     if (monitor == IntPtr.Zero || !GetMonitorInfoW(monitor, ref info))
                         return null;
-                    return new DisplayRect(info.Monitor.Left, info.Monitor.Top,
-                        info.Monitor.Right - info.Monitor.Left, info.Monitor.Bottom - info.Monitor.Top,
+                    var area = workArea ? info.Work : info.Monitor;
+                    return new DisplayRect(area.Left, area.Top, area.Right - area.Left, area.Bottom - area.Top,
                         (info.Flags & MonitorInfoPrimary) != 0);
                 }
                 catch

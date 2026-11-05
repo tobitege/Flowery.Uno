@@ -135,6 +135,14 @@ jobs:
       - name: Run unit tests (Skia desktop)
         run: dotnet run --project Flowery.Uno.UnitTests -f net10.0-desktop
 
+      # The unit tests built the Photos app; start it once with isolated state and close it again.
+      - name: Start Photos (Skia desktop)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          dotnet build Flowery.Uno.Photos/Flowery.Uno.Photos.csproj -f net10.0-desktop -c Debug
+          ./scripts/test_photos_start.ps1 -Configuration Debug
+
   build-gallery:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}

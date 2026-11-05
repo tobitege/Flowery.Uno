@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using Flowery.Localization;
 using Flowery.Uno.Photos.Localization;
@@ -61,6 +61,46 @@ namespace Flowery.Uno.UnitTests.Photos
 
         private static List<string> Placeholders(string text) =>
             System.Text.RegularExpressions.Regex.Matches(text, @"\{\d+\}").Select(m => m.Value).ToList();
+
+        /// <summary>
+        /// A key used in code (<c>"Photos_…"</c>) or XAML (<c>{Binding [Photos_…]}</c>) that no file has would show as the
+        /// key itself. The test reads the app's sources from the repository the test runs in.
+        /// </summary>
+        [TestMethod]
+        public void When_ScanningTheSources_EveryUsedKeyExists()
+        {
+            var sources = FindPhotosSources();
+            var english = LoadAll()["en"];
+            var used = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var file in SourceFiles(sources, "*.cs"))
+                used.UnionWith(System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(file), "\"(Photos_[A-Za-z0-9_]+)\"").Select(m => m.Groups[1].Value));
+            foreach (var file in SourceFiles(sources, "*.xaml"))
+                used.UnionWith(System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(file), @"\[(Photos_[A-Za-z0-9_]+)\]").Select(m => m.Groups[1].Value));
+
+            Assert.IsTrue(used.Count > 100, $"only {used.Count} keys found in {sources}");
+            var missing = used.Where(k => !english.ContainsKey(k)).ToList();
+            Assert.AreEqual(0, missing.Count, "used but missing in en.json: " + string.Join(", ", missing));
+        }
+
+        /// <summary>The app's own files, without the build output in bin and obj.</summary>
+        private static IEnumerable<string> SourceFiles(string root, string pattern) =>
+            Directory.EnumerateFiles(root, pattern, SearchOption.AllDirectories).Where(f =>
+            {
+                var relative = Path.GetRelativePath(root, f).Replace('\\', '/');
+                return !relative.StartsWith("bin/", StringComparison.Ordinal) && !relative.StartsWith("obj/", StringComparison.Ordinal);
+            });
+
+        private static string FindPhotosSources()
+        {
+            for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir != null; dir = dir.Parent)
+            {
+                var candidate = Path.Combine(dir.FullName, "Flowery.Uno.Photos");
+                if (File.Exists(Path.Combine(candidate, "Flowery.Uno.Photos.csproj")))
+                    return candidate;
+            }
+            Assert.Inconclusive("The Flowery.Uno.Photos sources are not above the test output.");
+            return string.Empty;
+        }
 
         [TestMethod]
         public void When_ResolvingAKey_FallsBackToEnglishThenToTheKey()

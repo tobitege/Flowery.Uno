@@ -31,6 +31,30 @@ namespace Flowery.Uno.RuntimeTests.Controls
         }
 
         [TestMethod]
+        public async Task When_LabelIsSetAndMeasuredAtOnce_TheSizeIncludesTheIcon()
+        {
+            // Toolbars that fit their buttons set a label and measure right away; a size without the icon made the Photos
+            // gallery header flip between two layouts on every frame.
+            var button = new DaisyButton { Content = "Filter", IconSymbol = Symbol.Filter };
+            RuntimeTestHelpers.AttachToHost(button);
+            await RuntimeTestHelpers.EnsureLoadedAsync(button);
+            var infinite = new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity);
+
+            button.Content = null;
+            button.Measure(infinite);
+            var iconOnly = button.DesiredSize.Width;
+            button.Content = "Filter";
+            button.Measure(infinite);
+            var atOnce = button.DesiredSize.Width;
+            AssertIconThenLabel(button, "Filter");
+
+            await NextDispatcherTurnAsync(button);
+            button.Measure(infinite);
+            Assert.AreEqual(button.DesiredSize.Width, atOnce, 0.5, "the size measured at once is the final one");
+            Assert.IsTrue(atOnce > iconOnly, $"the label adds width: {atOnce} vs {iconOnly}");
+        }
+
+        [TestMethod]
         public async Task When_IconButtonHasALabel_ScreenReadersHearTheLabel()
         {
             var button = CreateBoundIconButton("&Edit");

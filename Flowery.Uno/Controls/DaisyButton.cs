@@ -397,6 +397,18 @@ namespace Flowery.Controls
             UpdateMnemonicContentTemplate(newContent);
         }
 
+        /// <summary>
+        /// A label set after loading moves next to the icon only on the next dispatcher turn (see <see cref="OnContentChanged"/>).
+        /// A measure before that would size the button without its icon, and code that sets a label and measures right away
+        /// (to fit a toolbar) would decide on that size and could flip back and forth. Measure takes the label at once.
+        /// </summary>
+        protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
+        {
+            if (_iconLabelRewrapPending)
+                TakeContentAsIconLabel();
+            return base.MeasureOverride(availableSize);
+        }
+
         protected override AutomationPeer OnCreateAutomationPeer() => new DaisyButtonAutomationPeer(this);
 
         /// <summary>

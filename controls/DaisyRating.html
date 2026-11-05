@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyRating</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyRating</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyRating.png" alt="DaisyRating" class="doc-image">
+
+<p>DaisyRating is a star rating control built on <code>RangeBase</code>. It supports <strong>precision modes</strong> (full/half/0.1), <strong>3 size presets</strong>, and respects <code>Minimum/Maximum/Value</code> (default 0–5).</p>
+<p>Filled stars are clipped based on <code>Value</code> to show partial ratings; clicking updates the value unless <code>IsReadOnly</code> is set.</p>
+
+<h2>Precision Modes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Snapping</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Full (default)</td>
+<td>Whole stars (1, 2, 3…).</td>
+</tr>
+<tr>
+<td>Half</td>
+<td>0.5 increments.</td>
+</tr>
+<tr>
+<td>Precise</td>
+<td>0.1 increments.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Star Size</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>12px</td>
+<td>Dense tables/toolbars.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>16px</td>
+<td>Compact cards/forms.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>24px</td>
+<td>General usage.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>32px</td>
+<td>Hero ratings or touch-friendly UIs.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>Falls back to Medium styling (no explicit theme overrides).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic --&gt;
+&lt;controls:DaisyRating Value="2.5" /&gt;
+
+&lt;!-- Large, whole-star only --&gt;
+&lt;controls:DaisyRating Value="4" Size="Large" Precision="Full" /&gt;
+
+&lt;!-- Read-only display --&gt;
+&lt;controls:DaisyRating Value="4.5" IsReadOnly="True" /&gt;</code></pre>
+
+<h2>Accessibility Support</h2>
+
+<p>DaisyRating includes built-in accessibility for screen readers via the <code>AccessibleText</code> property. The automation peer automatically announces the current star count (e.g., "Rating: 3 of 5 stars").</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AccessibleText</code></td>
+<td><code>string</code></td>
+<td><code>"Rating"</code></td>
+<td>Context text announced by screen readers (e.g., "Product rating: 4 of 5 stars").</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>How It Works</h3>
+
+<p>The automation peer formats the announcement based on the current value and precision:</p>
+
+<ul><li><strong>Full precision</strong>: "Rating: 3 of 5 stars"</li>
+<li><strong>Half precision</strong>: "Rating: 3.5 of 5 stars"</li>
+<li><strong>Precise mode</strong>: "Rating: 3.7 of 5 stars"</li>
+</ul>
+<h3>Accessibility Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Default: announces "Rating: 3 of 5 stars" --&gt;
+&lt;controls:DaisyRating Value="3" /&gt;
+
+&lt;!-- Contextual: announces "Product rating: 4 of 5 stars" --&gt;
+&lt;controls:DaisyRating Value="4" AccessibleText="Product rating" /&gt;
+
+&lt;!-- Half precision: announces "Movie rating: 4.5 of 5 stars" --&gt;
+&lt;controls:DaisyRating Value="4.5" Precision="Half" AccessibleText="Movie rating" /&gt;
+
+&lt;!-- Read-only with context: announces "Average user rating: 3 of 5 stars" --&gt;
+&lt;controls:DaisyRating Value="3" IsReadOnly="True" AccessibleText="Average user rating" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set <code>Maximum</code> to the number of stars (default 5); <code>Value</code> is clipped within <code>Minimum/Maximum</code>.</li>
+<li>Use <code>Precision="Half"</code> for UX parity with common review widgets; <code>Precise</code> for finer sliders.</li>
+<li>When read-only, disable pointer updates via <code>IsReadOnly=True</code> but still show the clipped fill.</li>
+<li>Use <code>AccessibleText</code> to provide context (e.g., "Product rating" or "Your review"); the star count is automatically appended.</li>
+<li>The built-in accessibility replaces the need for a separate numeric label in most cases.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyRange.html">← Range</a></div>
+    <div class="nav-right"><a href="DaisyResizableColumnsHost.html">ResizableColumnsHost →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyGlass</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyGlass</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisyglass">
+  <input type="radio" name="daisyglass_tabs" id="daisyglass_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisyglass_tabs" id="daisyglass_tab1" class="tab-radio">
+  <input type="radio" name="daisyglass_tabs" id="daisyglass_tab2" class="tab-radio">
+  <input type="radio" name="daisyglass_tabs" id="daisyglass_tab3" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisyglass_tab0" class="tab-label">Part 1</label>
+    <label for="daisyglass_tab1" class="tab-label">Part 2</label>
+    <label for="daisyglass_tab2" class="tab-label">Part 3</label>
+    <label for="daisyglass_tab3" class="tab-label">Part 4</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyGlass(BitmapCaptureMode).png" alt="DaisyGlass - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyGlass(FullWidthExample).png" alt="DaisyGlass - Part 2" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyGlass(SimulatedGlass).png" alt="DaisyGlass - Part 3" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyGlass(SkiaSharpModeMatrix).png" alt="DaisyGlass - Part 4" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyGlass is a frosted-glass container with multiple blur strategies: simulated gradients, bitmap capture, or SkiaSharp GPU blur. It exposes tint/opacity controls, saturation, reflection parameters, and a toggle for real backdrop capture. Use it to create translucent panels over imagery or colorful backgrounds.</p>
+
+<h2>Blur Modes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Simulated</code></td>
+<td>No real blur; uses layered gradients/textures for a lightweight glass look.</td>
+</tr>
+<tr>
+<td><code>BitmapCapture</code> (default)</td>
+<td>Captures underlying content once and blurs it; good balance of quality/perf.</td>
+</tr>
+<tr>
+<td><code>SkiaSharp</code></td>
+<td>GPU blur via Skia; more real-time but experimental.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Key Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>EnableBackdropBlur</code> (bool)</td>
+<td>Enables real capture/blur; simulated layers are always rendered.</td>
+</tr>
+<tr>
+<td><code>BlurMode</code></td>
+<td>Chooses blur pipeline (Simulated/BitmapCapture/SkiaSharp).</td>
+</tr>
+<tr>
+<td><code>GlassBlur</code></td>
+<td>Blur radius/strength.</td>
+</tr>
+<tr>
+<td><code>GlassOpacity</code></td>
+<td>Base tint opacity (overlay).</td>
+</tr>
+<tr>
+<td><code>GlassTint</code> / <code>GlassTintOpacity</code></td>
+<td>Tint color and intensity.</td>
+</tr>
+<tr>
+<td><code>GlassBorderOpacity</code></td>
+<td>Subtle outline opacity.</td>
+</tr>
+<tr>
+<td><code>GlassReflectDegree</code> / <code>GlassReflectOpacity</code></td>
+<td>Control the reflection effect.</td>
+</tr>
+<tr>
+<td><code>GlassTextShadowOpacity</code></td>
+<td>Shadow for text content.</td>
+</tr>
+<tr>
+<td><code>GlassSaturation</code></td>
+<td>Saturation of blurred background (0 = grayscale).</td>
+</tr>
+<tr>
+<td><code>BlurredBackground</code> (read-only)</td>
+<td>Captured/blurred image when backdrop blur is enabled.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Lightweight simulated glass --&gt;
+&lt;controls:DaisyGlass&gt;
+    &lt;StackPanel Padding="16" Spacing="8"&gt;
+        &lt;TextBlock Text="Simulated Glass" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="No real blur, just gradients." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyGlass&gt;
+
+&lt;!-- Backdrop blur with custom tint --&gt;
+&lt;controls:DaisyGlass EnableBackdropBlur="True"
+                     BlurMode="BitmapCapture"
+                     GlassBlur="30"
+                     GlassTint="#FFFFFF"
+                     GlassTintOpacity="0.35"&gt;
+    &lt;StackPanel Padding="16" Spacing="8"&gt;
+        &lt;TextBlock Text="Blurred Panel" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Captures background once and blurs it." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyGlass&gt;
+
+&lt;!-- SkiaSharp live blur --&gt;
+&lt;controls:DaisyGlass EnableBackdropBlur="True"
+                     BlurMode="SkiaSharp"
+                     GlassBlur="40"
+                     GlassSaturation="0.9"&gt;
+    &lt;TextBlock Text="Live GPU blur" Margin="16,12" /&gt;
+&lt;/controls:DaisyGlass&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>EnableBackdropBlur=False</code> (default) for best performance; turn it on only where blur is critical.</li>
+<li>Keep <code>GlassBlur</code> moderate (20–40) to avoid heavy GPU/CPU load; higher values can be expensive.</li>
+<li>For dynamic backgrounds, call <code>RefreshBackdrop()</code> after major layout/content changes when using capture mode.</li>
+<li>Prefer <code>Simulated</code> on low-powered devices; use <code>SkiaSharp</code> only when GPU acceleration is available and acceptable.</li>
+<li>Ensure the parent has a background; backdrop capture looks better when sampling colorful or textured surfaces.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyFileInput.html">← FileInput</a></div>
+    <div class="nav-right"><a href="DaisyHero.html">Hero →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

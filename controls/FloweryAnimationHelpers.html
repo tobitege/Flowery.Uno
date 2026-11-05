@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloweryAnimationHelpers</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>FloweryAnimationHelpers</h1>
+
+<h2>Overview</h2>
+
+<p>FloweryAnimationHelpers provides a comprehensive, reusable animation and slideshow infrastructure for building cinematic UI experiences. It includes enums for visual effects, a controller for slideshow logic, and attached properties for declarative animations.</p>
+
+<strong>Namespace</strong>: <code>Flowery.Services</code>
+
+<h2>Components</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FlowerySlideEffect</code></td>
+<td>Enum for continuous visual animations (Pan And Zoom, zoom, pan, etc.)</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransition</code></td>
+<td>Enum for between-slide transitions (Fade, Cube, Wormhole, etc.)</td>
+</tr>
+<tr>
+<td><code>FlowerySlideEffectParams</code></td>
+<td>Configuration for continuous effect animations</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitionParams</code></td>
+<td>Configuration for between-slide transitions</td>
+</tr>
+<tr>
+<td><code>FlowerySlideshowMode</code></td>
+<td>Enum for navigation modes (Manual, Slideshow, Random, Kiosk)</td>
+</tr>
+<tr>
+<td><code>FlowerySlideshowController</code></td>
+<td>Reusable timer, shuffle, and navigation logic</td>
+</tr>
+<tr>
+<td><code>FlowerySlideEffects</code></td>
+<td>Attached properties for XAML-based effects</td>
+</tr>
+<tr>
+<td><code>FloweryAnimationHelpers</code></td>
+<td>Static methods for building slide effects</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitionHelpers</code></td>
+<td>Static methods for executing slide transitions</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>FlowerySlideEffect Enum</h2>
+
+<p>Specifies visual effects for slide/image animations. Usable by any control that displays content with cinematic transitions.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Value</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>No effect - static display.</td>
+</tr>
+<tr>
+<td><code>PanAndZoom</code></td>
+<td>Randomized pan and zoom combination (documentary-style).</td>
+</tr>
+<tr>
+<td><code>ZoomIn</code></td>
+<td>Slow zoom in from 1.0x to 1.0x + intensity.</td>
+</tr>
+<tr>
+<td><code>ZoomOut</code></td>
+<td>Slow zoom out from 1.0x + intensity to 1.0x.</td>
+</tr>
+<tr>
+<td><code>PanLeft</code></td>
+<td>Slow pan to the left.</td>
+</tr>
+<tr>
+<td><code>PanRight</code></td>
+<td>Slow pan to the right.</td>
+</tr>
+<tr>
+<td><code>PanUp</code></td>
+<td>Slow pan upward.</td>
+</tr>
+<tr>
+<td><code>PanDown</code></td>
+<td>Slow pan downward.</td>
+</tr>
+<tr>
+<td><code>Drift</code></td>
+<td>Random direction pan (different each slide).</td>
+</tr>
+<tr>
+<td><code>Breath</code></td>
+<td>Subtle rhythmic "breathing" zoom effect.</td>
+</tr>
+<tr>
+<td><code>Throw</code></td>
+<td>High-speed parallax fly-through effect.</td>
+</tr>
+<tr>
+<td><code>Pulse</code></td>
+<td>Subtle breathing/pulsing zoom effect.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>FlowerySlideEffectParser</h3>
+
+<pre><code class="language-csharp">// Parse string to enum (returns None for invalid/null)
+FlowerySlideEffect effect = FlowerySlideEffectParser.Parse("PanAndZoom");
+
+// Try-parse pattern
+if (FlowerySlideEffectParser.TryParse(value, out var effect))
+{
+    // Valid effect
+}</code></pre>
+<hr>
+<h2>FlowerySlideshowMode Enum</h2>
+
+<p>Specifies navigation modes for slideshow controls. Usable by carousels, galleries, and other slideshow-style components.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Value</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Manual</code></td>
+<td>User navigates via prev/next buttons only. Default behavior.</td>
+</tr>
+<tr>
+<td><code>Slideshow</code></td>
+<td>Automatic sequential advancement that loops infinitely.</td>
+</tr>
+<tr>
+<td><code>Random</code></td>
+<td>Automatic random advancement with non-repeating order (Fisher-Yates).</td>
+</tr>
+<tr>
+<td><code>Kiosk</code></td>
+<td>Random advance that also randomizes the visual effect and transition per slide.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>FlowerySlideshowModeParser</h3>
+
+<pre><code class="language-csharp">// Parse string to enum (returns Manual for invalid/null)
+FlowerySlideshowMode mode = FlowerySlideshowModeParser.Parse("Kiosk");</code></pre>
+<hr>
+<h2>FlowerySlideTransition Enum</h2>
+
+<p>Specifies visual animations that occur when navigating <strong>between</strong> slides.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Tier</th>
+<th>Category</th>
+<th>Values</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Tier 1</strong></td>
+<td>Transform</td>
+<td><code>Fade</code>, <code>Slide</code>, <code>Push</code>, <code>Zoom</code>, <code>Flip</code>, <code>Cube</code>, <code>Cover</code>, <code>Reveal</code></td>
+</tr>
+<tr>
+<td><strong>Tier 2</strong></td>
+<td>Clip-based</td>
+<td><code>Wipe</code>, <code>Blinds</code>, <code>Slices</code>, <code>Checkerboard</code>, <code>Spiral</code>, <code>MatrixRain</code>, <code>Wormhole</code></td>
+</tr>
+<tr>
+<td><strong>Tier 3</strong></td>
+<td>Skia-based</td>
+<td><code>Dissolve</code>, <code>Pixelate</code> (Requires Skia-enabled target)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>FlowerySlideTransitionParams</h3>
+
+<p>Configuration record for transition animation properties.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Duration</code></td>
+<td><code>TimeSpan</code></td>
+<td><code>400ms</code></td>
+<td>Total animation time.</td>
+</tr>
+<tr>
+<td><code>SliceCount</code></td>
+<td><code>int</code></td>
+<td><code>8</code></td>
+<td>Grid/Blind density for Tier 2.</td>
+</tr>
+<tr>
+<td><code>StaggerSlices</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Use sequential vs. random reveal order.</td>
+</tr>
+<tr>
+<td><code>FlipAngle</code></td>
+<td><code>double</code></td>
+<td><code>90.0</code></td>
+<td>Rotation angle for 3D transitions.</td>
+</tr>
+<tr>
+<td><code>PixelateSize</code></td>
+<td><code>int</code></td>
+<td><code>20</code></td>
+<td>Block size for Pixelate transition.</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-csharp">var myTransition = FlowerySlideTransitionHelpers.ApplyTransition(
+    container, oldElement, newElement, 
+    FlowerySlideTransition.CubeRight,
+    new FlowerySlideTransitionParams { Duration = TimeSpan.FromSeconds(0.6) }
+);</code></pre>
+<hr>
+<h2>FlowerySlideshowController</h2>
+
+<p>A batteries-included controller for building slideshow-style controls. Encapsulates timer management, shuffle algorithms, and navigation logic.</p>
+
+<h3>Constructor</h3>
+
+<pre><code class="language-csharp">var controller = new FlowerySlideshowController(
+    navigateAction: index =&gt; SelectedIndex = index,  // Called when navigating
+    getItemCount: () =&gt; Items.Count,                  // Returns item count
+    getCurrentIndex: () =&gt; SelectedIndex);            // Returns current index</code></pre>
+
+<h3>Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Mode</code></td>
+<td><code>FlowerySlideshowMode</code></td>
+<td><code>Manual</code></td>
+<td>Navigation mode. Changes restart the timer.</td>
+</tr>
+<tr>
+<td><code>Interval</code></td>
+<td><code>double</code></td>
+<td><code>3.0</code></td>
+<td>Seconds between auto-advances. Minimum 0.5s.</td>
+</tr>
+<tr>
+<td><code>WrapAround</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether navigation wraps (last→first, first→last).</td>
+</tr>
+<tr>
+<td><code>IsRunning</code></td>
+<td><code>bool</code></td>
+<td>(read-only)</td>
+<td>Whether the timer is currently running.</td>
+</tr>
+<tr>
+<td><code>CanGoPrevious</code></td>
+<td><code>bool</code></td>
+<td>(read-only)</td>
+<td>Whether previous navigation is possible.</td>
+</tr>
+<tr>
+<td><code>CanGoNext</code></td>
+<td><code>bool</code></td>
+<td>(read-only)</td>
+<td>Whether next navigation is possible.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Start()</code></td>
+<td>Starts or restarts the slideshow timer.</td>
+</tr>
+<tr>
+<td><code>Stop()</code></td>
+<td>Stops the slideshow timer.</td>
+</tr>
+<tr>
+<td><code>Restart()</code></td>
+<td>Restarts the timer (useful after mode/interval changes).</td>
+</tr>
+<tr>
+<td><code>Previous()</code></td>
+<td>Navigate to the previous item (respects WrapAround).</td>
+</tr>
+<tr>
+<td><code>Next()</code></td>
+<td>Navigate to the next item (respects WrapAround).</td>
+</tr>
+<tr>
+<td><code>GoTo(int index)</code></td>
+<td>Navigate to a specific index (clamped to valid range).</td>
+</tr>
+<tr>
+<td><code>OnItemCountChanged()</code></td>
+<td>Call when items change to reinitialize shuffle order.</td>
+</tr>
+<tr>
+<td><code>Dispose()</code></td>
+<td>Stops the timer and releases resources.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Example: Custom Gallery Control</h3>
+
+<pre><code class="language-csharp">public class MyGallery : Control, IDisposable
+{
+    private FlowerySlideshowController _controller;
+
+    public MyGallery()
+    {
+        _controller = new FlowerySlideshowController(
+            index =&gt; SelectedIndex = index,
+            () =&gt; Items.Count,
+            () =&gt; SelectedIndex);
+    }
+
+    public void StartSlideshow()
+    {
+        _controller.Mode = FlowerySlideshowMode.Random;
+        _controller.Interval = 5.0;
+        _controller.WrapAround = true;
+        _controller.Start();
+    }
+
+    private void OnPreviousClick() =&gt; _controller.Previous();
+    private void OnNextClick() =&gt; _controller.Next();
+
+    public void Dispose() =&gt; _controller.Dispose();
+}</code></pre>
+<hr>
+<h2>FlowerySlideEffects (Attached Properties)</h2>
+
+<p>Apply cinematic effects to any <code>UIElement</code> declaratively in XAML.</p>
+
+<h3>Attached Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Effect</code></td>
+<td><code>FlowerySlideEffect</code></td>
+<td><code>None</code></td>
+<td>The slide effect to apply.</td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td><code>double</code></td>
+<td><code>3.0</code></td>
+<td>Effect duration in seconds.</td>
+</tr>
+<tr>
+<td><code>ZoomIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.15</code></td>
+<td>Zoom scale factor (0.0 to 0.5).</td>
+</tr>
+<tr>
+<td><code>PanDistance</code></td>
+<td><code>double</code></td>
+<td><code>50</code></td>
+<td>Pan distance in pixels (0 to 200).</td>
+</tr>
+<tr>
+<td><code>PulseIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.08</code></td>
+<td>Pulse amplitude (0.0 to 0.2).</td>
+</tr>
+<tr>
+<td><code>AutoStart</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to start when the element loads.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>XAML Usage</h3>
+
+<pre><code class="language-xml">xmlns:services="using:Flowery.Services"
+
+&lt;!-- Pan And Zoom effect on a hero image --&gt;
+&lt;Image Source="ms-appx:///Assets/hero.jpg"
+       services:FlowerySlideEffects.Effect="PanAndZoom"
+       services:FlowerySlideEffects.Duration="8"
+       services:FlowerySlideEffects.ZoomIntensity="0.2"/&gt;
+
+&lt;!-- Pulsing logo --&gt;
+&lt;Image Source="ms-appx:///Assets/logo.png"
+       services:FlowerySlideEffects.Effect="Pulse"
+       services:FlowerySlideEffects.Duration="2"
+       services:FlowerySlideEffects.PulseIntensity="0.05"/&gt;
+
+&lt;!-- Slow pan across a wide image --&gt;
+&lt;Image Source="ms-appx:///Assets/panorama.jpg"
+       services:FlowerySlideEffects.Effect="PanLeft"
+       services:FlowerySlideEffects.Duration="10"
+       services:FlowerySlideEffects.PanDistance="100"/&gt;</code></pre>
+
+<h3>Programmatic Control</h3>
+
+<pre><code class="language-csharp">// Start effect manually
+FlowerySlideEffects.StartEffect(myImage);
+
+// Stop effect
+FlowerySlideEffects.StopEffect(myImage);
+
+// Configure and start
+FlowerySlideEffects.SetEffect(myImage, FlowerySlideEffect.ZoomIn);
+FlowerySlideEffects.SetDuration(myImage, 5.0);
+FlowerySlideEffects.SetAutoStart(myImage, false);
+FlowerySlideEffects.StartEffect(myImage);</code></pre>
+<hr>
+<h2>FlowerySlideEffectParams</h2>
+
+<p>Configuration record for fine-tuning effect parameters.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ZoomIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.15</code></td>
+<td>Zoom scale factor. 0.15 = zoom to 115%.</td>
+</tr>
+<tr>
+<td><code>PanDistance</code></td>
+<td><code>double</code></td>
+<td><code>50.0</code></td>
+<td>Pan distance in pixels.</td>
+</tr>
+<tr>
+<td><code>PulseIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.08</code></td>
+<td>Pulse amplitude. 0.08 = pulse to 108%.</td>
+</tr>
+<tr>
+<td><code>VerticalPanRatio</code></td>
+<td><code>double</code></td>
+<td><code>0.6</code></td>
+<td>Vertical pan multiplier relative to horizontal.</td>
+</tr>
+<tr>
+<td><code>SubtleZoomRatio</code></td>
+<td><code>double</code></td>
+<td><code>0.1</code></td>
+<td>Subtle zoom multiplier for pan effects.</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-csharp">var customParams = new FlowerySlideEffectParams
+{
+    ZoomIntensity = 0.25,
+    PanDistance = 80,
+    PulseIntensity = 0.12
+};</code></pre>
+<hr>
+<h2>FloweryAnimationHelpers (Static Methods)</h2>
+
+<p>Low-level animation factory methods for building custom effects.</p>
+
+<h3>Key Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CreateSlideAnimation(...)</code></td>
+<td>Creates a Storyboard for slide effects with configurable parameters.</td>
+</tr>
+<tr>
+<td><code>CreateDoubleAnimation(...)</code></td>
+<td>Creates a DoubleAnimation with easing.</td>
+</tr>
+<tr>
+<td><code>CreateFadeAnimation(...)</code></td>
+<td>Creates opacity fade animations.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Platform Support</h3>
+
+<p>Slide effects require <code>HAS_UNO</code> or <code>WINDOWS</code> compilation symbols. On other platforms, effects gracefully fall back to static display.</p>
+<hr>
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>FlowerySlideshowController</code> to add slideshow behavior to any control without reimplementing timer/shuffle logic.</li>
+<li>Set <code>AutoStart="False"</code> on attached effects when you need programmatic control over when animations begin.</li>
+<li>Combine <code>Mode="Slideshow"</code> with short <code>Interval</code> values (2-4s) for dynamic hero banners.</li>
+<li>Use <code>Mode="Random"</code> for digital signage or kiosks to prevent repetitive patterns.</li>
+<li>Use <code>PanAndZoom</code> for photo galleries - it randomly selects pan/zoom combinations per image.</li>
+<li>Use <code>Throw</code> for high-energy tech or motion-oriented slide decks.</li>
+<li>Use <code>Kiosk</code> mode for hands-off displays (signage) to maximize visual variety.</li>
+<li>Effects automatically stop when elements are unloaded to prevent memory leaks.</li>
+<li>Call <code>controller.OnItemCountChanged()</code> when your items collection changes to reinitialize shuffle order.</li>
+<li>Always call <code>controller.Dispose()</code> when your control is disposed to clean up timers.</li>
+</ul>
+<h2>Technical Reference (Implementation Files)</h2>
+
+<p>For deep implementation details, consult the following source files in the <code>Flowery.Uno</code> project:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>File</th>
+<th>Primary Coverage</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FloweryAnimationHelpers.cs</code></td>
+<td>Visual effect logic (<code>PanAndZoom</code>, <code>Breath</code>, <code>Throw</code>, <code>Pulse</code>).</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitions.cs</code></td>
+<td>Enums and parameter records for between-slide transitions.</td>
+</tr>
+<tr>
+<td><code>FlowerySlideClasses.cs</code></td>
+<td>Parameters and parsers for continuous slide effects.</td>
+</tr>
+<tr>
+<td><code>FlowerySlideTransitionHelpers.cs</code></td>
+<td>Implementation of Tiers 1, 2, and 3 transitions.</td>
+</tr>
+<tr>
+<td><code>FlowerySlideEffects.cs</code></td>
+<td>XAML attached property system and lifecycle management.</td>
+</tr>
+<tr>
+<td><code>FlowerySlideshowController.cs</code></td>
+<td>Timer-based navigation, shuffle logic, and Kiosk selection.</td>
+</tr>
+<tr>
+<td><code>FloweryPathHelpers.cs</code></td>
+<td>Icon geometries often used for navigation controls.</td>
+</tr>
+</tbody>
+</table></div>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Flowery.Uno.Gallery"
+    xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:not_win="http://uno.ui/not_win"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="not_win">
+
+    <!-- Gallery Layout Tokens -->
+    <x:Double x:Key="GallerySectionSpacing">14</x:Double>
+    <x:Double x:Key="GallerySubsectionTopMargin">12</x:Double>
+    <x:Double x:Key="GalleryItemSpacing">8</x:Double>
+    <x:Double x:Key="GalleryPageMargin">20</x:Double>
+    <x:Double x:Key="GalleryMajorSectionSpacing">20</x:Double>
+    <x:Double x:Key="GalleryWasmStackPanelSpacingScale">0</x:Double>
+
+    <!-- Gallery Section Style - apply to StackPanels containing SectionHeader -->
+    <Style x:Key="GallerySectionStyle" TargetType="StackPanel">
+        <Setter Property="Spacing" Value="{StaticResource GallerySectionSpacing}" />
+    </Style>
+
+    <!-- Gallery Item Row Style - horizontal button/control rows -->
+    <Style x:Key="GalleryItemRowStyle" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="{StaticResource GalleryItemSpacing}" />
+    </Style>
+
+    <!-- WinUI selects FontWeight from the variable fonts. Skia cannot, and the CJK and Hebrew
+         variable fonts default to Thin, so the other targets keep the static Regular fonts. -->
+    <win:FontFamily x:Key="NotoSansFamily">
+        ms-appx:///Assets/Fonts/NotoSans-Variable.ttf#Noto Sans,
+        ms-appx:///Assets/Fonts/NotoSansSC-Variable.ttf#Noto Sans SC,
+        ms-appx:///Assets/Fonts/NotoSansJP-Variable.ttf#Noto Sans JP,
+        ms-appx:///Assets/Fonts/NotoSansKR-Variable.ttf#Noto Sans KR,
+        ms-appx:///Assets/Fonts/NotoSansArabic-Variable.ttf#Noto Sans Arabic,
+        ms-appx:///Assets/Fonts/NotoSansHebrew-Variable.ttf#Noto Sans Hebrew
+    </win:FontFamily>
+    <not_win:FontFamily x:Key="NotoSansFamily">
+        ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,
+        ms-appx:///Assets/Fonts/NotoSansSC-Regular.otf#Noto Sans CJK SC,
+        ms-appx:///Assets/Fonts/NotoSansJP-Regular.otf#Noto Sans CJK JP,
+        ms-appx:///Assets/Fonts/NotoSansKR-Regular.otf#Noto Sans CJK KR,
+        ms-appx:///Assets/Fonts/NotoSansArabic-Regular.ttf#Noto Sans Arabic
+    </not_win:FontFamily>
+
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="ContentControl">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansFamily}" />
+    </Style>
+    <Style TargetType="StackPanel">
+        <Setter Property="local:WasmSpacingHelper.SpacingScale"
+                Value="{StaticResource GalleryWasmStackPanelSpacingScale}" />
+    </Style>
+
+    <ResourceDictionary.MergedDictionaries>
+        <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+        <ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

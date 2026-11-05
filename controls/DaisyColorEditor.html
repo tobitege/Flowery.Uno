@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyColorEditor</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyColorEditor</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyColorEditor.png" alt="DaisyColorEditor" class="doc-image">
+
+<p>DaisyColorEditor is a comprehensive color editing control that combines RGB and HSL sliders with numeric inputs and a hex color field. It provides precise color manipulation through multiple input methods, making it ideal for professional color selection interfaces.</p>
+
+<h2>Architecture Note</h2>
+
+<p>This is a <strong>standalone control</strong> with its own XAML theme (<code>DaisyColorEditor.xaml</code>). It can be used independently or as part of <code>DaisyColorPickerDialog</code>. When used in the dialog:</p>
+
+<ul><li><strong>Internal layout</strong> (slider heights, NumericUpDown widths, row spacing) → edit <code>DaisyColorEditor.xaml</code></li>
+<li><strong>Placement within dialog</strong> (margins around the editor) → edit <code>DaisyColorPickerDialog.cs</code></li>
+</ul>
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Color</code></td>
+<td><code>Color</code></td>
+<td><code>Red</code></td>
+<td>The selected RGB color</td>
+</tr>
+<tr>
+<td><code>HslColor</code></td>
+<td><code>HslColor</code></td>
+<td><code>H:0, S:1, L:0.5</code></td>
+<td>The HSL representation</td>
+</tr>
+<tr>
+<td><code>EditingMode</code></td>
+<td><code>ColorEditingMode</code></td>
+<td><code>Rgb</code></td>
+<td>Current editing mode (RGB or HSL)</td>
+</tr>
+<tr>
+<td><code>ShowAlphaChannel</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show alpha channel controls</td>
+</tr>
+<tr>
+<td><code>ShowHexInput</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show hex color input field</td>
+</tr>
+<tr>
+<td><code>ShowRgbSliders</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show RGB slider section</td>
+</tr>
+<tr>
+<td><code>ShowHslSliders</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show HSL slider section</td>
+</tr>
+<tr>
+<td><code>OnColorChangedCallback</code></td>
+<td><code>Action<Color>?</code></td>
+<td><code>null</code></td>
+<td>Optional callback when color changes</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Component Properties (Read/Write)</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Range</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Red</code></td>
+<td><code>byte</code></td>
+<td>0-255</td>
+<td>Red component</td>
+</tr>
+<tr>
+<td><code>Green</code></td>
+<td><code>byte</code></td>
+<td>0-255</td>
+<td>Green component</td>
+</tr>
+<tr>
+<td><code>Blue</code></td>
+<td><code>byte</code></td>
+<td>0-255</td>
+<td>Blue component</td>
+</tr>
+<tr>
+<td><code>Alpha</code></td>
+<td><code>byte</code></td>
+<td>0-255</td>
+<td>Alpha component</td>
+</tr>
+<tr>
+<td><code>Hue</code></td>
+<td><code>double</code></td>
+<td>0-359</td>
+<td>Hue in degrees</td>
+</tr>
+<tr>
+<td><code>Saturation</code></td>
+<td><code>double</code></td>
+<td>0-100</td>
+<td>Saturation percentage</td>
+</tr>
+<tr>
+<td><code>Lightness</code></td>
+<td><code>double</code></td>
+<td>0-100</td>
+<td>Lightness percentage</td>
+</tr>
+<tr>
+<td><code>HexValue</code></td>
+<td><code>string?</code></td>
+<td>-</td>
+<td>Hex color string (e.g., "#FF0000")</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Editing Modes</h2>
+
+<p>The <code>ColorEditingMode</code> enum determines the primary editing interface:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Rgb</code></td>
+<td>Red, Green, Blue sliders and inputs</td>
+</tr>
+<tr>
+<td><code>Hsl</code></td>
+<td>Hue, Saturation, Lightness sliders and inputs</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events and Callbacks</h2>
+
+<h3>Event-Based</h3>
+
+<pre><code class="language-csharp">editor.ColorChanged += (sender, e) =&gt; 
+{
+    Console.WriteLine($"New color: {e.Color}");
+    Console.WriteLine($"Hex: #{e.Color.R:X2}{e.Color.G:X2}{e.Color.B:X2}");
+};</code></pre>
+
+<h3>Callback-Based</h3>
+
+<pre><code class="language-xml">&lt;colorpicker:DaisyColorEditor 
+    OnColorChangedCallback="{Binding HandleEditorColorChanged}" /&gt;</code></pre>
+
+<pre><code class="language-csharp">var editor = new DaisyColorEditor
+{
+    ShowAlphaChannel = true,
+    OnColorChangedCallback = color =&gt; 
+    {
+        Debug.WriteLine($"Selected: {color}");
+    }
+};</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Full-featured editor --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    Color="{Binding SelectedColor, Mode=TwoWay}"
+    ShowAlphaChannel="True"
+    ShowHexInput="True"
+    ShowRgbSliders="True"
+    ShowHslSliders="True" /&gt;
+
+&lt;!-- RGB only (no HSL) --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    Color="{Binding SelectedColor, Mode=TwoWay}"
+    ShowHslSliders="False" /&gt;
+
+&lt;!-- HSL only (no RGB) --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    Color="{Binding SelectedColor, Mode=TwoWay}"
+    ShowRgbSliders="False"
+    EditingMode="Hsl" /&gt;
+
+&lt;!-- Compact: just hex input --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    Color="{Binding SelectedColor, Mode=TwoWay}"
+    ShowRgbSliders="False"
+    ShowHslSliders="False"
+    ShowAlphaChannel="False" /&gt;
+
+&lt;!-- No alpha channel --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    Color="{Binding SelectedColor, Mode=TwoWay}"
+    ShowAlphaChannel="False" /&gt;
+
+&lt;!-- With callback --&gt;
+&lt;colorpicker:DaisyColorEditor 
+    OnColorChangedCallback="{Binding OnEditorColorChanged}" /&gt;</code></pre>
+
+<h2>Template Parts</h2>
+
+<p>The control uses named template parts for its UI elements:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Part Name</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>PART_RedSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Red channel slider</td>
+</tr>
+<tr>
+<td><code>PART_GreenSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Green channel slider</td>
+</tr>
+<tr>
+<td><code>PART_BlueSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Blue channel slider</td>
+</tr>
+<tr>
+<td><code>PART_AlphaSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Alpha channel slider</td>
+</tr>
+<tr>
+<td><code>PART_HueSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Hue channel slider</td>
+</tr>
+<tr>
+<td><code>PART_SaturationSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Saturation channel slider</td>
+</tr>
+<tr>
+<td><code>PART_LightnessSlider</code></td>
+<td><code>DaisyColorSlider</code></td>
+<td>Lightness channel slider</td>
+</tr>
+<tr>
+<td><code>PART_RedInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Red numeric input</td>
+</tr>
+<tr>
+<td><code>PART_GreenInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Green numeric input</td>
+</tr>
+<tr>
+<td><code>PART_BlueInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Blue numeric input</td>
+</tr>
+<tr>
+<td><code>PART_AlphaInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Alpha numeric input</td>
+</tr>
+<tr>
+<td><code>PART_HueInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Hue numeric input</td>
+</tr>
+<tr>
+<td><code>PART_SaturationInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Saturation numeric input</td>
+</tr>
+<tr>
+<td><code>PART_LightnessInput</code></td>
+<td><code>NumericUpDown</code></td>
+<td>Lightness numeric input</td>
+</tr>
+<tr>
+<td><code>PART_HexInput</code></td>
+<td><code>TextBox</code></td>
+<td>Hex color input</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>RGB mode</strong> for precise color matching (e.g., brand colors with known RGB values).</li>
+<li>Use <strong>HSL mode</strong> for intuitive color adjustment (change brightness without affecting hue).</li>
+<li>Hide <code>ShowAlphaChannel</code> when transparency is not needed.</li>
+<li>The hex input accepts formats: <code>#RGB</code>, <code>#RRGGBB</code>, <code>#AARRGGBB</code>.</li>
+<li>All sliders and inputs are synchronized - changing one updates all others.</li>
+<li>Use <code>OnColorChangedCallback</code> for simple handlers; use <code>ColorChanged</code> event for multiple subscribers.</li>
+<li>Combine with <code>DaisyColorWheel</code> for a complete color picker interface.</li>
+</ul>
+<h2>Acknowledgments</h2>
+
+<p>This control is part of the Flowery.Uno color picker suite, inspired by the <a href="https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker" target="_blank" rel="noopener">Cyotek ColorPicker</a> library (MIT License).</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCollapse.html">← Collapse</a></div>
+    <div class="nav-right"><a href="DaisyColorGrid.html">ColorGrid →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

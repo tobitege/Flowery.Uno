@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyProgress</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyProgress</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyProgress.png" alt="DaisyProgress" class="doc-image">
+
+<p>DaisyProgress is a styled progress bar with <strong>8 color variants</strong>, <strong>4 size presets</strong>, <strong>optional shimmer animation</strong>, and indeterminate support. It inherits <code>ProgressBar</code> behavior for <code>Value</code>, <code>Minimum</code>, <code>Maximum</code>, and <code>IsIndeterminate</code>, using theme colors for the indicator fill.</p>
+
+<strong>Determinate mode</strong> features smooth width transitions (250ms) on value updates for a more fluid feel.
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Neutral bar; foreground uses base content color.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Brand/secondary accents.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic fills for status-driven progress.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>CornerRadius</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>16</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Shimmer Animation</h2>
+
+<p>The <code>Shimmer</code> property enables a subtle "breathing" animation on the progress fill. This creates a gentle opacity pulse (75%–100%) over a 2-second cycle, providing visual feedback that a process is active.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Shimmer</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enables a subtle breathing opacity animation on the fill.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Determinate --&gt;
+&lt;controls:DaisyProgress Value="40" /&gt;
+&lt;controls:DaisyProgress Value="60" Variant="Primary" /&gt;
+&lt;controls:DaisyProgress Value="80" Variant="Accent" Size="Large" /&gt;
+
+&lt;!-- Indeterminate --&gt;
+&lt;controls:DaisyProgress IsIndeterminate="True" Variant="Secondary" /&gt;
+
+&lt;!-- With Shimmer animation --&gt;
+&lt;controls:DaisyProgress Value="70" Variant="Primary" Shimmer="True" /&gt;
+&lt;controls:DaisyProgress Value="85" Variant="Success" Shimmer="True" /&gt;</code></pre>
+
+<h2>Accessibility Support</h2>
+
+<p>DaisyProgress includes built-in accessibility for screen readers via the <code>AccessibleText</code> property. The automation peer automatically announces the current percentage along with the accessible text.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AccessibleText</code></td>
+<td><code>string</code></td>
+<td><code>"Progress"</code></td>
+<td>Context text announced by screen readers (e.g., "Uploading file, 45%").</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Accessibility Examples</h3>
+
+<pre><code class="language-xml">&lt;!-- Default: announces "Progress, 40%" --&gt;
+&lt;controls:DaisyProgress Value="40" /&gt;
+
+&lt;!-- Contextual: announces "Uploading file, 60%" --&gt;
+&lt;controls:DaisyProgress Value="60" AccessibleText="Uploading file" /&gt;
+
+&lt;!-- Contextual: announces "Download progress, 80%" --&gt;
+&lt;controls:DaisyProgress Value="80" AccessibleText="Download progress" Variant="Primary" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Choose semantic variants to match the task (e.g., <code>Success</code> for completion, <code>Warning</code> for slow steps).</li>
+<li>For very small spaces, use <code>Size="Small"</code> or <code>ExtraSmall</code> to keep bars unobtrusive.</li>
+<li>If using indeterminate mode, ensure it communicates ongoing work without a definite end time; determinate values are better for known-length tasks.</li>
+<li>Wrap in a container with explicit width; the indicator scales to parent width via the <code>ProgressBar</code> layout.</li>
+<li>Use <code>AccessibleText</code> to provide context about what is loading (e.g., "Saving document" instead of generic "Progress").</li>
+<li>Use <code>Shimmer="True"</code> for active processes where you want subtle visual feedback that work is ongoing.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyProductThemeDropdown.html">← ProductThemeDropdown</a></div>
+    <div class="nav-right"><a href="DaisyRadialProgress.html">RadialProgress →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

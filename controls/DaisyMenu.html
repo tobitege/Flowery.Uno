@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyMenu</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyMenu</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisymenu">
+  <input type="radio" name="daisymenu_tabs" id="daisymenu_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisymenu_tabs" id="daisymenu_tab1" class="tab-radio">
+  <input type="radio" name="daisymenu_tabs" id="daisymenu_tab2" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisymenu_tab0" class="tab-label">Part 1</label>
+    <label for="daisymenu_tab1" class="tab-label">Part 2</label>
+    <label for="daisymenu_tab2" class="tab-label">Part 3</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyMenu_a.png" alt="DaisyMenu - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyMenu_b.png" alt="DaisyMenu - Part 2" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyMenu_c.png" alt="DaisyMenu - Part 3" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyMenu is a styled menu control for navigation menus. It supports vertical or horizontal layout, size presets, and customizable active colors for selected items. Submenus can be nested via another DaisyMenu or Expander. Use it for sidebars, nav bars, and contextual menus that need DaisyUI styling.</p>
+
+<h2>Orientation & Sizes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Option</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Vertical</code> (default) or <code>Horizontal</code>. Horizontal enables horizontal scrolling if needed.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>ExtraSmall, Small, Medium (default), Large, ExtraLarge adjust padding/font on items.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Active Styling</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ActiveForeground</code> / <code>ActiveBackground</code></td>
+<td>Colors applied to selected items; defaults to Neutral theme colors.</td>
+</tr>
+<tr>
+<td>Selection</td>
+<td>Inherits ListBox selection; <code>SelectedItem</code>/<code>SelectedIndex</code> works as usual.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Item Interaction</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Click</code></td>
+<td>DaisyMenuItem raises a click event and supports keyboard activation.</td>
+</tr>
+<tr>
+<td><code>Command</code> / <code>CommandParameter</code></td>
+<td>DaisyMenuItem inherits the base command pattern; use these for MVVM.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Hover Styling</h3>
+
+<p>To override hover background on menu items, define:</p>
+
+<pre><code class="language-txt">DaisyMenuItemHoverBackground</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Vertical menu --&gt;
+&lt;controls:DaisyMenu Width="200"&gt;
+    &lt;controls:DaisyMenuItem Content="Dashboard" IsActive="True" /&gt;
+    &lt;controls:DaisyMenuItem Content="Profile" /&gt;
+    &lt;controls:DaisyMenuItem Content="Settings" /&gt;
+&lt;/controls:DaisyMenu&gt;
+
+&lt;!-- Horizontal nav --&gt;
+&lt;controls:DaisyMenu Orientation="Horizontal" Size="Small"&gt;
+    &lt;controls:DaisyMenuItem&gt;Home&lt;/controls:DaisyMenuItem&gt;
+    &lt;controls:DaisyMenuItem&gt;About&lt;/controls:DaisyMenuItem&gt;
+    &lt;controls:DaisyMenuItem&gt;Contact&lt;/controls:DaisyMenuItem&gt;
+&lt;/controls:DaisyMenu&gt;
+
+&lt;!-- Nested submenu --&gt;
+&lt;controls:DaisyMenu&gt;
+    &lt;controls:DaisyMenuItem Content="Main" /&gt;
+    &lt;controls:DaisyMenuItem IsActive="True"&gt;Overview&lt;/controls:DaisyMenuItem&gt;
+    &lt;Expander Header="More"&gt;
+        &lt;controls:DaisyMenu&gt;
+            &lt;controls:DaisyMenuItem&gt;Subitem A&lt;/controls:DaisyMenuItem&gt;
+            &lt;controls:DaisyMenuItem&gt;Subitem B&lt;/controls:DaisyMenuItem&gt;
+        &lt;/controls:DaisyMenu&gt;
+    &lt;/Expander&gt;
+&lt;/controls:DaisyMenu&gt;
+
+&lt;!-- Checked item (toggle-style menu entry) --&gt;
+&lt;controls:DaisyMenu&gt;
+    &lt;controls:DaisyMenuItem Content="Resize columns" IsChecked="True" /&gt;
+&lt;/controls:DaisyMenu&gt;</code></pre>
+
+<h2>Keyboard Mnemonics</h2>
+
+<p>String content of a <code>DaisyMenuItem</code> shows WinForms-style mnemonics: <code>&</code> underlines the access character and <code>&&</code> is a literal <code>&</code>. The item's automation name is the display text. It is display only, so handle Alt+key in your app. See <a href="DaisyMnemonicText.html">DaisyMnemonicText</a>.</p>
+
+<pre><code class="language-xml">&lt;controls:DaisyMenuItem&gt;&amp;amp;File&lt;/controls:DaisyMenuItem&gt;
+&lt;controls:DaisyMenuItem&gt;Save &amp;amp;&amp;amp; Close&lt;/controls:DaisyMenuItem&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use size presets to match surrounding controls; Small/ExtraSmall pair well with toolbars.</li>
+<li>Set <code>ActiveForeground/ActiveBackground</code> to align with your brand colors if Neutral isn't desired.</li>
+<li>For horizontal menus, ensure there's enough padding/margin in the parent to avoid crowding.</li>
+<li>Use <code>Classes="menu-title"</code> for non-interactive section headers inside the menu.</li>
+<li>Nest DaisyMenu or use <code>Expander</code> for collapsible submenus; adjust margins for indentation as needed.</li>
+<li>Use <code>IsChecked</code> for toggle-like items so all menu rows keep the same layout.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyMaskInput.html">← MaskInput</a></div>
+    <div class="nav-right"><a href="DaisyMnemonicText.html">MnemonicText →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

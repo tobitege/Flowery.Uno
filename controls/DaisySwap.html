@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisySwap</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisySwap</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisySwap.png" alt="DaisySwap" class="doc-image">
+
+<p>DaisySwap is a toggle that swaps between <code>OnContent</code>, <code>OffContent</code>, and optional <code>IndeterminateContent</code>. It supports transition effects (none, rotate, flip) to animate the content change. Use it for icon toggles, play/pause, theme switches, or stateful actions.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>OnContent</code></td>
+<td>Content shown when <code>IsChecked=True</code>.</td>
+</tr>
+<tr>
+<td><code>OffContent</code></td>
+<td>Content shown when <code>IsChecked=False</code>.</td>
+</tr>
+<tr>
+<td><code>IndeterminateContent</code></td>
+<td>Content for indeterminate state when <code>IsChecked=null</code>.</td>
+</tr>
+<tr>
+<td><code>TransitionEffect</code></td>
+<td><code>None</code>, <code>Rotate</code>, or <code>Flip</code> animation between states.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple icon swap --&gt;
+&lt;controls:DaisySwap TransitionEffect="Rotate" IsChecked="True"&gt;
+    &lt;controls:DaisySwap.OnContent&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconSun}" /&gt;
+    &lt;/controls:DaisySwap.OnContent&gt;
+    &lt;controls:DaisySwap.OffContent&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconMoon}" /&gt;
+    &lt;/controls:DaisySwap.OffContent&gt;
+&lt;/controls:DaisySwap&gt;
+
+&lt;!-- Text swap with indeterminate --&gt;
+&lt;controls:DaisySwap TransitionEffect="Flip" IsThreeState="True" IsChecked="{Binding IsMaybe}"&gt;
+    &lt;controls:DaisySwap.OnContent&gt;
+        &lt;TextBlock Text="On" /&gt;
+    &lt;/controls:DaisySwap.OnContent&gt;
+    &lt;controls:DaisySwap.OffContent&gt;
+        &lt;TextBlock Text="Off" /&gt;
+    &lt;/controls:DaisySwap.OffContent&gt;
+    &lt;controls:DaisySwap.IndeterminateContent&gt;
+        &lt;TextBlock Text="?" /&gt;
+    &lt;/controls:DaisySwap.IndeterminateContent&gt;
+&lt;/controls:DaisySwap&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep content sizes similar to avoid layout shifts during transitions.</li>
+<li>Use <code>IsThreeState="True"</code> to enable the indeterminate content path.</li>
+<li>Choose <code>Rotate</code>/<code>Flip</code> for playful state changes; <code>None</code> for instant swaps.</li>
+<li>Bind <code>IsChecked</code> for state management; the control inherits ToggleButton behavior.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisySteps.html">← Steps</a></div>
+    <div class="nav-right"><a href="DaisyTable.html">Table →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

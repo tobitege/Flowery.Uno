@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyHero</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyHero</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyHero.png" alt="DaisyHero" class="doc-image">
+
+<p>DaisyHero is a full-width banner container for impactful headlines. It provides padding, a large minimum height, and centers its content over a background color or image you provide. Use it for marketing hero sections, page intros, or prominent callouts.</p>
+
+<h2>Layout & Styling</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Background</code></td>
+<td>Set to a solid color, gradient, or image brush for the hero backdrop.</td>
+</tr>
+<tr>
+<td><code>Padding</code></td>
+<td>Space around the content (default 40).</td>
+</tr>
+<tr>
+<td><code>MinHeight</code></td>
+<td>Default 300 to keep the hero tall enough for headline + CTA.</td>
+</tr>
+<tr>
+<td><code>CornerRadius</code></td>
+<td>Inherited from ContentControl; set for rounded hero edges when embedded in cards.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple hero with CTA --&gt;
+&lt;controls:DaisyHero Background="{ThemeResource DaisyPrimaryBrush}" Padding="48" Height="180"&gt;
+    &lt;StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8"&gt;
+        &lt;TextBlock Text="Hello there" FontSize="30" FontWeight="Bold" Foreground="White" /&gt;
+        &lt;TextBlock Text="Provident cupiditate voluptatem et in." Foreground="White" /&gt;
+        &lt;controls:DaisyButton Content="Get Started" Variant="Secondary" Margin="0,10,0,0" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyHero&gt;
+
+&lt;!-- Hero with image background --&gt;
+&lt;controls:DaisyHero Padding="56"&gt;
+    &lt;controls:DaisyHero.Background&gt;
+        &lt;ImageBrush ImageSource="ms-appx:///Flowery.Uno.Gallery/Assets/hero.jpg"
+                    Stretch="UniformToFill" /&gt;
+    &lt;/controls:DaisyHero.Background&gt;
+    &lt;StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Spacing="10"&gt;
+        &lt;TextBlock Text="Build faster UI" FontSize="32" FontWeight="Bold" Foreground="White" /&gt;
+        &lt;controls:DaisyButton Content="Browse Components" Variant="Primary" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyHero&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use high-contrast foreground content over bright backgrounds; add an overlay (e.g., semi-transparent rectangle) if needed.</li>
+<li>Set explicit <code>Height</code> when embedding multiple heroes in a layout to maintain consistent proportions.</li>
+<li>Combine with <code>CornerRadius</code> for card-style heroes inside grids or dashboards.</li>
+<li>Keep content concise: headline, subtext, and one primary CTA work best.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyGlass.html">← Glass</a></div>
+    <div class="nav-right"><a href="DaisyHoverGallery.html">HoverGallery →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>neumorphic</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>neumorphic</h1>
+
+<h2>Overview</h2>
+
+<p>Neumorphic (Soft UI) mode is a design style that uses highlights and shadows to create elements that appear to extrude from or be inset into the background surface.</p>
+
+<h2>What is Neumorphism?</h2>
+
+<p>Neumorphism (new skeuomorphism) combines the realism of skeuomorphism with the simplicity of flat design. It creates soft, extruded UI elements that appear to push out from or press into the background surface, using carefully positioned light and dark shadows.</p>
+
+<h3>The Three Essential Properties</h3>
+
+<p>To apply neumorphism style to any element, you must implement these three main properties:</p>
+
+<p>1. <strong>Background Match</strong>: Element background must be the same as its container (seamless surface)</p>
+<p>2. <strong>Dark Shadow</strong>: Applied to one corner (bottom-right for raised, top-left for inset)</p>
+<p>3. <strong>Light Shadow</strong>: Applied to the opposite corner (top-left for raised, bottom-right for inset)</p>
+
+<h3>Shadow Positioning (Light Source Model)</h3>
+
+<p>The effect assumes a <strong>top-left light source</strong> (like sunlight through a window):</p>
+
+<ul><li><strong>Raised Mode</strong>:</li>
+</ul>  - Light shadow on top-left (where light hits the raised edge)
+<p>- Dark shadow on bottom-right (where light doesn't reach)</p>
+<ul><li><strong>Inset Mode</strong>: Inverted positioning</li>
+</ul>  - Dark shadow on top-left (inner edge in shadow)
+<p>- Light shadow on bottom-right (inner edge catching light)</p>
+
+<h2>Technical Implementation</h2>
+
+<p>Flowery.Uno implements neumorphism using a cross-platform approach via <code>DaisyNeumorphicHelper</code> with platform-specific optimizations.</p>
+
+<h3>Implementation Strategy by Mode</h3>
+
+<strong>Raised/Flat Modes</strong> - Platform-specific shadow rendering:
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Platform</th>
+<th>Implementation</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Windows</strong></td>
+<td>Composition API <code>DropShadow</code></td>
+<td>Single shadow (dark) for reliability</td>
+</tr>
+<tr>
+<td><strong>Desktop (Skia)</strong></td>
+<td><code>UIElementExtensions.SetElevation()</code></td>
+<td>Single shadow via ShadowState; some templates (e.g., <code>DaisyButton</code>) apply elevation to <code>PART_ShadowContainer</code> to avoid clipping</td>
+</tr>
+<tr>
+<td><strong>WASM</strong></td>
+<td><code>UIElementExtensions.SetElevation()</code></td>
+<td>CSS box-shadow</td>
+</tr>
+<tr>
+<td><strong>Android</strong></td>
+<td><code>UIElementExtensions.SetElevation()</code></td>
+<td>ViewCompat.SetElevation</td>
+</tr>
+<tr>
+<td><strong>iOS</strong></td>
+<td><code>UIElementExtensions.SetElevation()</code></td>
+<td>CALayer.shadow*</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Windows-Specific Implementation</strong> (<code>DaisyNeumorphicHelper.Windows.cs</code>):
+
+<ul><li>Uses partial class pattern to isolate Windows code (<code>#if WINDOWS</code>)</li>
+<li>Creates a single <code>SpriteVisual</code> with <code>DropShadow</code> (dark shadow, bottom-right)</li>
+<li>Uses a simple opaque mask to render the shadow shape</li>
+<li>Shadow colors derived from theme tokens (see Theme Integration below)</li>
+<li><strong>Alternative</strong>: <code>UIElementExtensions.SetElevation()</code> also works on Windows and can be used as a fallback or a simpler path when Composition shadows are disabled.</li>
+<li><strong>Direct elevation routing</strong>: use <code>DaisyNeumorphicHelper.ShouldUseDirectElevation()</code> to decide when to bypass the helper and call <code>SetElevation</code> directly (Skia/WASM/non-Windows).</li>
+<li><strong>Elevation target by control (Skia/WASM)</strong>:</li>
+</ul>  - <code>DaisyButton</code>: apply elevation to <code>PART_ShadowContainer</code> (template wrapper) to avoid clipping; falls back to <code>ButtonBorder</code> when the container is missing.
+<p>- Most other controls: apply elevation to their neumorphic host element (e.g., <code>DaisyCard</code> uses <code>PART_SolidBackground</code>).</p>
+<ul><li><strong>Note</strong>: ThemeShadow is intentionally not included due to limited use and compatibility.</li>
+</ul>
+<h3>XAML Template Patterns (for custom controls)</h3>
+
+<strong>Goal:</strong> make it obvious which element should receive elevation on Skia/WASM and where inset overlays can be injected.
+
+<h4>Namespace Cheat Sheet (XAML)</h4>
+
+<ul><li><code>xmlns:utu="using:Uno.Toolkit.UI"</code> for <code>ShadowContainer</code></li>
+<li><code>xmlns:controls="using:Flowery.Controls"</code> for Flowery controls (e.g., <code>DaisyButton</code>)</li>
+</ul>
+<h4>Platform Differences (Quick Reference)</h4>
+
+<ul><li><strong>Windows (WinAppSDK)</strong>: prefers Composition <code>DropShadow</code> (single dark shadow); optional ThemeShadow for special cases.</li>
+<li><strong>Desktop (Skia)</strong>: uses <code>UIElementExtensions.SetElevation()</code>; apply elevation to <code>PART_ShadowContainer</code> if the surface is wrapped (prevents clipping).</li>
+<li><strong>WASM</strong>: uses CSS <code>box-shadow</code> via <code>SetElevation</code>; apply elevation to the surface border (or container if used).</li>
+<li><strong>Android/iOS</strong>: use native elevation APIs via <code>SetElevation</code> (single shadow).</li>
+</ul>
+<h4>Platform × Mode Matrix</h4>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Platform</th>
+<th>Raised</th>
+<th>Flat</th>
+<th>Inset</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Windows (WinAppSDK)</strong></td>
+<td>Composition <code>DropShadow</code> (dark only)</td>
+<td>Composition <code>DropShadow</code> (reduced)</td>
+<td>Gradient overlays (inset borders)</td>
+</tr>
+<tr>
+<td><strong>Desktop (Skia)</strong></td>
+<td><code>SetElevation</code> (single shadow)</td>
+<td><code>SetElevation</code> (reduced)</td>
+<td>Gradient overlays (inset borders)</td>
+</tr>
+<tr>
+<td><strong>WASM</strong></td>
+<td><code>SetElevation</code> (CSS box-shadow)</td>
+<td><code>SetElevation</code> (reduced)</td>
+<td>Gradient overlays (inset borders)</td>
+</tr>
+<tr>
+<td><strong>Android</strong></td>
+<td><code>SetElevation</code> (native view elevation)</td>
+<td><code>SetElevation</code> (reduced)</td>
+<td>Gradient overlays (inset borders)</td>
+</tr>
+<tr>
+<td><strong>iOS</strong></td>
+<td><code>SetElevation</code> (CALayer shadow)</td>
+<td><code>SetElevation</code> (reduced)</td>
+<td>Gradient overlays (inset borders)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h4>Pattern A — Simple Surface (Most Controls)</h4>
+
+<ul><li>Use a single surface element with a stable name (e.g., <code>PART_SolidBackground</code>).</li>
+<li>In code, override <code>GetNeumorphicHostElement()</code> to return that surface.</li>
+<li>Apply <code>SetElevation</code> to that surface on Skia/WASM.</li>
+</ul>
+<p>Example (simplified):</p>
+
+<pre><code class="language-xml">&lt;Border x:Name="PART_SolidBackground"
+        Background="{TemplateBinding Background}"
+        CornerRadius="{TemplateBinding CornerRadius}"&gt;
+  &lt;!-- content --&gt;
+&lt;/Border&gt;</code></pre>
+
+<h4>Pattern B — Shadow Wrapper (DaisyButton Style)</h4>
+
+<ul><li>Wrap the surface in a <code>ShadowContainer</code> so the shadow is not clipped by the border.</li>
+<li>On Skia/WASM, apply elevation to the <code>ShadowContainer</code>, not the inner <code>Border</code>.</li>
+</ul>
+<p>Example (simplified):</p>
+
+<pre><code class="language-xml">&lt;!-- xmlns:utu="using:Uno.Toolkit.UI" --&gt;
+&lt;utu:ShadowContainer x:Name="PART_ShadowContainer"
+                     CornerRadius="{TemplateBinding CornerRadius}"&gt;
+  &lt;Border x:Name="ButtonBorder"
+          Background="{TemplateBinding Background}"
+          CornerRadius="{TemplateBinding CornerRadius}"&gt;
+    &lt;!-- content --&gt;
+  &lt;/Border&gt;
+&lt;/utu:ShadowContainer&gt;</code></pre>
+
+<h4>Inset Overlays</h4>
+
+<ul><li>Inset mode injects overlay <code>Border</code> elements into a container grid.</li>
+<li>Ensure the template allows overlay injection (i.e., the host element is part of the visual tree and not re-parented later).</li>
+</ul>
+<h3>Full How-To (add neumorphism to a custom control)</h3>
+
+<h4>Step 1: Choose a surface element in XAML</h4>
+
+<ul><li>Pick the element that represents the visible surface (usually a <code>Border</code>).</li>
+<li>If the surface can clip shadows, wrap it in <code>PART_ShadowContainer</code> (Pattern B).</li>
+</ul>
+<h4>Step 2: Expose the surface in code</h4>
+
+<ul><li>If your control derives from <code>DaisyBaseContentControl</code>, override <code>GetNeumorphicHostElement()</code> and return the surface element.</li>
+<li>If you add a <code>ShadowContainer</code> wrapper, make sure you can access it in code (e.g., <code>GetTemplateChild("PART_ShadowContainer")</code>).</li>
+</ul>
+<p>Example (surface host override):</p>
+
+<pre><code class="language-csharp">protected override FrameworkElement? GetNeumorphicHostElement()
+{
+    return _surfaceBorder ?? this;
+}</code></pre>
+
+<h4>Step 3: Apply neumorphic settings</h4>
+
+<ul><li>Use attached properties to opt in or override global settings.</li>
+</ul>
+<pre><code class="language-xml">&lt;local:MyControl
+    NeumorphicEnabled="True"
+    NeumorphicMode="Raised"
+    NeumorphicIntensity="0.8" /&gt;</code></pre>
+
+<h4>Step 4: Ensure template parts are ready</h4>
+
+<ul><li>In <code>OnApplyTemplate</code>, cache template parts (<code>_surfaceBorder</code>, <code>_shadowContainer</code>, etc.).</li>
+<li>Call <code>RequestNeumorphicRefresh()</code> after template is ready.</li>
+</ul>
+<h4>Step 5: Direct elevation routing</h4>
+
+<ul><li>When <code>DaisyNeumorphicHelper.ShouldUseDirectElevation()</code> is true (Skia/WASM/non-Windows), apply <code>SetElevation</code> to:</li>
+</ul>  - <code>PART_ShadowContainer</code> (if you use Pattern B), otherwise
+<p>- the surface border (Pattern A).</p>
+
+<h4>Step 6: Clear on None</h4>
+
+<ul><li>When mode is <code>None</code>, clear elevation on the same element you used for direct elevation.</li>
+</ul>
+<h4>Step 7: Avoid template conflicts</h4>
+
+<ul><li>Do not re-parent the surface element after the helper has injected overlays.</li>
+<li>Keep the surface element in the visual tree; avoid replacing it at runtime.</li>
+</ul>
+<h3>Worked Example A — Simple Surface (Pattern A)</h3>
+
+<h4>XAML</h4>
+
+<pre><code class="language-xml">&lt;ControlTemplate x:Key="MyCardTemplate" TargetType="local:MyCard"&gt;
+  &lt;Border x:Name="PART_SolidBackground"
+          Background="{TemplateBinding Background}"
+          CornerRadius="{TemplateBinding CornerRadius}"&gt;
+    &lt;ContentPresenter Margin="{TemplateBinding Padding}" /&gt;
+  &lt;/Border&gt;
+&lt;/ControlTemplate&gt;</code></pre>
+
+<h4>Code-Behind</h4>
+
+<pre><code class="language-csharp">public sealed partial class MyCard : DaisyBaseContentControl
+{
+    private Border? _surfaceBorder;
+
+    public MyCard()
+    {
+        DefaultStyleKey = typeof(MyCard);
+    }
+
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        _surfaceBorder = GetTemplateChild("PART_SolidBackground") as Border;
+        RequestNeumorphicRefresh();
+    }
+
+    protected override FrameworkElement? GetNeumorphicHostElement()
+    {
+        return _surfaceBorder ?? this;
+    }
+}</code></pre>
+
+<h4>Usage</h4>
+
+<pre><code class="language-xml">&lt;local:MyCard NeumorphicEnabled="True"
+              NeumorphicMode="Raised"
+              NeumorphicIntensity="0.8" /&gt;</code></pre>
+
+<h3>Worked Example B — Shadow Wrapper (Pattern B / DaisyButton Style)</h3>
+
+<h4>XAML B</h4>
+
+<pre><code class="language-xml">&lt;!-- xmlns:utu="using:Uno.Toolkit.UI" --&gt;
+&lt;ControlTemplate x:Key="MyButtonTemplate" TargetType="local:MyButton"&gt;
+  &lt;utu:ShadowContainer x:Name="PART_ShadowContainer"
+                       CornerRadius="{TemplateBinding CornerRadius}"&gt;
+    &lt;Border x:Name="PART_SurfaceBorder"
+            Background="{TemplateBinding Background}"
+            CornerRadius="{TemplateBinding CornerRadius}"&gt;
+      &lt;ContentPresenter Margin="{TemplateBinding Padding}" /&gt;
+    &lt;/Border&gt;
+  &lt;/utu:ShadowContainer&gt;
+&lt;/ControlTemplate&gt;</code></pre>
+
+<h4>Code-Behind B</h4>
+
+<pre><code class="language-csharp">public sealed partial class MyButton : DaisyBaseContentControl
+{
+    private Border? _surfaceBorder;
+    private ShadowContainer? _shadowContainer;
+
+    public MyButton()
+    {
+        DefaultStyleKey = typeof(MyButton);
+    }
+
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        _surfaceBorder = GetTemplateChild("PART_SurfaceBorder") as Border;
+        _shadowContainer = GetTemplateChild("PART_ShadowContainer") as ShadowContainer;
+        RequestNeumorphicRefresh();
+    }
+
+    protected override FrameworkElement? GetNeumorphicHostElement()
+    {
+        return _surfaceBorder ?? this;
+    }
+
+    private UIElement? GetElevationTarget()
+    {
+        if (DaisyNeumorphicHelper.ShouldUseDirectElevation() &amp;&amp; _shadowContainer != null)
+            return _shadowContainer;
+
+        return _surfaceBorder;
+    }
+}</code></pre>
+
+<h4>Usage B</h4>
+
+<pre><code class="language-xml">&lt;local:MyButton NeumorphicEnabled="True"
+                NeumorphicMode="Raised"
+                NeumorphicIntensity="0.8" /&gt;</code></pre>
+
+<strong>Inset Mode</strong> - Injects gradient overlay borders into the visual tree:
+
+<ul><li>Two semi-transparent <code>Border</code> elements with <code>LinearGradientBrush</code> backgrounds</li>
+<li>Dark gradient from top-left corner, light gradient from bottom-right corner</li>
+<li>Overlays on top of the owner's content without blocking interaction</li>
+</ul>
+<h3>Elevation System (Size-Aware)</h3>
+
+<p>Elevation values are based on the control's <code>DaisySize</code> via <code>DaisyResourceLookup.GetDefaultElevation()</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>DaisySize</th>
+<th>Elevation</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>14</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>16</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The caller (e.g., <code>DaisyButton</code>) passes the appropriate elevation based on its Size property.</p>
+
+<h3>DaisyNeumorphicHelper API</h3>
+
+<pre><code class="language-csharp">public void Update(
+    bool enabled,
+    DaisyNeumorphicMode mode,
+    double intensity,
+    double elevation)</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td>Whether neumorphic effect is active</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>Raised</code>, <code>Inset</code>, <code>Flat</code>, or <code>None</code></td>
+</tr>
+<tr>
+<td><code>intensity</code></td>
+<td>Multiplier for shadow strength (0.0 - 1.0)</td>
+</tr>
+<tr>
+<td><code>elevation</code></td>
+<td>Base shadow depth in pixels (from <code>DaisyResourceLookup.GetDefaultElevation()</code>)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Deferred Attachment (Timing Fix)</h3>
+
+<p>The neumorphic helper requires the control's visual tree to be fully laid out before it can find the correct injection point. When <code>Content</code> is set on a <code>ContentControl</code>, the <code>ContentPresenter</code> doesn't process it immediately—this happens on the next layout pass.</p>
+
+<strong>The Problem</strong>: If <code>RefreshNeumorphicEffect()</code> runs immediately after <code>OnLoaded()</code>:
+
+<p>1. The helper calls <code>VisualTreeHelper.GetChild()</code> to find the visual tree</p>
+<p>2. The <code>ContentPresenter</code> has 0 children (not laid out yet)</p>
+<p>3. The helper falls back to attaching directly to the <code>ContentPresenter</code></p>
+<p>4. When layout completes, the composition surface renders ON TOP of the actual content</p>
+<p>5. Controls appear as blank boxes</p>
+
+<strong>The Solution</strong>: Neumorphic attachment is deferred until after the first <code>LayoutUpdated</code> event:
+
+<pre><code class="language-csharp">private void OnBaseLoaded(object sender, RoutedEventArgs e)
+{
+    // ... subscriptions ...
+    OnLoaded();  // Derived control builds its visual tree here
+
+    // Defer until visual tree is laid out
+    LayoutUpdated += OnFirstLayoutForNeumorphic;
+}
+
+private void OnFirstLayoutForNeumorphic(object? sender, object e)
+{
+    LayoutUpdated -= OnFirstLayoutForNeumorphic;
+    if (_isLoaded) RefreshNeumorphicEffect();
+}</code></pre>
+
+<p>This ensures dynamically-built controls (like <code>DaisyInput</code>, <code>DaisyTextArea</code>) work correctly with neumorphic mode.</p>
+
+<h3>Stability Safeguards (Post-Hang Fixes)</h3>
+
+<p>The following safeguards were added after real-world hangs (scrolling + page switches) to prevent layout storms and runaway visual tree updates:</p>
+
+<p>1. <strong>Single-shot overlay injection</strong></p>
+<p>- The helper now attempts to inject the overlay container only once per instance.</p>
+<p>- If the owner is not a direct child of a supported parent (<code>Panel</code> or <code>ContentPresenter</code>), injection is marked as failed and will not be retried.</p>
+<p>- This avoids repeated <code>LayoutUpdated</code> loops when the visual tree cannot be safely re-parented.</p>
+
+<p>2. <strong>Graceful fallback when injection fails</strong></p>
+<p>- If overlay injection fails, the helper <em>disables inset overlays</em> for that instance and falls back to <strong>direct elevation</strong> for Raised/Flat.</p>
+<p>- This keeps the app responsive on complex templates and virtualized panels, at the cost of losing inset on that element.</p>
+
+<p>3. <strong>Layout monitoring is gated</strong></p>
+<p>- <code>LayoutUpdated</code> monitoring is stopped as soon as the overlay is injected <em>or</em> injection is known to be impossible.</p>
+<p>- Update calls are ignored while the element is unloaded or the injection has failed, preventing update storms during scroll.</p>
+
+<p>4. <strong>No forced enablement</strong></p>
+<p>- Controls must respect <code>IsNeumorphicEffectivelyEnabled()</code> and <strong>never</strong> force-enable the effect when global mode is <code>None</code>.</p>
+<p>- Example fix: <code>DaisySlideToConfirm</code> stopped enabling neumorphism unconditionally to avoid background update churn.</p>
+
+<p>5. <strong>Gallery diagnostics guard (runtime only)</strong></p>
+<p>- Central in-app diagnostic log aggregation was disabled in the Gallery app to avoid runaway memory usage when many controls update simultaneously.</p>
+<p>- This is a Gallery-only safety measure and does not affect library logging APIs.</p>
+
+<h3>Field-Tested Integration Notes (Session Takeaways)</h3>
+
+<p>These are proven fixes from real-world testing that eliminated regressions across Windows + Desktop:</p>
+
+<p>1. <strong>Pick the real surface as the host element</strong></p>
+<p>- For composite controls, attach neumorphism to the element that actually renders the surface.</p>
+<p>- Example: <code>DaisyCard</code> now uses <code>PART_SolidBackground</code> via <code>GetNeumorphicHostElement()</code> to prevent background loss on Windows and Skia.</p>
+
+<p>2. <strong>ComboBox popup anchoring after host changes</strong></p>
+<p>- When the host is an inner element, anchor the drop-down to the trigger button (not the outer control) so the popup aligns with the input instead of its shadow.</p>
+
+<p>3. <strong>Avoid raw Composition DropShadow on Skia</strong></p>
+<p>- <code>Compositor.CreateDropShadow()</code> is not implemented in Uno Skia and throws <code>NotImplementedException</code>.</p>
+<p>- Use <code>DaisyNeumorphicHelper</code> or <code>ShadowContainer</code> for cross-platform shadows instead of raw Composition APIs.</p>
+
+<p>4. <strong>Do NOT merge Uno.Toolkit.* Generic.xaml</strong></p>
+<p>- The toolkit does not ship <code>Styles/Generic.xaml</code>. Merging it causes startup failures.</p>
+<p>- ShadowContainer only needs the package reference; no Generic.xaml merge.</p>
+
+<h3>Performance & Threading</h3>
+
+<ul><li><strong>Low-Priority Dispatching</strong>: Updates to the neumorphic visuals are queued with <code>DispatcherQueuePriority.Low</code>. This prevents the UI thread from hanging when hundreds of controls update simultaneously (e.g., when toggling mode in the Sidebar).</li>
+<li><strong>Hardware Acceleration</strong>: Shadow rendering is delegated to platform-native APIs which use GPU acceleration.</li>
+</ul>
+<h2>Effects Usage</h2>
+
+<p>Neumorphic effects are integrated directly into the <code>DaisyBaseContentControl</code> class.</p>
+
+<h3>Global Configuration (Opt-In Defaults)</h3>
+
+<p>Global settings provide <strong>default values</strong> for controls that don't have local overrides. They are <strong>opt-in</strong>, not forced:</p>
+
+<ul><li>Controls with explicit local <code>NeumorphicEnabled</code>, <code>NeumorphicMode</code>, etc. ignore the global settings.</li>
+<li><code>DaisyButton</code> has a <strong>heuristic</strong> that excludes certain buttons from global neumorphic:</li>
+</ul>  - Transparent variants (Ghost, Link) are excluded
+<p>- Default variant + Default style buttons are excluded (protects sidebars, menus)</p>
+<ul><li>Container controls (<code>DaisyButtonGroup</code>, <code>DaisyJoin</code>) explicitly disable neumorphic on their children.</li>
+</ul>
+<strong>Automatic state synchronization:</strong>
+
+<ul><li>Setting <code>GlobalNeumorphicMode</code> to a non-None value (Raised, Inset, Flat) automatically sets <code>GlobalNeumorphicEnabled = true</code></li>
+<li>Setting <code>GlobalNeumorphicMode = None</code> automatically sets <code>GlobalNeumorphicEnabled = false</code></li>
+<li>Setting <code>GlobalNeumorphicEnabled = true</code> when Mode was None <strong>restores the last non-None mode</strong> (defaults to Raised)</li>
+<li>The last non-None mode is remembered, so toggling Enabled on/off preserves the user's mode preference</li>
+</ul>
+<p>This bidirectional synchronization ensures the dropdown selector works intuitively.</p>
+
+<pre><code class="language-csharp">// Set mode preference
+DaisyBaseContentControl.GlobalNeumorphicMode = DaisyNeumorphicMode.Inset;
+
+// Disable (remembers Inset)
+DaisyBaseContentControl.GlobalNeumorphicEnabled = false;  // or Mode = None
+
+// Re-enable (restores Inset, not Raised!)
+DaisyBaseContentControl.GlobalNeumorphicEnabled = true;
+
+// Fires GlobalNeumorphicChanged event so controls can refresh</code></pre>
+
+<h3>Per-Control Configuration (XAML)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyButton
+    Content="Raised Button"
+    NeumorphicEnabled="True"
+    NeumorphicMode="Raised" /&gt;
+
+&lt;daisy:DaisyCard
+    NeumorphicEnabled="True"
+    NeumorphicMode="Inset"
+    NeumorphicIntensity="0.7" /&gt;</code></pre>
+
+<h3>Available Modes (<code>DaisyNeumorphicMode</code>)</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Style Guide Term</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>—</td>
+<td>No effect applied.</td>
+</tr>
+<tr>
+<td><code>Raised</code></td>
+<td>Outer</td>
+<td>Element appears to "pop out" from the surface. Uses platform elevation API.</td>
+</tr>
+<tr>
+<td><code>Inset</code></td>
+<td>Inner</td>
+<td>Element appears "pressed into" the surface. Uses gradient overlays.</td>
+</tr>
+<tr>
+<td><code>Flat</code></td>
+<td>—</td>
+<td>Single subtle shadow (half of Raised elevation).</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Button Interaction Pattern</strong> (from style guide): For interactive buttons, animate between Raised (normal) and Inset (pressed) states on MouseDown/MouseUp to create a satisfying click feedback.
+
+<h2>📐 Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>NeumorphicEnabled</code></td>
+<td><code>bool?</code></td>
+<td><code>null</code></td>
+<td>Enables/disables the effect. Falls back to global setting.</td>
+</tr>
+<tr>
+<td><code>NeumorphicMode</code></td>
+<td><code>DaisyNeumorphicMode?</code></td>
+<td><code>null</code></td>
+<td>The visual style (Raised, Inset, etc.). Falls back to global.</td>
+</tr>
+<tr>
+<td><code>NeumorphicIntensity</code></td>
+<td><code>double?</code></td>
+<td><code>null</code></td>
+<td>Adjusts shadow opacity/strength (0.0-1.0). Falls back to global.</td>
+</tr>
+<tr>
+<td><code>NeumorphicDarkShadowColor</code></td>
+<td><code>Color?</code></td>
+<td><code>null</code></td>
+<td>Override dark shadow color. Falls back to theme-derived global.</td>
+</tr>
+<tr>
+<td><code>NeumorphicLightShadowColor</code></td>
+<td><code>Color?</code></td>
+<td><code>null</code></td>
+<td>Override light shadow color. Falls back to theme-derived global.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Windows-Specific Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyNeumorphicHelper.UseRoundedShadowMask</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When true, applies rounded rectangle mask to match button corner radius.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Developer Notes</h2>
+
+<h3>Partial Class Architecture</h3>
+
+<code>DaisyNeumorphicHelper</code> uses a partial class pattern for platform-specific implementations:
+
+<pre><code class="language-diagram">Flowery.Uno/Controls/
+├── DaisyNeumorphicHelper.cs          # Shared code, partial method declarations
+└── DaisyNeumorphicHelper.Windows.cs  # Windows-only (#if WINDOWS), Composition API</code></pre>
+
+<strong>Partial Method Hooks</strong>:
+
+<pre><code class="language-csharp">// In DaisyNeumorphicHelper.cs:
+partial void OnApplyDirectElevation(DaisyNeumorphicMode mode, double intensity, double elevation, ref bool handled);
+partial void OnDisposeWindowsShadows();
+
+// In DaisyNeumorphicHelper.Windows.cs (#if WINDOWS):
+partial void OnApplyDirectElevation(..., ref bool handled)
+{
+    ApplyWindowsDropShadows(mode, intensity, elevation);
+    handled = true; // Skip default SetElevation path
+}</code></pre>
+
+<p>This pattern isolates platform-specific code without risking regressions on other platforms.</p>
+
+<h3>Theme Integration (Shadow Colors)</h3>
+
+<p>Shadow colors are <strong>automatically derived from the theme</strong> when <code>DaisyThemeManager.ApplyTheme()</code> is called:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Theme Type</th>
+<th>Dark Shadow</th>
+<th>Light Shadow</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Dark themes</strong></td>
+<td>Pure black <code>#000000</code></td>
+<td>Pure white <code>#FFFFFF</code></td>
+</tr>
+<tr>
+<td><strong>Light themes</strong></td>
+<td>Darkened Base300 (40%)</td>
+<td>Pure white <code>#FFFFFF</code></td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The derivation happens in <code>DaisyThemeManager.UpdateNeumorphicShadowColors()</code> and updates:</p>
+
+<ul><li><code>DaisyBaseContentControl.GlobalNeumorphicDarkShadowColor</code></li>
+<li><code>DaisyBaseContentControl.GlobalNeumorphicLightShadowColor</code></li>
+</ul>
+<strong>Override Chain</strong> (per-element → global):
+
+<pre><code class="language-csharp">// Per-element via attached property (highest priority)
+var darkColor = DaisyNeumorphic.GetDarkShadowColor(element)
+    ?? DaisyBaseContentControl.GlobalNeumorphicDarkShadowColor; // Theme-derived fallback</code></pre>
+
+<h3>Platform Considerations</h3>
+
+<strong>Windows</strong>: Uses Composition API <code>DropShadow</code> via partial class (<code>DaisyNeumorphicHelper.Windows.cs</code>). Current implementation uses a single dark shadow for reliability. Falls back to standard <code>SetElevation</code> path if Composition API fails.
+
+<strong>Desktop (Skia)</strong>: Shadows are clearly visible and scale well with elevation values. Uses single-shadow <code>SetElevation</code> approach.
+
+<strong>WASM</strong>: Uses CSS <code>box-shadow</code> via <code>SetElevation</code>. May need slightly boosted opacity values for visibility.
+
+<h3>Container Controls (DaisyButtonGroup, DaisyJoin)</h3>
+
+<strong>IMPORTANT</strong>: Container controls like <code>DaisyButtonGroup</code> and <code>DaisyJoin</code> are the <strong>single neumorphic surface</strong> - they draw ONE unified shadow/border around all children.
+
+<p>Child controls inside these containers have neumorphic <strong>explicitly disabled</strong> via <code>DaisyNeumorphic.SetIsEnabled(child, false)</code>. This prevents:</p>
+
+<ul><li>Overlapping shadows between adjacent buttons</li>
+<li>Duplicate borders that look wrong</li>
+<li>Visual artifacts from multiple neumorphic effects competing</li>
+</ul>
+<p>The children are flat visual segments inside the container's neumorphic shell. The container itself (which inherits from <code>DaisyBaseContentControl</code>) provides the neumorphic effect for the whole group.</p>
+
+<h3>Lifecycle Management</h3>
+
+<p>The base class automatically manages the creation and disposal of the neumorphic helper during <code>Loaded</code> and <code>Unloaded</code> events.</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

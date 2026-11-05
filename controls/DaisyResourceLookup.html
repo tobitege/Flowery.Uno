@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyResourceLookup</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyResourceLookup</h1>
+
+<h2>Overview</h2>
+
+<p>A static helper class providing centralized access to design tokens, resource lookups, and default sizing values for all Flowery.Uno controls.</p>
+<p>It provides:</p>
+
+<p>1. <strong>Resource Lookup Methods</strong> - Safe access to <code>ResourceDictionary</code> values with fallbacks</p>
+<p>2. <strong>Size Key Helpers</strong> - Convert <code>DaisySize</code> enum to resource key strings</p>
+<p>3. <strong>Default Sizing Values</strong> - Hardcoded fallbacks for all control dimensions</p>
+
+<p>All Flowery.Uno controls use this class internally to ensure consistent sizing and theming.</p>
+
+<h2>Resource Lookup Methods</h2>
+
+<p>These methods safely retrieve values from a <code>ResourceDictionary</code>, searching merged dictionaries recursively.</p>
+
+<h3>Basic Lookups (with ResourceDictionary)</h3>
+
+<pre><code class="language-csharp">using Flowery.Theming;
+
+var resources = Application.Current.Resources;
+
+// Get a double value with fallback
+double height = DaisyResourceLookup.GetDouble(resources, "DaisySizeMediumHeight", 28);
+
+// Get a Thickness
+Thickness padding = DaisyResourceLookup.GetThickness(resources, "DaisyButtonMediumPadding", new Thickness(10, 0));
+
+// Get a CornerRadius
+CornerRadius radius = DaisyResourceLookup.GetCornerRadius(resources, "DaisyCornerRadiusMedium", new CornerRadius(6));
+
+// Get a Brush
+Brush primary = DaisyResourceLookup.GetBrush(resources, "DaisyPrimaryBrush", new SolidColorBrush(Colors.Blue));</code></pre>
+
+<h3>Convenience Overloads (uses Application.Current.Resources)</h3>
+
+<pre><code class="language-csharp">// Shorter syntax when using app-level resources
+double height = DaisyResourceLookup.GetDouble("DaisySizeMediumHeight", 28);
+Brush primary = DaisyResourceLookup.GetBrush("DaisyPrimaryBrush");</code></pre>
+
+<h3>Low-Level Access</h3>
+
+<pre><code class="language-csharp">// Check if a resource exists
+if (DaisyResourceLookup.TryGetResource(resources, "MyCustomKey", out var value))
+{
+    // value is the resource object
+}</code></pre>
+
+<h2>Size Key Helpers</h2>
+
+<p>Convert <code>DaisySize</code> enum values to string keys for resource lookups.</p>
+
+<h3>GetSizeKey - Abbreviated (XS, S, M, L, XL)</h3>
+
+<pre><code class="language-csharp">string key = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraSmall); // "XS"
+string key = DaisyResourceLookup.GetSizeKey(DaisySize.Medium);     // "M"
+string key = DaisyResourceLookup.GetSizeKey(DaisySize.ExtraLarge); // "XL"
+
+// Use for resources like "DaisyBadgeXSHeight"
+var resourceKey = $"DaisyBadge{GetSizeKey(size)}Height";</code></pre>
+
+<h3>GetSizeKeyFull - Full Name</h3>
+
+<pre><code class="language-csharp">string key = DaisyResourceLookup.GetSizeKeyFull(DaisySize.ExtraSmall); // "ExtraSmall"
+string key = DaisyResourceLookup.GetSizeKeyFull(DaisySize.Medium);     // "Medium"
+
+// Use for resources like "DaisySizeExtraSmallHeight"
+var resourceKey = $"DaisySize{GetSizeKeyFull(size)}Height";</code></pre>
+
+<h2>Default Sizing Methods</h2>
+
+<p>These methods return hardcoded default values for each <code>DaisySize</code>. They're used as fallbacks when resources aren't defined.</p>
+
+<h3>Available Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Returns</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GetDefaultHeight(size)</code></td>
+<td>double</td>
+<td>22</td>
+<td>24</td>
+<td>28</td>
+<td>32</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>GetDefaultFloatingInputHeight(size)</code></td>
+<td>double</td>
+<td>28</td>
+<td>32</td>
+<td>36</td>
+<td>40</td>
+<td>44</td>
+</tr>
+<tr>
+<td><code>GetDefaultFontSize(size)</code></td>
+<td>double</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>GetDefaultHeaderFontSize(size)</code></td>
+<td>double</td>
+<td>14</td>
+<td>16</td>
+<td>20</td>
+<td>24</td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>GetDefaultIconSize(size)</code></td>
+<td>double</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>GetDefaultIconSpacing(size)</code></td>
+<td>double</td>
+<td>3</td>
+<td>4</td>
+<td>6</td>
+<td>6</td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>GetDefaultSwatchSize(size)</code></td>
+<td>double</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>GetDefaultPadding(size)</code></td>
+<td>Thickness</td>
+<td>6,0</td>
+<td>8,0</td>
+<td>10,0</td>
+<td>12,0</td>
+<td>14,0</td>
+</tr>
+<tr>
+<td><code>GetDefaultCornerRadius(size)</code></td>
+<td>CornerRadius</td>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>GetSizeValue(size)</code></td>
+<td>double</td>
+<td>14</td>
+<td>20</td>
+<td>26</td>
+<td>38</td>
+<td>52</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Specialized Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GetDefaultSpinnerButtonPadding(size)</code></td>
+<td>double</td>
+<td>NumericUpDown spinner button padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultSpinnerGridWidth(size)</code></td>
+<td>double</td>
+<td>NumericUpDown spinner grid width</td>
+</tr>
+<tr>
+<td><code>GetDefaultRadialProgressSize(size)</code></td>
+<td>double</td>
+<td>Radial progress dimensions (24-128)</td>
+</tr>
+<tr>
+<td><code>GetDefaultRangeTrackHeight(size)</code></td>
+<td>double</td>
+<td>Range slider track height</td>
+</tr>
+<tr>
+<td><code>GetDefaultRangeThumbSize(size)</code></td>
+<td>double</td>
+<td>Range slider thumb size</td>
+</tr>
+<tr>
+<td><code>GetDefaultRatingStarSize(size)</code></td>
+<td>double</td>
+<td>Rating star dimensions</td>
+</tr>
+<tr>
+<td><code>GetDefaultRatingSpacing(size)</code></td>
+<td>double</td>
+<td>Rating star gap</td>
+</tr>
+<tr>
+<td><code>GetDefaultMenuPadding(size)</code></td>
+<td>Thickness</td>
+<td>Menu/list row padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultTagPadding(size)</code></td>
+<td>Thickness</td>
+<td>Tag/chip padding</td>
+</tr>
+<tr>
+<td><code>GetDefaultOtpSlotSize(size)</code></td>
+<td>double</td>
+<td>OTP input slot size</td>
+</tr>
+<tr>
+<td><code>GetDefaultOtpSpacing(size)</code></td>
+<td>double</td>
+<td>OTP slot spacing</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Avatar-Specific Methods</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GetAvatarSize(size)</code></td>
+<td>double</td>
+<td>Avatar width/height (22-80)</td>
+</tr>
+<tr>
+<td><code>GetAvatarStatusSize(size)</code></td>
+<td>double</td>
+<td>Status indicator size (5-16)</td>
+</tr>
+<tr>
+<td><code>GetAvatarFontSize(size)</code></td>
+<td>double</td>
+<td>Placeholder text font size</td>
+</tr>
+<tr>
+<td><code>GetAvatarIconSize(size)</code></td>
+<td>double</td>
+<td>Avatar icon size</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Usage in Custom Controls</h2>
+
+<h3>Pattern 1: Direct Defaults (Simple)</h3>
+
+<pre><code class="language-csharp">private void ApplySizing()
+{
+    Height = DaisyResourceLookup.GetDefaultHeight(Size);
+    FontSize = DaisyResourceLookup.GetDefaultFontSize(Size);
+    Padding = DaisyResourceLookup.GetDefaultPadding(Size);
+}</code></pre>
+
+<h3>Pattern 2: Resource with Fallback (Flexible)</h3>
+
+<pre><code class="language-csharp">private void ApplySizing()
+{
+    var resources = Application.Current?.Resources;
+    var sizeKey = DaisyResourceLookup.GetSizeKeyFull(Size);
+
+    Height = DaisyResourceLookup.GetDouble(resources, 
+        $"DaisySize{sizeKey}Height", 
+        DaisyResourceLookup.GetDefaultHeight(Size));
+
+    FontSize = DaisyResourceLookup.GetDouble(resources, 
+        $"DaisySize{sizeKey}FontSize", 
+        DaisyResourceLookup.GetDefaultFontSize(Size));
+}</code></pre>
+
+<h3>Pattern 3: Control-Specific Resources</h3>
+
+<pre><code class="language-csharp">private void ApplySizing()
+{
+    var resources = Application.Current?.Resources;
+    var sizeKey = DaisyResourceLookup.GetSizeKey(Size); // "XS", "S", "M", etc.
+
+    // Look for control-specific resource first, fall back to default
+    Height = DaisyResourceLookup.GetDouble(resources, 
+        $"DaisyBadge{sizeKey}Height", 
+        DaisyResourceLookup.GetDefaultHeight(Size));
+}</code></pre>
+
+<h2>Overriding Defaults via Resources</h2>
+
+<p>You can override any default value by defining resources in your app:</p>
+
+<pre><code class="language-xml">&lt;Application.Resources&gt;
+    &lt;!-- Override default heights --&gt;
+    &lt;x:Double x:Key="DaisySizeExtraSmallHeight"&gt;20&lt;/x:Double&gt;
+    &lt;x:Double x:Key="DaisySizeSmallHeight"&gt;22&lt;/x:Double&gt;
+    &lt;x:Double x:Key="DaisySizeMediumHeight"&gt;26&lt;/x:Double&gt;
+
+    &lt;!-- Override control-specific values --&gt;
+    &lt;x:Double x:Key="DaisyBadgeXSHeight"&gt;18&lt;/x:Double&gt;
+    &lt;x:Double x:Key="DaisyButtonLHeight"&gt;40&lt;/x:Double&gt;
+&lt;/Application.Resources&gt;</code></pre>
+<hr>
+<h2>Related</h2>
+
+<ul><li><a href="DesignTokens.html">DesignTokens</a> - Complete design token reference</li>
+<li><a href="FlowerySizeManager.html">FlowerySizeManager</a> - Global size management</li>
+<li><a href="SizingAndScaling.html">SizingAndScaling</a> - Sizing system overview</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

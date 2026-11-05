@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyAlert</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyAlert</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyAlert.png" alt="DaisyAlert" class="doc-image">
+
+<p>DaisyAlert is a compact callout for inline status messages. It provides <strong>4 semantic variants</strong> (Info, Success, Warning, Error), optional icon content, and a simple two-column layout that keeps messages readable without dominating the page. Use it for persistent notices inside forms, cards, or panels; pair with DaisyToast for transient alerts.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Info</strong></td>
+<td>Calm blue outline and text for neutral updates or instructions.</td>
+</tr>
+<tr>
+<td><strong>Success</strong></td>
+<td>Green outline/text for confirmations and “saved” states.</td>
+</tr>
+<tr>
+<td><strong>Warning</strong></td>
+<td>Amber outline/text for cautions and required attention.</td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td>Red outline/text for failures and blocking issues.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Content & Icon Slot</h2>
+
+<ul><li>Body comes from the control <code>Content</code>; it supports plain text or any UI element.</li>
+<li>The <code>Icon</code> property accepts any object/element and shows in a leading slot with a small gutter. If <code>Icon</code> is omitted or <code>null</code>, the icon column collapses automatically.</li>
+<li>Default padding (16) and rounded corners (8) create a subtle card-like appearance; border uses the variant color.</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic variants --&gt;
+&lt;controls:DaisyAlert Content="Info: New software update available." Variant="Info" /&gt;
+&lt;controls:DaisyAlert Content="Success: Profile updated." Variant="Success" /&gt;
+&lt;controls:DaisyAlert Content="Warning: Password is weak." Variant="Warning" /&gt;
+&lt;controls:DaisyAlert Content="Error: Could not save changes." Variant="Error" /&gt;
+
+&lt;!-- With a custom icon --&gt;
+&lt;controls:DaisyAlert Variant="Info"&gt;
+    &lt;controls:DaisyAlert.Icon&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconInfo}" Width="18" Height="18" /&gt;
+    &lt;/controls:DaisyAlert.Icon&gt;
+    &lt;TextBlock Text="You can change these settings later." TextWrapping="Wrap" /&gt;
+&lt;/controls:DaisyAlert&gt;
+
+&lt;!-- Inline inside a form --&gt;
+&lt;StackPanel Spacing="8" Width="420"&gt;
+    &lt;TextBlock Text="Email address" /&gt;
+    &lt;TextBox Text="{Binding Email}" /&gt;
+    &lt;controls:DaisyAlert Variant="Warning" Content="We'll use this to verify your account." /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Dynamic status surface --&gt;
+&lt;controls:DaisyAlert x:Name="StatusAlert" Variant="Success"&gt;
+    &lt;TextBlock Text="{Binding StatusMessage}" /&gt;
+&lt;/controls:DaisyAlert&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep messages short; alerts are meant for quick scanning, not full paragraphs.</li>
+<li>Provide an <code>Icon</code> for critical states (Warning/Error) to increase recognition at a glance.</li>
+<li>For stacking multiple alerts, add vertical spacing (e.g., <code>Margin="0,4"</code>) to avoid a wall of color.</li>
+<li>Use DaisyAlert for persistent inline messaging; prefer DaisyToast for transient, dismissible notifications.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyAccordion.html">← Accordion</a></div>
+    <div class="nav-right"><a href="DaisyAnimatedNumber.html">AnimatedNumber →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

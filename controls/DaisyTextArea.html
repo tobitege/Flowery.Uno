@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTextArea</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyTextArea</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyTextArea.png" alt="DaisyTextArea" class="doc-image">
+
+<p>DaisyTextArea is a multiline variant of DaisyInput. It inherits all input variants/sizes/properties, sets <code>AcceptsReturn</code>/<code>AcceptsTab=True</code>, and enables <code>TextWrapping</code>. It additionally supports textarea-specific features like character counters, auto-growing, and action buttons.</p>
+
+<h2>Key Behavior</h2>
+
+<ul><li>Multiline by default (<code>AcceptsReturn=True</code>, <code>TextWrapping=Wrap</code>).</li>
+<li>Inherits all DaisyInput properties: <code>Variant</code>, <code>Size</code>, <code>Label</code>, <code>HelperText</code>, <code>HintText</code>, <code>StartIcon</code>, <code>EndIcon</code>, <code>IsRequired</code>, <code>IsOptional</code>, etc.</li>
+<li>Uses <code>MinHeight</code> instead of fixed <code>Height</code> to allow content expansion.</li>
+<li>Supports <code>Watermark</code> for placeholder text.</li>
+</ul>
+<h2>Inherited Properties</h2>
+
+<p>DaisyTextArea inherits all properties from DaisyInput. Key ones for textarea usage:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Label</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Label text displayed above the textarea.</td>
+</tr>
+<tr>
+<td><code>IsRequired</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows asterisk (*) indicator next to label.</td>
+</tr>
+<tr>
+<td><code>IsOptional</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows "Optional field" text next to label.</td>
+</tr>
+<tr>
+<td><code>HelperText</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Helper text displayed below textarea (left-aligned).</td>
+</tr>
+<tr>
+<td><code>HintText</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Hint text displayed below label, above textarea.</td>
+</tr>
+<tr>
+<td><code>Variant</code></td>
+<td><code>DaisyInputVariant</code></td>
+<td><code>Bordered</code></td>
+<td>Visual style (Bordered, Ghost, Filled, Error, Success, etc.).</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Size preset affecting padding and font size.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>TextArea-Specific Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ShowCharacterCount</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Displays character count below textarea (e.g., "42 / 200").</td>
+</tr>
+<tr>
+<td><code>IsAutoGrow</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Automatically expands height based on content.</td>
+</tr>
+<tr>
+<td><code>CanResize</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether the textarea can be resized by the user.</td>
+</tr>
+<tr>
+<td><code>ActionButtonContent</code></td>
+<td><code>object?</code></td>
+<td><code>null</code></td>
+<td>Content for action button below textarea (e.g., "Submit Feedback").</td>
+</tr>
+<tr>
+<td><code>ActionButtonCommand</code></td>
+<td><code>ICommand?</code></td>
+<td><code>null</code></td>
+<td>Command executed when action button is clicked (MVVM).</td>
+</tr>
+<tr>
+<td><code>ActionButtonCommandParameter</code></td>
+<td><code>object?</code></td>
+<td><code>null</code></td>
+<td>Parameter passed to the action button command.</td>
+</tr>
+<tr>
+<td><code>ActionButtonClicked</code></td>
+<td><code>event</code></td>
+<td>-</td>
+<td>Event raised when action button is clicked (code-behind).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic textarea --&gt;
+&lt;controls:DaisyTextArea Watermark="Enter description..." MinHeight="120" /&gt;
+
+&lt;!-- With label and required indicator --&gt;
+&lt;controls:DaisyTextArea Label="Bio" IsRequired="True" Watermark="Tell us about yourself..." MinHeight="100" /&gt;
+
+&lt;!-- With helper text --&gt;
+&lt;controls:DaisyTextArea Label="Feedback" HelperText="Your feedback is useful for us." Watermark="Type your feedback here" MinHeight="80" /&gt;
+
+&lt;!-- Character counter with max length --&gt;
+&lt;controls:DaisyTextArea Label="Message" ShowCharacterCount="True" MaxLength="200" Watermark="Type here..." MinHeight="80" /&gt;
+
+&lt;!-- Auto-growing textarea --&gt;
+&lt;controls:DaisyTextArea IsAutoGrow="True" Watermark="This textarea grows as you type..." MinHeight="60" /&gt;
+
+&lt;!-- With action button --&gt;
+&lt;controls:DaisyTextArea Label="Feedback" ActionButtonContent="Submit Feedback" ActionButtonCommand="{Binding SubmitCommand}" Watermark="Type your feedback here" MinHeight="80" /&gt;
+
+&lt;!-- Validation states --&gt;
+&lt;controls:DaisyTextArea Variant="Error" HelperText="Please provide valid input" Watermark="Invalid input" MinHeight="80" /&gt;
+&lt;controls:DaisyTextArea Variant="Success" HelperText="Looks good!" Watermark="Valid input" MinHeight="80" /&gt;
+
+&lt;!-- Filled variant --&gt;
+&lt;controls:DaisyTextArea Variant="Filled" Watermark="Filled textarea" MinHeight="80" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set <code>MinHeight</code> to provide enough room for content; allow wrapping instead of horizontal scrolling.</li>
+<li>Use <code>Label</code> for field names and <code>Watermark</code> for placeholder text.</li>
+<li>Use <code>HelperText</code> for validation messages; use <code>ShowCharacterCount</code> for character limits.</li>
+<li>Use <code>IsAutoGrow="True"</code> for comment fields where users may write varying amounts of text.</li>
+<li>Use <code>ActionButtonContent</code> to add inline submit buttons for feedback forms.</li>
+<li>Use the same variant/size scheme as adjacent inputs for visual consistency.</li>
+<li>Use semantic variants (Error/Success/Warning) with <code>HelperText</code> to reinforce validation feedback.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTagPicker.html">← TagPicker</a></div>
+    <div class="nav-right"><a href="DaisyTextRotate.html">TextRotate →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

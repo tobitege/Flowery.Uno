@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyPagination</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyPagination</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyPagination.png" alt="DaisyPagination" class="doc-image">
+
+<p>DaisyPagination renders joined page navigation buttons using <code>DaisyJoin</code> internally. It automatically generates page buttons based on <code>TotalPages</code>, handles prev/next navigation, and highlights the current page. The control responds to global size changes via <code>FlowerySizeManager</code>.</p>
+
+<strong>Key Features:</strong>
+
+<ul><li><strong>Smart truncation</strong> with ellipsis for large page counts (e.g., 100+ pages)</li>
+<li><strong>First/Last buttons</strong> (⏮ ⏭) for jumping to extremes</li>
+<li><strong>Jump buttons</strong> (« ») for skipping multiple pages at once</li>
+<li><strong>Configurable appearance</strong> with customizable max visible pages</li>
+</ul>
+<h2>Properties & Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CurrentPage</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td>The currently selected page (1-based, auto-clamped to valid range).</td>
+</tr>
+<tr>
+<td><code>TotalPages</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td>Total number of pages to display.</td>
+</tr>
+<tr>
+<td><code>MaxVisiblePages</code></td>
+<td><code>int</code></td>
+<td><code>7</code></td>
+<td>Maximum page buttons to display (minimum 5). When <code>TotalPages</code> exceeds this, ellipsis is shown.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Button size preset (ExtraSmall, Small, Medium, Large, ExtraLarge).</td>
+</tr>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Orientation</code></td>
+<td><code>Horizontal</code></td>
+<td>Layout direction (Horizontal or Vertical).</td>
+</tr>
+<tr>
+<td><code>ShowPrevNext</code></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>Whether to show single-chevron prev/next buttons (‹ ›).</td>
+</tr>
+<tr>
+<td><code>ShowFirstLast</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Whether to show first/last page buttons (⏮ ⏭).</td>
+</tr>
+<tr>
+<td><code>ShowJumpButtons</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Whether to show double-chevron jump buttons (« »).</td>
+</tr>
+<tr>
+<td><code>JumpStep</code></td>
+<td><code>int</code></td>
+<td><code>10</code></td>
+<td>Number of pages to skip when using jump buttons.</td>
+</tr>
+<tr>
+<td><code>EllipsisText</code></td>
+<td><code>string</code></td>
+<td><code>"…"</code></td>
+<td>Text displayed for ellipsis placeholders.</td>
+</tr>
+<tr>
+<td><code>PageChanged</code></td>
+<td><code>EventHandler<int></code></td>
+<td>—</td>
+<td>Fired with the new page number when navigating.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<h3>Basic Usage</h3>
+
+<pre><code class="language-xml">&lt;!-- Simple pagination with 7 pages, current page 3 --&gt;
+&lt;daisy:DaisyPagination TotalPages="7" CurrentPage="3" PageChanged="OnPageChanged" /&gt;
+
+&lt;!-- Small pagination without prev/next --&gt;
+&lt;daisy:DaisyPagination TotalPages="5" CurrentPage="1" ShowPrevNext="False" Size="Small" /&gt;
+
+&lt;!-- Vertical pagination --&gt;
+&lt;daisy:DaisyPagination TotalPages="4" CurrentPage="2" Orientation="Vertical" /&gt;</code></pre>
+
+<h3>Large Page Counts with Ellipsis</h3>
+
+<pre><code class="language-xml">&lt;!-- 100 pages with smart truncation - shows: [1] … [48] [49] [50] [51] [52] … [100] --&gt;
+&lt;daisy:DaisyPagination TotalPages="100"
+                       CurrentPage="50"
+                       MaxVisiblePages="7" /&gt;
+
+&lt;!-- Compact display with fewer visible pages --&gt;
+&lt;daisy:DaisyPagination TotalPages="100"
+                       CurrentPage="50"
+                       MaxVisiblePages="5" /&gt;</code></pre>
+
+<h3>Navigation Buttons</h3>
+
+<pre><code class="language-xml">&lt;!-- With First/Last buttons (⏮ ⏭) --&gt;
+&lt;daisy:DaisyPagination TotalPages="50"
+                       CurrentPage="25"
+                       ShowFirstLast="True" /&gt;
+
+&lt;!-- With Jump buttons (« ») to skip 10 pages --&gt;
+&lt;daisy:DaisyPagination TotalPages="100"
+                       CurrentPage="50"
+                       ShowJumpButtons="True"
+                       JumpStep="10" /&gt;
+
+&lt;!-- Full featured: First/Last + Jump + Prev/Next --&gt;
+&lt;daisy:DaisyPagination TotalPages="200"
+                       CurrentPage="100"
+                       MaxVisiblePages="5"
+                       ShowFirstLast="True"
+                       ShowJumpButtons="True"
+                       JumpStep="10" /&gt;</code></pre>
+
+<h3>Data Binding</h3>
+
+<pre><code class="language-xml">&lt;!-- Bound to ViewModel --&gt;
+&lt;daisy:DaisyPagination TotalPages="{Binding TotalPages}"
+                       CurrentPage="{Binding CurrentPage, Mode=TwoWay}"
+                       PageChanged="OnPageChanged" /&gt;</code></pre>
+
+<h2>Code-Behind Example</h2>
+
+<pre><code class="language-csharp">private void OnPageChanged(object sender, int newPage)
+{
+    // Update your data based on the new page
+    LoadPageData(newPage);
+
+    // Or update a status display
+    StatusText.Text = $"Showing page {newPage} of {pagination.TotalPages}";
+}</code></pre>
+
+<h2>Smart Truncation Algorithm</h2>
+
+<p>The control uses intelligent truncation to keep the UI compact:</p>
+
+<p>1. <strong>Always shows first and last page</strong> for context</p>
+<p>2. <strong>Centers visible pages around current page</strong></p>
+<p>3. <strong>Inserts ellipsis (<code>…</code>)</strong> when there are gaps > 1 between pages</p>
+<p>4. <strong>Adapts to position</strong> - shows more pages on the side closer to the edge</p>
+
+<h3>Visual Examples</h3>
+
+<pre><code class="language-txt">TotalPages=100, CurrentPage=1, MaxVisiblePages=7:
+  ‹ [1] [2] [3] [4] [5] … [100] ›
+
+TotalPages=100, CurrentPage=50, MaxVisiblePages=7:
+  ‹ [1] … [49] [50] [51] … [100] ›
+
+TotalPages=100, CurrentPage=100, MaxVisiblePages=7:
+  ‹ [1] … [96] [97] [98] [99] [100] ›
+
+With ShowJumpButtons (order: jump outside, prev/next inside):
+  « ‹ [1] … [49] [50] [51] … [100] › »
+
+Full featured (order by magnitude: first/last → jump → prev/next):
+  |← « ‹ [1] … [49] [50] [51] … [100] › » →|</code></pre>
+
+<h3>Button Order Diagram</h3>
+
+<pre><code class="language-txt">|← « ‹ [1] … [49] [50] [51] … [100] › » →|
+ │  │  │                            │  │  │
+ │  │  │                            │  │  └── Last (→|) - outermost
+ │  │  │                            │  └───── Jump +10 (») - middle  
+ │  │  │                            └──────── Next (›) - innermost
+ │  │  └─────────────────────────────────────── Prev (‹) - innermost
+ │  └────────────────────────────────────────── Jump -10 («) - middle
+ └───────────────────────────────────────────── First (|←) - outermost</code></pre>
+
+<strong>Logic</strong>: The further from the page numbers, the bigger the jump:
+
+<ul><li><strong>Innermost</strong> (<code>‹</code> <code>›</code>): Single step (±1 page)</li>
+<li><strong>Middle</strong> (<code>«</code> <code>»</code>): Jump to nearest multiple of 10</li>
+<li><strong>Outermost</strong> (<code>|←</code> <code>→|</code>): Jump to edge (first/last page)</li>
+</ul>
+<h3>Jump-to-Tens Behavior</h3>
+
+<p>Jump buttons navigate to <strong>exact multiples</strong> of <code>JumpStep</code> (default 10), not by a fixed offset:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Current</th>
+<th>« (Back)</th>
+<th>» (Forward)</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>53</td>
+<td>→ 50</td>
+<td>→ 60</td>
+</tr>
+<tr>
+<td>50</td>
+<td>→ 40</td>
+<td>→ 60</td>
+</tr>
+<tr>
+<td>47</td>
+<td>→ 40</td>
+<td>→ 50</td>
+</tr>
+<tr>
+<td>10</td>
+<td>→ 1</td>
+<td>→ 20</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>This makes navigation more predictable - users always land on round numbers like 10, 20, 30, etc.</p>
+
+<h2>Internal Architecture</h2>
+
+<p>DaisyPagination uses <code>DaisyJoin</code> internally for:</p>
+
+<ul><li>Joined button styling (shared borders, rounded end corners)</li>
+<li>Active item highlighting via <code>DaisyJoin.ActiveIndex</code></li>
+</ul>
+<p>Each button is a <code>DaisyPaginationItem</code> (extends <code>Button</code>) with:</p>
+
+<ul><li><code>PageNumber</code> - the page this button represents (null for nav buttons)</li>
+<li><code>IsEllipsis</code> - true for ellipsis placeholders (disabled, non-clickable)</li>
+</ul>
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Bind <code>CurrentPage</code></strong> to your view model and handle <code>PageChanged</code> to load data.</li>
+<li><strong>For 20+ pages</strong>, enable <code>ShowFirstLast="True"</code> for quick navigation to extremes.</li>
+<li><strong>For 50+ pages</strong>, consider enabling <code>ShowJumpButtons="True"</code> with <code>JumpStep="10"</code>.</li>
+<li><strong>Reduce <code>MaxVisiblePages</code></strong> to 5 for very compact layouts.</li>
+<li><strong>Use <code>Size</code></strong> for consistent sizing; buttons are square with symmetric padding.</li>
+<li>The control responds to <code>FlowerySizeManager.CurrentSize</code> for global sizing.</li>
+<li><code>CurrentPage</code> is automatically clamped to valid range (1 to TotalPages).</li>
+</ul>
+<h2>Related Icons</h2>
+
+<p>The pagination control uses these icons from <code>DaisyIcons.xaml</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Icon Key</th>
+<th>Style</th>
+<th>Usage</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisyIconChevronLeft</code></td>
+<td><code>‹</code></td>
+<td>Previous page (single step)</td>
+</tr>
+<tr>
+<td><code>DaisyIconChevronRight</code></td>
+<td><code>›</code></td>
+<td>Next page (single step)</td>
+</tr>
+<tr>
+<td><code>DaisyIconChevronDoubleLeft</code></td>
+<td><code>«</code></td>
+<td>Jump backward (to previous x10)</td>
+</tr>
+<tr>
+<td><code>DaisyIconChevronDoubleRight</code></td>
+<td><code>»</code></td>
+<td>Jump forward (to next x10)</td>
+</tr>
+<tr>
+<td><code>DaisyIconPageFirst</code></td>
+<td><code>\</td>
+<td>←</code></td>
+<td>First page (bar + arrow)</td>
+</tr>
+<tr>
+<td><code>DaisyIconPageLast</code></td>
+<td><code>→\</td>
+<td></code></td>
+<td>Last page (arrow + bar)</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Icon semantics:</strong>
+
+<ul><li><strong>Bar</strong> (<code>|</code>) = boundary/edge indicator</li>
+<li><strong>Single chevron</strong> = single step navigation</li>
+<li><strong>Double chevron</strong> = multi-step jump navigation</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyOtpInput.html">← OtpInput</a></div>
+    <div class="nav-right"><a href="DaisyPasswordBox.html">PasswordBox →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

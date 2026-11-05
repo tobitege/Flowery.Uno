@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyInput</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyInput</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyInput.png" alt="DaisyInput" class="doc-image">
+
+<p>DaisyInput is a styled TextBox with <strong>10 variants</strong> and <strong>4 size presets</strong>. It supports bordered, ghost, filled, and semantic colored borders, plus labels, helper text, icons, and inner content slots. Defaults to a padded, rounded text field that matches DaisyUI forms.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Bordered (default)</td>
+<td>Subtle 30% opacity border; brightens on focus.</td>
+</tr>
+<tr>
+<td>Ghost</td>
+<td>No border and transparent background; adds light fill on focus.</td>
+</tr>
+<tr>
+<td>Filled</td>
+<td>Filled background with bottom border; ideal for material-style forms.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Colored borders with focus states.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic border colors.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<p>DaisyInput uses <strong>fixed heights</strong> for each size to match DaisyUI's design.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>Font Size</th>
+<th>Floating Height</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>24</td>
+<td>10</td>
+<td>40</td>
+<td>Dense tables/toolbars.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>32</td>
+<td>12</td>
+<td>48</td>
+<td>Compact forms.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>48</td>
+<td>14</td>
+<td>56</td>
+<td>General usage.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>64</td>
+<td>18</td>
+<td>64</td>
+<td>Prominent inputs/hero sections.</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-tip"><div class="alert-title">TIP</div>The heights for <code>LabelPosition="Floating"</code> are slightly larger to provide vertical headroom for the label. See <code>DaisyInputFloating*Height</code> tokens in Design Tokens documentation.</div>
+<div class="alert alert-note"><div class="alert-title">NOTE</div>DaisyInput uses <strong>fixed heights</strong> for each size to match DaisyUI's design. Single-line inputs will not grow vertically. For multi-line text entry, use <code>DaisyTextArea</code> instead.</div>
+<h2>Properties</h2>
+
+<p>DaisyInput wraps an inner <code>TextBox</code> and forwards common TextBox properties (<code>Text</code>, <code>PlaceholderText</code>, <code>MaxLength</code>, <code>AcceptsReturn</code>, <code>TextWrapping</code>, <code>IsReadOnly</code>).</p>
+
+<strong>DaisyInput-specific properties:</strong>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Variant</code></td>
+<td><code>DaisyInputVariant</code></td>
+<td><code>Bordered</code></td>
+<td>Visual style variant (see table above).</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Size preset (see table above).</td>
+</tr>
+<tr>
+<td><code>Label</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Label text displayed above the input.</td>
+</tr>
+<tr>
+<td><code>LabelPosition</code></td>
+<td><code>DaisyLabelPosition</code></td>
+<td><code>Top</code></td>
+<td>Label positioning mode (None, Top, Floating, Inset). <strong>Floating</strong> mode features a high-fidelity "identity clone" animation.</td>
+</tr>
+<tr>
+<td><code>IsRequired</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows asterisk (*) indicator next to label.</td>
+</tr>
+<tr>
+<td><code>IsOptional</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows "Optional field" text next to label.</td>
+</tr>
+<tr>
+<td><code>HintText</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Hint text displayed below label, above input.</td>
+</tr>
+<tr>
+<td><code>HelperText</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Helper text displayed below input (right-aligned).</td>
+</tr>
+<tr>
+<td><code>StartIcon</code></td>
+<td><code>Geometry?</code></td>
+<td><code>null</code></td>
+<td>Icon displayed at the start (left) of the input.</td>
+</tr>
+<tr>
+<td><code>EndIcon</code></td>
+<td><code>Geometry?</code></td>
+<td><code>null</code></td>
+<td>Icon displayed at the end (right) of the input.</td>
+</tr>
+<tr>
+<td><code>BorderRingBrush</code></td>
+<td><code>Brush?</code></td>
+<td><code>null</code></td>
+<td>Custom brush for the focus ring (overrides default).</td>
+</tr>
+<tr>
+<td><code>IsReadOnly</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>When true, text cannot be edited but can be selected/copied.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Content Alignment</h2>
+
+<p>The <code>VerticalContentAlignment</code> property controls vertical positioning of both the watermark and text content:</p>
+
+<ul><li><strong>Center</strong> (default): Text vertically centered - standard for single-line inputs.</li>
+<li><strong>Top</strong>: Text aligned to top - used by <code>DaisyTextArea</code> for multi-line editing.</li>
+</ul>
+<h2>Floating Labels</h2>
+
+<p>Setting <code>LabelPosition="Floating"</code> enables a high-fidelity interaction inspired by SmoothUI and Material Design.</p>
+
+<h3>Interaction Flow</h3>
+
+<p>1. <strong>Identity Match</strong>: The label starts exactly overlayed on the watermark, matching its font size, position, and opacity.</p>
+<p>2. <strong>Instant Switch</strong>: Upon focus, the label instantly snaps to its active style (primary color and semi-bold weight) but stays stationary.</p>
+<p>3. <strong>Delayed Float</strong>: After a 50ms pause, the label smoothly scales down and slides to the top border using a Material-standard cubic-bezier easing.</p>
+<p>4. <strong>Persistence</strong>: The label remains in the floated position as long as the input has focus or contains text (tracked via the <code>:hastext</code> pseudo-class).</p>
+
+<h3>Layout Requirements</h3>
+
+<p>Floating labels require additional vertical headroom above the input border to prevent clipping. This is handled automatically by the control's template using dedicated design tokens:</p>
+
+<ul><li><code>DaisyInputFloatingMediumHeight</code> (Default: 56px)</li>
+<li><code>DaisyInputFloatingSmallHeight</code> (Default: 48px)</li>
+<li><code>DaisyInputFloatingExtraSmallHeight</code> (Default: 40px)</li>
+<li><code>DaisyInputFloatingLargeHeight</code> (Default: 64px)</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic --&gt;
+&lt;controls:DaisyInput Watermark="Bordered (Default)" /&gt;
+
+&lt;!-- Filled variant --&gt;
+&lt;controls:DaisyInput Variant="Filled" Watermark="Filled style" /&gt;
+
+&lt;!-- With label and required indicator --&gt;
+&lt;controls:DaisyInput Label="Email" IsRequired="True" Watermark="Enter email..." /&gt;
+
+&lt;!-- With label and optional indicator --&gt;
+&lt;controls:DaisyInput Label="Notes" IsOptional="True" HelperText="Optional field" Watermark="Enter notes..." /&gt;
+
+&lt;!-- With helper text --&gt;
+&lt;controls:DaisyInput Label="Password" HelperText="Must be at least 8 characters" Watermark="Enter password..." /&gt;
+
+&lt;!-- Floating Label --&gt;
+&lt;controls:DaisyInput Label="Email Address" LabelPosition="Floating" Watermark="Enter email..." /&gt;
+
+&lt;!-- With icons --&gt;
+&lt;controls:DaisyInput StartIcon="{StaticResource DaisyIconHome}" Watermark="Address" /&gt;
+&lt;controls:DaisyInput EndIcon="{StaticResource DaisyIconSearch}" Watermark="Search..." /&gt;
+
+&lt;!-- Semantic variants --&gt;
+&lt;controls:DaisyInput Variant="Error" HelperText="Invalid input" Watermark="Error state" /&gt;
+&lt;controls:DaisyInput Variant="Success" HelperText="Looks good!" Watermark="Valid input" /&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;controls:DaisyInput Size="Small" Watermark="Small Input" /&gt;
+&lt;controls:DaisyInput Size="Large" Watermark="Large Input" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Label</code> for form field names and <code>Watermark</code> for placeholder text inside the input.</li>
+<li>Use <code>IsRequired="True"</code> to show an asterisk (*) indicator for required fields.</li>
+<li>Use <code>HelperText</code> for validation messages or additional guidance.</li>
+<li>Use Ghost for inputs on colored surfaces; use Bordered/Primary for standard light backgrounds.</li>
+<li>Use Filled variant for material design style forms.</li>
+<li>Pair semantic variants with validation states (Error/Success) to reinforce feedback.</li>
+<li>Keep <code>Padding</code> consistent across form fields; sizes already tune height and font size.</li>
+<li>For search bars, add a left icon; for clear actions, add a right button via <code>InnerRightContent</code>.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyIndicator.html">← Indicator</a></div>
+    <div class="nav-right"><a href="DaisyJoin.html">Join →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

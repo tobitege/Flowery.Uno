@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyButton</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyButton</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyButton.png" alt="DaisyButton" class="doc-image">
+
+<p>DaisyButton delivers DaisyUI-styled actions with <strong>11 color variants</strong>, <strong>4 visual styles</strong>, <strong>5 sizes</strong>, and <strong>shape modifiers</strong> for wide, block, square, or circular buttons. It supports active state scaling, optional shadows, and link/ghost modes for text-like actions. Use it for everything from primary calls-to-action to subtle icon buttons.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default / Neutral</td>
+<td>Base theme fill; balanced emphasis for most actions.</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td>High-emphasis brand color for main actions.</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td>Alternate brand color for secondary actions.</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td>Highlight color for standout actions.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic colors for status-driven actions.</td>
+</tr>
+<tr>
+<td>Ghost</td>
+<td>Transparent background with subtle hover fill; minimal weight.</td>
+</tr>
+<tr>
+<td>Link</td>
+<td>Text-like button: no padding/border, uses primary color and underline on hover.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Style Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Style</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Solid fill (or transparent for Ghost/Link) with hover transitions.</td>
+</tr>
+<tr>
+<td>Outline</td>
+<td>Transparent background with colored border/text; fills with the variant color on hover.</td>
+</tr>
+<tr>
+<td>Dash</td>
+<td>Dashed stroke around the button (shown via a dashed rectangle) with transparent fill until hover.</td>
+</tr>
+<tr>
+<td>Soft</td>
+<td>Tinted background with colored text; hover deepens the tint.</td>
+</tr>
+<tr>
+<td><code>IsOutline</code> (obsolete)</td>
+<td>Legacy flag; prefer <code>ButtonStyle="Outline"</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Shape Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Shape</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Standard pill rounding (8px).</td>
+</tr>
+<tr>
+<td>Wide</td>
+<td>Extra horizontal padding for prominent CTAs.</td>
+</tr>
+<tr>
+<td>Block</td>
+<td>Stretches to parent width (HorizontalAlignment=Stretch).</td>
+</tr>
+<tr>
+<td>Square</td>
+<td>Fixed width per size; good for icon-only buttons.</td>
+</tr>
+<tr>
+<td>Circle</td>
+<td>Fully rounded; fixed width per size; icon-friendly.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>Padding</th>
+<th>Typical Use</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>24px</td>
+<td>8px horizontal</td>
+<td>Dense toolbars, icon circles.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>32px</td>
+<td>12px horizontal</td>
+<td>Compact forms, secondary actions.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>48px</td>
+<td>16px horizontal</td>
+<td>General purpose.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>64px</td>
+<td>24px horizontal</td>
+<td>Hero sections, primary CTAs.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>80px</td>
+<td>32px horizontal</td>
+<td>Splash/marketing layouts.</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>DaisyButton uses <strong>fixed heights</strong> (not MinHeight) for each size to match DaisyUI's design. Buttons will not grow vertically to accommodate multi-line content. If you need a flexible-height button, override <code>Height="NaN"</code> on the individual button.</div>
+<h2>Shadows & States</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsActive=True</code></td>
+<td>Applies a 0.95 scale to simulate pressed/active state.</td>
+</tr>
+<tr>
+<td><code>ShowShadow</code></td>
+<td>Enables box shadow; customize with <code>ShadowOffsetX</code>, <code>ShadowOffsetY</code>, <code>ShadowBlur</code>, <code>ShadowColor</code>.</td>
+</tr>
+<tr>
+<td><code>IsEnabled=False</code></td>
+<td>Lowers opacity and removes hand cursor for disabled state.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Primary CTA --&gt;
+&lt;controls:DaisyButton Content="Get Started" Variant="Primary" /&gt;
+
+&lt;!-- Outline and soft styles --&gt;
+&lt;controls:DaisyButton Content="Secondary" Variant="Secondary" ButtonStyle="Outline" /&gt;
+&lt;controls:DaisyButton Content="Soft Accent" Variant="Accent" ButtonStyle="Soft" /&gt;
+
+&lt;!-- Ghost and link --&gt;
+&lt;controls:DaisyButton Content="Ghost Action" Variant="Ghost" /&gt;
+&lt;controls:DaisyButton Content="Learn more" Variant="Link" /&gt;
+
+&lt;!-- Shapes --&gt;
+&lt;controls:DaisyButton Content="Wide CTA" Variant="Primary" Shape="Wide" /&gt;
+&lt;controls:DaisyButton Shape="Square" Variant="Primary" Size="Small"&gt;
+    &lt;PathIcon Data="{StaticResource DaisyIconSettings}" Width="16" Height="16" /&gt;
+&lt;/controls:DaisyButton&gt;
+&lt;controls:DaisyButton Shape="Circle" Variant="Secondary" Size="Large"&gt;
+    &lt;PathIcon Data="{StaticResource DaisyIconPlay}" Width="18" Height="18" /&gt;
+&lt;/controls:DaisyButton&gt;
+
+&lt;!-- Shadows and active states --&gt;
+&lt;controls:DaisyButton Content="With Shadow" ShowShadow="True" /&gt;
+&lt;controls:DaisyButton Content="Active" Variant="Primary" IsActive="True" /&gt;
+&lt;controls:DaisyButton Content="Custom Shadow" Variant="Accent" ShowShadow="True"
+                      ShadowOffsetX="2" ShadowOffsetY="8" ShadowBlur="12"
+                      ShadowColor="#332196F3" /&gt;</code></pre>
+
+<h2>Keyboard Mnemonics</h2>
+
+<p>String content shows WinForms-style mnemonics: <code>&</code> underlines the access character and <code>&&</code> is a literal <code>&</code>. <code>Content</code> keeps the markers. While <code>Content</code> is a string that contains <code>&</code> and no <code>ContentTemplate</code> is set, the button shows it through <code>FloweryMnemonicHelpers.StringContentTemplate</code>; your own <code>ContentTemplate</code> takes precedence. It is display only, so handle Alt+key in your app. See <a href="DaisyMnemonicText.html">DaisyMnemonicText</a>.</p>
+
+<pre><code class="language-xml">&lt;controls:DaisyButton Content="&amp;amp;Save" Variant="Primary" /&gt;
+&lt;controls:DaisyButton Content="Save &amp;amp;&amp;amp; Exit" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <strong>Primary</strong> for the single most important action; reserve <strong>Secondary/Accent</strong> for supporting actions.</li>
+<li>Prefer <strong>Ghost</strong> or <strong>Link</strong> for non-blocking, inline actions to reduce visual noise.</li>
+<li>Outline and Dash styles shine on colored backgrounds where solid fills would clash.</li>
+<li>Match size/shape to context: Square/Circle for icons, Wide for promotional CTAs, Block for full-width forms.</li>
+<li>Keep shadow subtle; large blur/offset can look heavy - start with <code>ShowShadow=True</code> defaults before customizing.</li>
+<li>Buttons have <strong>fixed heights</strong> by design. For flexible-height buttons with wrapping text, set <code>Height="NaN"</code> to allow vertical growth.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyBreadcrumbs.html">← Breadcrumbs</a></div>
+    <div class="nav-right"><a href="DaisyButtonGroup.html">ButtonGroup →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

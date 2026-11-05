@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyNavbar</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyNavbar</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisynavbar">
+  <input type="radio" name="daisynavbar_tabs" id="daisynavbar_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisynavbar_tabs" id="daisynavbar_tab1" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisynavbar_tab0" class="tab-label">Part 1</label>
+    <label for="daisynavbar_tab1" class="tab-label">Part 2</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyNavbar_a.png" alt="DaisyNavbar - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyNavbar_b.png" alt="DaisyNavbar - Part 2" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyNavbar is a top navigation bar with optional start, center, and end slots. It provides padding, corner radius, and an optional shadow. If no slots are set, it renders its <code>Content</code> as a simple fallback. Use it for headers, app bars, or hero-top navigation.</p>
+
+<h2>Slots & Layout</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Slot</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>NavbarStart</code></td>
+<td>Left section (fills half width, left-aligned).</td>
+</tr>
+<tr>
+<td><code>NavbarCenter</code></td>
+<td>Centered content (auto-sized).</td>
+</tr>
+<tr>
+<td><code>NavbarEnd</code></td>
+<td>Right section (fills remaining half, right-aligned).</td>
+</tr>
+<tr>
+<td><code>Content</code></td>
+<td>Used only when no slot content is provided (fallback).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Appearance</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsFullWidth</code></td>
+<td>Removes corner radius for edge-to-edge bars.</td>
+</tr>
+<tr>
+<td><code>HasShadow</code></td>
+<td>Toggles drop shadow under the bar.</td>
+</tr>
+<tr>
+<td><code>Padding</code> / <code>MinHeight</code></td>
+<td>Default 16,8 and 64 for comfortable touch targets.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic title only --&gt;
+&lt;controls:DaisyNavbar&gt;
+    &lt;controls:DaisyNavbar.NavbarStart&gt;
+        &lt;controls:DaisyButton Variant="Ghost" FontSize="20" FontWeight="Bold" Content="Flowery" /&gt;
+    &lt;/controls:DaisyNavbar.NavbarStart&gt;
+&lt;/controls:DaisyNavbar&gt;
+
+&lt;!-- Full three-section navbar --&gt;
+&lt;controls:DaisyNavbar&gt;
+    &lt;controls:DaisyNavbar.NavbarStart&gt;
+        &lt;controls:DaisyButton Variant="Ghost" FontSize="20" FontWeight="Bold" Content="Flowery" /&gt;
+    &lt;/controls:DaisyNavbar.NavbarStart&gt;
+    &lt;controls:DaisyNavbar.NavbarCenter&gt;
+        &lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+            &lt;controls:DaisyButton Variant="Ghost" Content="Home" /&gt;
+            &lt;controls:DaisyButton Variant="Ghost" Content="About" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyNavbar.NavbarCenter&gt;
+    &lt;controls:DaisyNavbar.NavbarEnd&gt;
+        &lt;controls:DaisyButton Variant="Primary" Content="Get Started" /&gt;
+    &lt;/controls:DaisyNavbar.NavbarEnd&gt;
+&lt;/controls:DaisyNavbar&gt;
+
+&lt;!-- Full-width bar without shadow --&gt;
+&lt;controls:DaisyNavbar IsFullWidth="True" HasShadow="False"&gt;
+    &lt;StackPanel Orientation="Horizontal" Spacing="10"&gt;
+        &lt;TextBlock Text="Simple Navbar" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" /&gt;
+        &lt;controls:DaisyButton Variant="Ghost" Content="Link 1" /&gt;
+        &lt;controls:DaisyButton Variant="Ghost" Content="Link 2" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyNavbar&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>HasShadow=False</code> for flat layouts or when nesting inside elevated surfaces.</li>
+<li>Keep <code>NavbarCenter</code> compact to avoid overlap with start/end sections on small widths.</li>
+<li>For responsive designs, collapse center links into a menu/drawer at narrow widths.</li>
+<li>Apply <code>IsFullWidth=True</code> when the navbar touches screen edges; keep rounded corners for in-card navs.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyModifierKeys.html">← ModifierKeys</a></div>
+    <div class="nav-right"><a href="DaisyNumberFlow.html">NumberFlow →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDiff</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDiff</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyDiff.png" alt="DaisyDiff" class="doc-image">
+
+<p>DaisyDiff is a before/after comparison control with a draggable grip. It overlays <code>Image1</code> atop <code>Image2</code> and clips the top layer based on <code>Offset</code> (0–100%). Users can drag the grip to reveal more or less of each side; layout adjusts automatically on resize. Supports both horizontal (left-right) and vertical (top-bottom) split orientations.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Image1</code></td>
+<td>Content shown on top (clipped). Accepts any UI (images, borders, etc.).</td>
+</tr>
+<tr>
+<td><code>Image2</code></td>
+<td>Content shown underneath, full size.</td>
+</tr>
+<tr>
+<td><code>Offset</code> (0–100, default 50)</td>
+<td>Percentage revealed for <code>Image1</code>; also sets grip position.</td>
+</tr>
+<tr>
+<td><code>Orientation</code> (Horizontal, default Horizontal)</td>
+<td>Split direction: <code>Horizontal</code> (left-right) or <code>Vertical</code> (top-bottom).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple color comparison (horizontal) --&gt;
+&lt;controls:DaisyDiff Width="450" Height="180"&gt;
+    &lt;controls:DaisyDiff.Image1&gt;
+        &lt;Border Background="#FF5F56"&gt;
+            &lt;TextBlock Text="BEFORE" Foreground="White" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+        &lt;/Border&gt;
+    &lt;/controls:DaisyDiff.Image1&gt;
+    &lt;controls:DaisyDiff.Image2&gt;
+        &lt;Border Background="#27C93F"&gt;
+            &lt;TextBlock Text="AFTER" Foreground="White" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+        &lt;/Border&gt;
+    &lt;/controls:DaisyDiff.Image2&gt;
+&lt;/controls:DaisyDiff&gt;
+
+&lt;!-- Vertical orientation (top-bottom split) --&gt;
+&lt;controls:DaisyDiff Width="300" Height="250" Orientation="Vertical"&gt;
+    &lt;controls:DaisyDiff.Image1&gt;
+        &lt;Border Background="#6366F1"&gt;
+            &lt;TextBlock Text="TOP" Foreground="White" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+        &lt;/Border&gt;
+    &lt;/controls:DaisyDiff.Image1&gt;
+    &lt;controls:DaisyDiff.Image2&gt;
+        &lt;Border Background="#10B981"&gt;
+            &lt;TextBlock Text="BOTTOM" Foreground="White" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+        &lt;/Border&gt;
+    &lt;/controls:DaisyDiff.Image2&gt;
+&lt;/controls:DaisyDiff&gt;
+
+&lt;!-- Image comparison with custom start offset --&gt;
+&lt;controls:DaisyDiff Width="500" Height="300" Offset="30"&gt;
+    &lt;controls:DaisyDiff.Image1&gt;
+        &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo-before.jpg" Stretch="UniformToFill" /&gt;
+    &lt;/controls:DaisyDiff.Image1&gt;
+    &lt;controls:DaisyDiff.Image2&gt;
+        &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/photo-after.jpg" Stretch="UniformToFill" /&gt;
+    &lt;/controls:DaisyDiff.Image2&gt;
+&lt;/controls:DaisyDiff&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep <code>Image1</code> and <code>Image2</code> the same aspect ratio to avoid jumpy reveals.</li>
+<li>Set explicit <code>Width</code>/<code>Height</code> (or parent constraints) so the grip and clipping stay predictable.</li>
+<li>Initialize <code>Offset</code> to highlight the more important state first (e.g., 70 to emphasize the "after").</li>
+<li>Use <code>Orientation="Vertical"</code> for tall images or top/bottom comparisons (before/after in vertical layouts).</li>
+<li>You can host any content (charts, text, borders), not just images - use it for code diffs, design comps, or map overlays.</li>
+<li>The grip uses a transparent drag area with a handle; ensure background contrast so the handle remains visible.</li>
+<li>Vertical orientation displays horizontal grip indicator (⋯) while horizontal shows vertical (⋮).</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyDateTimelineItem.html">← DateTimelineItem</a></div>
+    <div class="nav-right"><a href="DaisyDivider.html">Divider →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

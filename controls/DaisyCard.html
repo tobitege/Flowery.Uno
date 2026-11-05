@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCard</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCard</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCard.png" alt="DaisyCard" class="doc-image">
+
+<p>DaisyCard provides a panel for grouping content with padding, rounded corners, and optional glass effects. It supports <strong>3 layout variants</strong> (Normal, Compact, Side), <strong>color variants</strong> for semantic styling, configurable body/title typography, and an opt-in glassmorphism stack with tint/blur controls. You can also use the built-in header API (Title/Description/Icon) for a ready-made card layout. Use it for dashboards, feature tiles, or content groupings; compose headers, bodies, and action rows inside.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Normal (default)</td>
+<td>Standard padding (32) and 16px corner radius.</td>
+</tr>
+<tr>
+<td>Compact</td>
+<td>Reduced padding (16) for dense layouts or nested cards.</td>
+</tr>
+<tr>
+<td>Side</td>
+<td>Reserved for side-by-side card styling; currently matches Normal styling.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Color Variants</h2>
+
+<p>Use <code>ColorVariant</code> to apply semantic palette colors:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>ColorVariant</th>
+<th>Background</th>
+<th>Foreground</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Base100 (or custom)</td>
+<td>BaseContent (auto-detected)</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td>DaisyPrimaryBrush</td>
+<td>DaisyPrimaryContentBrush</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td>DaisySecondaryBrush</td>
+<td>DaisySecondaryContentBrush</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td>DaisyAccentBrush</td>
+<td>DaisyAccentContentBrush</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>DaisyNeutralBrush</td>
+<td>DaisyNeutralContentBrush</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>DaisyInfoBrush</td>
+<td>DaisyInfoContentBrush</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>DaisySuccessBrush</td>
+<td>DaisySuccessContentBrush</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>DaisyWarningBrush</td>
+<td>DaisyWarningContentBrush</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>DaisyErrorBrush</td>
+<td>DaisyErrorContentBrush</td>
+</tr>
+<tr>
+<td>Base200</td>
+<td>DaisyBase200Brush</td>
+<td>DaisyBaseContentBrush</td>
+</tr>
+<tr>
+<td>Base300</td>
+<td>DaisyBase300Brush</td>
+<td>DaisyBaseContentBrush</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Auto-Foreground Detection</h2>
+
+<p>When you set a custom <code>Background</code> using a Daisy palette brush, the card <strong>automatically detects</strong> the matching foreground color. No need to manually set <code>Foreground</code> on child elements!</p>
+
+<pre><code class="language-xml">&lt;!-- Auto-foreground detection - Foreground is automatically set to DaisyPrimaryContentBrush --&gt;
+&lt;controls:DaisyCard Background="{DynamicResource DaisyPrimaryBrush}"&gt;
+    &lt;TextBlock Text="Hello World"/&gt;  &lt;!-- Inherits correct foreground automatically --&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Equivalent to (but more concise): --&gt;
+&lt;controls:DaisyCard ColorVariant="Primary"&gt;
+    &lt;TextBlock Text="Hello World"/&gt;
+&lt;/controls:DaisyCard&gt;</code></pre>
+
+<p>This feature:</p>
+
+<ul><li>Works with any Daisy palette color (Primary, Secondary, Accent, Info, Success, Warning, Error, Base variants)</li>
+<li>Automatically updates when themes change</li>
+<li>Respects explicit <code>Foreground</code> settings if you need to override</li>
+</ul>
+<h2>Patterned Card Colors</h2>
+
+<code>DaisyPatternedCard</code> renders its pattern using the card <code>Foreground</code> when <code>PatternMode="Tiled"</code>. In <code>SvgAsset</code> mode, the pattern assets are chosen as black or white based on the active theme. If patterns disappear on some themes, use one of these approaches:
+
+<ul><li>Set <code>PatternMode="Tiled"</code> and provide a high-contrast <code>Foreground</code> so the pattern tint stays visible.</li>
+<li>Lock colors per card by defining <code>DaisyCardBackground</code> and <code>DaisyCardForeground</code> in the card's <code>Resources</code> (keeps the sample or one instance theme-independent).</li>
+<li>Keep <code>SvgAsset</code> mode and ensure the card background contrasts with the theme's black/white assets.</li>
+<li>If content text should match the pattern tint, set a local <code>TextBlock</code> style or explicit <code>Foreground</code> in the card content.</li>
+</ul>
+<pre><code class="language-xml">&lt;controls:DaisyPatternedCard Pattern="Grid" PatternMode="Tiled" Foreground="White" Background="Black"&gt;
+    &lt;TextBlock Text="Fixed colors, theme-independent pattern." /&gt;
+&lt;/controls:DaisyPatternedCard&gt;</code></pre>
+
+<h2>Glass Effect Settings</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsGlass</code></td>
+<td>Switches to the layered glass template (tinted + gradients + inner shine). Disables the drop shadow.</td>
+</tr>
+<tr>
+<td><code>GlassBlur</code></td>
+<td>Blur intensity for the frosted look (default 40).</td>
+</tr>
+<tr>
+<td><code>GlassOpacity</code></td>
+<td>Opacity of the base tint layer (default 0.3).</td>
+</tr>
+<tr>
+<td><code>GlassTint</code> / <code>GlassTintOpacity</code></td>
+<td>Tint color and its opacity (defaults: White, 0.5).</td>
+</tr>
+<tr>
+<td><code>GlassBorderOpacity</code></td>
+<td>Alpha for the outer border (default 0.2).</td>
+</tr>
+<tr>
+<td><code>EnableBackdropBlur</code></td>
+<td>Enables real backdrop blur using Skia (performance intensive).</td>
+</tr>
+<tr>
+<td><code>BlurMode</code></td>
+<td>Blur rendering mode: Simulated, BitmapCapture, or SkiaSharp.</td>
+</tr>
+<tr>
+<td><code>GlassSaturation</code></td>
+<td>Saturation of blur (0.0 = grayscale, 1.0 = normal).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Typography & Layout</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>BodyPadding</code></td>
+<td>Controls padding around content (default 32; compact sets 16).</td>
+</tr>
+<tr>
+<td><code>BodyFontSize</code></td>
+<td>Default body text size for custom layouts (default 14).</td>
+</tr>
+<tr>
+<td><code>TitleFontSize</code></td>
+<td>Default title text size for custom layouts (default 20).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Batteries-Included Header</h2>
+
+<p>Set these properties to get a ready-made header (icon + title + description) without custom XAML. Any <code>Content</code> you provide renders below the description.</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Title</code></td>
+<td>Header title text.</td>
+</tr>
+<tr>
+<td><code>Description</code></td>
+<td>Body description text.</td>
+</tr>
+<tr>
+<td><code>IconImageSource</code></td>
+<td>Icon image source for the header.</td>
+</tr>
+<tr>
+<td><code>IconBackground</code></td>
+<td>Background brush for the icon container.</td>
+</tr>
+<tr>
+<td><code>IconBorderBrush</code></td>
+<td>Border brush for the icon container.</td>
+</tr>
+<tr>
+<td><code>IconSize</code></td>
+<td>Icon container size (default 56).</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-xml">&lt;controls:DaisyCard Title="Launch Plan"
+                    Description="Ready to ship this release. Confirm the checklist and roll out."
+                    IconImageSource="{x:Bind ViewModel.LaunchIcon}"
+                    IconBackground="{ThemeResource DaisyBase200Brush}"
+                    IconBorderBrush="{ThemeResource DaisyBase300Brush}"&gt;
+    &lt;controls:DaisyButton Content="Open" Variant="Primary" HorizontalAlignment="Right" /&gt;
+&lt;/controls:DaisyCard&gt;</code></pre>
+
+<h2>Content Structure</h2>
+
+<p>Place any layout/content inside the card; common patterns:</p>
+
+<ul><li>Title + body text</li>
+<li>Media (images/charts) with CTA buttons</li>
+<li>Form sections</li>
+</ul>
+<pre><code class="language-xml">&lt;!-- Standard card --&gt;
+&lt;controls:DaisyCard&gt;
+    &lt;StackPanel Spacing="10"&gt;
+        &lt;TextBlock Text="Card Title" FontWeight="SemiBold" FontSize="18" /&gt;
+        &lt;TextBlock Text="Supporting description goes here." TextWrapping="Wrap" /&gt;
+        &lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+            &lt;controls:DaisyButton Content="Action" Variant="Primary" /&gt;
+            &lt;controls:DaisyButton Content="Secondary" Variant="Ghost" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Color variant card --&gt;
+&lt;controls:DaisyCard ColorVariant="Primary"&gt;
+    &lt;StackPanel Spacing="6"&gt;
+        &lt;TextBlock Text="Primary Card" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Uses DaisyPrimaryBrush background with auto foreground." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Custom background with auto-foreground --&gt;
+&lt;controls:DaisyCard Background="{DynamicResource DaisySuccessBrush}"&gt;
+    &lt;StackPanel Spacing="6"&gt;
+        &lt;TextBlock Text="Success Card" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Foreground auto-detected from background!" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Compact card --&gt;
+&lt;controls:DaisyCard Variant="Compact"&gt;
+    &lt;StackPanel Spacing="6"&gt;
+        &lt;TextBlock Text="Compact Card" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Tighter padding for dense layouts." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Glass card --&gt;
+&lt;controls:DaisyCard IsGlass="True" Width="260"&gt;
+    &lt;StackPanel Spacing="8"&gt;
+        &lt;TextBlock Text="Glass Card" FontWeight="Bold" FontSize="18" /&gt;
+        &lt;TextBlock Text="Subtle tint with frosted layers." TextWrapping="Wrap" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Glass with custom tint --&gt;
+&lt;controls:DaisyCard IsGlass="True" GlassTint="#000000" GlassOpacity="0.4" GlassTintOpacity="0.6" Width="260"&gt;
+    &lt;StackPanel Spacing="8"&gt;
+        &lt;TextBlock Text="Dark Glass" FontWeight="Bold" /&gt;
+        &lt;TextBlock Text="Higher tint opacity for contrast." TextWrapping="Wrap" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;
+
+&lt;!-- Real blur glass card --&gt;
+&lt;controls:DaisyCard IsGlass="True" EnableBackdropBlur="True" BlurMode="SkiaSharp" 
+                    GlassBlur="30" GlassSaturation="0.8" Width="260"&gt;
+    &lt;StackPanel Spacing="8"&gt;
+        &lt;TextBlock Text="Skia Blur" FontWeight="Bold" FontSize="18" /&gt;
+        &lt;TextBlock Text="Real backdrop blur effect." TextWrapping="Wrap" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>ColorVariant</code> for semantic coloring - it's the cleanest approach.</li>
+<li>When setting custom <code>Background</code>, the card auto-detects and applies matching foreground.</li>
+<li>Use <strong>Compact</strong> when cards are nested in grids or lists to conserve space.</li>
+<li>Glass mode removes the default shadow - place on contrasting backgrounds to maintain depth.</li>
+<li>For real blur effects, use <code>EnableBackdropBlur="True"</code> with <code>BlurMode="SkiaSharp"</code> or <code>BlurMode="BitmapCapture"</code>.</li>
+<li>Adjust <code>BodyPadding</code> for edge-to-edge media (e.g., set to <code>0</code> and pad inner content manually).</li>
+<li>Set explicit <code>Width</code> or use layout constraints for uniform card grids.</li>
+<li>Pair with DaisyButton variants for clear primary/secondary actions inside the card.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCalendarDatePicker.html">← CalendarDatePicker</a></div>
+    <div class="nav-right"><a href="DaisyCarousel.html">Carousel →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

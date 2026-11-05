@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyThemeSwap</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyThemeSwap</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyThemeSwap is a themed variant of DaisySwap for toggling light/dark (or any two) themes. It defaults to a rotate transition and keeps <code>IsChecked</code> in sync with the current theme's light/dark status. Clicking applies <code>LightTheme</code> or <code>DarkTheme</code> via <code>DaisyThemeManager</code>.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>LightTheme</code></td>
+<td>Theme applied when toggling to light (default “Light”).</td>
+</tr>
+<tr>
+<td><code>DarkTheme</code></td>
+<td>Theme applied when toggling to dark (default “Dark”).</td>
+</tr>
+<tr>
+<td><code>OnContent</code> / <code>OffContent</code> / <code>IndeterminateContent</code></td>
+<td>Inherited from DaisySwap for custom visuals.</td>
+</tr>
+<tr>
+<td><code>TransitionEffect</code></td>
+<td>Inherited; defaults to <code>Rotate</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Behavior</h2>
+
+<ul><li>Click toggles between <code>LightTheme</code> and <code>DarkTheme</code>.</li>
+<li><code>IsChecked</code> is set to true when the current theme is dark (via <code>IsDarkTheme</code>).</li>
+<li>Listens to <code>ThemeChanged</code> to stay synced with external theme changes.</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple light/dark swap --&gt;
+&lt;controls:DaisyThemeSwap&gt;
+    &lt;controls:DaisySwap.OnContent&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconMoon}" /&gt;
+    &lt;/controls:DaisySwap.OnContent&gt;
+    &lt;controls:DaisySwap.OffContent&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconSun}" /&gt;
+    &lt;/controls:DaisySwap.OffContent&gt;
+&lt;/controls:DaisyThemeSwap&gt;
+
+&lt;!-- Custom theme pair --&gt;
+&lt;controls:DaisyThemeSwap LightTheme="Corporate" DarkTheme="Synthwave" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set <code>LightTheme</code> to your base theme so toggling off returns to the default look.</li>
+<li>Provide clear icon/text content for on/off states to make the toggle intent obvious.</li>
+<li>If you allow many themes, pair this with <code>DaisyThemeDropdown</code> or <code>DaisyProductThemeDropdown</code> for full selection plus quick toggle.</li>
+</ul>
+<h2>Related Controls</h2>
+
+<ul><li><a href="DaisyThemeDropdown.html">DaisyThemeDropdown</a> - Dropdown for all 35+ DaisyUI themes</li>
+<li><a href="DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a> - Dropdown for 96 industry-specific product themes</li>
+<li><a href="DaisyThemeController.html">DaisyThemeController</a> - Toggle-based theme switching</li>
+<li><a href="DaisyThemeRadio.html">DaisyThemeRadio</a> - Radio button theme selection</li>
+<li><a href="DaisyThemeManager.html">DaisyThemeManager</a> - Central theme management</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyThemeRadio.html">← ThemeRadio</a></div>
+    <div class="nav-right"><a href="DaisyTimeline.html">Timeline →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

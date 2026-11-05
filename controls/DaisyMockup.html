@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyMockup</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyMockup</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisymockup">
+  <input type="radio" name="daisymockup_tabs" id="daisymockup_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisymockup_tabs" id="daisymockup_tab1" class="tab-radio">
+  <input type="radio" name="daisymockup_tabs" id="daisymockup_tab2" class="tab-radio">
+  <input type="radio" name="daisymockup_tabs" id="daisymockup_tab3" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisymockup_tab0" class="tab-label">Part 1</label>
+    <label for="daisymockup_tab1" class="tab-label">Part 2</label>
+    <label for="daisymockup_tab2" class="tab-label">Part 3</label>
+    <label for="daisymockup_tab3" class="tab-label">Part 4</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyMockup.png" alt="DaisyMockup - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/Mockup(Browserwithbackground).png" alt="DaisyMockup - Part 2" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/Mockup(Browserwithborder).png" alt="DaisyMockup - Part 3" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/Mockup(Window).png" alt="DaisyMockup - Part 4" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyMockup frames content in simulated shells: <strong>Code</strong>, <strong>Window</strong>, or <strong>Browser</strong>. It provides the chrome (dots, toolbar/address bar) and padding so you can showcase code, UI previews, or pages in a themed wrapper.</p>
+
+<h2>Variants</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Code (default)</td>
+<td>Dark background, no border, generous padding for code snippets.</td>
+</tr>
+<tr>
+<td>Window</td>
+<td>Neutral window frame with header dots/buttons and inner content area.</td>
+</tr>
+<tr>
+<td>Browser</td>
+<td>Adds toolbar with chrome buttons and an address bar showing <code>Url</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Chrome Styles</h2>
+
+<p>The <code>ChromeStyle</code> property controls the window decoration style:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>ChromeStyle</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Mac (default)</td>
+<td>macOS-style traffic light buttons on the left (red/yellow/green circles).</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>Windows-style minimize/maximize/close buttons on the right, with an app icon on the left.</td>
+</tr>
+<tr>
+<td>Linux</td>
+<td>Linux/GNOME-style circular buttons on the right.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>RTL (Right-to-Left) Support</h2>
+
+<p>The control respects <code>FlowDirection</code> and automatically flips chrome positioning:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>ChromeStyle</th>
+<th>LTR Layout</th>
+<th>RTL Layout</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Mac</td>
+<td>Controls on LEFT</td>
+<td>Controls on RIGHT</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>Buttons RIGHT, Icon LEFT</td>
+<td>Buttons LEFT, Icon RIGHT</td>
+</tr>
+<tr>
+<td>Linux</td>
+<td>Controls on RIGHT</td>
+<td>Controls on LEFT</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Variant</code></td>
+<td><code>DaisyMockupVariant</code></td>
+<td>Selects shell style: Code, Window, or Browser.</td>
+</tr>
+<tr>
+<td><code>ChromeStyle</code></td>
+<td><code>DaisyChromeStyle</code></td>
+<td>Window chrome style: Mac, Windows, or Linux.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td>Control size (ExtraSmall, Small, Medium, Large). Respects global size manager.</td>
+</tr>
+<tr>
+<td><code>Url</code></td>
+<td><code>string</code></td>
+<td>URL displayed in the Browser variant's address bar.</td>
+</tr>
+<tr>
+<td><code>AppIcon</code></td>
+<td><code>object</code></td>
+<td>Optional app icon for Windows chrome (accepts PathIcon, Image, etc.). Shows a default icon if not set.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Code mockup --&gt;
+&lt;controls:DaisyMockup Variant="Code"&gt;
+    &lt;TextBlock Text="console.log('Hello world');" Foreground="White" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Window mockup (Mac style - default) --&gt;
+&lt;controls:DaisyMockup Variant="Window"&gt;
+    &lt;StackPanel Spacing="8"&gt;
+        &lt;TextBlock Text="Window Content" FontWeight="SemiBold" /&gt;
+        &lt;controls:DaisyButton Content="Action" Variant="Primary" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Window mockup (Windows style) --&gt;
+&lt;controls:DaisyMockup Variant="Window" ChromeStyle="Windows"&gt;
+    &lt;TextBlock Text="Windows-style window with app icon" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Window mockup (Linux/GNOME style) --&gt;
+&lt;controls:DaisyMockup Variant="Window" ChromeStyle="Linux"&gt;
+    &lt;TextBlock Text="GNOME-style window" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Browser mockup with URL (Mac chrome) --&gt;
+&lt;controls:DaisyMockup Variant="Browser" Url="https://daisyui.com" Width="400"&gt;
+    &lt;Grid Background="{ThemeResource DaisyBase100Brush}"&gt;
+        &lt;TextBlock Text="Hello!" HorizontalAlignment="Center" VerticalAlignment="Center" /&gt;
+    &lt;/Grid&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Browser mockup (Windows chrome) --&gt;
+&lt;controls:DaisyMockup Variant="Browser" ChromeStyle="Windows" Url="https://microsoft.com" Width="400"&gt;
+    &lt;TextBlock Text="Edge-style browser" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- Windows mockup with custom app icon --&gt;
+&lt;controls:DaisyMockup Variant="Window" ChromeStyle="Windows"&gt;
+    &lt;controls:DaisyMockup.AppIcon&gt;
+        &lt;PathIcon Data="M12,3L2,12H5V20H19V12H22L12,3..." Foreground="{ThemeResource DaisyInfoBrush}" /&gt;
+    &lt;/controls:DaisyMockup.AppIcon&gt;
+    &lt;TextBlock Text="Custom icon in title bar" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- RTL layout (Mac controls on right) --&gt;
+&lt;controls:DaisyMockup Variant="Window" ChromeStyle="Mac" FlowDirection="RightToLeft"&gt;
+    &lt;TextBlock Text="Traffic lights on the right" /&gt;
+&lt;/controls:DaisyMockup&gt;
+
+&lt;!-- RTL layout (Windows controls on left) --&gt;
+&lt;controls:DaisyMockup Variant="Window" ChromeStyle="Windows" FlowDirection="RightToLeft"&gt;
+    &lt;TextBlock Text="Buttons on left, icon on right" /&gt;
+&lt;/controls:DaisyMockup&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>For long code, pair the Code variant with a monospace font and consider wrapping in a <code>ScrollViewer</code>.</li>
+<li>Set explicit <code>Width</code> for the Browser variant to keep the address bar readable.</li>
+<li>Use <code>ChromeStyle</code> to match your target platform's look and feel.</li>
+<li>The Windows chrome has a default generic app icon; set <code>AppIcon</code> to customize it with your app's branding.</li>
+<li>Use <code>FlowDirection="RightToLeft"</code> for RTL language support; chrome positioning flips automatically.</li>
+<li>Use meaningful <code>Url</code> strings to convey context in the Browser mockup, even if static.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyMnemonicText.html">← MnemonicText</a></div>
+    <div class="nav-right"><a href="DaisyModal.html">Modal →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

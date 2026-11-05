@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyClock</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyClock</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyClock is a comprehensive "batteries included" clock control that displays time with three visual styles (Segmented, Flip, Text), optional labels, and supports Clock, Timer, and Stopwatch modes. It provides localized labels, 12/24-hour formats, RTL support, and events for timer/stopwatch interaction. Designed as a full replacement for manual DaisyCountdown composition.</p>
+
+<h2>Modes</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Clock</code></td>
+<td>Shows the current system time, updating every second.</td>
+</tr>
+<tr>
+<td><code>Timer</code></td>
+<td>Countdown timer from a specified duration. Fires <code>TimerFinished</code> when complete.</td>
+</tr>
+<tr>
+<td><code>Stopwatch</code></td>
+<td>Elapsed time counter with Start/Stop/Reset controls.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Display Styles</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Style</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Segmented</code></td>
+<td>Uses DaisyCountdown controls for each time unit segment (default).</td>
+</tr>
+<tr>
+<td><code>Flip</code></td>
+<td>Classic bedside flip-clock look using TextBlocks inside DaisyJoin.</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td>Simple plain TextBlock showing formatted time string (lightest weight).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Mode</code></td>
+<td><code>ClockMode</code></td>
+<td><code>Clock</code></td>
+<td>Clock, Timer, or Stopwatch mode.</td>
+</tr>
+<tr>
+<td><code>DisplayStyle</code></td>
+<td><code>ClockStyle</code></td>
+<td><code>Segmented</code></td>
+<td>Visual style: Segmented, Flip, or Text.</td>
+</tr>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>Orientation</code></td>
+<td><code>Horizontal</code></td>
+<td>Layout orientation.</td>
+</tr>
+<tr>
+<td><code>ShowSeconds</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to display the seconds component.</td>
+</tr>
+<tr>
+<td><code>LabelFormat</code></td>
+<td><code>ClockLabelFormat</code></td>
+<td><code>None</code></td>
+<td>None, Short ("4h 53m"), or Long ("4 hours 53 minutes").</td>
+</tr>
+<tr>
+<td><code>Separator</code></td>
+<td><code>string</code></td>
+<td><code>":"</code></td>
+<td>Separator between time units (used with <code>LabelFormat.None</code>).</td>
+</tr>
+<tr>
+<td><code>Format</code></td>
+<td><code>ClockFormat</code></td>
+<td><code>TwentyFourHour</code></td>
+<td>12-hour or 24-hour format.</td>
+</tr>
+<tr>
+<td><code>ShowAmPm</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether to show AM/PM suffix (only in 12h mode).</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Size of the clock display.</td>
+</tr>
+<tr>
+<td><code>Spacing</code></td>
+<td><code>double</code></td>
+<td><code>6.0</code></td>
+<td>Spacing between time units.</td>
+</tr>
+<tr>
+<td><code>UseJoin</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Use DaisyJoin for a segmented appearance.</td>
+</tr>
+<tr>
+<td><code>TimerDuration</code></td>
+<td><code>TimeSpan</code></td>
+<td><code>5 minutes</code></td>
+<td>Duration for Timer mode.</td>
+</tr>
+<tr>
+<td><code>TimerRemaining</code></td>
+<td><code>TimeSpan</code></td>
+<td>(read-only)</td>
+<td>Remaining time in Timer mode.</td>
+</tr>
+<tr>
+<td><code>StopwatchElapsed</code></td>
+<td><code>TimeSpan</code></td>
+<td>(read-only)</td>
+<td>Elapsed time in Stopwatch mode.</td>
+</tr>
+<tr>
+<td><code>IsRunning</code></td>
+<td><code>bool</code></td>
+<td>(read-only)</td>
+<td>Whether the timer/stopwatch is active.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TimerFinished</code></td>
+<td>Raised when the timer reaches zero.</td>
+</tr>
+<tr>
+<td><code>TimerTick</code></td>
+<td>Raised each second during timer countdown.</td>
+</tr>
+<tr>
+<td><code>StopwatchTick</code></td>
+<td>Raised each tick during stopwatch operation.</td>
+</tr>
+<tr>
+<td><code>LapRecorded</code></td>
+<td>Raised when a lap is recorded via <code>RecordLap()</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Public Methods</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Start()</code></td>
+<td>Starts the timer or stopwatch (depending on mode).</td>
+</tr>
+<tr>
+<td><code>Pause()</code></td>
+<td>Pauses the timer or stopwatch.</td>
+</tr>
+<tr>
+<td><code>Reset()</code></td>
+<td>Stops and resets the timer or stopwatch.</td>
+</tr>
+<tr>
+<td><code>RecordLap()</code></td>
+<td>Records a lap at the current stopwatch time (Stopwatch mode only).</td>
+</tr>
+<tr>
+<td><code>ClearLaps()</code></td>
+<td>Clears all recorded laps.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties (Read-Only)</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Laps</code></td>
+<td><code>ReadOnlyObservableCollection<LapTime></code></td>
+<td>Collection of recorded lap times.</td>
+</tr>
+<tr>
+<td><code>TimerRemaining</code></td>
+<td><code>TimeSpan</code></td>
+<td>Remaining time in Timer mode.</td>
+</tr>
+<tr>
+<td><code>StopwatchElapsed</code></td>
+<td><code>TimeSpan</code></td>
+<td>Elapsed time in Stopwatch mode.</td>
+</tr>
+<tr>
+<td><code>IsRunning</code></td>
+<td><code>bool</code></td>
+<td>Whether the timer/stopwatch is currently running.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic clock (24h, segmented) --&gt;
+&lt;controls:DaisyClock Size="Large" /&gt;
+
+&lt;!-- 12-hour clock with AM/PM --&gt;
+&lt;controls:DaisyClock Format="TwelveHour" ShowAmPm="True" /&gt;
+
+&lt;!-- Clock without seconds --&gt;
+&lt;controls:DaisyClock ShowSeconds="False" /&gt;
+
+&lt;!-- Flip clock style (bedside clock look) --&gt;
+&lt;controls:DaisyClock DisplayStyle="Flip" Size="Large" /&gt;
+
+&lt;!-- Plain text clock (lightest weight) --&gt;
+&lt;controls:DaisyClock DisplayStyle="Text" Size="Large" /&gt;
+
+&lt;!-- Vertical layout with short labels --&gt;
+&lt;controls:DaisyClock LabelFormat="Short" Orientation="Vertical" /&gt;
+
+&lt;!-- Joined segments (polished look) --&gt;
+&lt;controls:DaisyClock UseJoin="True" Size="Large" /&gt;
+
+&lt;!-- 5-minute countdown timer --&gt;
+&lt;controls:DaisyClock Mode="Timer"
+                     TimerDuration="0:05:00"
+                     TimerFinished="OnTimerDone" /&gt;
+
+&lt;!-- Stopwatch mode --&gt;
+&lt;controls:DaisyClock Mode="Stopwatch" /&gt;</code></pre>
+
+<h2>Timer & Stopwatch Control (Code-Behind)</h2>
+
+<pre><code class="language-csharp">// Unified Start/Pause/Reset API
+MyClock.Start();   // Works for both Timer and Stopwatch modes
+MyClock.Pause();   // Pause timer or stopwatch
+MyClock.Reset();   // Reset to initial state
+
+// Lap recording (Stopwatch mode only)
+MyClock.RecordLap();  // Records current elapsed as a lap
+MyClock.ClearLaps();  // Clear all recorded laps
+
+// Access recorded laps
+foreach (var lap in MyClock.Laps)
+{
+    Console.WriteLine($"Lap {lap.Number}: {lap.LapDuration:mm\\:ss\\.ff} (Total: {lap.TotalElapsed:hh\\:mm\\:ss})");
+}
+
+// Event handling
+MyClock.TimerFinished += (s, e) =&gt; ShowNotification("Timer complete!");
+MyClock.StopwatchTick += (s, elapsed) =&gt; UpdateDisplay(elapsed);
+MyClock.LapRecorded += (s, lap) =&gt; AddLapToList(lap);</code></pre>
+
+<h2>Localization</h2>
+
+<p>DaisyClock uses localized labels from <code>FloweryLocalization</code>. The following keys are used:</p>
+
+<ul><li><code>Clock_Hour</code>, <code>Clock_Hours</code>, <code>Clock_Hours_Short</code> - Hour labels</li>
+<li><code>Clock_Minute</code>, <code>Clock_Minutes</code>, <code>Clock_Minutes_Short</code> - Minute labels  </li>
+<li><code>Clock_Second</code>, <code>Clock_Seconds</code>, <code>Clock_Seconds_Short</code> - Second labels</li>
+<li><code>Clock_AM</code>, <code>Clock_PM</code> - AM/PM indicators</li>
+</ul>
+<p>The control automatically responds to culture changes and supports RTL layouts for Arabic, Hebrew, etc.</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Display Style Selection</strong>: Use <code>Segmented</code> for separate digit segments, <code>Flip</code> for a retro aesthetic, and <code>Text</code> for minimal resource usage.</li>
+<li><strong>Labels with Vertical</strong>: <code>LabelFormat.Long</code> works best with <code>Orientation="Vertical"</code> to avoid cramped layouts.</li>
+<li><strong>UseJoin</strong>: Best suited for <code>LabelFormat.None</code>; combines well with <code>Flip</code> style.</li>
+<li><strong>Timer Events</strong>: Always handle <code>TimerFinished</code> to notify users when the countdown completes.</li>
+<li><strong>Stopwatch Performance</strong>: The stopwatch uses a 1-second interval; for sub-second precision, use a custom timer.</li>
+<li><strong>Size Consistency</strong>: Use <code>DaisySize</code> values for consistent scaling across the application.</li>
+<li><strong>RTL Support</strong>: The clock automatically adjusts flow direction based on the current culture.</li>
+<li><strong>Memory</strong>: Timers are automatically stopped when the control is unloaded from the visual tree.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCheckBox.html">← CheckBox</a></div>
+    <div class="nav-right"><a href="DaisyCollapse.html">Collapse →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

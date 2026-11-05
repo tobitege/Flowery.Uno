@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyTabsHeaderButtons</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyTabsHeaderButtons</h1>
+
+
+<h2>Overview</h2>
+
+<p>DaisyTabsHeaderButtons provides optional previous and next buttons and a menu of named views.</p>
+<p>It works in a DaisyTabs header or as a separate toolbar control.</p>
+<p>The buttons use the Default variant and Square shape. The application handles navigation, view selection, and view management through events or commands.</p>
+<p>Ported from Flowery.NET 3.4.0.</p>
+
+<h2>Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Default</th>
+<th>Behavior</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ShowNavigationButtons</td>
+<td>false</td>
+<td>Shows previous and next buttons</td>
+</tr>
+<tr>
+<td>ShowViewMenuButton</td>
+<td>false</td>
+<td>Shows the view menu button</td>
+</tr>
+<tr>
+<td>Views</td>
+<td>null</td>
+<td>Supplies an <code>IList<DaisyTabView></code> for the menu</td>
+</tr>
+<tr>
+<td>ActiveViewId</td>
+<td>null</td>
+<td>Identifies the checked view through object equality</td>
+</tr>
+<tr>
+<td>ShowManageViewsEntry</td>
+<td>true</td>
+<td>Adds the localized management entry after the views</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Small</td>
+<td>Sets the size of the three buttons and icons; follows the global size once loaded</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Each <code>DaisyTabView</code> has a required <code>object Id</code> and a required <code>string Name</code>.</p>
+<p>Use unique identifiers. The control reads the list and active identifier each time the menu opens.</p>
+
+<p>The view menu is a WinUI <code>MenuFlyout</code>: views are <code>ToggleMenuFlyoutItem</code> entries, and the active view shows a check mark.</p>
+<p>The management entry has a separator when view entries precede it.</p>
+<p>With no views, the menu contains only the management entry.</p>
+<p>If the view list and management entry are absent, the menu button is disabled unless <code>ViewMenuOpening</code> has a handler.</p>
+
+<h2>Events and Commands</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Command</th>
+<th>Command parameter</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>PreviousRequested</td>
+<td>PreviousCommand</td>
+<td>null</td>
+</tr>
+<tr>
+<td>NextRequested</td>
+<td>NextCommand</td>
+<td>null</td>
+</tr>
+<tr>
+<td>ViewSelected</td>
+<td>ViewSelectedCommand</td>
+<td>Selected view Id</td>
+</tr>
+<tr>
+<td>ManageViewsRequested</td>
+<td>ManageViewsCommand</td>
+<td>null</td>
+</tr>
+</tbody>
+</table></div>
+
+<code>ViewSelected</code> supplies <code>DaisyTabViewEventArgs</code> with <code>Id</code> and <code>Name</code>.
+<p>The other events use <code>EventArgs</code>. If an event handler and command are both assigned, both receive the action.</p>
+<p>Commands use the standard WinUI <code>CanExecute</code> behavior: a command that cannot execute disables its button or menu entry.</p>
+
+<p>The control does not change <code>ActiveViewId</code> when a user selects a view.</p>
+<p>The application sets this property after it accepts the request.</p>
+<p>The control does not change tab visibility, persist views, or open a management dialog.</p>
+
+<h2>Quick Examples</h2>
+
+<h3>Navigation in a tab header</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabs&gt;
+    &lt;daisy:DaisyTabs.HeaderTrailingContent&gt;
+        &lt;daisy:DaisyTabsHeaderButtons ShowNavigationButtons="True"
+                                      PreviousCommand="{x:Bind ViewModel.PreviousCommand}"
+                                      NextCommand="{x:Bind ViewModel.NextCommand}" /&gt;
+    &lt;/daisy:DaisyTabs.HeaderTrailingContent&gt;
+    &lt;StackPanel&gt;
+        &lt;TabViewItem Header="Records"&gt;&lt;TextBlock Text="Record content" /&gt;&lt;/TabViewItem&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyTabs&gt;</code></pre>
+
+<h3>View menu with MVVM</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabsHeaderButtons ShowViewMenuButton="True"
+                              Views="{x:Bind ViewModel.Views}"
+                              ActiveViewId="{x:Bind ViewModel.ActiveViewId, Mode=OneWay}"
+                              ViewSelectedCommand="{x:Bind ViewModel.SelectViewCommand}"
+                              ManageViewsCommand="{x:Bind ViewModel.ManageViewsCommand}"
+                              ShowManageViewsEntry="{x:Bind ViewModel.CanManageViews, Mode=OneWay}" /&gt;</code></pre>
+
+<h3>Built-in group</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisyTabs x:Name="RecordTabs" ShowHeaderButtons="True"&gt;
+    &lt;StackPanel&gt;
+        &lt;TabViewItem Header="Records"&gt;&lt;TextBlock Text="Record content" /&gt;&lt;/TabViewItem&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyTabs&gt;</code></pre>
+
+<pre><code class="language-csharp">var buttons = RecordTabs.HeaderButtons!;
+buttons.ShowNavigationButtons = true;
+buttons.ShowViewMenuButton = true;
+buttons.Views = new ObservableCollection&lt;DaisyTabView&gt;
+{
+    new() { Id = 1, Name = "Overview" },
+    new() { Id = 2, Name = "Details" },
+    new() { Id = 3, Name = "Archive" }
+};
+buttons.ActiveViewId = 2;
+buttons.ViewSelected += OnViewSelected;
+
+void OnViewSelected(object? sender, DaisyTabViewEventArgs e)
+{
+    if (sender is DaisyTabsHeaderButtons source)
+        source.ActiveViewId = e.Id;
+}</code></pre>
+
+<h3>Separate toolbar control</h3>
+
+<pre><code class="language-xml">&lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+    &lt;TextBlock Text="Records" VerticalAlignment="Center" /&gt;
+    &lt;daisy:DaisyTabsHeaderButtons x:Name="RecordButtons"
+                                  ShowNavigationButtons="True"
+                                  ShowViewMenuButton="True" /&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<p>Subscribe to <code>PreviousRequested</code>, <code>NextRequested</code>, <code>ViewSelected</code> and <code>ManageViewsRequested</code> in code.</p>
+
+<h2>Load Views Before Opening</h2>
+
+<code>ViewMenuOpening</code> uses <code>EventHandler<CancelEventArgs></code> and fires before the control builds the menu entries.
+<p>The handler can load <code>Views</code>, set <code>ActiveViewId</code>, and update <code>ShowManageViewsEntry</code> after it checks permissions.</p>
+<p>Setting <code>Cancel</code> to true prevents both the menu rebuild and the menu display.</p>
+
+<p>WinUI's <code>FlyoutBase.Opening</code> cannot be cancelled, so the view menu button raises <code>ViewMenuOpening</code> itself and only then opens the <code>MenuFlyout</code>.</p>
+<p>A subscribed handler keeps the menu button available even when the view list is initially empty.</p>
+<p>If the handler leaves no entries, the menu does not open.</p>
+<p>The event is synchronous. Load the list in the handler, or prepare data asynchronously before the user opens the menu.</p>
+
+<pre><code class="language-csharp">buttons.ViewMenuOpening += OnViewMenuOpening;
+
+void OnViewMenuOpening(object? sender, CancelEventArgs e)
+{
+    if (!CanReadViews())
+    {
+        e.Cancel = true;
+        return;
+    }
+
+    if (sender is DaisyTabsHeaderButtons source)
+    {
+        source.Views = LoadViews();
+        source.ShowManageViewsEntry = CanManageViews();
+    }
+}</code></pre>
+
+<p>The application supplies <code>CanReadViews</code>, <code>LoadViews</code>, and <code>CanManageViews</code> in this example.</p>
+<code>CancelEventArgs</code> is in <code>System.ComponentModel</code>.
+
+<h2>Collection Updates</h2>
+
+<p>The menu always reads the current <code>Views</code> list when it opens.</p>
+<p>An <code>ObservableCollection<DaisyTabView></code> also updates button availability immediately when its contents change.</p>
+<p>A plain list updates availability on the next layout pass or when <code>Views</code> is replaced.</p>
+<p>Collection changes and property assignments must occur on the UI thread.</p>
+
+<h2>Size and Scaling</h2>
+
+<code>Size</code> supports ExtraSmall, Small, Medium, Large, and ExtraLarge.
+<p>Small is the default. With global sizing enabled, the group follows <code>FlowerySizeManager</code> once loaded; <code>FlowerySizeManager.IgnoreGlobalSize</code> opts out.</p>
+<p>The icons use the Daisy icon size for the current <code>Size</code> (<code>DaisyResourceLookup.GetDefaultIconSize</code>).</p>
+<p>The group implements <code>IScalableControl</code>: <code>ApplyScaleFactor</code> scales the icon size. Button dimensions follow the normal button size resources.</p>
+
+<h2>Localization and Accessibility</h2>
+
+<code>Tabs_ManageViews</code> supplies the management entry text, and <code>Tabs_Views</code> the view button label.
+<p>The navigation buttons use <code>Accessibility_PreviousItem</code> and <code>Accessibility_NextItem</code>. All four keys exist in every supported language.</p>
+<p>Each icon button has a localized tooltip and automation name.</p>
+<p>Button labels follow culture changes, and menu labels use the culture at opening time.</p>
+<hr><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTabs.html">← Tabs</a></div>
+    <div class="nav-right"><a href="DaisyTagPicker.html">TagPicker →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

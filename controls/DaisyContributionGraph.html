@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyContributionGraph</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyContributionGraph</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyContributionGraph.png" alt="DaisyContributionGraph" class="doc-image">
+
+<p>DaisyContributionGraph is a GitHub-style contribution heatmap graph (7 rows × 53 weeks). Provide day entries via <code>Contributions</code>, and the control renders a compact year overview with optional month/day labels, hover tooltips, and a “Less/More” legend.</p>
+
+<h2>Data Model</h2>
+
+<p>Each entry is a <code>DaisyContributionDay</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Date</code></td>
+<td>The calendar day (date portion is used).</td>
+</tr>
+<tr>
+<td><code>Count</code></td>
+<td>Numeric count shown in the tooltip text.</td>
+</tr>
+<tr>
+<td><code>Level</code></td>
+<td>Intensity level (clamped to 0–4). Level drives the cell's visual intensity.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code> (<code>DaisySize</code>)</td>
+<td>Control size (ExtraSmall through ExtraLarge). Automatically adjusts cell size, margins, corner radius, and font sizes. Respects <code>FlowerySizeManager</code> global sizing. Default: Medium.</td>
+</tr>
+<tr>
+<td><code>Contributions</code> (<code>IEnumerable<DaisyContributionDay>?</code>)</td>
+<td>Data points used to populate the graph. Days not present render as level 0 / count 0.</td>
+</tr>
+<tr>
+<td><code>Year</code> (int)</td>
+<td>Which year to display (default: current year).</td>
+</tr>
+<tr>
+<td><code>StartDayOfWeek</code> (<code>DayOfWeek</code>)</td>
+<td>Which day is shown as the first row. <strong>Default: Current culture's first day of week</strong> (Monday in Europe, Sunday in US, etc.). Can be overridden explicitly.</td>
+</tr>
+<tr>
+<td><code>ShowLegend</code> (bool)</td>
+<td>Shows/hides the "Less/More" legend (default: true).</td>
+</tr>
+<tr>
+<td><code>ShowToolTips</code> (bool)</td>
+<td>Enables/disables per-cell tooltip text (default: true).</td>
+</tr>
+<tr>
+<td><code>ShowMonthLabels</code> (bool)</td>
+<td>Shows/hides month labels above the grid (default: true).</td>
+</tr>
+<tr>
+<td><code>ShowDayLabels</code> (bool)</td>
+<td>Shows/hides day labels on the left (default: true).</td>
+</tr>
+<tr>
+<td><code>HighlightMonthStartBorders</code> (bool)</td>
+<td>When true, cells that represent the 1st of a month get a secondary-colored border (default: false).</td>
+</tr>
+<tr>
+<td><code>CellSize</code> (double)</td>
+<td>Cell size in pixels (default: 12 for Medium size). Automatically set when <code>Size</code> changes.</td>
+</tr>
+<tr>
+<td><code>CellMargin</code> (Thickness)</td>
+<td>Margin around each cell (default: 1). Automatically set when <code>Size</code> changes.</td>
+</tr>
+<tr>
+<td><code>CellCornerRadius</code> (CornerRadius)</td>
+<td>Corner radius for each cell (default: 2). Automatically set when <code>Size</code> changes.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Styling Notes</h2>
+
+<p>Cells are rendered as <code>Border</code> elements with <code>Classes="daisy-contribution-cell"</code> and <code>Tag</code> set to the level (0–4). You can override the color/intensity by adding styles for selectors like:</p>
+
+<pre><code class="language-xml">&lt;Style Selector="Border.daisy-contribution-cell[Tag=4]"&gt;
+    &lt;Setter Property="Background" Value="{ThemeResource DaisySuccessBrush}" /&gt;
+    &lt;Setter Property="Opacity" Value="1" /&gt;
+&lt;/Style&gt;</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic graph with inline sample data --&gt;
+&lt;controls:DaisyContributionGraph Year="2025" Width="720"&gt;
+    &lt;controls:DaisyContributionGraph.Contributions&gt;
+        &lt;x:Array Type="{x:Type controls:DaisyContributionDay}"&gt;
+            &lt;controls:DaisyContributionDay Date="2025-01-01" Count="1" Level="1" /&gt;
+            &lt;controls:DaisyContributionDay Date="2025-01-02" Count="3" Level="2" /&gt;
+            &lt;controls:DaisyContributionDay Date="2025-01-03" Count="7" Level="3" /&gt;
+            &lt;controls:DaisyContributionDay Date="2025-01-04" Count="11" Level="4" /&gt;
+        &lt;/x:Array&gt;
+    &lt;/controls:DaisyContributionGraph.Contributions&gt;
+&lt;/controls:DaisyContributionGraph&gt;
+
+&lt;!-- Compact, labels off --&gt;
+&lt;controls:DaisyContributionGraph Year="2025"
+                                ShowLegend="False"
+                                ShowMonthLabels="False"
+                                ShowDayLabels="False"
+                                CellSize="8"
+                                CellMargin="1" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Prefer setting <code>Level</code> to a normalized 0–4 bucket in your data layer; the control clamps values outside that range.</li>
+<li>Set <code>ShowToolTips="False"</code> if you want a purely decorative heatmap.</li>
+<li>Use smaller <code>CellSize</code> and keep <code>ShowMonthLabels/ShowDayLabels</code> off for very dense dashboards.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyColorWheel.html">← ColorWheel</a></div>
+    <div class="nav-right"><a href="DaisyCopyButton.html">CopyButton →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

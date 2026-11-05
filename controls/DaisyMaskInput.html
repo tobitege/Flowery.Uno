@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyMaskInput</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyMaskInput</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyMaskInput.png" alt="DaisyMaskInput" class="doc-image">
+
+<p>DaisyMaskInput is a <code>MaskedTextBox</code> styled like <code>DaisyInput</code>, intended for <strong>structured input</strong> such as times, dates, IDs, and payment details. It supports the same Daisy input API (variants, sizes, labels, helper text, and icons) and adds masked-editing via the built-in <code>Mask</code> property.</p>
+
+<h2>Masked Editing</h2>
+
+<p>You can set the mask manually using <code>Mask="..."</code>. The mask format and behavior is provided by the underlying <code>MaskedTextBox</code> control.</p>
+
+<p>Alternatively, use <code>Mode="..."</code> to apply a preset mask (and an example watermark). When <code>Mode != Custom</code>, <code>DaisyMaskInput</code> sets <code>Mask</code> automatically and sets <code>Watermark</code> automatically if it was empty. Those auto-watermarks are localized via <code>FloweryLocalization</code>.</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Preset modes (Mask + localized Watermark are applied automatically) --&gt;
+&lt;custom:DaisyMaskInput Mode="AlphaNumericCode" /&gt;
+&lt;custom:DaisyMaskInput Mode="Timer" /&gt;
+&lt;custom:DaisyMaskInput Mode="CreditCardNumber" EndIcon="{StaticResource DaisyIconCard}" /&gt;
+&lt;custom:DaisyMaskInput Mode="ExpiryDate" ExpiryYearDigits="2" Label="Expiry date" /&gt;
+&lt;custom:DaisyMaskInput Mode="Cvc" /&gt;
+
+&lt;!-- Custom mask (manual Mask/Watermark) --&gt;
+&lt;custom:DaisyMaskInput Mode="Custom" Mask="AA00 AAA" Watermark="AB12 CDE" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>Mode</code> for common structured formats; it keeps <code>Mask</code> (and the default example <code>Watermark</code>) consistent.</li>
+<li>If you want a custom watermark, set <code>Watermark="..."</code> explicitly (this disables the auto-watermark behavior).</li>
+<li>Prefer masks for fixed-format values; use <code>DaisyInput</code> for free-form text.</li>
+<li>Combine with <code>Variant="Error"</code> / <code>HelperText="..."</code> for validation feedback.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyMask.html">← Mask</a></div>
+    <div class="nav-right"><a href="DaisyMenu.html">Menu →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

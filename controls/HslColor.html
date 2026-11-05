@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HslColor</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>HslColor</h1>
+
+<h2>Overview</h2>
+
+<p>HslColor is a struct representing colors in the HSL (Hue, Saturation, Lightness) color space. It provides seamless conversion between HSL and RGB color spaces, making it essential for color picker controls that need intuitive color manipulation.</p>
+
+<h2>Why HSL?</h2>
+
+<p>HSL is more intuitive than RGB for color selection:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Color Space</th>
+<th>Best For</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>RGB</strong></td>
+<td>Precise color values, web colors, digital displays</td>
+</tr>
+<tr>
+<td><strong>HSL</strong></td>
+<td>Intuitive color adjustment - change brightness without affecting hue</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Range</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>H</code></td>
+<td><code>double</code></td>
+<td>0-359</td>
+<td>Hue angle in degrees (0=red, 120=green, 240=blue)</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td><code>double</code></td>
+<td>0-1</td>
+<td>Saturation (0=gray, 1=vivid)</td>
+</tr>
+<tr>
+<td><code>L</code></td>
+<td><code>double</code></td>
+<td>0-1</td>
+<td>Lightness (0=black, 0.5=pure color, 1=white)</td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td><code>int</code></td>
+<td>0-255</td>
+<td>Alpha/transparency</td>
+</tr>
+<tr>
+<td><code>IsEmpty</code></td>
+<td><code>bool</code></td>
+<td>-</td>
+<td>Whether this is an empty color</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Static Members</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Member</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>HslColor.Empty</code></td>
+<td>Represents an empty/undefined HSL color</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Constructors</h2>
+
+<pre><code class="language-csharp">// From HSL values (alpha defaults to 255)
+var hsl = new HslColor(180, 0.8, 0.5);  // Cyan-ish
+
+// From HSL values with alpha
+var hsl = new HslColor(255, 180, 0.8, 0.5);  // Fully opaque cyan
+
+// From WinUI Color
+var hsl = new HslColor(Colors.Red);</code></pre>
+
+<h2>Conversion Methods</h2>
+
+<pre><code class="language-csharp">// HSL to RGB
+HslColor hsl = new HslColor(0, 1, 0.5);  // Pure red in HSL
+Color rgb = hsl.ToRgbColor();             // Convert to RGB
+
+// With custom alpha
+Color rgb = hsl.ToRgbColor(128);          // 50% transparent
+
+// Static conversion
+Color rgb = HslColor.HslToRgb(180, 0.8, 0.5);
+Color rgb = HslColor.HslToRgb(255, 180, 0.8, 0.5);  // With alpha
+
+// RGB to HSL
+HslColor.RgbToHsl(255, 0, 0, out double h, out double s, out double l);</code></pre>
+
+<h2>Implicit Conversions</h2>
+
+<p>HslColor supports implicit conversion to/from WinUI <code>Color</code>:</p>
+
+<pre><code class="language-csharp">// HSL to Color (implicit)
+HslColor hsl = new HslColor(120, 1, 0.5);
+Color color = hsl;  // Implicit conversion
+
+// Color to HSL (implicit)
+Color color = Colors.Blue;
+HslColor hsl = color;  // Implicit conversion</code></pre>
+
+<h2>Hue Reference</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Hue (degrees)</th>
+<th>Color</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Red</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Orange</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Yellow</td>
+</tr>
+<tr>
+<td>120</td>
+<td>Green</td>
+</tr>
+<tr>
+<td>180</td>
+<td>Cyan</td>
+</tr>
+<tr>
+<td>240</td>
+<td>Blue</td>
+</tr>
+<tr>
+<td>270</td>
+<td>Purple</td>
+</tr>
+<tr>
+<td>300</td>
+<td>Magenta</td>
+</tr>
+<tr>
+<td>330</td>
+<td>Pink</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Saturation & Lightness</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Saturation</th>
+<th>Effect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td>Grayscale (no color)</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>Muted/pastel</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>Full vivid color</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Lightness</th>
+<th>Effect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td>Black</td>
+</tr>
+<tr>
+<td>0.25</td>
+<td>Dark shade</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>Pure color</td>
+</tr>
+<tr>
+<td>0.75</td>
+<td>Light tint</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>White</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-csharp">// Create a pure blue
+var blue = new HslColor(240, 1, 0.5);
+
+// Create a pastel pink
+var pastelPink = new HslColor(350, 0.5, 0.8);
+
+// Create a dark green
+var darkGreen = new HslColor(120, 1, 0.25);
+
+// Adjust lightness without changing hue
+var hsl = new HslColor(Colors.Red);
+hsl.L = 0.75;  // Make it lighter
+Color lighterRed = hsl.ToRgbColor();
+
+// Adjust saturation
+hsl.S = 0.3;  // Make it more gray/muted
+Color mutedRed = hsl.ToRgbColor();
+
+// Compare colors
+var a = new HslColor(180, 0.5, 0.5);
+var b = new HslColor(180, 0.5, 0.5);
+bool equal = (a == b);  // true</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use HSL when you need to adjust brightness or saturation without changing the base color.</li>
+<li>Hue wraps around: 360° = 0° (both are red).</li>
+<li>For grayscale colors, saturation is 0 and hue is irrelevant.</li>
+<li>Lightness of 0.5 gives the purest representation of the hue.</li>
+<li>Use implicit conversions for clean code when working with WinUI controls.</li>
+<li>The <code>IsEmpty</code> property is useful for nullable color scenarios.</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

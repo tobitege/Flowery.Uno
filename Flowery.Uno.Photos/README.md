@@ -3,7 +3,8 @@
 A demo app for viewing photos and making basic edits, built with the [Flowery.Uno](../README.md) Daisy controls on
 the Uno Platform Skia Desktop head. It runs on Windows, macOS and Linux.
 
-It is a port of [Flowery.WinUI Photos](https://github.com/tobitege/Flowery.WinUI) (tracked in issue #60). The screens,
+It is a port of [Flowery.WinUI Photos](https://github.com/tobitege/Flowery.WinUI/tree/main/Flowery.WinUI.Photos)
+(tracked in issue #60). The screens,
 texts and the 12 UI languages are the same; the image pipeline runs on SkiaSharp instead of Win2D, and the operating
 system actions go through a small platform layer. Flowery Photos shows what a complete, everyday desktop app looks like
 with Flowery.Uno: Daisy controls throughout, runtime themes, global sizing and 12 UI languages. It is a showcase, not a
@@ -86,10 +87,11 @@ results of Flowery.WinUI Photos.
 - Custom title bar with search, navigation rail, toasts and dialogs (Windows; macOS and Linux keep the system title
   bar).
 - The hover, focus and selection frames use the system accent color where the OS provides a readable one (Windows,
-  GNOME); otherwise the theme accent.
+  macOS, GNOME); otherwise the theme accent.
 - Settings open as a modal dialog above the current view (also above the editor). Changes preview live; **OK** keeps
   them, **Cancel** (or `Esc`) restores the previous state and returns to where you were.
-- Window position, size and all preferences are remembered.
+- The window size and all preferences are remembered. The window opens where the system places it, at most as large
+  as that screen.
 
 ## Platform support
 
@@ -118,6 +120,7 @@ action when there is no working way to do it:
 | `Ctrl` + `E` | Open the editor |
 | `Ctrl` + `Z` / `Ctrl` + `Y` | Undo / redo |
 | `Ctrl` + `S` | Save a copy |
+| `Ctrl` + `Shift` + `S` | Replace the original |
 | `+` / `-`, `0`, `1` | Zoom in / out, fit, 100 % |
 | `F` | Toggle favorite |
 | `I` | File info panel |
@@ -138,14 +141,30 @@ dotnet run --project Flowery.Uno.Photos/Flowery.Uno.Photos.csproj -f net10.0-des
 
 Pass an image path as the first argument to open it directly in the viewer.
 
-Settings, the metadata cache and the thumbnail cache are stored in `%LOCALAPPDATA%\Flowery.Uno.Photos` on Windows and
-in `~/.local/share/Flowery.Uno.Photos` on macOS and Linux. Set the environment variable `FLOWERY_STATE_ROOT` to an
-absolute path to use a different location, for example for tests with sample data only.
+Settings, the metadata cache and the thumbnail cache are stored in the local application data folder:
+`%LOCALAPPDATA%\Flowery.Uno.Photos` on Windows, `~/Library/Application Support/Flowery.Uno.Photos` on macOS and
+`~/.local/share/Flowery.Uno.Photos` on Linux. Set the environment variable `FLOWERY_STATE_ROOT` to an absolute path to
+use a different location, for example for tests with sample data only. Unhandled errors are written to `crash.log` in
+that folder.
 
 The unit tests of the app are in `Flowery.Uno.UnitTests/Photos`:
 
 ```bash
 dotnet run --project Flowery.Uno.UnitTests -f net10.0-desktop
+```
+
+`scripts/test_photos_start.ps1` starts the built app on Windows with an isolated state folder and checks that it opens
+its window, runs and closes without writing `crash.log`; CI runs it.
+
+## Screenshots
+
+[`Screenies`](Screenies) contains feature screenshots (1400x1000, Windows). `Screenies/Capture-Screenshots.ps1`
+recreates them: it starts the built app with an isolated state folder and the bundled sample photos, copies only theme,
+size and view options from your settings, and drives the UI through UI Automation, mouse and keyboard input. Pass
+`-Monitor` with a device name to use another monitor than the primary one.
+
+```powershell
+pwsh -File Flowery.Uno.Photos/Screenies/Capture-Screenshots.ps1
 ```
 
 ## Limitations

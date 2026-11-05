@@ -6,10 +6,11 @@ library changes are in the [main changelog](../CHANGELOG.md).
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.6.0] - 2026-11-05
 
-First version of the app, ported from Flowery.WinUI Photos 1.9.0 (`31798a9`) to the Uno Platform Skia Desktop head
-(Windows, macOS, Linux). Issue #60; delivered in #108, #133 and #134.
+First version of the app, ported from Flowery.WinUI Photos to the Uno Platform Skia Desktop head (Windows, macOS,
+Linux) and checked against Flowery.WinUI `a810ffe`; the NativeAOT changes there apply to WinUI only. Issue #60;
+delivered in #108, #133, #134 and #136.
 
 ### Added
 
@@ -26,7 +27,12 @@ First version of the app, ported from Flowery.WinUI Photos 1.9.0 (`31798a9`) to 
   tools (palettes in JASC-PAL and GPL, harmonies, eyedropper), before/after compare, undo/redo, revert, save as copy
   or replace, copy to the clipboard. Rendering uses SkiaSharp with SkSL runtime effects fitted to the Win2D results.
 - A JPEG keeps its EXIF data (camera, date, GPS) when it is saved; WebP photos can be replaced in place (#134).
-- Unit tests for the library, metadata, thumbnails, platform layer, localization and the editing pipeline.
+- Closing the window with unsaved edits asks first, as closing the viewer does (#134).
+- The window reopens with the size it had, at most as large as the screen it opens on (#136).
+- Unit tests for the library, metadata, thumbnails, platform layer, localization and the editing pipeline; a test that
+  every localization key used in code and XAML exists.
+- `Screenies/Capture-Screenshots.ps1` recreates the feature screenshots, and `scripts/test_photos_start.ps1` starts the
+  app with an isolated state folder and fails on `crash.log`; CI runs it on Windows (#136).
 
 ### Changed compared with Flowery.WinUI Photos
 
@@ -34,9 +40,6 @@ First version of the app, ported from Flowery.WinUI Photos 1.9.0 (`31798a9`) to 
   a placeholder tile.
 - *Replace* is disabled for formats that cannot be written back (GIF, BMP and others); an edit is then saved as a JPEG
   copy.
-- Highlights, shadows and vignette were refitted to the Win2D output (#134).
-
-### Fixed
-
-- Follow-up fixes after the first review: full screen insets, language refresh, hero layout (#108, #133) and review
-  findings on the editing code (#134).
+- Highlights and vignette were refitted to the Win2D output on saturated colors and in the corners (#134).
+- The window position is not restored: when the app moved its window onto a monitor with another scaling, Uno kept
+  mapping pointer input with the first monitor's scaling.

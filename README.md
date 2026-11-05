@@ -52,6 +52,7 @@ I hope this will be useful and fun to work with! -- tobitege
 - **FlowKanban**: Full Kanban board control with swimlanes, WIP limits, drag & drop, undo/redo history, multi-board home, and JSON persistence + migration. [📖 Guide](llms-static/FlowKanban.md)
 - **Variants**: Supports `Primary`, `Secondary`, `Accent`, `Ghost`, etc.
 - **Gallery App**: Demo application showcasing all controls and features.
+- **Flowery Photos**: Demo app for viewing photos and making basic edits on the Skia desktop head (Windows, macOS, Linux), ported from Flowery.WinUI. [📖 README](Flowery.Uno.Photos/README.md)
 
 ## FlowKanban
 
@@ -324,6 +325,7 @@ dotnet workload restore
 | `Flowery.Uno.Gallery.Desktop` | Skia desktop Gallery head (Windows/Linux/macOS) |
 | `Flowery.Uno.Gallery.Browser` | WebAssembly Gallery head |
 | `Flowery.Uno.Gallery.Android` | Android Gallery head |
+| `Flowery.Uno.Photos` | Flowery Photos demo app (Skia desktop: Windows/Linux/macOS) |
 
 ---
 

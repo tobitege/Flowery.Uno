@@ -192,6 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it.
 - README: the note no longer calls Flowery.Uno an alpha and gives the current size of the repo (~175K lines of C# and
   XAML in 1,000+ files, with 100+ controls; it said ~134K lines in 900+ files).
+- README: the features and the project structure list the Flowery Photos demo app, with a link to its README.
 - Kiosk.Browser: the login slide lists 100+ controls (was 80+) and 50+ themes (was 35+).
 - Docs: the theme counts match the 53 built-in themes (36 DaisyUI themes and 17 HappyHues themes) that
   `DaisyThemeDropdown` lists. The README, `THEMING.md` and the `llms-static` pages for the theme dropdown, controller,

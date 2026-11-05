@@ -1,18 +1,20 @@
 # Flowery Photos
 
-A simple demo app for viewing photos and making basic edits, built with [Flowery.Uno](../README.md) Daisy controls,
-SkiaSharp and the Uno Platform Skia desktop head. It runs on Windows, macOS and Linux.
+A demo app for viewing photos and making basic edits, built with the [Flowery.Uno](../README.md) Daisy controls on
+the Uno Platform Skia Desktop head. It runs on Windows, macOS and Linux.
 
-Flowery Photos shows what a complete, everyday desktop app looks like with Flowery.Uno: Daisy controls throughout,
-runtime themes, global sizing and 12 UI languages. It is a showcase, not a replacement for a full photo manager or
-image editor. It is a port of Flowery.WinUI.Photos (Flowery.WinUI 1.8.0); the differences are listed below.
+It is a port of [Flowery.WinUI Photos](https://github.com/tobitege/Flowery.WinUI) (tracked in issue #60). The screens,
+texts and the 12 UI languages are the same; the image pipeline runs on SkiaSharp instead of Win2D, and the operating
+system actions go through a small platform layer. Flowery Photos shows what a complete, everyday desktop app looks like
+with Flowery.Uno: Daisy controls throughout, runtime themes, global sizing and 12 UI languages. It is a showcase, not a
+replacement for a full photo manager or image editor.
 
 ## Features
 
 ### Home
 
-- **Start page:** greeting with a library summary and quick actions (slideshow, add folder, import), counts for
-  photos, favorites, albums and folders, and rows of recently taken photos, favorites, folders and albums.
+- **Start page:** greeting with a library summary and quick actions (slideshow, add folder, import), counts for photos,
+  favorites, albums and folders, and rows of recently taken photos, favorites, folders and albums.
 - **Welcome page:** an empty library shows the first steps (add a folder, import photos or use the sample photos) and
   what the app can do.
 
@@ -20,7 +22,7 @@ image editor. It is a port of Flowery.WinUI.Photos (Flowery.WinUI 1.8.0); the di
 
 - **Folders as library:** starts with your `Pictures` folder. Add more folders, include or exclude subfolders, and
   remove folders without deleting files. Changes on disk are picked up automatically.
-- **Fast scanning:** dimensions, capture date, orientation and camera model are read directly from file headers
+- **Fast scanning:** dimensions, capture date, orientation and camera model are read from the file headers
   (JPEG/EXIF, PNG, GIF, BMP, WebP) and cached.
 - **Justified photo grid:** virtualized rows that keep each photo's aspect ratio, grouped by day, month or year.
   Optional square thumbnails and file names. Thumbnails are cached on disk.
@@ -29,11 +31,11 @@ image editor. It is a port of Flowery.WinUI.Photos (Flowery.WinUI 1.8.0); the di
 - **Search, filter, sort:** search by file name, folder, camera, year or month name; filter by file type and
   orientation; sort by date taken, date modified, name or file size.
 - **Thumbnail size:** slider, `Ctrl` + mouse wheel or `Ctrl` + `+`/`-`.
-- **Multi-select:** check boxes, `Ctrl`/`Shift` click, select a whole date group or select all. Then favorite, add to an
-  album, copy or delete in one step.
+- **Multi-select:** check boxes, `Ctrl`/`Shift` click, select a whole date group or select all. Then favorite, add to
+  an album, copy or delete in one step.
 - **Context menu:** open, edit, favorite, add to album, copy, open with, show in the file manager, set as desktop
-  background, delete (to the trash, with confirmation). Items the system does not offer are hidden (see
-  [Platforms](#platforms)).
+  background, delete (to the trash, with confirmation). Actions the operating system cannot do are hidden
+  (see [Platform support](#platform-support)).
 - **Import:** add a folder, import files (copied into `Pictures/Flowery Photos`), or drop photos and folders onto the
   window.
 
@@ -52,20 +54,20 @@ image editor. It is a port of Flowery.WinUI.Photos (Flowery.WinUI 1.8.0); the di
   folder.
 - File info panel: folder, size, dimensions, dates, camera, lens, exposure and GPS location (opens the map).
 - Slideshow with cross-fade and configurable interval.
-- Immersive full screen (`F11`): toolbar and status bar float above the photo and fade out until the pointer reaches
-  the top or bottom edge.
+- Immersive full screen (`F11`): hides the title bar; toolbar and status bar float above the photo and fade out until
+  the pointer reaches the top or bottom edge.
 - **View options:** rulers with pixel coordinates, gridlines, status bar on/off, auto-hide toolbar, and a navigator
   thumbnail for panning zoomed photos.
 
 ### Editing
 
-All edits are non-destructive until you save. They are rendered with SkiaSharp on the CPU; the preview follows the
-sliders while the full-size render runs in the background.
+All edits are non-destructive until you save. Rendering uses SkiaSharp and SkSL runtime effects, fitted to the Win2D
+results of Flowery.WinUI Photos.
 
 - **Crop:** rotate, flip, straighten, free or fixed aspect ratios (original, 1:1, 4:3, 3:2, 16:9 and portrait
-  variants), crop handles with rule-of-thirds grid. The chosen ratio turns with the photo (16:9 becomes 9:16).
+  variants), crop handles with rule-of-thirds grid.
 - **Adjust:** one-click auto enhance, then brightness, exposure, contrast, highlights, shadows, saturation, warmth,
-  tint, sharpness, clarity, vignette and fade. The effects are matched to the Win2D effects of the WinUI app.
+  tint, sharpness, clarity, vignette and fade.
 - **Filters:** 14 looks with live previews of the current photo and adjustable intensity.
 - **Markup:** pen and highlighter with adjustable size; strokes are saved into the image.
 - **Colors (markup):** primary/secondary color (left/right mouse button, swap with `X`), presets, eyedropper, nine
@@ -74,40 +76,35 @@ sliders while the full-size render runs in the background.
   editor.
 - **Compare:** split view with a draggable before/after divider.
 - **Undo/redo** for every step, **Revert** to the original (at the top of the edit panel).
-- **Save:** save a copy (default), replace the original after confirmation, or copy the edited image to the clipboard.
-  A JPEG saved from a JPEG keeps its EXIF data (camera, date, GPS). Unsaved edits are never lost silently: changing
-  the photo, closing the viewer and closing the window ask first.
+- **Save:** save a copy (default), replace the original after confirmation, or copy the edited image to the
+  clipboard. Unsaved edits are never lost silently.
 
 ### App
 
 - Daisy themes, global size (scales controls and text) and 12 languages (English, German, French, Spanish, Italian,
   Chinese (Simplified), Japanese, Korean, Turkish, Arabic, Hebrew, Ukrainian), switchable at runtime.
-- Navigation rail, toasts and dialogs. On Windows the app bar replaces the system title bar; on macOS and Linux it is
-  a row below it.
-- The hover, focus and selection frames use the system accent color where the system has one, otherwise the theme's
-  primary color.
+- Custom title bar with search, navigation rail, toasts and dialogs (Windows; macOS and Linux keep the system title
+  bar).
+- The hover, focus and selection frames use the system accent color where the OS provides a readable one (Windows,
+  GNOME); otherwise the theme accent.
 - Settings open as a modal dialog above the current view (also above the editor). Changes preview live; **OK** keeps
   them, **Cancel** (or `Esc`) restores the previous state and returns to where you were.
-- Window size and all preferences are remembered.
+- Window position, size and all preferences are remembered.
 
-## Platforms
+## Platform support
 
-| Feature | Windows | macOS | Linux |
+The Skia Desktop head runs on all three systems. These actions depend on the operating system, and the app hides an
+action when there is no working way to do it:
+
+| Action | Windows | macOS | Linux |
 | --- | --- | --- | --- |
-| Move to trash | Recycle Bin | Trash | with `gio` |
-| Show in file manager | File Explorer | Finder | with `dbus-send` or `xdg-open` |
-| Set as desktop background | yes | yes | GNOME (`gsettings`) |
-| Open with | system dialog | list of apps | list of apps, with `gio` |
-| Copy files to the clipboard | yes | no (the edited image can be copied) | yes |
-| System accent color | yes | yes | GNOME (`gsettings`) |
-
-## Formats
-
-The app opens the formats SkiaSharp decodes: JPEG, PNG, WebP, GIF, BMP and ICO. HEIC, AVIF, TIFF and JPEG XR show a
-placeholder tile, on every system. Animated GIFs show their first frame.
-
-JPEG, PNG and WebP are saved in their format; other formats are saved as JPEG copies, and "Replace" is disabled for
-them.
+| Move to trash | Recycle Bin | Trash | `gio trash` |
+| Show in file manager | Explorer | Finder | file manager over D-Bus, else the folder opens |
+| Set as desktop background | yes | yes | GNOME only |
+| Open with | system dialog | list of apps | list of apps (needs `gio`) |
+| Copy files to the clipboard | yes | not available | yes |
+| System accent color | yes | yes | GNOME with an accent color setting |
+| Custom title bar | yes | system title bar | system title bar |
 
 ## Keyboard shortcuts
 
@@ -121,9 +118,9 @@ them.
 | `Ctrl` + `E` | Open the editor |
 | `Ctrl` + `Z` / `Ctrl` + `Y` | Undo / redo |
 | `Ctrl` + `S` | Save a copy |
-| `Ctrl` + `Shift` + `S` | Replace the original |
 | `+` / `-`, `0`, `1` | Zoom in / out, fit, 100 % |
 | `F` | Toggle favorite |
+| `I` | File info panel |
 | `R` / `Shift` + `R` | Rotate right / left |
 | `X` | Swap primary/secondary color (markup) |
 | `Del` | Delete photo |
@@ -131,49 +128,34 @@ them.
 | `F11` | Full screen |
 | `Esc` | Close / go back |
 
-## Screenshots
-
-[`Screenies`](Screenies) contains feature screenshots (1400x1000, Windows). `Screenies/Capture-Screenshots.ps1`
-recreates them: it starts the built app with an isolated state folder and the bundled sample photos, copies only theme,
-size and view options from your settings, and drives the UI through UI Automation, mouse and keyboard input. Pass
-`-Monitor` with a device name to use another monitor than the primary one.
-
-```powershell
-pwsh -File Flowery.Uno.Photos/Screenies/Capture-Screenshots.ps1
-```
-
 ## Build and run
 
-Requirements are the same as for the repository (.NET 10 SDK; on Linux the packages of the Skia desktop head).
+Requirements are the same as for the repository (.NET 10 SDK).
 
 ```bash
-dotnet build Flowery.Uno.Photos/Flowery.Uno.Photos.csproj -f net10.0-desktop -c Debug
 dotnet run --project Flowery.Uno.Photos/Flowery.Uno.Photos.csproj -f net10.0-desktop
 ```
 
 Pass an image path as the first argument to open it directly in the viewer.
 
-Settings, the metadata cache and the thumbnail cache are stored in the local application data folder
-(`%LOCALAPPDATA%\Flowery.Uno.Photos` on Windows, `~/.local/share/Flowery.Uno.Photos` on Linux and
-`~/Library/Application Support/Flowery.Uno.Photos` on macOS). Set the environment variable `FLOWERY_STATE_ROOT` to an
-absolute path to use a different location, for example for tests with sample data only. Unhandled errors are written
-to `crash.log` in that folder.
+Settings, the metadata cache and the thumbnail cache are stored in `%LOCALAPPDATA%\Flowery.Uno.Photos` on Windows and
+in `~/.local/share/Flowery.Uno.Photos` on macOS and Linux. Set the environment variable `FLOWERY_STATE_ROOT` to an
+absolute path to use a different location, for example for tests with sample data only.
 
-`scripts/test_photos_start.ps1` starts the built app on Windows with an isolated state folder and checks that it opens
-its window, runs and closes without writing `crash.log`; CI runs it.
+The unit tests of the app are in `Flowery.Uno.UnitTests/Photos`:
 
-## Differences from Flowery.WinUI.Photos
-
-- Runs on Windows, macOS and Linux instead of Windows only; system features are offered where the system has them
-  (see [Platforms](#platforms)).
-- Rendering with SkiaSharp instead of Win2D. The effects were fitted to the output of Win2D 1.3.2, so an edit looks
-  close to the same edit in the WinUI app, but not identical.
-- A JPEG saved from a JPEG keeps its EXIF data, and WebP photos are saved as WebP. The WinUI app drops EXIF and saves
-  WebP edits as JPEG copies.
-- TIFF, HEIC, AVIF and JPEG XR cannot be opened. The WinUI app opens them through Windows Imaging.
+```bash
+dotnet run --project Flowery.Uno.UnitTests -f net10.0-desktop
+```
 
 ## Limitations
 
-- Saving re-encodes the image. PNG and WebP edits are saved without EXIF data.
-- GIF and BMP edits are saved as JPEG copies.
+- **Formats:** the app opens what SkiaSharp can decode: JPEG, PNG, WebP, GIF, BMP and ICO. TIFF, HEIC, AVIF and JXR
+  files are listed with a placeholder tile on every system and cannot be opened in the viewer.
+- **Saving:** JPEG, PNG and WebP are written back in their own format. A JPEG keeps its EXIF data (camera, date, GPS)
+  when it is saved. For GIF, BMP and the other formats SkiaSharp cannot encode, an edit is saved as a JPEG copy and
+  *Replace* is disabled, so an animated GIF is never flattened by accident.
+- Animated GIFs show their first frame.
 - There is no repair/retouch tool, no RAW development and no cloud sync.
+- Browser, Android and iOS are not supported yet. The library already reads its photos through `IPhotoSource`, so
+  those heads need a picker based source and no rewrite of `PhotoLibrary`.

@@ -1,23 +1,42 @@
-<!-- markdownlint-disable MD024 -->
+<!-- markdownlint-disable MD022 MD024 -->
 # Changelog
 
-All notable changes to Flowery Photos (`Flowery.Uno.Photos`) are documented in this file. The app shares its version
-with the repository.
+All notable changes to Flowery Photos are documented in this file. The app is versioned with the repository; the
+library changes are in the [main changelog](../CHANGELOG.md).
 
-## [1.6.0] - 2026-11-05
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-- **New:** first version of Flowery Photos for the Uno Platform Skia desktop head on Windows, macOS and Linux, ported
-  from Flowery.WinUI.Photos (Flowery.WinUI 1.8.0) (#108, #133 and #134): home page, library with folder
-  watching and a disk thumbnail cache, gallery, favorites, albums and folders, settings, the viewer with slideshow and
-  immersive full screen, and the editor (crop, adjust, filters, markup, colors, compare, save). See the
-  [README](README.md) for the features and the differences from the WinUI app.
-- Rendering uses SkiaSharp on the CPU instead of Win2D. Exposure, contrast, temperature, tint, highlights, shadows,
-  clarity, sharpen and vignette were fitted to the output of Win2D 1.3.2.
-- System features go through one platform layer per OS: trash, reveal in the file manager, desktop background, "open
-  with", copying files to the clipboard and the system accent color. Items the system does not offer are hidden.
-- A JPEG saved from a JPEG keeps its EXIF data (camera, date, GPS), with orientation 1, the new pixel size and without
-  the old embedded thumbnail. WebP photos are saved as WebP.
-- Closing the window with unsaved edits asks first, as closing the viewer does.
-- The window reopens with the size it had, at most as large as the screen it opens on.
-- `scripts/test_photos_start.ps1` starts the app with an isolated state folder and fails on `crash.log`; CI runs it on
-  Windows.
+## [Unreleased]
+
+First version of the app, ported from Flowery.WinUI Photos 1.9.0 (`31798a9`) to the Uno Platform Skia Desktop head
+(Windows, macOS, Linux). Issue #60; delivered in #108, #133 and #134.
+
+### Added
+
+- **App and library** (#108): the `Flowery.Uno.Photos` project with its 12 UI languages, runtime themes and global
+  size; folders as library with a file system watcher, justified photo grid with grouping, timeline, search, filter and
+  sort, multi-select with batch actions, context menu, import and drag and drop. Metadata comes from the file headers;
+  thumbnails are cached in memory and on disk. The library reads files through `IPhotoSource`.
+- **Shell and pages** (#108): home, favorites, albums, folders, settings with live preview, custom title bar on Windows.
+- **Viewer** (#108): zoom and pan, navigator, rulers, grid, status bar, auto-hiding toolbar, slideshow, immersive full
+  screen, file info panel with EXIF and GPS.
+- **Platform layer** (#108): trash, show in file manager, set as wallpaper, open with, file clipboard, system accent and
+  display information for Windows, macOS and Linux. An action without a working mechanism on the current OS is hidden.
+- **Editing** (#134): crop, rotate, flip, straighten, adjustments, 14 filters, markup with pen and highlighter, color
+  tools (palettes in JASC-PAL and GPL, harmonies, eyedropper), before/after compare, undo/redo, revert, save as copy
+  or replace, copy to the clipboard. Rendering uses SkiaSharp with SkSL runtime effects fitted to the Win2D results.
+- A JPEG keeps its EXIF data (camera, date, GPS) when it is saved; WebP photos can be replaced in place (#134).
+- Unit tests for the library, metadata, thumbnails, platform layer, localization and the editing pipeline.
+
+### Changed compared with Flowery.WinUI Photos
+
+- Images are decoded and encoded with SkiaSharp. JPEG, PNG, WebP, GIF, BMP and ICO open; TIFF, HEIC, AVIF and JXR show
+  a placeholder tile.
+- *Replace* is disabled for formats that cannot be written back (GIF, BMP and others); an edit is then saved as a JPEG
+  copy.
+- Highlights, shadows and vignette were refitted to the Win2D output (#134).
+
+### Fixed
+
+- Follow-up fixes after the first review: full screen insets, language refresh, hero layout (#108, #133) and review
+  findings on the editing code (#134).

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyFab</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyFab</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyFab.png" alt="DaisyFab" class="doc-image">
+
+<p>DaisyFab is a Floating Action Button container with a trigger button and expandable action buttons. It supports <strong>Vertical</strong>, <strong>Horizontal</strong>, or <strong>Flower</strong> layouts, auto-closes when an action is clicked, and lets you customize trigger content, size, and variant. Ideal for exposing a small set of secondary actions from a single FAB.</p>
+
+<h2>Layout & Interaction</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Layout</code></td>
+<td><code>Vertical</code> (default) stacks actions above trigger; <code>Horizontal</code> places actions to the left of trigger; <code>Flower</code> uses larger spacing.</td>
+</tr>
+<tr>
+<td><code>IsOpen</code></td>
+<td>Toggles visibility of action buttons. Trigger click flips this.</td>
+</tr>
+<tr>
+<td><code>AutoClose</code> (default <code>True</code>)</td>
+<td>Clicking an action button closes the menu automatically.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Trigger Appearance</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TriggerVariant</code></td>
+<td>DaisyButton variant for the trigger (default <code>Primary</code>).</td>
+</tr>
+<tr>
+<td><code>TriggerContent</code></td>
+<td>Text or simple content for the trigger (default "+").</td>
+</tr>
+<tr>
+<td><code>TriggerIconData</code></td>
+<td>Path data string for the trigger icon (recommended for icons).</td>
+</tr>
+<tr>
+<td><code>TriggerIconSize</code></td>
+<td>Size of the trigger icon in pixels (default 16).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Sizing</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code></td>
+<td>Controls the size of both the trigger and all action buttons (<code>ExtraSmall</code> through <code>ExtraLarge</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The FAB automatically propagates its <code>Size</code> to all child action buttons. You don't need to set <code>Size</code> on individual action buttons—they inherit from the parent FAB.</p>
+
+<strong>Global Size Support:</strong> DaisyFab responds to <code>FlowerySizeManager.CurrentSize</code> changes. When the global size changes, the FAB and all its action buttons update automatically (unless <code>FlowerySizeManager.IgnoreGlobalSize</code> is set).
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Vertical FAB (default) - actions appear above trigger --&gt;
+&lt;daisy:DaisyFab TriggerContent="+" TriggerVariant="Primary" Size="Medium"&gt;
+    &lt;StackPanel&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="A" /&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="B" /&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="C" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyFab&gt;
+
+&lt;!-- Horizontal FAB - actions appear to the left of trigger --&gt;
+&lt;daisy:DaisyFab Layout="Horizontal" TriggerContent="+" TriggerVariant="Accent" Size="Medium"
+    HorizontalAlignment="Left" VerticalAlignment="Bottom"&gt;
+    &lt;StackPanel&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="1" /&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="2" /&gt;
+        &lt;daisy:DaisyButton Shape="Circle" Content="3" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyFab&gt;
+
+&lt;!-- FAB with icon buttons (recommended pattern) --&gt;
+&lt;daisy:DaisyFab TriggerVariant="Secondary" Size="Medium"
+    TriggerIconData="M12 4.5v15m7.5-7.5h-15"&gt;
+    &lt;StackPanel&gt;
+        &lt;daisy:DaisyButton Shape="Circle"
+            IconData="M3 9.5l9-7 9 7V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" /&gt;
+        &lt;daisy:DaisyButton Shape="Circle"
+            IconData="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z..." /&gt;
+    &lt;/StackPanel&gt;
+&lt;/daisy:DaisyFab&gt;</code></pre>
+
+<h2>Icons in Action Buttons</h2>
+
+<p>For icons that scale with the FAB size, use the <code>IconData</code> property on action buttons instead of placing a <code>PathIcon</code> as content:</p>
+
+<pre><code class="language-xml">&lt;!-- ✅ Recommended: IconData auto-scales with Size --&gt;
+&lt;daisy:DaisyButton Shape="Circle" IconData="M12 4.5v15m7.5-7.5h-15" /&gt;
+
+&lt;!-- ❌ Avoid: Fixed-size PathIcon won't scale --&gt;
+&lt;daisy:DaisyButton Shape="Circle"&gt;
+    &lt;PathIcon Width="16" Height="16" Data="..." /&gt;
+&lt;/daisy:DaisyButton&gt;</code></pre>
+
+<h2>Layout Behavior</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Layout</th>
+<th>Actions Position</th>
+<th>Grid Structure</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Vertical</code></td>
+<td>Above trigger</td>
+<td>Row-based (actions Row 0, trigger Row 1)</td>
+</tr>
+<tr>
+<td><code>Horizontal</code></td>
+<td>Left of trigger</td>
+<td>Column-based (actions Column 0, trigger Column 1)</td>
+</tr>
+<tr>
+<td><code>Flower</code></td>
+<td>Above trigger with larger spacing</td>
+<td>Row-based with 12px spacing</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep action count small (2–5) so spacing remains readable.</li>
+<li>Use <code>AutoClose="False"</code> if actions open modal flows and you want the menu to stay open.</li>
+<li>Prefer circular action buttons with concise icons or letters; labels belong in tooltips.</li>
+<li>Use <code>TriggerIconData</code> for the trigger icon and <code>IconData</code> for action button icons—both auto-scale with <code>Size</code>.</li>
+<li>For horizontal layout, consider using <code>HorizontalAlignment="Left"</code> since actions expand leftward.</li>
+<li>Position the FAB with layout alignment (default bottom-right) to avoid overlap with content.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyExpander.html">← Expander</a></div>
+    <div class="nav-right"><a href="DaisyFileInput.html">FileInput →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyWeatherCurrent</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyWeatherCurrent</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyWeatherCurrent.png" alt="DaisyWeatherCurrent" class="doc-image">
+
+<p>DaisyWeatherCurrent is a standalone widget for showing the current weather state. It features a large animated weather icon, prominent temperature display, and supporting information like "feels like" and sun times.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Temperature</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Current temperature value</td>
+</tr>
+<tr>
+<td><code>FeelsLike</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>"Feels like" temperature</td>
+</tr>
+<tr>
+<td><code>Condition</code></td>
+<td><code>WeatherCondition</code></td>
+<td><code>Unknown</code></td>
+<td>Weather condition for icon</td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td><code>DateTime</code></td>
+<td><code>DateTime.Now</code></td>
+<td>Date/time of reading</td>
+</tr>
+<tr>
+<td><code>Sunrise</code></td>
+<td><code>TimeSpan</code></td>
+<td>-</td>
+<td>Sunrise time (e.g., 07:33)</td>
+</tr>
+<tr>
+<td><code>Sunset</code></td>
+<td><code>TimeSpan</code></td>
+<td>-</td>
+<td>Sunset time (e.g., 17:20)</td>
+</tr>
+<tr>
+<td><code>TemperatureUnit</code></td>
+<td><code>string</code></td>
+<td><code>"C"</code></td>
+<td>Temperature unit (C or F)</td>
+</tr>
+<tr>
+<td><code>ShowSunTimes</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to show sunrise/sunset</td>
+</tr>
+<tr>
+<td><code>DateFormat</code></td>
+<td><code>string</code></td>
+<td><code>"dddd, d MMMM"</code></td>
+<td>Date display format (e.g., "ddd, d MMM" for short)</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Control size (ExtraSmall, Small, Medium, Large, ExtraLarge)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage --&gt;
+&lt;controls:DaisyWeatherCurrent
+    Temperature="22"
+    FeelsLike="24"
+    Condition="Sunny"
+    TemperatureUnit="C" /&gt;
+
+&lt;!-- With sun times --&gt;
+&lt;controls:DaisyWeatherCurrent
+    Temperature="8"
+    FeelsLike="5"
+    Condition="PartlyCloudy"
+    Sunrise="07:33"
+    Sunset="17:20" /&gt;
+
+&lt;!-- Fahrenheit --&gt;
+&lt;controls:DaisyWeatherCurrent
+    Temperature="72"
+    FeelsLike="75"
+    Condition="Clear"
+    TemperatureUnit="F" /&gt;
+
+&lt;!-- Hide sun times --&gt;
+&lt;controls:DaisyWeatherCurrent
+    Temperature="15"
+    Condition="Cloudy"
+    ShowSunTimes="False" /&gt;
+
+&lt;!-- With data binding --&gt;
+&lt;controls:DaisyWeatherCurrent
+    Temperature="{Binding CurrentTemperature}"
+    FeelsLike="{Binding FeelsLikeTemperature}"
+    Condition="{Binding CurrentCondition}"
+    Date="{Binding LastUpdated}"
+    Sunrise="{Binding SunriseTime}"
+    Sunset="{Binding SunsetTime}" /&gt;</code></pre>
+
+<h2>Layout</h2>
+
+<p>The control displays in a three-column layout:</p>
+
+<p>1. <strong>Left</strong>: Large animated weather condition icon (64px)</p>
+<p>2. <strong>Center</strong>: Date and sun times (sunrise ☀️↑ / sunset ☀️↓)</p>
+<p>3. <strong>Right</strong>: Temperature with unit and "Feels like" value</p>
+
+<h2>Styling</h2>
+
+<p>The control uses theme brushes:</p>
+
+<ul><li>Temperature: <code>DaisyPrimaryBrush</code></li>
+<li>Feels Like: <code>DaisySecondaryBrush</code></li>
+<li>Text: <code>DaisyBaseContentBrush</code></li>
+<li>Sunrise icon: <code>DaisyWarningBrush</code></li>
+<li>Sunset icon: <code>DaisyErrorBrush</code></li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyWeatherCard.html">← WeatherCard</a></div>
+    <div class="nav-right"><a href="DaisyWeatherForecast.html">WeatherForecast →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

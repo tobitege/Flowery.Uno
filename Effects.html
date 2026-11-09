@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effects</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="home.html">Home</a></div>
+<h1>Overview</h1>
+
+<p>A collection of pluggable visual effects for Uno Platform controls (namespace: Flowery.Effects), designed for cross-platform compatibility including Browser/WASM.</p>
+
+<img src="images/effects_showcase.webp" alt="Effects Showcase" style="max-width:50%;width:50%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+
+<h2>Installation</h2>
+
+<p>Add the namespace to your XAML:</p>
+
+<pre><code class="language-xml">xmlns:fx="using:Flowery.Effects"</code></pre>
+
+<h2>Effects</h2>
+
+<h3>RevealBehavior</h3>
+
+<p>Entrance animation when element enters the visual tree. Supports 5 modes:</p>
+
+<strong>FadeReveal (default):</strong> Fades in while sliding into position.
+
+<pre><code class="language-xml">&lt;Border fx:RevealBehavior.IsEnabled="True"
+        fx:RevealBehavior.Duration="0:0:0.6"
+        fx:RevealBehavior.Direction="Bottom"
+        fx:RevealBehavior.Distance="50"&gt;
+    &lt;TextBlock Text="I fade in from below!"/&gt;
+&lt;/Border&gt;</code></pre>
+
+<strong>SlideIn:</strong> Slides in fully visible (no fade). Good for drawers.
+
+<pre><code class="language-xml">&lt;Border fx:RevealBehavior.Mode="SlideIn" .../&gt;</code></pre>
+
+<strong>FadeOnly:</strong> Pure fade-in with no movement. Good for overlays.
+
+<pre><code class="language-xml">&lt;Border fx:RevealBehavior.Mode="FadeOnly" fx:RevealBehavior.Duration="0:0:0.8"/&gt;</code></pre>
+
+<strong>Scale:</strong> Scales up from center (0.8→1) while fading. Good for modals.
+
+<pre><code class="language-xml">&lt;Border fx:RevealBehavior.Mode="Scale" fx:RevealBehavior.Duration="0:0:0.5"/&gt;</code></pre>
+
+<strong>ScaleSlide:</strong> Combined scale + slide + fade. Maximum impact entrance.
+
+<pre><code class="language-xml">&lt;Border fx:RevealBehavior.Mode="ScaleSlide"
+        fx:RevealBehavior.Direction="Bottom"
+        fx:RevealBehavior.Distance="60"/&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable the effect</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td>RevealMode</td>
+<td>FadeReveal</td>
+<td><code>FadeReveal</code>, <code>SlideIn</code>, <code>FadeOnly</code>, <code>Scale</code>, <code>ScaleSlide</code></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>TimeSpan</td>
+<td>500ms</td>
+<td>Animation duration</td>
+</tr>
+<tr>
+<td><code>Direction</code></td>
+<td>RevealDirection</td>
+<td>Bottom</td>
+<td>Origin direction (Top/Bottom/Left/Right)</td>
+</tr>
+<tr>
+<td><code>Distance</code></td>
+<td>double</td>
+<td>30</td>
+<td>Slide distance in pixels (for translate modes)</td>
+</tr>
+<tr>
+<td><code>Easing</code></td>
+<td>Easing</td>
+<td>QuadraticEaseOut</td>
+<td>Easing function</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3>ScrambleHoverBehavior</h3>
+
+<p>Text scramble/reveal effect on hover or click (mobile-friendly).</p>
+
+<strong>RevealOnHover (default):</strong> Text starts scrambled and progressively reveals on hover/click. Ideal for teasers, spoilers, or hidden content.
+
+<pre><code class="language-xml">&lt;TextBlock Text="Secret Message"
+           fx:ScrambleHoverBehavior.IsEnabled="True"/&gt;</code></pre>
+
+<strong>ScrambleOnHover:</strong> Text starts readable and scrambles on hover. Decorative glitch effect.
+
+<pre><code class="language-xml">&lt;TextBlock Text="Glitch Me!"
+           fx:ScrambleHoverBehavior.IsEnabled="True"
+           fx:ScrambleHoverBehavior.Mode="ScrambleOnHover"/&gt;</code></pre>
+
+<strong>SplitFlap style:</strong> Airport departure board effect - characters cycle A to Z until settling.
+
+<pre><code class="language-xml">&lt;TextBlock Text="DEPARTURES"
+           fx:ScrambleHoverBehavior.IsEnabled="True"
+           fx:ScrambleHoverBehavior.RevealStyle="SplitFlap"
+           fx:ScrambleHoverBehavior.Duration="0:0:2.5"/&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable the effect</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td>ScrambleMode</td>
+<td>RevealOnHover</td>
+<td><code>RevealOnHover</code> (start scrambled) or <code>ScrambleOnHover</code> (start readable)</td>
+</tr>
+<tr>
+<td><code>RevealStyle</code></td>
+<td>RevealStyle</td>
+<td>Random</td>
+<td><code>Random</code> (random chars) or <code>SplitFlap</code> (alphabetical cycling like airport boards)</td>
+</tr>
+<tr>
+<td><code>ScrambleChars</code></td>
+<td>string</td>
+<td><code>!@#$%^&*()[]{}...</code></td>
+<td>Characters used for Random style</td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>TimeSpan</td>
+<td>500ms</td>
+<td>Time to fully resolve/scramble text</td>
+</tr>
+<tr>
+<td><code>FrameRate</code></td>
+<td>int</td>
+<td>30</td>
+<td>Updates per second</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Mobile support:</strong> Click/tap triggers the animation for touch devices without hover capability.
+<hr>
+<h3>WaveTextBehavior</h3>
+
+<p>Infinite sine wave animation on the Y axis. Supports both whole-block and per-character modes.</p>
+
+<pre><code class="language-xml">&lt;!-- Per-character ripple wave (SmoothUI style) --&gt;
+&lt;TextBlock Text="Ripple!"
+           fx:WaveTextBehavior.IsEnabled="True"
+           fx:WaveTextBehavior.IsPerCharacter="True"
+           fx:WaveTextBehavior.Amplitude="8"
+           fx:WaveTextBehavior.StaggerDelay="0:0:0.05"/&gt;
+
+&lt;!-- Simple whole-block wave --&gt;
+&lt;TextBlock Text="Wave!"
+           fx:WaveTextBehavior.IsEnabled="True"
+           fx:WaveTextBehavior.Amplitude="5"/&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable the effect</td>
+</tr>
+<tr>
+<td><code>IsPerCharacter</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable character-level ripple wave (replaces Text with Inlines)</td>
+</tr>
+<tr>
+<td><code>Amplitude</code></td>
+<td>double</td>
+<td>5</td>
+<td>Maximum vertical movement (pixels)</td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>TimeSpan</td>
+<td>1000ms</td>
+<td>Wave cycle duration</td>
+</tr>
+<tr>
+<td><code>StaggerDelay</code></td>
+<td>TimeSpan</td>
+<td>50ms</td>
+<td>Delay between characters (only for <code>IsPerCharacter</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3>CursorFollowBehavior</h3>
+
+<p>Creates a follower element that tracks mouse position with spring physics.</p>
+
+<pre><code class="language-xml">&lt;Grid Background="Transparent"
+      fx:CursorFollowBehavior.IsEnabled="True"
+      fx:CursorFollowBehavior.FollowerSize="20"
+      fx:CursorFollowBehavior.FollowerShape="Circle"
+      fx:CursorFollowBehavior.FollowerOpacity="0.75"
+      fx:CursorFollowBehavior.FollowerBrush="{ThemeResource DaisyPrimaryBrush}"/&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable the effect</td>
+</tr>
+<tr>
+<td><code>FollowerSize</code></td>
+<td>double</td>
+<td>20</td>
+<td>Size of follower element</td>
+</tr>
+<tr>
+<td><code>FollowerShape</code></td>
+<td>FollowerShape</td>
+<td>Circle</td>
+<td><code>Circle</code>, <code>Square</code>, or <code>Ring</code></td>
+</tr>
+<tr>
+<td><code>FollowerOpacity</code></td>
+<td>double</td>
+<td>1.0</td>
+<td>Opacity (0.0 - 1.0)</td>
+</tr>
+<tr>
+<td><code>FollowerBrush</code></td>
+<td>Brush</td>
+<td>DodgerBlue</td>
+<td>Fill/stroke brush</td>
+</tr>
+<tr>
+<td><code>Stiffness</code></td>
+<td>double</td>
+<td>0.15</td>
+<td>Spring stiffness (0-1)</td>
+</tr>
+<tr>
+<td><code>Damping</code></td>
+<td>double</td>
+<td>0.85</td>
+<td>Velocity damping (0-1)</td>
+</tr>
+</tbody>
+</table></div>
+
+<strong>Note</strong>: Must be applied to a Panel-type control (e.g., <code>Grid</code>, <code>Canvas</code>, <code>StackPanel</code>).
+
+<strong>Desktop only:</strong> This effect is designed for mouse/cursor tracking and is hidden on Android/mobile where touch gestures scroll the page instead.
+
+<strong>Container hit testing:</strong> If you want tracking to work across a container's full area (not just over child elements), the Panel must have <code>Background="Transparent"</code> (or any brush). Without a background, pointer events are only detected over rendered content.
+
+<pre><code class="language-xml">&lt;!-- ✅ Correct: Panel receives mouse events everywhere --&gt;
+&lt;Grid Background="Transparent" fx:CursorFollowBehavior.IsEnabled="True"&gt;
+    &lt;TextBlock Text="Content"/&gt;
+&lt;/Grid&gt;
+
+&lt;!-- ❌ Wrong: Mouse events only fire over the TextBlock --&gt;
+&lt;Grid fx:CursorFollowBehavior.IsEnabled="True"&gt;
+    &lt;TextBlock Text="Content"/&gt;
+&lt;/Grid&gt;</code></pre>
+<hr>
+<h3>TypewriterBehavior</h3>
+
+<p>Sequential character reveal animation for <code>TextBlock</code> controls. Ideal for terminal simulations, loading messages, or storytelling UI.</p>
+
+<pre><code class="language-xml">&lt;TextBlock Text="System initialized... Ready."
+           fx:TypewriterBehavior.IsEnabled="True"
+           fx:TypewriterBehavior.Speed="0:0:0.05"/&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable the effect</td>
+</tr>
+<tr>
+<td><code>Speed</code></td>
+<td>TimeSpan</td>
+<td>50ms</td>
+<td>Delay between each character</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3>ScrollRevealBehavior</h3>
+
+<p>Automatically re-triggers entrance animations when an element enters the scroll viewport. Works in conjunction with <code>RevealBehavior</code>.</p>
+
+<pre><code class="language-xml">&lt;ScrollViewer&gt;
+    &lt;StackPanel&gt;
+        &lt;Border fx:RevealBehavior.IsEnabled="True"
+                fx:ScrollRevealBehavior.IsEnabled="True"&gt;
+            &lt;TextBlock Text="I reveal when you scroll to me!"/&gt;
+        &lt;/Border&gt;
+    &lt;/StackPanel&gt;
+&lt;/ScrollViewer&gt;</code></pre>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>false</td>
+<td>Enable viewport-aware reveal</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Runtime Usage (C#)</h2>
+
+<p>All effects can be applied or modified at runtime using static helper methods:</p>
+
+<pre><code class="language-csharp">using Flowery.Effects;
+
+// Apply RevealBehavior to any UIElement
+RevealBehavior.SetIsEnabled(myBorder, true);
+RevealBehavior.SetDuration(myBorder, TimeSpan.FromMilliseconds(800));
+RevealBehavior.SetDirection(myBorder, RevealDirection.Left);
+
+// Manually trigger a reveal animation
+RevealBehavior.TriggerReveal(myBorder);
+
+// Apply Typewriter effect programmatically
+TypewriterBehavior.SetIsEnabled(myTextBlock, true);
+TypewriterBehavior.SetSpeed(myTextBlock, TimeSpan.FromMilliseconds(30));
+
+// Apply ScrollReveal behavior
+ScrollRevealBehavior.SetIsEnabled(myElement, true);
+
+// Apply ScrambleHover to a TextBlock (default: RevealOnHover)
+ScrambleHoverBehavior.SetIsEnabled(myTextBlock, true);
+ScrambleHoverBehavior.SetScrambleChars(myTextBlock, "█▓▒░");
+
+// Use ScrambleOnHover mode for decorative glitch effect
+ScrambleHoverBehavior.SetMode(myTextBlock, ScrambleMode.ScrambleOnHover);
+
+// Use SplitFlap style for airport departure board effect
+ScrambleHoverBehavior.SetRevealStyle(myTextBlock, RevealStyle.SplitFlap);
+
+// Trigger animation programmatically (for demos)
+ScrambleHoverBehavior.TriggerScramble(myTextBlock);
+
+// Apply WaveText to a TextBlock
+WaveTextBehavior.SetIsEnabled(myTextBlock, true);
+WaveTextBehavior.SetAmplitude(myTextBlock, 10);
+
+// Apply CursorFollow to a Panel
+CursorFollowBehavior.SetIsEnabled(myGrid, true);
+CursorFollowBehavior.SetFollowerBrush(myGrid, new SolidColorBrush(Colors.Red));
+CursorFollowBehavior.SetFollowerShape(myGrid, FollowerShape.Ring);
+
+// Programmatically control cursor follower (for demos/automation)
+CursorFollowBehavior.ShowFollower(myGrid);
+CursorFollowBehavior.SetTargetPosition(myGrid, 100, 50); // Set target x,y
+CursorFollowBehavior.HideFollower(myGrid);</code></pre>
+
+<h3>Automation Example (Infinity Path)</h3>
+
+<pre><code class="language-csharp">// Animate cursor follower in a figure-8 pattern
+private async Task AnimateInfinityPath(Grid panel, CancellationToken ct)
+{
+    double t = 0;
+    while (!ct.IsCancellationRequested)
+    {
+        var w = panel.ActualWidth;
+        var h = panel.ActualHeight;
+
+        // Lemniscate of Bernoulli
+        var sinT = Math.Sin(t);
+        var cosT = Math.Cos(t);
+        var denom = 1 + sinT * sinT;
+
+        var x = (cosT / denom) * w / 3 + w / 2;
+        var y = (sinT * cosT / denom) * h / 2 + h / 2;
+
+        CursorFollowBehavior.SetTargetPosition(panel, x, y);
+
+        t += 0.03;
+        await Task.Delay(16, ct);
+    }
+}</code></pre>
+<hr>
+<h2>AnimationHelper</h2>
+
+<p>Core utility for cross-platform compatible animations. Use this for custom effects:</p>
+
+<pre><code class="language-csharp">using Flowery.Effects;
+
+// Animate a single value
+await AnimationHelper.AnimateAsync(
+    value =&gt; element.Opacity = value,
+    from: 0.0,
+    to: 1.0,
+    duration: TimeSpan.FromMilliseconds(500),
+    easing: new CubicEaseOut());
+
+// Animate with progress callback (t = 0 to 1, eased)
+await AnimationHelper.AnimateAsync(
+    t =&gt;
+    {
+        element.Opacity = t;
+        transform.X = AnimationHelper.Lerp(startX, endX, t);
+    },
+    duration: TimeSpan.FromMilliseconds(500),
+    easing: new CubicEaseInOut());</code></pre>
+<hr>
+<h2>Cross-Platform Compatibility</h2>
+
+<p>All effects use manual <code>Task.Delay</code> + <code>DispatcherQueue</code> interpolation instead of declarative animation keyframes. This pattern ensures consistent behavior across:</p>
+
+<ul><li>✅ Windows Desktop</li>
+<li>✅ Browser / WebAssembly (planned)</li>
+<li>✅ iOS / Android (planned)</li>
+</ul>
+<h3>The Pattern</h3>
+
+<pre><code class="language-csharp">// Manual interpolation pattern (used by Flowery.Effects)
+for (int i = 0; i &lt;= steps; i++)
+{
+    var t = easing.Ease((double)i / steps);
+    DispatcherQueue.GetForCurrentThread().TryEnqueue(() =&gt; ApplyValue(t));
+    if (i &lt; steps) await Task.Delay(stepDuration, ct);
+}</code></pre>
+<hr>
+<h2>Future Enhancements</h2>
+
+<ul><li><strong>ScrollableCardStack</strong>: 3D stacking effect with scale/blur/opacity (deferred, requires Composition API)</li>
+</ul><hr>
+<h2>Credits</h2>
+
+<p>This library is inspired by <a href="https://github.com/educlopez/smoothui" target="_blank" rel="noopener">smoothui</a> by Eduardo López, a React/Tailwind/Framer Motion component library.</p>
+
+<strong>smoothui</strong> is licensed under the <a href="https://github.com/educlopez/smoothui/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

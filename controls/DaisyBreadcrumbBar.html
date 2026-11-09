@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyBreadcrumbBar</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyBreadcrumbBar</h1>
+
+
+<h2>Overview</h2>
+
+<p>DaisyBreadcrumbBar is a themed wrapper around WinUI's <code>BreadcrumbBar</code>. It aligns typography</p>
+<p>and colors with the Daisy token system while keeping standard breadcrumb behavior like</p>
+<p>overflow ellipsis.</p>
+
+<h2>When to Use (vs DaisyBreadcrumbs)</h2>
+
+<ul><li>Use <code>DaisyBreadcrumbBar</code> when you already have an <code>ItemsSource</code> and want standard WinUI <code>BreadcrumbBar</code> behavior (overflow ellipsis, built-in item handling, and keyboard/automation support).</li>
+<li>Use <code>DaisyBreadcrumbs</code> when you want fully custom per-item content, custom separators, or manual control over clickability and layout.</li>
+<li><code>DaisyBreadcrumbBar</code> uses <code>ItemsSource</code> + <code>ItemTemplate</code>; <code>DaisyBreadcrumbs</code> expects <code>DaisyBreadcrumbItem</code> children.</li>
+</ul>
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>Compact breadcrumbs for dense layouts</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>Tight navigation trails</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Default sizing</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>More prominent breadcrumb text</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>Large display breadcrumb trails</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;daisy:DaisyBreadcrumbBar ItemsSource="{x:Bind BreadcrumbItems}" /&gt;
+&lt;daisy:DaisyBreadcrumbBar ItemsSource="{x:Bind BreadcrumbItems}" Size="Small" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Provide path segments in order using <code>ItemsSource</code>.</li>
+<li>Use <code>ItemTemplate</code> when you need icons or rich content.</li>
+<li>Apply lightweight styling via <code>DaisyBreadcrumbBar*</code> resource keys for color overrides.</li>
+<li>For manual breadcrumb items or custom separators, switch to <code>DaisyBreadcrumbs</code>.</li>
+</ul><hr><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyBaseContentControl.html">← BaseContentControl</a></div>
+    <div class="nav-right"><a href="DaisyBreadcrumbs.html">Breadcrumbs →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

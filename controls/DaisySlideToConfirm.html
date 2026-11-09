@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisySlideToConfirm</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisySlideToConfirm</h1>
+
+<h2>Overview</h2>
+
+<p>DaisySlideToConfirm is a "slide to confirm" control that requires the user to drag a handle across a track to confirm an action. This pattern prevents accidental triggers for destructive or important operations like power-off, delete, or payment confirmation.</p>
+
+<p>Key features:</p>
+
+<ul><li><strong>Drag-to-Confirm</strong>: User must deliberately slide the handle to the end to trigger the action.</li>
+<li><strong>Visual Feedback</strong>: Track background color and label opacity animate proportionally as the user slides.</li>
+<li><strong>Auto-Reset</strong>: After confirmation, the control shows a confirming state then resets automatically.</li>
+<li><strong>Variant Colors</strong>: Use semantic variants (Primary, Success, Error, etc.) for themed colors.</li>
+<li><strong>Size Support</strong>: Supports all DaisySize variants and responds to global sizing.</li>
+<li><strong>Design Tokens</strong>: All dimensions are configurable through design tokens.</li>
+</ul>
+<h2>Key Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Variant</strong></td>
+<td><code>DaisySlideToConfirmVariant</code></td>
+<td><code>Default</code></td>
+<td>Color variant (Primary, Success, Error, etc.).</td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Control size (ExtraSmall to ExtraLarge).</td>
+</tr>
+<tr>
+<td><strong>Text</strong></td>
+<td><code>string</code></td>
+<td><code>"SLIDE TO CONFIRM"</code></td>
+<td>Label text displayed on the track.</td>
+</tr>
+<tr>
+<td><strong>ConfirmingText</strong></td>
+<td><code>string</code></td>
+<td><code>"CONFIRMING..."</code></td>
+<td>Text displayed after the slide is completed.</td>
+</tr>
+<tr>
+<td><strong>SlideColor</strong></td>
+<td><code>Color</code></td>
+<td>(from Variant)</td>
+<td>Color the track transitions to as the user slides.</td>
+</tr>
+<tr>
+<td><strong>IconData</strong></td>
+<td><code>string</code></td>
+<td>Power-off icon</td>
+<td>Custom icon path data for the handle.</td>
+</tr>
+<tr>
+<td><strong>IconForeground</strong></td>
+<td><code>Brush</code></td>
+<td>(from Variant)</td>
+<td>Foreground color of the icon.</td>
+</tr>
+<tr>
+<td><strong>HandleBackground</strong></td>
+<td><code>Brush</code></td>
+<td><code>DaisyBase100Brush</code></td>
+<td>Background color of the slide handle.</td>
+</tr>
+<tr>
+<td><strong>ResetDelay</strong></td>
+<td><code>TimeSpan</code></td>
+<td><code>900ms</code></td>
+<td>Delay before auto-resetting after confirmation.</td>
+</tr>
+<tr>
+<td><strong>AutoReset</strong></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Whether to auto-reset after confirmation.</td>
+</tr>
+<tr>
+<td><strong>TrackWidth</strong></td>
+<td><code>double</code></td>
+<td>(from Size)</td>
+<td>Override width of the slide track.</td>
+</tr>
+<tr>
+<td><strong>TrackHeight</strong></td>
+<td><code>double</code></td>
+<td>(from Size)</td>
+<td>Override height of the slide track.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Variants</h2>
+
+<p>Use the <code>Variant</code> property for semantic, theme-aware colors:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Default</code> / <code>Primary</code></td>
+<td>General confirmations</td>
+</tr>
+<tr>
+<td><code>Success</code></td>
+<td>Positive confirmations (confirm, approve)</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td>Destructive actions (delete, power off)</td>
+</tr>
+<tr>
+<td><code>Warning</code></td>
+<td>Caution actions</td>
+</tr>
+<tr>
+<td><code>Info</code></td>
+<td>Informational actions (unlock, reveal)</td>
+</tr>
+<tr>
+<td><code>Secondary</code> / <code>Accent</code></td>
+<td>Alternative styling</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>SlideCompleted</strong></td>
+<td>Fires when the user successfully slides the handle all the way to the end.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<h3>Basic Power-Off Slider (Primary)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisySlideToConfirm 
+    Text="SLIDE TO POWER OFF"
+    ConfirmingText="POWERING OFF..."
+    Variant="Primary"
+    SlideCompleted="OnSlideCompleted" /&gt;</code></pre>
+
+<h3>Confirm Slider (Success)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisySlideToConfirm 
+    Text="SLIDE TO CONFIRM"
+    ConfirmingText="CONFIRMED!"
+    Variant="Success"
+    SlideCompleted="OnSlideCompleted" /&gt;</code></pre>
+
+<h3>Delete Slider (Error)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisySlideToConfirm 
+    Text="SLIDE TO DELETE"
+    ConfirmingText="DELETING..."
+    Variant="Error"
+    SlideCompleted="OnDeleteConfirmed" /&gt;</code></pre>
+
+<h3>Unlock Slider (Info with Auto-Reset)</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisySlideToConfirm 
+    Text="SLIDE TO UNLOCK"
+    ConfirmingText="UNLOCKED!"
+    Variant="Info"
+    ResetDelay="0:0:2"
+    SlideCompleted="OnUnlockCompleted" /&gt;</code></pre>
+
+<h3>Different Sizes</h3>
+
+<pre><code class="language-xml">&lt;!-- Responds to global size by default --&gt;
+&lt;daisy:DaisySlideToConfirm Variant="Primary" Text="SLIDE" /&gt;
+
+&lt;!-- Explicit sizes (ignores global) --&gt;
+&lt;daisy:DaisySlideToConfirm Size="Small" Variant="Primary" Text="SLIDE" /&gt;
+&lt;daisy:DaisySlideToConfirm Size="Large" Variant="Error" Text="SLIDE TO DELETE" /&gt;</code></pre>
+
+<h3>Custom Icon</h3>
+
+<pre><code class="language-xml">&lt;daisy:DaisySlideToConfirm 
+    Text="SLIDE TO LOCK"
+    IconData="{StaticResource DaisyIconLock}"
+    Variant="Warning"
+    SlideCompleted="OnLockConfirmed" /&gt;</code></pre>
+
+<h3>Code-Behind Event Handler</h3>
+
+<pre><code class="language-csharp">private void OnSlideCompleted(object? sender, EventArgs e)
+{
+    // Perform the confirmed action
+    System.Diagnostics.Debug.WriteLine("Action confirmed!");
+}</code></pre>
+
+<h2>Design Tokens</h2>
+
+<p>DaisySlideToConfirm uses the following design tokens (customizable via <code>DaisyTokenDefaults</code>):</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>XS</th>
+<th>S</th>
+<th>M</th>
+<th>L</th>
+<th>XL</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DaisySlideToConfirm{Size}TrackWidth</code> (MinWidth)</td>
+<td>60</td>
+<td>70</td>
+<td>80</td>
+<td>90</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}TrackHeight</code></td>
+<td>20</td>
+<td>24</td>
+<td>28</td>
+<td>32</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}HandleSize</code></td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>22</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}IconSize</code></td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}FontSize</code></td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>DaisySlideToConfirm{Size}CornerRadius</code></td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> Track width auto-sizes to fit text content. The token value is used as MinWidth. Set <code>TrackWidth</code> explicitly for a fixed width.</p>
+
+<p>Override tokens in your App.xaml or ResourceDictionary:</p>
+
+<pre><code class="language-xml">&lt;x:Double x:Key="DaisySlideToConfirmMediumTrackWidth"&gt;350&lt;/x:Double&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Use Variants for Colors</strong>: Prefer <code>Variant="Error"</code> over hardcoded <code>SlideColor="#DC2626"</code> for theme-aware colors.</li>
+<li><strong>Semantic Variants</strong>: Use <code>Error</code> for destructive actions, <code>Success</code> for confirmations, <code>Info</code> for unlocks.</li>
+<li><strong>Size Consistency</strong>: The control responds to <code>FlowerySizeManager</code> global size by default.</li>
+<li><strong>Ignore Global Size in Demos</strong>: Use <code>FlowerySizeManager.IgnoreGlobalSize="True"</code> on parent to show explicit sizes.</li>
+<li><strong>Reset Delay</strong>: Adjust <code>ResetDelay</code> based on how long the confirmed action takes to complete.</li>
+<li><strong>Custom Icons</strong>: Use <code>IconData</code> with StaticResource for custom icons (lock, trash, check, etc.).</li>
+</ul>
+<h2>Common Pitfalls</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Issue</th>
+<th>Solution</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Text cut off by handle</td>
+<td>Uses left margin automatically; ensure track is wide enough</td>
+</tr>
+<tr>
+<td>Colors don't match theme</td>
+<td>Use <code>Variant</code> property instead of hardcoded colors</td>
+</tr>
+<tr>
+<td>Control too small</td>
+<td>Check <code>Size</code> property or increase design token values</td>
+</tr>
+<tr>
+<td>Icon not showing</td>
+<td>Ensure <code>IconData</code> is a valid path geometry string</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Related Controls</h2>
+
+<ul><li><a href="DaisyButton.html">DaisyButton</a> - Standard button for simple actions</li>
+<li><a href="DaisyModal.html">DaisyModal</a> - Dialog-based confirmation</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisySkeleton.html">← Skeleton</a></div>
+    <div class="nav-right"><a href="DaisyStack.html">Stack →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

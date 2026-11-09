@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloweryScaleConverter</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>FloweryScaleConverter</h1>
+
+<h2>Overview</h2>
+
+<p>Flowery.Uno provides two approaches for responsive scaling based on window size:</p>
+
+<p>1. <strong><code>ScaleExtension</code></strong> (Recommended) - Markup extension with semantic presets</p>
+<p>2. <strong><code>FloweryScaleConverter</code></strong> - Traditional converter for advanced scenarios</p>
+
+<p>Both provide <strong>continuous, real-time scaling</strong> as the window resizes, unlike <code>FloweryResponsive</code> which uses discrete breakpoints.</p>
+
+<h2>Quick Comparison</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Feature</th>
+<th>ScaleExtension</th>
+<th>FloweryScaleConverter</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>XAML Syntax</strong></td>
+<td><code>{services:Scale FontTitle}</code></td>
+<td>Full binding with converter</td>
+</tr>
+<tr>
+<td><strong>Window Detection</strong></td>
+<td>Automatic</td>
+<td>Manual (<code>ElementName=...</code>)</td>
+</tr>
+<tr>
+<td><strong>Presets</strong></td>
+<td>Built-in semantic names</td>
+<td>Not available</td>
+</tr>
+<tr>
+<td><strong>Customization</strong></td>
+<td>Via <code>FloweryScaleConfig</code></td>
+<td>Converter properties</td>
+</tr>
+<tr>
+<td><strong>Best For</strong></td>
+<td>Most use cases</td>
+<td>Complex multi-window scenarios</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>ScaleExtension (Recommended)</h2>
+
+<p>The cleanest way to use responsive scaling. Automatically finds the parent window and scales values.</p>
+
+<h2>Basic Usage</h2>
+
+<pre><code class="language-xml">&lt;!-- Add namespace --&gt;
+xmlns:services="using:Flowery.Services"
+
+&lt;!-- Using presets (cleanest) --&gt;
+&lt;TextBlock FontSize="{services:Scale FontTitle}"/&gt;
+&lt;TextBlock FontSize="{services:Scale FontBody}"/&gt;
+&lt;Border Padding="{services:Scale SpacingMedium}"/&gt;
+&lt;Grid Width="{services:Scale CardWidth}"/&gt;
+
+&lt;!-- Using custom values (base,min) --&gt;
+&lt;TextBlock FontSize="{services:Scale 24,12}"/&gt;
+&lt;Border Width="{services:Scale 300}"/&gt;
+
+&lt;!-- Using explicit properties --&gt;
+&lt;TextBlock FontSize="{services:Scale Preset=Custom, BaseValue=24, MinValue=12}"/&gt;</code></pre>
+
+<h2>Available Presets</h2>
+
+<h3>Font Sizes</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Preset</th>
+<th>Base</th>
+<th>Min</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FontDisplay</code></td>
+<td>32</td>
+<td>20</td>
+<td>Hero/display text</td>
+</tr>
+<tr>
+<td><code>FontTitle</code></td>
+<td>28</td>
+<td>18</td>
+<td>Page titles</td>
+</tr>
+<tr>
+<td><code>FontHeading</code></td>
+<td>20</td>
+<td>14</td>
+<td>Section headings</td>
+</tr>
+<tr>
+<td><code>FontSubheading</code></td>
+<td>16</td>
+<td>11</td>
+<td>Subheadings, emphasized text</td>
+</tr>
+<tr>
+<td><code>FontBody</code></td>
+<td>14</td>
+<td>10</td>
+<td>Body text</td>
+</tr>
+<tr>
+<td><code>FontCaption</code></td>
+<td>12</td>
+<td>9</td>
+<td>Captions, secondary text</td>
+</tr>
+<tr>
+<td><code>FontSmall</code></td>
+<td>11</td>
+<td>8</td>
+<td>Fine print, labels</td>
+</tr>
+<tr>
+<td><code>FontThemeLabel</code></td>
+<td>13</td>
+<td>11</td>
+<td>Theme selector labels</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Spacing</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Preset</th>
+<th>Base</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SpacingXL</code></td>
+<td>40</td>
+<td>Large gaps, section separators</td>
+</tr>
+<tr>
+<td><code>SpacingLarge</code></td>
+<td>28</td>
+<td>Major element spacing</td>
+</tr>
+<tr>
+<td><code>SpacingMedium</code></td>
+<td>20</td>
+<td>Standard padding/margins</td>
+</tr>
+<tr>
+<td><code>SpacingSmall</code></td>
+<td>12</td>
+<td>Compact spacing</td>
+</tr>
+<tr>
+<td><code>SpacingXS</code></td>
+<td>8</td>
+<td>Minimal spacing</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Dimensions</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Preset</th>
+<th>Base</th>
+<th>Min</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CardWidth</code></td>
+<td>400</td>
+<td>-</td>
+<td>Card/container width</td>
+</tr>
+<tr>
+<td><code>CardHeight</code></td>
+<td>120</td>
+<td>100</td>
+<td>Card/container min height</td>
+</tr>
+<tr>
+<td><code>IconContainerLarge</code></td>
+<td>140</td>
+<td>-</td>
+<td>Large icon backgrounds</td>
+</tr>
+<tr>
+<td><code>IconContainerMedium</code></td>
+<td>40</td>
+<td>-</td>
+<td>Standard icon backgrounds</td>
+</tr>
+<tr>
+<td><code>IconContainerSmall</code></td>
+<td>24</td>
+<td>-</td>
+<td>Compact icon backgrounds</td>
+</tr>
+<tr>
+<td><code>IconLarge</code></td>
+<td>32</td>
+<td>-</td>
+<td>Large icons</td>
+</tr>
+<tr>
+<td><code>IconMedium</code></td>
+<td>24</td>
+<td>-</td>
+<td>Standard icons</td>
+</tr>
+<tr>
+<td><code>IconSmall</code></td>
+<td>16</td>
+<td>-</td>
+<td>Small icons</td>
+</tr>
+<tr>
+<td><code>ControlHeight</code></td>
+<td>40</td>
+<td>-</td>
+<td>Button/input heights</td>
+</tr>
+<tr>
+<td><code>Thumbnail</code></td>
+<td>80</td>
+<td>-</td>
+<td>Thumbnail images</td>
+</tr>
+<tr>
+<td><code>Avatar</code></td>
+<td>48</td>
+<td>-</td>
+<td>User avatars</td>
+</tr>
+<tr>
+<td><code>PanelLarge</code></td>
+<td>250</td>
+<td>200</td>
+<td>Large panels/dialogs</td>
+</tr>
+<tr>
+<td><code>PanelMedium</code></td>
+<td>140</td>
+<td>-</td>
+<td>Medium panels</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Customizing Presets</h2>
+
+<p>Apps can override preset values at startup:</p>
+
+<pre><code class="language-csharp">// In App.xaml.cs
+FloweryScaleConfig.SetPresetValues(FloweryScalePreset.FontTitle, 32, 22);
+FloweryScaleConfig.SetPresetValues(FloweryScalePreset.CardWidth, 450);
+
+// Adjust reference dimensions (default: 1920x1080)
+FloweryScaleConfig.ReferenceWidth = 2560;  // For 1440p baseline
+FloweryScaleConfig.ReferenceHeight = 1440;
+
+// Adjust minimum scale factor (default: 0.5)
+FloweryScaleConfig.MinScaleFactor = 0.6;  // Won't go below 60%</code></pre>
+
+<h2>Before & After Comparison</h2>
+
+<h3>Before (Verbose)</h3>
+
+<pre><code class="language-xml">&lt;TextBlock FontSize="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowSize, 
+    Converter={x:Static vm:MainWindowViewModel.ScaleConverter}, 
+    ConverterParameter='16,11'}"/&gt;
+
+&lt;Border Width="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowSize, 
+    Converter={x:Static vm:MainWindowViewModel.ScaleConverter}, 
+    ConverterParameter=400}"/&gt;
+
+&lt;Border Padding="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowSize, 
+    Converter={x:Static vm:MainWindowViewModel.ScaleConverter}, 
+    ConverterParameter=20}"/&gt;</code></pre>
+
+<h3>After (Clean)</h3>
+
+<pre><code class="language-xml">&lt;TextBlock FontSize="{services:Scale FontSubheading}"/&gt;
+&lt;Border Width="{services:Scale CardWidth}"/&gt;
+&lt;Border Padding="{services:Scale SpacingMedium}"/&gt;</code></pre>
+<hr>
+<h2>FloweryScaleConverter (Advanced)</h2>
+
+<p>For scenarios where you need explicit control over the binding source or are working with multiple windows.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ReferenceWidth</code></td>
+<td>double</td>
+<td>1920</td>
+<td>Width for 100% scaling (Full HD)</td>
+</tr>
+<tr>
+<td><code>ReferenceHeight</code></td>
+<td>double</td>
+<td>1080</td>
+<td>Height for 100% scaling (Full HD)</td>
+</tr>
+<tr>
+<td><code>MinScaleFactor</code></td>
+<td>double</td>
+<td>0.5</td>
+<td>Minimum scale (50% of base value)</td>
+</tr>
+<tr>
+<td><code>DefaultMinFontSize</code></td>
+<td>double</td>
+<td>9.0</td>
+<td>Default minimum for font sizes</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Usage</h2>
+
+<pre><code class="language-xml">&lt;Window.Resources&gt;
+    &lt;services:FloweryScaleConverter x:Key="ScaleConverter"/&gt;
+&lt;/Window.Resources&gt;
+
+&lt;!-- Requires explicit binding to window bounds --&gt;
+&lt;TextBlock FontSize="{Binding Bounds, ElementName=RootWindow, 
+    Converter={StaticResource ScaleConverter}, 
+    ConverterParameter='24,12'}"/&gt;</code></pre>
+<hr>
+<h2>How Scaling Works</h2>
+
+<p>1. <strong>Calculate scale ratios</strong> for width and height:</p>
+<p>- <code>widthScale = windowWidth / ReferenceWidth</code></p>
+<p>- <code>heightScale = windowHeight / ReferenceHeight</code></p>
+
+<p>2. <strong>Use most constraining axis</strong> (maintains aspect ratio):</p>
+<p>- <code>scale = Min(widthScale, heightScale)</code></p>
+
+<p>3. <strong>Clamp to bounds</strong>:</p>
+<p>- <code>scale = Clamp(scale, MinScaleFactor, 1.0)</code></p>
+
+<p>4. <strong>Apply to base value</strong>:</p>
+<p>- <code>result = baseValue × scale</code></p>
+<p>- If minimum specified: <code>result = Max(result, minValue)</code></p>
+
+<h2>Example Scaling Behavior</h2>
+
+<p>With default settings (1920×1080 reference, 0.5 min scale):</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Window Size</th>
+<th>Scale Factor</th>
+<th>FontTitle (28,18)</th>
+<th>CardWidth (400)</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1920×1080</td>
+<td>1.0</td>
+<td>28pt</td>
+<td>400px</td>
+</tr>
+<tr>
+<td>1440×810</td>
+<td>0.75</td>
+<td>21pt</td>
+<td>300px</td>
+</tr>
+<tr>
+<td>1280×720</td>
+<td>0.67</td>
+<td>18.8pt → 18pt (min)</td>
+<td>267px</td>
+</tr>
+<tr>
+<td>960×540</td>
+<td>0.5</td>
+<td>18pt (min)</td>
+<td>200px</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Tips & Best Practices</h2>
+
+<ul><li><strong>Use presets for consistency</strong> - Semantic names ensure consistent sizing across your app</li>
+<li><strong>Customize at startup</strong> - Set preset overrides in <code>App.xaml.cs</code> before any UI loads</li>
+<li><strong>Min values prevent unreadable text</strong> - Always use min values for fonts</li>
+<li><strong>ScaleExtension is preferred</strong> - Only use FloweryScaleConverter for edge cases</li>
+<li><strong>Combine with FloweryResponsive</strong> - Use <code>FloweryResponsive</code> for layout breakpoints, <code>ScaleExtension</code> for sizing</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

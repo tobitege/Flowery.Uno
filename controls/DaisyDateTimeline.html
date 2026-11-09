@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyDateTimeline</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyDateTimeline</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyDateTimeline.png" alt="DaisyDateTimeline" class="doc-image">
+
+<p>DaisyDateTimeline is a <strong>horizontal scrollable date picker</strong> inspired by FadyFayezYounan's <a href="https://github.com/FadyFayezYounan/easy_date_timeline" target="_blank" rel="noopener">easy_date_timeline</a> package. It displays dates in a horizontal strip where each date appears as a card showing the day name, day number, and month. Perfect for booking systems, scheduling apps, calendars, and any UI requiring date selection from a visible range.</p>
+
+<p>* Available in <strong>DaisyUI v1.2.1</strong> and later.</p>
+
+<strong>Key Features:</strong>
+
+<p>- Horizontal scrolling date strip with <strong>5 size options</strong></p>
+<p>- <strong>3 header types</strong>: None, MonthYear, Switcher (with navigation arrows)</p>
+<p>- <strong>6 disable strategies</strong> for restricting date selection</p>
+<p>- Today highlighting with customizable appearance</p>
+<p>- Auto-scroll to selected date (center or first)</p>
+<p>- Full <strong>locale support</strong> for internationalization</p>
+<p>- Configurable display elements (day name, number, month)</p>
+
+<h2>Header Types</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>HeaderType</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>None</strong></td>
+<td>No header displayed above the timeline</td>
+</tr>
+<tr>
+<td><strong>MonthYear</strong></td>
+<td>Simple text header showing "December 2024" format based on selected date</td>
+</tr>
+<tr>
+<td><strong>Switcher</strong></td>
+<td>Header with left/right chevron arrows to navigate between months</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Disable Strategies</h2>
+
+<p>Control which dates users can select:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>DisableStrategy</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>None</strong></td>
+<td>All dates are selectable (default)</td>
+</tr>
+<tr>
+<td><strong>BeforeToday</strong></td>
+<td>Dates before today are grayed out and unselectable</td>
+</tr>
+<tr>
+<td><strong>AfterToday</strong></td>
+<td>Dates after today are grayed out and unselectable</td>
+</tr>
+<tr>
+<td><strong>BeforeDate</strong></td>
+<td>Dates before <code>DisableBeforeDate</code> property value are disabled</td>
+</tr>
+<tr>
+<td><strong>AfterDate</strong></td>
+<td>Dates after <code>DisableAfterDate</code> property value are disabled</td>
+</tr>
+<tr>
+<td><strong>All</strong></td>
+<td>All dates are disabled (read-only mode)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Selection Modes</h2>
+
+<p>Control how the timeline scrolls when a date is selected:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>SelectionMode</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>None</strong></td>
+<td>No automatic scrolling after selection</td>
+</tr>
+<tr>
+<td><strong>AlwaysFirst</strong></td>
+<td>Selected date scrolls to the left edge (first visible position)</td>
+</tr>
+<tr>
+<td><strong>AutoCenter</strong></td>
+<td>Selected date scrolls to the center of the viewport (default)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Layout Modes</h2>
+
+<p>Control the orientation of date items:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>ItemLayout</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Vertical</strong></td>
+<td>Stacked layout with month on top, day number centered, day name at bottom (default, portrait-style)</td>
+</tr>
+<tr>
+<td><strong>Horizontal</strong></td>
+<td>Side-by-side layout showing "MON 19" format (landscape-style, wider items)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Display Elements</h2>
+
+<p>Configure which parts of each date item are shown using the <code>DisplayElements</code> flags. Each item displays in the order: <strong>Month → Day Number → Day Name</strong> (top to bottom).</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>DisplayElements</th>
+<th>Shows</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>DayName</strong></td>
+<td>Three-letter day name in uppercase (MON, TUE, WED...)</td>
+</tr>
+<tr>
+<td><strong>DayNumber</strong></td>
+<td>Numeric day of month (1-31)</td>
+</tr>
+<tr>
+<td><strong>MonthName</strong></td>
+<td>Three-letter month name in uppercase (JAN, FEB, MAR...)</td>
+</tr>
+<tr>
+<td><strong>Default</strong></td>
+<td>All three elements (MonthName + DayNumber + DayName)</td>
+</tr>
+<tr>
+<td><strong>Compact</strong></td>
+<td>Day name and number only</td>
+</tr>
+<tr>
+<td><strong>NumberOnly</strong></td>
+<td>Just the day number</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Item Height</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>~56px</td>
+<td>Compact toolbars, embedded widgets</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>~68px</td>
+<td>Secondary pickers, limited space</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>~80px</td>
+<td>Default, general purpose</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>~96px</td>
+<td>Primary date selection, emphasis</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>~112px</td>
+<td>Hero sections, full-width pickers</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage with defaults --&gt;
+&lt;controls:DaisyDateTimeline /&gt;
+
+&lt;!-- Custom date range --&gt;
+&lt;controls:DaisyDateTimeline 
+    FirstDate="2024-01-01"
+    LastDate="2024-12-31"
+    SelectedDate="{Binding SelectedDate}" /&gt;
+
+&lt;!-- With month switcher navigation --&gt;
+&lt;controls:DaisyDateTimeline 
+    HeaderType="Switcher"
+    SelectedDate="{Binding AppointmentDate, Mode=TwoWay}" /&gt;
+
+&lt;!-- No header, compact mode --&gt;
+&lt;controls:DaisyDateTimeline 
+    HeaderType="None"
+    Size="Small"
+    DisplayElements="Compact" /&gt;
+
+&lt;!-- Only allow future dates --&gt;
+&lt;controls:DaisyDateTimeline 
+    DisableStrategy="BeforeToday"
+    SelectedDate="{Binding BookingDate, Mode=TwoWay}" /&gt;
+
+&lt;!-- Custom disable date range --&gt;
+&lt;controls:DaisyDateTimeline 
+    DisableStrategy="BeforeDate"
+    DisableBeforeDate="2024-06-01"
+    FirstDate="2024-05-01"
+    LastDate="2024-07-31" /&gt;
+
+&lt;!-- Different locale (German) --&gt;
+&lt;controls:DaisyDateTimeline 
+    Locale="{x:Static glob:CultureInfo.GetCultureInfo('de-DE')}" /&gt;
+
+&lt;!-- Large size for primary selection --&gt;
+&lt;controls:DaisyDateTimeline 
+    Size="Large"
+    HeaderType="Switcher" /&gt;
+
+&lt;!-- Day number only display --&gt;
+&lt;controls:DaisyDateTimeline 
+    DisplayElements="NumberOnly"
+    ItemWidth="48"
+    ItemSpacing="4" /&gt;</code></pre>
+
+<h2>Properties Summary</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>FirstDate</code></td>
+<td><code>DateTime</code></td>
+<td>Today - 1 month</td>
+<td>First date in the scrollable range</td>
+</tr>
+<tr>
+<td><code>LastDate</code></td>
+<td><code>DateTime</code></td>
+<td>Today + 3 months</td>
+<td>Last date in the scrollable range</td>
+</tr>
+<tr>
+<td><code>SelectedDate</code></td>
+<td><code>DateTime?</code></td>
+<td>Today</td>
+<td>Currently selected date</td>
+</tr>
+<tr>
+<td><code>ItemWidth</code></td>
+<td><code>double</code></td>
+<td>64</td>
+<td>Width of each date item in pixels</td>
+</tr>
+<tr>
+<td><code>ItemSpacing</code></td>
+<td><code>double</code></td>
+<td>8</td>
+<td>Horizontal spacing between items</td>
+</tr>
+<tr>
+<td><code>DisplayElements</code></td>
+<td><code>DateElementDisplay</code></td>
+<td>Default</td>
+<td>Which date parts to display</td>
+</tr>
+<tr>
+<td><code>DisableStrategy</code></td>
+<td><code>DateDisableStrategy</code></td>
+<td>None</td>
+<td>How to disable dates</td>
+</tr>
+<tr>
+<td><code>DisableBeforeDate</code></td>
+<td><code>DateTime?</code></td>
+<td>null</td>
+<td>Reference date for BeforeDate strategy</td>
+</tr>
+<tr>
+<td><code>DisableAfterDate</code></td>
+<td><code>DateTime?</code></td>
+<td>null</td>
+<td>Reference date for AfterDate strategy</td>
+</tr>
+<tr>
+<td><code>SelectionMode</code></td>
+<td><code>DateSelectionMode</code></td>
+<td>AutoCenter</td>
+<td>How to scroll on selection</td>
+</tr>
+<tr>
+<td><code>HeaderType</code></td>
+<td><code>DateTimelineHeaderType</code></td>
+<td>MonthYear</td>
+<td>Header display style</td>
+</tr>
+<tr>
+<td><code>Locale</code></td>
+<td><code>CultureInfo</code></td>
+<td>CurrentCulture</td>
+<td>Culture for date formatting</td>
+</tr>
+<tr>
+<td><code>ShowTodayHighlight</code></td>
+<td><code>bool</code></td>
+<td>true</td>
+<td>Whether to highlight today's date</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td>Medium</td>
+<td>Overall size of date items</td>
+</tr>
+<tr>
+<td><code>ItemLayout</code></td>
+<td><code>DateItemLayout</code></td>
+<td>Vertical</td>
+<td>Layout orientation (Vertical or Horizontal)</td>
+</tr>
+<tr>
+<td><code>MarkedDates</code></td>
+<td><code>IList<DateMarker>?</code></td>
+<td>null</td>
+<td>Collection of dates to highlight with tooltips</td>
+</tr>
+<tr>
+<td><code>ScrollBarVisibility</code></td>
+<td><code>ScrollBarVisibility</code></td>
+<td>Hidden</td>
+<td>Scrollbar display mode (Hidden still allows mouse wheel/drag)</td>
+</tr>
+<tr>
+<td><code>AutoWidth</code></td>
+<td><code>bool</code></td>
+<td>false</td>
+<td>Auto-calculate width to fit exactly VisibleDaysCount items</td>
+</tr>
+<tr>
+<td><code>VisibleDaysCount</code></td>
+<td><code>int</code></td>
+<td>7</td>
+<td>Number of visible days when AutoWidth is true</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Marked Dates</h2>
+
+<p>Mark specific dates with a secondary color background and optional tooltip text. Marked dates stand out visually and show their tooltip on hover.</p>
+
+<h3>DateMarker Class</h3>
+
+<pre><code class="language-csharp">public class DateMarker
+{
+    public DateTime Date { get; set; }     // The date to mark
+    public string Text { get; set; }       // Tooltip text (optional)
+}</code></pre>
+
+<h3>Usage</h3>
+
+<pre><code class="language-csharp">// In code-behind or ViewModel
+myTimeline.MarkedDates = new List&lt;DateMarker&gt;
+{
+    new DateMarker(DateTime.Today.AddDays(2), "Team Meeting"),
+    new DateMarker(DateTime.Today.AddDays(5), "Project Deadline"),
+    new DateMarker(DateTime.Today.AddDays(10), "Vacation Day")
+};</code></pre>
+
+<p>Marked dates display with a <strong>secondary color</strong> background (instead of the default neutral). When the user hovers over a marked date, the tooltip text appears.</p>
+
+<h2>Events</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Trigger</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>DateChanged</code></td>
+<td>Selection changes</td>
+<td>Fires when SelectedDate changes from any source (click, keyboard, code). Provides <code>DateTime</code>.</td>
+</tr>
+<tr>
+<td><code>DateClicked</code></td>
+<td>Mouse click</td>
+<td>Fires when a date is clicked with the mouse. Provides the clicked <code>DateTime</code>.</td>
+</tr>
+<tr>
+<td><code>DateConfirmed</code></td>
+<td>Enter/Space key</td>
+<td>Fires when Enter or Space is pressed on the selected date (confirmation action).</td>
+</tr>
+<tr>
+<td><code>EscapePressed</code></td>
+<td>Escape key</td>
+<td>Fires when Escape is pressed. Default behavior: scrolls to today if in range.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Methods</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Method</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GoToDate(DateTime)</code></td>
+<td>Scrolls to and selects the specified date if within range</td>
+</tr>
+<tr>
+<td><code>GoToToday()</code></td>
+<td>Scrolls to and selects today's date if within range</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Date Formatting Helpers</h2>
+
+<p>Read-only properties for convenient date string formatting (uses the control's <code>Locale</code> setting):</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Example Output</th>
+<th>Format</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedDateLong</code></td>
+<td>"Wednesday, December 11, 2025"</td>
+<td>Long date (D)</td>
+</tr>
+<tr>
+<td><code>SelectedDateShort</code></td>
+<td>"12/11/2025"</td>
+<td>Short date (d)</td>
+</tr>
+<tr>
+<td><code>SelectedDateIso</code></td>
+<td>"2025-12-11"</td>
+<td>ISO 8601</td>
+</tr>
+<tr>
+<td><code>SelectedDateMonthDay</code></td>
+<td>"December 11"</td>
+<td>Month and day</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Keyboard Navigation</h2>
+
+<p>The control is fully keyboard accessible. Click on the timeline or tab to it to enable keyboard navigation:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Key</th>
+<th>Action</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>←</strong> (Left)</td>
+<td>Move to previous day</td>
+</tr>
+<tr>
+<td><strong>→</strong> (Right)</td>
+<td>Move to next day</td>
+</tr>
+<tr>
+<td><strong>↑</strong> (Up)</td>
+<td>Move to previous week (7 days back)</td>
+</tr>
+<tr>
+<td><strong>↓</strong> (Down)</td>
+<td>Move to next week (7 days forward)</td>
+</tr>
+<tr>
+<td><strong>Home</strong></td>
+<td>Jump to first available date in range</td>
+</tr>
+<tr>
+<td><strong>End</strong></td>
+<td>Jump to last available date in range</td>
+</tr>
+<tr>
+<td><strong>Page Up</strong></td>
+<td>Move to previous month</td>
+</tr>
+<tr>
+<td><strong>Page Down</strong></td>
+<td>Move to next month</td>
+</tr>
+<tr>
+<td><strong>Enter/Space</strong></td>
+<td>Confirm selection (fires <code>DateConfirmed</code> event)</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Scroll to today if in range (fires <code>EscapePressed</code> event)</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> Navigation automatically skips disabled dates.</p>
+
+<h2>Mouse Navigation</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Interaction</th>
+<th>Action</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Mouse Wheel</strong></td>
+<td>Scroll horizontally through dates</td>
+</tr>
+<tr>
+<td><strong>Click + Drag</strong></td>
+<td>Pan left/right through dates (grab-and-drag)</td>
+</tr>
+<tr>
+<td><strong>Click on Date</strong></td>
+<td>Select that date</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Visual States</h2>
+
+<p>Each date item can display the following visual states:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>State</th>
+<th>Appearance</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Normal</strong></td>
+<td>Base200 background, subtle border</td>
+</tr>
+<tr>
+<td><strong>Hover</strong></td>
+<td>Slightly elevated with Base300 background</td>
+</tr>
+<tr>
+<td><strong>Today</strong></td>
+<td>Primary-colored border (when not selected)</td>
+</tr>
+<tr>
+<td><strong>Selected</strong></td>
+<td>Primary background with contrasting text</td>
+</tr>
+<tr>
+<td><strong>Disabled</strong></td>
+<td>40% opacity, no hover effect, non-interactive</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Tips & Best Practices</h2>
+
+<p>1. <strong>Set reasonable date ranges</strong>: Avoid extremely large ranges (years) as each date creates a control instance. Stick to weeks or months.</p>
+
+<p>2. <strong>Use <code>DisableStrategy</code> for validation</strong>: Rather than filtering dates in your ViewModel, use the built-in strategies for better performance.</p>
+
+<p>3. <strong>Combine with <code>DaisyCard</code></strong>: Wrap the timeline in a card for a polished booking widget:</p>
+
+<pre><code class="language-xml">&lt;controls:DaisyCard&gt;
+    &lt;StackPanel Spacing="12"&gt;
+        &lt;TextBlock Text="Select Date" FontWeight="SemiBold" /&gt;
+        &lt;controls:DaisyDateTimeline HeaderType="Switcher" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/controls:DaisyCard&gt;</code></pre>
+
+<p>4. <strong>Locale support</strong>: For international apps, bind <code>Locale</code> to a user preference:</p>
+
+<pre><code class="language-xml">    &lt;controls:DaisyDateTimeline Locale="{Binding UserCulture}" /&gt;</code></pre>
+
+<p>5. <strong>Adjust <code>ItemWidth</code> for content</strong>: If showing only day numbers (<code>NumberOnly</code>), reduce <code>ItemWidth</code> to ~48px for a more compact appearance.</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCountdown.html">← Countdown</a></div>
+    <div class="nav-right"><a href="DaisyDateTimelineItem.html">DateTimelineItem →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

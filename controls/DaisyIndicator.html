@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyIndicator</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyIndicator</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyIndicator.png" alt="DaisyIndicator" class="doc-image">
+
+<p>DaisyIndicator overlays a marker on top of any content (icon, button, card, avatar). You provide the main content as a child and a <code>Marker</code> slot for the overlay element. The marker can be any control—commonly a <code>DaisyBadge</code>, but also a colored dot, image, or custom element. Use it for notification counts, status indicators, or promotional labels.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Marker</code></td>
+<td>The overlay content. Can be any control: <code>DaisyBadge</code>, <code>Border</code>, <code>Image</code>, etc. Hidden when null.</td>
+</tr>
+<tr>
+<td><code>MarkerPosition</code></td>
+<td>Where the marker appears. Enum: <code>TopLeft</code>, <code>TopCenter</code>, <code>TopRight</code>, <code>CenterLeft</code>, <code>Center</code>, <code>CenterRight</code>, <code>BottomLeft</code>, <code>BottomCenter</code>, <code>BottomRight</code>. Default: <code>TopRight</code>.</td>
+</tr>
+<tr>
+<td><code>MarkerAlignment</code></td>
+<td>How the marker aligns to the corner. Enum: <code>Inside</code> (fully inside content bounds), <code>Edge</code> (straddles the corner, half in/half out), <code>Outside</code> (mostly outside). Default: <code>Inside</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Card with "NEW" label in top-right corner (inside) --&gt;
+&lt;controls:DaisyIndicator MarkerPosition="TopRight" MarkerAlignment="Inside"&gt;
+    &lt;controls:DaisyIndicator.Marker&gt;
+        &lt;controls:DaisyBadge Content="NEW" Variant="Warning" /&gt;
+    &lt;/controls:DaisyIndicator.Marker&gt;
+    &lt;controls:DaisyCard MinWidth="160" MinHeight="80" /&gt;
+&lt;/controls:DaisyIndicator&gt;
+
+&lt;!-- Button with notification count (on the edge) --&gt;
+&lt;controls:DaisyIndicator MarkerPosition="TopRight" MarkerAlignment="Edge"&gt;
+    &lt;controls:DaisyIndicator.Marker&gt;
+        &lt;controls:DaisyBadge Content="9+" Variant="Error" Size="ExtraSmall" /&gt;
+    &lt;/controls:DaisyIndicator.Marker&gt;
+    &lt;controls:DaisyButton IconSymbol="Message" Variant="Secondary" /&gt;
+&lt;/controls:DaisyIndicator&gt;
+
+&lt;!-- Avatar with online status dot --&gt;
+&lt;controls:DaisyIndicator MarkerPosition="BottomRight" MarkerAlignment="Edge"&gt;
+    &lt;controls:DaisyIndicator.Marker&gt;
+        &lt;!-- Include Width, Height, MinWidth, MinHeight for precise sizing --&gt;
+        &lt;controls:DaisyBadge Variant="Success" CornerRadius="6" Padding="0" 
+                             Width="12" Height="12" MinWidth="12" MinHeight="12" /&gt;
+    &lt;/controls:DaisyIndicator.Marker&gt;
+    &lt;controls:DaisyAvatar Initials="JD" Size="Large" /&gt;
+&lt;/controls:DaisyIndicator&gt;
+
+&lt;!-- Card with "SALE" in top-left corner --&gt;
+&lt;controls:DaisyIndicator MarkerPosition="TopLeft" MarkerAlignment="Inside"&gt;
+    &lt;controls:DaisyIndicator.Marker&gt;
+        &lt;controls:DaisyBadge Content="SALE" Variant="Error" /&gt;
+    &lt;/controls:DaisyIndicator.Marker&gt;
+    &lt;controls:DaisyCard MinWidth="160" MinHeight="80" /&gt;
+&lt;/controls:DaisyIndicator&gt;</code></pre>
+
+<h2>MarkerAlignment Visual Guide</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Alignment</th>
+<th>Behavior</th>
+<th>Best For</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Inside</code></td>
+<td>Marker sits within content bounds (3px inset from edge)</td>
+<td>Product labels (NEW, SALE) on cards</td>
+</tr>
+<tr>
+<td><code>Edge</code></td>
+<td>Marker straddles the corner (half in, half out)</td>
+<td>Notification counts, status dots</td>
+</tr>
+<tr>
+<td><code>Outside</code></td>
+<td>Marker sits mostly outside, touching corner</td>
+<td>Floating action indicators</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Notes</h2>
+
+<ul><li>The <code>Marker</code> property accepts <strong>any control</strong>, not just <code>DaisyBadge</code>. Use a <code>Border</code> for simple dots, an <code>Image</code> for icons, etc.</li>
+<li>For circular status dots, use a <code>DaisyBadge</code> with explicit <code>Width</code>, <code>Height</code>, <code>MinWidth</code>, <code>MinHeight</code>, and <code>CornerRadius</code> values (set CornerRadius to half of Width/Height for a circle).</li>
+<li><code>Inside</code> alignment applies a <strong>3px inset</strong> from the content edge to prevent clipping due to anti-aliasing.</li>
+<li>For status dots on avatars, <code>Edge</code> alignment often looks better than <code>Inside</code> since the dot sits on the circular avatar's edge.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyIconText.html">← IconText</a></div>
+    <div class="nav-right"><a href="DaisyInput.html">Input →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyChatBubble</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyChatBubble</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisychatbubble">
+  <input type="radio" name="daisychatbubble_tabs" id="daisychatbubble_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisychatbubble_tabs" id="daisychatbubble_tab1" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisychatbubble_tab0" class="tab-label">Part 1</label>
+    <label for="daisychatbubble_tab1" class="tab-label">Part 2</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisyChatBubble_a.png" alt="DaisyChatBubble - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisyChatBubble_b.png" alt="DaisyChatBubble - Part 2" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisyChatBubble renders chat-style message bubbles with alignment control, optional avatar image, header/footer text, and <strong>9 color variants</strong>. <code>IsEnd</code> flips the bubble to the right side and mirrors the tail rounding for responder messages. Use it for conversation threads, comments, or inline messaging UIs.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Neutral base bubble.</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>Muted gray fill with matching content color.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Brand-aligned fills for emphasis.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic colors for status or tone.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Structure & Alignment</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnd</code></td>
+<td>Aligns the bubble to the right, swaps corner rounding (tail on the left), and mirrors avatar/header/footer placement.</td>
+</tr>
+<tr>
+<td><code>Header</code></td>
+<td>Small text above the bubble (e.g., sender name); auto-hides when empty.</td>
+</tr>
+<tr>
+<td><code>Footer</code></td>
+<td>Small text below (e.g., timestamps/read receipts); auto-hides when empty.</td>
+</tr>
+<tr>
+<td><code>Image</code></td>
+<td>Optional avatar shown beside the bubble; hides when not set.</td>
+</tr>
+<tr>
+<td><code>Padding</code> / <code>CornerRadius</code></td>
+<td>Control bubble padding and rounding (default 16,8 padding with 16px rounded tail).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple exchange --&gt;
+&lt;StackPanel Spacing="6"&gt;
+    &lt;controls:DaisyChatBubble Content="It's over Anakin, I have the high ground." /&gt;
+    &lt;controls:DaisyChatBubble IsEnd="True" Content="You underestimate my power!" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- With header/footer and avatar --&gt;
+&lt;controls:DaisyChatBubble Header="Obi-Wan Kenobi"
+                         Footer="Delivered"
+                         Image="{StaticResource ObiWanAvatar}"&gt;
+    &lt;TextBlock Text="You were the Chosen One!" TextWrapping="Wrap" /&gt;
+&lt;/controls:DaisyChatBubble&gt;
+
+&lt;!-- Semantic variants --&gt;
+&lt;controls:DaisyChatBubble Content="Info message" Variant="Info" /&gt;
+&lt;controls:DaisyChatBubble IsEnd="True" Content="Success!" Variant="Success" /&gt;
+&lt;controls:DaisyChatBubble Content="Warning: Check your connection." Variant="Warning" /&gt;
+&lt;controls:DaisyChatBubble IsEnd="True" Content="Error: Unable to send." Variant="Error" /&gt;
+
+&lt;!-- Thread with mixed alignment and headers --&gt;
+&lt;StackPanel Spacing="8"&gt;
+    &lt;controls:DaisyChatBubble Header="Support" Content="Can you describe the issue?" Footer="Seen 10:24" /&gt;
+    &lt;controls:DaisyChatBubble IsEnd="True" Header="You" Content="App freezes on login." Footer="Sent 10:25" Variant="Primary" /&gt;
+    &lt;controls:DaisyChatBubble Header="Support" Content="Trying a fix now." Variant="Info" /&gt;
+&lt;/StackPanel&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>IsEnd=True</code> for the local user and default alignment for remote speakers to maintain visual clarity.</li>
+<li>Keep headers short; rely on <code>Footer</code> for timestamps or delivery/read states.</li>
+<li>Avatars should be square to avoid clipping when rendered in the 40×40 slot.</li>
+<li>Limit bubble width via parent layout or <code>MaxWidth</code> to prevent overly wide messages (defaults to 400).</li>
+<li>Choose semantic variants to convey tone (success/warning/error) without extra icons.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyCarousel.html">← Carousel</a></div>
+    <div class="nav-right"><a href="DaisyCheckBox.html">CheckBox →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

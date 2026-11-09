@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyWeatherCard</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisyWeatherCard</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyWeatherCard.png" alt="DaisyWeatherCard" class="doc-image">
+
+<p>DaisyWeatherCard is a flexible container that combines multiple weather display components. You can show/hide sections as needed and either bind data manually or provide an <code>IWeatherService</code> implementation for automatic fetching.</p>
+
+<h2>Properties</h2>
+
+<h3>Current Weather</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Temperature</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Current temperature value</td>
+</tr>
+<tr>
+<td><code>FeelsLike</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>"Feels like" temperature</td>
+</tr>
+<tr>
+<td><code>Condition</code></td>
+<td><code>WeatherCondition</code></td>
+<td><code>Unknown</code></td>
+<td>Current weather condition</td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td><code>DateTime</code></td>
+<td><code>DateTime.Now</code></td>
+<td>Date/time of the reading</td>
+</tr>
+<tr>
+<td><code>Sunrise</code></td>
+<td><code>TimeSpan</code></td>
+<td>-</td>
+<td>Sunrise time</td>
+</tr>
+<tr>
+<td><code>Sunset</code></td>
+<td><code>TimeSpan</code></td>
+<td>-</td>
+<td>Sunset time</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Forecast</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Forecast</code></td>
+<td><code>IEnumerable<ForecastDay></code></td>
+<td><code>null</code></td>
+<td>Collection of forecast days</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Metrics</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>UvIndex</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Current UV index</td>
+</tr>
+<tr>
+<td><code>UvMax</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Maximum UV for the day</td>
+</tr>
+<tr>
+<td><code>WindSpeed</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Current wind speed</td>
+</tr>
+<tr>
+<td><code>WindMax</code></td>
+<td><code>double</code></td>
+<td><code>0</code></td>
+<td>Maximum wind speed</td>
+</tr>
+<tr>
+<td><code>WindUnit</code></td>
+<td><code>string</code></td>
+<td><code>"km/h"</code></td>
+<td>Wind speed unit</td>
+</tr>
+<tr>
+<td><code>Humidity</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Current humidity percentage</td>
+</tr>
+<tr>
+<td><code>HumidityMax</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Maximum humidity</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Configuration</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TemperatureUnit</code></td>
+<td><code>string</code></td>
+<td><code>"C"</code></td>
+<td>Temperature unit (C or F)</td>
+</tr>
+<tr>
+<td><code>ShowCurrent</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show current weather section</td>
+</tr>
+<tr>
+<td><code>ShowForecast</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show forecast section</td>
+</tr>
+<tr>
+<td><code>ShowMetrics</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show metrics section</td>
+</tr>
+<tr>
+<td><code>ShowSunTimes</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Show sunrise/sunset times</td>
+</tr>
+<tr>
+<td><code>DateFormat</code></td>
+<td><code>string</code></td>
+<td><code>"dddd, d MMMM"</code></td>
+<td>Date display format (e.g., "ddd, d MMM" for short)</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>Control size (ExtraSmall, Small, Medium, Large, ExtraLarge)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Service Integration</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>WeatherService</code></td>
+<td><code>IWeatherService</code></td>
+<td><code>null</code></td>
+<td>Weather data provider</td>
+</tr>
+<tr>
+<td><code>Location</code></td>
+<td><code>string</code></td>
+<td><code>null</code></td>
+<td>Location for data fetching</td>
+</tr>
+<tr>
+<td><code>ForecastDays</code></td>
+<td><code>int</code></td>
+<td><code>5</code></td>
+<td>Number of forecast days</td>
+</tr>
+<tr>
+<td><code>IsLoading</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether data is being loaded</td>
+</tr>
+<tr>
+<td><code>ErrorMessage</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Error message if fetch failed</td>
+</tr>
+<tr>
+<td><code>AutoRefresh</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Auto-refresh at interval</td>
+</tr>
+<tr>
+<td><code>RefreshInterval</code></td>
+<td><code>TimeSpan</code></td>
+<td><code>30 min</code></td>
+<td>Time between refreshes</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Manual binding - all sections --&gt;
+&lt;controls:DaisyWeatherCard
+    Temperature="22"
+    FeelsLike="24"
+    Condition="Sunny"
+    TemperatureUnit="C"
+    ShowForecast="True"
+    ShowMetrics="True" /&gt;
+
+&lt;!-- Current weather only --&gt;
+&lt;controls:DaisyWeatherCard
+    Temperature="18"
+    Condition="PartlyCloudy"
+    ShowForecast="False"
+    ShowMetrics="False" /&gt;
+
+&lt;!-- With forecast binding --&gt;
+&lt;controls:DaisyWeatherCard
+    Temperature="{Binding CurrentTemp}"
+    Condition="{Binding CurrentCondition}"
+    Forecast="{Binding ForecastDays}" /&gt;
+
+&lt;!-- With service integration --&gt;
+&lt;controls:DaisyWeatherCard
+    WeatherService="{Binding MyWeatherService}"
+    Location="London, UK"
+    ForecastDays="7"
+    AutoRefresh="True"
+    RefreshInterval="00:15:00" /&gt;</code></pre>
+
+<h2>IWeatherService Interface</h2>
+
+<p>To use automatic data fetching, implement <code>IWeatherService</code>:</p>
+
+<pre><code class="language-csharp">public interface IWeatherService
+{
+    Task&lt;CurrentWeather&gt; GetCurrentWeatherAsync(string location, CancellationToken token);
+    Task&lt;IEnumerable&lt;ForecastDay&gt;&gt; GetForecastAsync(string location, int days, CancellationToken token);
+    Task&lt;WeatherMetrics&gt; GetMetricsAsync(string location, CancellationToken token);
+}</code></pre>
+
+<p>An <code>OpenWeatherMapService</code> implementation is provided as a reference.</p>
+
+<h2>Refresh Methods</h2>
+
+<pre><code class="language-csharp">// Manually trigger a refresh
+await weatherCard.RefreshAsync();</code></pre>
+
+<h2>ForecastDay Model</h2>
+
+<pre><code class="language-csharp">public class ForecastDay
+{
+    public DateTime Date { get; set; }
+    public WeatherCondition Condition { get; set; }
+    public double HighTemperature { get; set; }
+    public double LowTemperature { get; set; }
+    public int PrecipitationChance { get; set; }
+}</code></pre>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyTooltip.html">← Tooltip</a></div>
+    <div class="nav-right"><a href="DaisyWeatherCurrent.html">WeatherCurrent →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

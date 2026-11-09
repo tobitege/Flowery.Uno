@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisySteps</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisySteps</h1>
+
+<h2>Overview</h2>
+
+<div class="tabbed-gallery" id="gallery_daisysteps">
+  <input type="radio" name="daisysteps_tabs" id="daisysteps_tab0" class="tab-radio" checked>
+  <input type="radio" name="daisysteps_tabs" id="daisysteps_tab1" class="tab-radio">
+  <div class="image-tabs">
+    <label for="daisysteps_tab0" class="tab-label">Part 1</label>
+    <label for="daisysteps_tab1" class="tab-label">Part 2</label>
+  </div>
+  <div class="image-panels">
+    <div class="image-panel">
+      <img src="../images/DaisySteps_a.png" alt="DaisySteps - Part 1" class="doc-image">
+    </div>
+    <div class="image-panel">
+      <img src="../images/DaisySteps_b.png" alt="DaisySteps - Part 2" class="doc-image">
+    </div>
+  </div>
+</div>
+
+<p>DaisySteps renders a sequence of step items with lines and circles. It supports horizontal or vertical layouts, <strong>5 sizes</strong>, colored states per step, and an <code>SelectedIndex</code> to mark completed/active steps. Each <code>DaisyStepItem</code> can show custom text or icons via <code>Content</code>/<code>DataContent</code>.</p>
+
+<h2>DaisySteps Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Orientation</code></td>
+<td>Horizontal (default) or Vertical.</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td>ExtraSmall, Small, Medium (default), Large, ExtraLarge (affects circle/line sizes and fonts).</td>
+</tr>
+<tr>
+<td><code>SelectedIndex</code></td>
+<td>0-based index; steps with index ≤ SelectedIndex become active.</td>
+</tr>
+<tr>
+<td><code>JsonSteps</code></td>
+<td>A JSON string describing step objects: <code>[{"content": "Label", "color": "Primary", "isActive": true}, ...]</code>.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>DaisyStepItem Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Content</code></td>
+<td>Step label shown under/right of the circle.</td>
+</tr>
+<tr>
+<td><code>DataContent</code></td>
+<td>Optional text inside the circle (number/icon).</td>
+</tr>
+<tr>
+<td><code>Icon</code></td>
+<td>Slot available if you template-in; not used in default theme.</td>
+</tr>
+<tr>
+<td><code>Color</code></td>
+<td>Step color: Default, Neutral, Primary, Secondary, Accent, Info, Success, Warning, Error.</td>
+</tr>
+<tr>
+<td><code>IsActive</code></td>
+<td>Set by DaisySteps when <code>SelectedIndex</code> includes the step.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Horizontal steps --&gt;
+&lt;controls:DaisySteps SelectedIndex="1" Width="400"&gt;
+    &lt;controls:DaisyStepItem Content="Register" Color="Primary" /&gt;
+    &lt;controls:DaisyStepItem Content="Choose plan" Color="Primary" /&gt;
+    &lt;controls:DaisyStepItem Content="Purchase" /&gt;
+    &lt;controls:DaisyStepItem Content="Receive" /&gt;
+&lt;/controls:DaisySteps&gt;
+
+&lt;!-- Vertical steps --&gt;
+&lt;controls:DaisySteps Orientation="Vertical" SelectedIndex="1" Height="200"&gt;
+    &lt;controls:DaisyStepItem Content="Register" Color="Primary" /&gt;
+    &lt;controls:DaisyStepItem Content="Plan" Color="Primary" /&gt;
+    &lt;controls:DaisyStepItem Content="Purchase" /&gt;
+&lt;/controls:DaisySteps&gt;
+
+&lt;!-- Custom data content --&gt;
+&lt;controls:DaisySteps Width="300"&gt;
+    &lt;controls:DaisyStepItem Content="Step 1" DataContent="?" Color="Neutral" /&gt;
+    &lt;controls:DaisyStepItem Content="Step 2" DataContent="!" Color="Neutral" /&gt;
+    &lt;controls:DaisyStepItem Content="Step 3" DataContent="✓" Color="Success" /&gt;
+&lt;/controls:DaisySteps&gt;
+
+&lt;!-- Dynamic JSON Loading --&gt;
+&lt;controls:DaisySteps JsonSteps='[
+    {"content": "Initialize", "color": "Neutral", "isActive": true},
+    {"content": "Upload Data", "color": "Primary", "isActive": true},
+    {"content": "Processing", "color": "Warning", "isActive": false},
+    {"content": "Finish", "color": "Success", "isActive": false}
+]' /&gt;</code></pre>
+
+<pre><code class="language-csharp">// C#: JSON string
+var steps = new DaisySteps
+{
+    Width = 400,
+    JsonSteps = "[{\"content\":\"Register\",\"color\":\"Primary\",\"isActive\":true}," +
+                "{\"content\":\"Choose plan\",\"color\":\"Primary\"}," +
+                "{\"content\":\"Purchase\"}," +
+                "{\"content\":\"Receive\"}]"
+};</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Set <code>SelectedIndex</code> as progress advances; earlier steps automatically become active.</li>
+<li>Choose size based on layout density; ExtraSmall/Small for sidebars, Large/XL for wizards.</li>
+<li>Use <code>Color</code> to convey status (e.g., Error for failed steps, Success for completed).</li>
+<li>For vertical layouts, ensure enough height to accommodate circles, lines, and labels.</li>
+<li>Replace circle content (via <code>DataContent</code> or a templated icon) to show numbers or checkmarks.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyStatusIndicator.html">← StatusIndicator</a></div>
+    <div class="nav-right"><a href="DaisySwap.html">Swap →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

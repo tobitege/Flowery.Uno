@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyToggle</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyToggle</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyToggle.png" alt="DaisyToggle" class="doc-image">
+
+<p>DaisyToggle is a styled <code>ToggleSwitch</code> with <strong>8 color variants</strong> and <strong>5 size presets</strong>. It offers customizable thumb size via <code>TogglePadding</code> (knob margin) and uses smooth knob animation on state changes. Use it for binary on/off controls.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>Neutral track and knob; darkens when checked.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Colored track when checked.</td>
+</tr>
+<tr>
+<td>Success / Warning / Info / Error</td>
+<td>Semantic track colors when checked.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Track (W×H)</th>
+<th>Knob</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>16×8</td>
+<td>4px</td>
+<td>Dense layouts, tables.</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>20×10</td>
+<td>6px</td>
+<td>Compact forms.</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>24×12</td>
+<td>8px</td>
+<td>General purpose.</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>28×14</td>
+<td>10px</td>
+<td>Touch-friendly UIs.</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>32×16</td>
+<td>12px</td>
+<td>Hero sections or large touch targets.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Additional Styling</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TogglePadding</code></td>
+<td>Internal knob padding/margin (default 1). Adjust to tweak knob inset.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;controls:DaisyToggle Content="Toggle" /&gt;
+&lt;controls:DaisyToggle Content="Primary" Variant="Primary" IsChecked="True" /&gt;
+&lt;controls:DaisyToggle Content="Error" Variant="Error" Size="Small" IsChecked="True" /&gt;
+&lt;controls:DaisyToggle Content="Large Switch" Variant="Accent" Size="Large" /&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Match <code>Size</code> to surrounding controls; use Large for mobile or card headers, Small/XS for dense lists.</li>
+<li>Use semantic variants to convey meaning (Success for enabled/ready, Error for risky toggles).</li>
+<li>Keep <code>TogglePadding</code> small; larger padding may reduce visible track fill on small sizes.</li>
+<li>Bind <code>IsChecked</code> for state management; it inherits ToggleSwitch behavior.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyToast.html">← Toast</a></div>
+    <div class="nav-right"><a href="DaisyTooltip.html">Tooltip →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

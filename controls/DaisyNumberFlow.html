@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyNumberFlow</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyNumberFlow</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyNumberFlow.png" alt="DaisyNumberFlow" class="doc-image">
+
+<p>> <strong>Added in v1.7.1</strong></p>
+
+<code>DaisyNumberFlow</code> is a numeric display control that animates individual digits scrolling vertically when values change. This creates a smooth, high-quality transition effect similar to physical counters or modern web dashboards.
+
+<h2>Key Features</h2>
+
+<ul><li><strong>Granular digit animation</strong>: Only digits that change are animated.</li>
+<li><strong>Locale-aware formatting</strong>: Supports standard .NET format strings (e.g., <code>C2</code>, <code>P0</code>, <code>N0</code>) and cultures.</li>
+<li><strong>Easing and Duration</strong>: Fully configurable animation timing and easing.</li>
+<li><strong>Prefix/Suffix support</strong>: Add currency symbols or units that stay fixed while numbers animate.</li>
+<li><strong>Built-in controls</strong>: Optional increment/decrement buttons with configurable bounds.</li>
+<li><strong>Dashboard styling</strong>: Optional digit boxes for a SmoothUI-style counter appearance.</li>
+<li><strong>Design tokens</strong>: Uses <code>LargeDisplay*</code> tokens for consistent sizing across dashboard controls.</li>
+</ul>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic usage --&gt;
+&lt;controls:DaisyNumberFlow Value="123" /&gt;
+
+&lt;!-- Currency formatting --&gt;
+&lt;controls:DaisyNumberFlow Value="19.99" FormatString="C2" /&gt;
+
+&lt;!-- Percentage with custom easing and duration --&gt;
+&lt;controls:DaisyNumberFlow Value="0.75" 
+                          FormatString="P0" 
+                          Duration="0:0:1" 
+                          Easing="BounceEaseOut" /&gt;
+
+&lt;!-- With prefix and suffix --&gt;
+&lt;controls:DaisyNumberFlow Value="42" Prefix="Score: " Suffix=" pts" /&gt;
+
+&lt;!-- Dashboard-style counter with digit boxes and +/- buttons --&gt;
+&lt;controls:DaisyNumberFlow Value="0"
+                          FormatString="000"
+                          ShowDigitBoxes="True"
+                          ShowControls="True"
+                          Minimum="0"
+                          Maximum="999" /&gt;
+
+&lt;!-- Interactive counter with digit selection (tap any digit to control it) --&gt;
+&lt;controls:DaisyNumberFlow Value="28"
+                          FormatString="000"
+                          ShowDigitBoxes="True"
+                          ShowControls="True"
+                          AllowDigitSelection="True"
+                          Minimum="0"
+                          Maximum="999" /&gt;</code></pre>
+
+<h2>Built-in Controls</h2>
+
+<p>When <code>ShowControls="True"</code>, the control displays increment/decrement buttons:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ShowControls</code></td>
+<td>bool</td>
+<td>False</td>
+<td>Shows +/- buttons beside the digits</td>
+</tr>
+<tr>
+<td><code>Minimum</code></td>
+<td>decimal?</td>
+<td>null</td>
+<td>Lower bound for Value</td>
+</tr>
+<tr>
+<td><code>Maximum</code></td>
+<td>decimal?</td>
+<td>null</td>
+<td>Upper bound for Value</td>
+</tr>
+<tr>
+<td><code>Step</code></td>
+<td>decimal</td>
+<td>1</td>
+<td>Amount to increment/decrement per button click</td>
+</tr>
+<tr>
+<td><code>RepeatInterval</code></td>
+<td>TimeSpan</td>
+<td>200ms</td>
+<td>Interval for repeat firing when button is held (should be >= Duration)</td>
+</tr>
+<tr>
+<td><code>RepeatDelay</code></td>
+<td>TimeSpan</td>
+<td>400ms</td>
+<td>Initial delay before repeat starts</td>
+</tr>
+<tr>
+<td><code>WrapAround</code></td>
+<td>bool</td>
+<td>False</td>
+<td>When true, value wraps from Max→Min or Min→Max</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The buttons fire on pointer-pressed (not release) for immediate responsiveness and support repeat-click when held down. They automatically disable when Value reaches the Minimum or Maximum (unless <code>WrapAround</code> is enabled).</p>
+
+<h2>Digit Selection</h2>
+
+<p>Enable digit selection for fine-grained control over individual digits:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AllowDigitSelection</code></td>
+<td>bool</td>
+<td>False</td>
+<td>Enable tapping digits to select which one to control</td>
+</tr>
+<tr>
+<td><code>SelectedDigitIndex</code></td>
+<td>int?</td>
+<td>null</td>
+<td>Currently selected digit (0 = rightmost/ones place)</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>When <code>AllowDigitSelection="True"</code>:</p>
+
+<ul><li>Tap any digit to select it (cursor changes to hand)</li>
+<li>The selected digit shows an accent-colored bottom border indicator</li>
+<li>The +/- buttons adjust only the selected digit position (e.g., selecting digit 2 adds/subtracts 100)</li>
+</ul>
+<h3>Keyboard Support</h3>
+
+<p>When <code>AllowDigitSelection="True"</code>, full keyboard navigation is available:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Key</th>
+<th>Action</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Tab</strong></td>
+<td>Focus the control (auto-selects rightmost digit)</td>
+</tr>
+<tr>
+<td><strong>Shift+Tab</strong></td>
+<td>Navigate between control and +/- buttons</td>
+</tr>
+<tr>
+<td><strong>Arrow Left</strong></td>
+<td>Select higher digit (tens → hundreds)</td>
+</tr>
+<tr>
+<td><strong>Arrow Right</strong></td>
+<td>Select lower digit (hundreds → tens)</td>
+</tr>
+<tr>
+<td><strong>Arrow Up</strong></td>
+<td>Increment the selected digit</td>
+</tr>
+<tr>
+<td><strong>Arrow Down</strong></td>
+<td>Decrement the selected digit</td>
+</tr>
+<tr>
+<td><strong>0-9</strong></td>
+<td>Directly set the selected digit to that value (with animation)</td>
+</tr>
+<tr>
+<td><strong>Space / Enter</strong></td>
+<td>Trigger focused +/- button</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The control shows an accent border when focused via keyboard (<code>:focus-visible</code>). The selected digit shows an accent-colored bottom border.</p>
+
+<pre><code class="language-xml">&lt;!-- Interactive digit-by-digit counter with wrap-around --&gt;
+&lt;controls:DaisyNumberFlow Value="0"
+                          FormatString="000"
+                          ShowDigitBoxes="True"
+                          ShowControls="True"
+                          AllowDigitSelection="True"
+                          WrapAround="True"
+                          Minimum="0"
+                          Maximum="999" /&gt;</code></pre>
+
+<h2>Styling Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ShowDigitBoxes</code></td>
+<td>bool</td>
+<td>False</td>
+<td>Displays styled boxes behind each digit</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>When <code>ShowDigitBoxes="True"</code>, each digit gets a rounded box with an inset shadow, creating a dashboard/counter aesthetic similar to SmoothUI's NumberFlow component.</p>
+
+<h2>Design Tokens</h2>
+
+<code>DaisyNumberFlow</code> uses the <code>LargeDisplay*</code> design tokens for consistent sizing:
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Token</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>LargeDisplayFontSize</code></td>
+<td>36</td>
+<td>Default font size for digits</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementHeight</code></td>
+<td>86</td>
+<td>Height of each digit box</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementWidth</code></td>
+<td>58</td>
+<td>Width of each digit box</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementCornerRadius</code></td>
+<td>12</td>
+<td>Corner radius for digit boxes</td>
+</tr>
+<tr>
+<td><code>LargeDisplayElementSpacing</code></td>
+<td>4</td>
+<td>Gap between digit boxes</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonSize</code></td>
+<td>42</td>
+<td>Size of +/- buttons</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonFontSize</code></td>
+<td>20</td>
+<td>Font size for +/- symbols</td>
+</tr>
+<tr>
+<td><code>LargeDisplayButtonCornerRadius</code></td>
+<td>8</td>
+<td>Corner radius for buttons</td>
+</tr>
+<tr>
+<td><code>LargeDisplayContainerPadding</code></td>
+<td>16</td>
+<td>Padding inside outer container</td>
+</tr>
+<tr>
+<td><code>LargeDisplayContainerCornerRadius</code></td>
+<td>16</td>
+<td>Corner radius of container</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Override these in your <code>App.xaml</code> to customize all large display controls:</p>
+
+<pre><code class="language-xml">&lt;Application.Resources&gt;
+    &lt;sys:Double x:Key="LargeDisplayFontSize"&gt;48&lt;/sys:Double&gt;
+    &lt;sys:Double x:Key="LargeDisplayElementHeight"&gt;100&lt;/sys:Double&gt;
+&lt;/Application.Resources&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>DaisyNumberFlow</code> for prominent numeric displays like prices, scores, or sensor readings.</li>
+<li>For simple inputs, use <code>DaisyNumericUpDown</code>.</li>
+<li>Choose a <code>FormatString</code> that matches your data type (e.g., "N0" for integers, "N2" for decimals).</li>
+<li>Use <code>ShowDigitBoxes="True" ShowControls="True"</code> for interactive dashboard counters.</li>
+<li><code>FontSize</code> defaults to the <code>LargeDisplayFontSize</code> token (36px) but can be overridden directly.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyNavbar.html">← Navbar</a></div>
+    <div class="nav-right"><a href="DaisyNumericUpDown.html">NumericUpDown →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

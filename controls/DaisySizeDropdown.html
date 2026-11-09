@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisySizeDropdown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div><h1>DaisySizeDropdown</h1>
+
+<p>A dropdown control for selecting a global size (<code>DaisySize</code>) that affects (almost) all Flowery.Uno controls.</p>
+
+<h2>Overview</h2>
+
+<code>DaisySizeDropdown</code> provides a user-friendly way to let users choose their preferred UI size. When the user selects a size, it's applied globally via <code>FlowerySizeManager</code>. All Daisy controls with a <code>Size</code> property automatically update.
+
+<h2>Basic Usage</h2>
+
+<pre><code class="language-xml">xmlns:controls="using:Flowery.Controls"
+
+&lt;controls:DaisySizeDropdown Width="180" /&gt;</code></pre>
+
+<p>This displays a dropdown with all five sizes (ExtraSmall, Small, Medium, Large, ExtraLarge) using localized display names.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedSize</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>The currently selected size</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td><code>Medium</code></td>
+<td>The size of the dropdown control itself</td>
+</tr>
+<tr>
+<td><code>ShowAbbreviations</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Show abbreviations (XS, S, M, L, XL) instead of full names</td>
+</tr>
+<tr>
+<td><code>SizeOptions</code></td>
+<td><code>IList<SizePreviewInfo></code></td>
+<td><code>null</code></td>
+<td>Custom size options to display</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Customizing Available Sizes</h2>
+
+<p>By default, all five sizes are shown. You can customize which sizes appear and what they're called using the <code>SizeOptions</code> property.</p>
+
+<h3>SizePreviewInfo Properties</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Size</code></td>
+<td><code>DaisySize</code></td>
+<td>-</td>
+<td>The enum value (required)</td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td><code>string</code></td>
+<td>-</td>
+<td>Internal name for localization lookup (e.g., "Small")</td>
+</tr>
+<tr>
+<td><code>IsVisible</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Set to <code>false</code> to hide this size from the dropdown</td>
+</tr>
+<tr>
+<td><code>DisplayNameOverride</code></td>
+<td><code>string?</code></td>
+<td><code>null</code></td>
+<td>Custom label that overrides localized text</td>
+</tr>
+<tr>
+<td><code>Abbreviation</code></td>
+<td><code>string</code></td>
+<td>-</td>
+<td>Short form for compact display (XS, S, M, L, XL)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Example: Show Only 3 Sizes with Custom Names</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisySizeDropdown&gt;
+    &lt;controls:DaisySizeDropdown.SizeOptions&gt;
+        &lt;x:Array Type="{x:Type controls:SizePreviewInfo}"&gt;
+            &lt;controls:SizePreviewInfo Size="Small" Name="Small" 
+                                      DisplayNameOverride="Compact" Abbreviation="C" /&gt;
+            &lt;controls:SizePreviewInfo Size="Medium" Name="Medium" 
+                                      DisplayNameOverride="Normal" Abbreviation="N" /&gt;
+            &lt;controls:SizePreviewInfo Size="Large" Name="Large" 
+                                      DisplayNameOverride="Large" Abbreviation="L" /&gt;
+        &lt;/x:Array&gt;
+    &lt;/controls:DaisySizeDropdown.SizeOptions&gt;
+&lt;/controls:DaisySizeDropdown&gt;</code></pre>
+
+<h3>Example: Hide ExtraSmall and ExtraLarge</h3>
+
+<pre><code class="language-xml">&lt;controls:DaisySizeDropdown&gt;
+    &lt;controls:DaisySizeDropdown.SizeOptions&gt;
+        &lt;x:Array Type="{x:Type controls:SizePreviewInfo}"&gt;
+            &lt;controls:SizePreviewInfo Size="ExtraSmall" Name="ExtraSmall" IsVisible="False" /&gt;
+            &lt;controls:SizePreviewInfo Size="Small" Name="Small" /&gt;
+            &lt;controls:SizePreviewInfo Size="Medium" Name="Medium" /&gt;
+            &lt;controls:SizePreviewInfo Size="Large" Name="Large" /&gt;
+            &lt;controls:SizePreviewInfo Size="ExtraLarge" Name="ExtraLarge" IsVisible="False" /&gt;
+        &lt;/x:Array&gt;
+    &lt;/controls:DaisySizeDropdown.SizeOptions&gt;
+&lt;/controls:DaisySizeDropdown&gt;</code></pre>
+<hr>
+<h2>Localization</h2>
+
+<p>Size names are automatically localized based on the current culture. The display name resolution order is:</p>
+
+<p>1. <strong>DisplayNameOverride</strong> (if set) – your custom label</p>
+<p>2. <strong>Localized text</strong> – from <code>FloweryLocalization</code> (e.g., "Klein" in German)</p>
+<p>3. <strong>Name</strong> (fallback) – the enum name like "ExtraSmall"</p>
+
+<h3>Supported Languages</h3>
+
+<p>Size names are localized in 12 languages:</p>
+
+<ul><li>English, German, French, Spanish, Italian</li>
+<li>Japanese, Korean, Chinese (Simplified)</li>
+<li>Arabic, Turkish, Ukrainian, Hebrew</li>
+</ul>
+<h3>Custom Localization Keys</h3>
+
+<p>If you need to override the built-in translations, add these keys to your localization:</p>
+
+<pre><code class="language-json">{
+  "Size_ExtraSmall": "Extra Small",
+  "Size_Small": "Small", 
+  "Size_Medium": "Medium",
+  "Size_Large": "Large",
+  "Size_ExtraLarge": "Extra Large"
+}</code></pre>
+<hr>
+<h2>Styling</h2>
+
+<p>The dropdown respects global size changes. When a new size is selected, the dropdown itself also updates its appearance.</p>
+
+<h3>Size Variants</h3>
+
+<pre><code class="language-xml">&lt;!-- Use the dropdown's own Size property for its appearance --&gt;
+&lt;controls:DaisySizeDropdown Size="Small" Width="120" /&gt;
+&lt;controls:DaisySizeDropdown Size="Large" Width="200" /&gt;</code></pre>
+
+<h3>Automatic MinWidth</h3>
+
+<p>The control automatically calculates a <code>MinWidth</code> based on the current <code>Size</code> to ensure:</p>
+
+<p>1. The size name text fits without clipping</p>
+<p>2. The dropdown arrow/glyph is fully visible (requires ~26px)</p>
+
+<p>This is particularly important at smaller sizes (ExtraSmall, Small) where the WinUI ComboBox template expects more space than the control height provides.</p>
+
+<strong>Calculated MinWidth</strong>: approximately <code>116px</code> (text area + dropdown glyph margin)
+
+<p>If you need a narrower dropdown, consider:</p>
+
+<ul><li>Using <code>ShowAbbreviations="True"</code> to display shorter labels (XS, S, M, L, XL)</li>
+<li>Providing custom <code>SizeOptions</code> with shorter <code>DisplayNameOverride</code> values</li>
+</ul>
+<pre><code class="language-xml">&lt;!-- Compact dropdown with abbreviations --&gt;
+&lt;controls:DaisySizeDropdown ShowAbbreviations="True" Width="80" /&gt;</code></pre>
+
+<p>> <strong>Note:</strong> Setting <code>Width</code> below <code>MinWidth</code> will be overridden. To force a smaller width, you must also set <code>MinWidth</code> explicitly, but this may cause visual clipping.</p>
+<hr>
+<h2>Programmatic Control</h2>
+
+<p>If you need to change the size without the UI:</p>
+
+<pre><code class="language-csharp">using Flowery.Controls;
+
+// Apply a size globally
+FlowerySizeManager.ApplySize(DaisySize.Large);
+
+// Or by name
+FlowerySizeManager.ApplySize("Large");
+
+// Check current size
+DaisySize current = FlowerySizeManager.CurrentSize;</code></pre>
+
+<p>The dropdown automatically syncs with <code>FlowerySizeManager.CurrentSize</code>.</p>
+<hr>
+<h2>Integration with FlowerySizeManager</h2>
+
+<code>DaisySizeDropdown</code> is designed to work seamlessly with the global sizing system:
+
+<ul><li><strong>On selection change</strong>: Calls <code>FlowerySizeManager.ApplySize()</code></li>
+<li><strong>On external size change</strong>: Syncs to match the current global size</li>
+<li><strong>On culture change</strong>: Refreshes localized display names</li>
+</ul>
+<p>For comprehensive documentation on the sizing system, see <a href="https://tobitege.github.io/Flowery.Uno/#SizingAndScaling" target="_blank" rel="noopener">SizingAndScaling</a>.</p>
+<hr>
+<h2>Best Practices</h2>
+
+<p>1. <strong>Place in settings or sidebar</strong> – Give users easy access to change the size preference.</p>
+
+<p>2. <strong>Consider visibility</strong> – For most apps, 3 sizes (Small, Medium, Large) may be enough.</p>
+
+<p>3. <strong>Use meaningful names</strong> – If "Small" doesn't fit your domain, use <code>DisplayNameOverride</code> (e.g., "Compact", "Dense").</p>
+
+<p>4. <strong>Test all sizes</strong> – Ensure your layouts work at both ExtraSmall and ExtraLarge.</p>
+
+<p>5. <strong>Persist preference</strong> – Save the user's selection and restore it on app startup.</p>
+
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

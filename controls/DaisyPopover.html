@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyPopover</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyPopover</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyPopover.png" alt="DaisyPopover" class="doc-image">
+
+<p>DaisyPopover is a lightweight popover control that hosts content inside a <code>Popup</code> anchored to a trigger. It's useful for rich tooltips, small forms, contextual menus, and “more actions” surfaces.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TriggerContent</code> (object?)</td>
+<td>Content shown as the trigger (e.g. a button or icon).</td>
+</tr>
+<tr>
+<td><code>PopoverContent</code> (object?)</td>
+<td>Content hosted inside the popup.</td>
+</tr>
+<tr>
+<td><code>IsOpen</code> (bool)</td>
+<td>Controls whether the popover is open.</td>
+</tr>
+<tr>
+<td><code>PlacementMode</code> (<code>PlacementMode</code>)</td>
+<td>Popup placement relative to the trigger (default <code>Bottom</code>).</td>
+</tr>
+<tr>
+<td><code>HorizontalOffset</code> (double)</td>
+<td>Horizontal popup offset (default 0).</td>
+</tr>
+<tr>
+<td><code>VerticalOffset</code> (double)</td>
+<td>Vertical popup offset (default 8).</td>
+</tr>
+<tr>
+<td><code>IsLightDismissEnabled</code> (bool)</td>
+<td>Closes the popover when clicking outside (default true).</td>
+</tr>
+<tr>
+<td><code>MatchTargetWidth</code> (bool)</td>
+<td>When true, the popup minimum width matches the trigger width (default false).</td>
+</tr>
+<tr>
+<td><code>ToggleOnClick</code> (bool)</td>
+<td>When true, clicking the trigger toggles <code>IsOpen</code> (default true).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Toggle popover on click --&gt;
+&lt;controls:DaisyPopover&gt;
+    &lt;controls:DaisyPopover.TriggerContent&gt;
+        &lt;controls:DaisyButton Content="Open" Variant="Primary" /&gt;
+    &lt;/controls:DaisyPopover.TriggerContent&gt;
+    &lt;controls:DaisyPopover.PopoverContent&gt;
+        &lt;StackPanel Spacing="8" Width="240"&gt;
+            &lt;TextBlock Text="Popover" FontWeight="SemiBold" /&gt;
+            &lt;TextBlock Text="This content is hosted inside a Popup." Opacity="0.8" TextWrapping="Wrap" /&gt;
+            &lt;controls:DaisyButton Content="Action" Size="Small" Variant="Secondary" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyPopover.PopoverContent&gt;
+&lt;/controls:DaisyPopover&gt;
+
+&lt;!-- Programmatic control --&gt;
+&lt;controls:DaisyPopover ToggleOnClick="False"
+                      IsOpen="{Binding IsHelpOpen}"
+                      MatchTargetWidth="True"&gt;
+    &lt;controls:DaisyPopover.TriggerContent&gt;
+        &lt;controls:DaisyButton Content="Help" ButtonStyle="Outline" /&gt;
+    &lt;/controls:DaisyPopover.TriggerContent&gt;
+    &lt;controls:DaisyPopover.PopoverContent&gt;
+        &lt;TextBlock Text="Help content" /&gt;
+    &lt;/controls:DaisyPopover.PopoverContent&gt;
+&lt;/controls:DaisyPopover&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>MatchTargetWidth="True"</code> for dropdown-like layouts where the popup should align with the trigger width.</li>
+<li>Set <code>ToggleOnClick="False"</code> when you want to fully control the open state via binding or code.</li>
+<li>For simple selection lists, <code>DaisyDropdown</code> can be a more specialized choice.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyPatternedCard.html">← PatternedCard</a></div>
+    <div class="nav-right"><a href="DaisyProductThemeDropdown.html">ProductThemeDropdown →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

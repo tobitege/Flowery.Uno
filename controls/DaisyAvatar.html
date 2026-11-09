@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyAvatar</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyAvatar</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyAvatar.png" alt="DaisyAvatar" class="doc-image">
+
+<p>DaisyAvatar renders user/profile images or initials with <strong>5 sizes</strong>, <strong>3 shapes</strong>, optional <strong>status dot</strong>, and <strong>ring accent</strong> colors. It accepts any content (images, icons, initials) and can show placeholders while real media loads. Pair with <code>DaisyAvatarGroup</code> to overlap multiple avatars.</p>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Approx. Dimensions</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>24×24</td>
+<td>Very tight UIs, inline with text</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>32×32</td>
+<td>Toolbars, compact cards</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>48×48</td>
+<td>General-purpose avatar lists</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>96×96</td>
+<td>Profile headers, spotlight cards</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>128×128</td>
+<td>Hero/profile pages</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Shape Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Shape</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Square</td>
+<td>Hard edges; works for app icons or assets.</td>
+</tr>
+<tr>
+<td>Rounded</td>
+<td>Soft 12px rounding; balanced, card-friendly look.</td>
+</tr>
+<tr>
+<td>Circle (default)</td>
+<td>Fully circular mask for typical profile photos.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Status & Ring Indicators</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Option</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Status=Online</code></td>
+<td>Shows a green dot at the top-right with a thin base-colored outline.</td>
+</tr>
+<tr>
+<td><code>Status=Offline</code></td>
+<td>Shows a neutral/grey dot in the same position.</td>
+</tr>
+<tr>
+<td><code>HasRing=True</code></td>
+<td>Adds an outer ring; color set by <code>RingColor</code> (uses Daisy theme colors: Primary, Secondary, Accent, Neutral, Info, Success, Warning, Error).</td>
+</tr>
+<tr>
+<td><code>IsPlaceholder=True</code></td>
+<td>Applies neutral background/content colors - use with initials or icons while images load.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Image avatar (default circle, medium) --&gt;
+&lt;controls:DaisyAvatar&gt;
+    &lt;Image Source="ms-appx:///Flowery.Uno.Gallery/Assets/logo.png" /&gt;
+&lt;/controls:DaisyAvatar&gt;
+
+&lt;!-- Initials with status and ring (using Initials property) --&gt;
+&lt;controls:DaisyAvatar Initials="JS" Status="Online" HasRing="True" RingColor="Success" /&gt;
+
+&lt;!-- Shapes --&gt;
+&lt;StackPanel Orientation="Horizontal" Spacing="8"&gt;
+    &lt;controls:DaisyAvatar Shape="Square" Size="Small"&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconDog}" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Shape="Rounded" Size="Small"&gt;
+        &lt;TextBlock Text="RD" VerticalAlignment="Center" HorizontalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Shape="Circle" Size="Small"&gt;
+        &lt;TextBlock Text="CI" VerticalAlignment="Center" HorizontalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Sizes with initials (using Initials property) --&gt;
+&lt;StackPanel Orientation="Horizontal" Spacing="12"&gt;
+    &lt;controls:DaisyAvatar IsPlaceholder="True" Size="ExtraSmall" Initials="A" /&gt;
+    &lt;controls:DaisyAvatar IsPlaceholder="True" Size="Medium" Initials="AI" /&gt;
+    &lt;controls:DaisyAvatar IsPlaceholder="True" Size="Large" Initials="UI" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- With DaisyAvatarGroup --&gt;
+&lt;controls:DaisyAvatarGroup Overlap="16"&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#FFCDD2"&gt;
+        &lt;PathIcon Data="{StaticResource DaisyIconDog}" Width="20" Height="20" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" Background="#C8E6C9" HasRing="True" RingColor="Accent"&gt;
+        &lt;TextBlock Text="AB" VerticalAlignment="Center" HorizontalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+    &lt;controls:DaisyAvatar Size="Small" IsPlaceholder="True"&gt;
+        &lt;TextBlock Text="+5" VerticalAlignment="Center" HorizontalAlignment="Center" /&gt;
+    &lt;/controls:DaisyAvatar&gt;
+&lt;/controls:DaisyAvatarGroup&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use square source images to avoid unintended cropping; non-square content is clipped to the mask.</li>
+<li>Prefer <code>IsPlaceholder=True</code> with initials while loading remote images to avoid empty states.</li>
+<li>Choose <strong>Rounded</strong> when avatars sit next to cards/panels with similar rounding; use <strong>Circle</strong> for classic profile lists.</li>
+<li>Rings help call out priority or presence; align ring color with meaning (e.g., <code>Success</code> for active, <code>Warning</code> for away).</li>
+<li><code>IsRounded</code> exists for backward compatibility - new layouts should use <code>Shape</code> instead.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyAnimatedNumber.html">← AnimatedNumber</a></div>
+    <div class="nav-right"><a href="DaisyAvatarGroup.html">AvatarGroup →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

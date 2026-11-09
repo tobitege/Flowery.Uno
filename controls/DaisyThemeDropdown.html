@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyThemeDropdown</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyThemeDropdown</h1>
+
+<h2>Overview</h2>
+
+<p>DaisyThemeDropdown is a ComboBox listing available themes from <code>DaisyThemeManager</code>. It previews theme colors in a 2×2 dot grid and applies the selected theme. It syncs selection with the current theme when themes change externally. Preview brushes come from <code>DaisyThemeManager.TryCreatePalette</code>, including themes registered at runtime.</p>
+
+<h2>How Theming Works</h2>
+
+<p>This control uses <code>DaisyThemeManager</code> internally, which manages the application's theme resources:</p>
+
+<ul><li>Each of the 35+ built-in themes provides a unique color palette</li>
+<li>Theme changes are applied through resource dictionary updates</li>
+<li>Themes added with <code>DaisyThemeManager.RegisterTheme</code> appear in the list and use that factory for preview swatches</li>
+<li>For custom CSS themes loaded at runtime, use <code>DaisyThemeLoader.ApplyThemeToApplication()</code></li>
+</ul>
+<h2>Properties & Behavior</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>SelectedTheme</code></td>
+<td>Name of the currently selected theme. Setting this applies the theme.</td>
+</tr>
+<tr>
+<td>ItemsSource</td>
+<td>Auto-populated from <code>DaisyThemeManager.AvailableThemes</code> with preview brushes from <code>TryCreatePalette</code>.</td>
+</tr>
+<tr>
+<td>Sync</td>
+<td>Subscribes to <code>ThemeChanged</code> and, while loaded, <code>AvailableThemesChanged</code>, so selection and the theme list stay current.</td>
+</tr>
+<tr>
+<td><code>AddTheme(originalName, displayName, preferred)</code></td>
+<td>Adds a standard, registered or product theme to this dropdown only, with its own display text and group. Selecting an added product theme registers and applies it.</td>
+</tr>
+<tr>
+<td><code>RemoveThemeOverride(originalName)</code></td>
+<td>Removes a local entry and restores the manager's entry, if any.</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>The list honours <code>DaisyThemeManager.ExcludedThemes</code>, <code>PreferredThemes</code> and global <code>AddTheme</code> entries. Preferred entries come first, followed by a separator line. See <a href="DaisyThemeManager.md#theme-visibility-and-ordering">DaisyThemeManager</a>.</p>
+
+<p>Local and global list customization applies to dropdowns that fill their own list. If the app sets <code>ItemsSource</code>, the dropdown shows that list unchanged.</p>
+
+<h2>Initialization Behavior</h2>
+
+<p>The dropdown automatically syncs to the current theme during construction:</p>
+
+<ul><li>If <code>DaisyThemeManager.CurrentThemeName</code> is already set (e.g., app restored theme from settings), the dropdown syncs to that theme <strong>without re-applying it</strong>.</li>
+<li>If no theme is set yet, the dropdown defaults to "Dark" <strong>without triggering <code>ApplyTheme</code></strong>.</li>
+</ul>
+<p>This ensures apps can restore persisted theme preferences before constructing UI controls without worrying about dropdowns overriding the saved theme.</p>
+
+<h2>Quick Examples</h2>
+
+<p>In your <code>.xaml</code> file (e.g., <code>MainWindow.xaml</code>), add the namespace and control:</p>
+
+<pre><code class="language-xml">&lt;!-- Add at top of file --&gt;
+xmlns:controls="using:Flowery.Controls"
+
+&lt;!-- Default theme dropdown - shows all 35+ themes with color previews --&gt;
+&lt;controls:DaisyThemeDropdown Width="220" /&gt;
+
+&lt;!-- Binding selected theme to ViewModel --&gt;
+&lt;controls:DaisyThemeDropdown SelectedTheme="{Binding CurrentTheme, Mode=TwoWay}" /&gt;</code></pre>
+
+<strong>Prerequisite</strong>: Your <code>App.xaml</code> must include Flowery.Uno's theme resources in <code>Application.Resources.MergedDictionaries</code>:
+
+<pre><code class="language-xml">&lt;ResourceDictionary Source="ms-appx:///Flowery.Uno/Themes/Generic.xaml" /&gt;</code></pre>
+
+<h2>Automatic Sizing</h2>
+
+<p>The dropdown automatically calculates dimensions based on the <code>Size</code> property:</p>
+
+<h3>MinWidth Calculation</h3>
+
+<code>MinWidth</code> is computed to ensure all content fits:
+
+<ul><li><strong>Color swatches</strong>: 5 dots using <code>DaisyResourceLookup.GetDefaultSwatchSize(Size)</code> design token</li>
+<li><strong>Theme name text</strong>: ~60px for typical theme names</li>
+<li><strong>Dropdown glyph</strong>: ~26px for the arrow button</li>
+</ul>
+<p>This prevents the dropdown arrow from being clipped, especially at smaller sizes (ExtraSmall, Small).</p>
+
+<h3>Swatch Scaling</h3>
+
+<p>The 5 color preview dots scale with the control size:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Swatch Diameter</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>6px</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>8px</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>10px</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>12px</td>
+</tr>
+<tr>
+<td>ExtraLarge</td>
+<td>14px</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>> <strong>Note:</strong> Setting <code>Width</code> below the computed <code>MinWidth</code> will be overridden. If you need a narrower dropdown, also set <code>MinWidth</code> explicitly (may cause visual clipping).</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use alongside <code>DaisyThemeController</code> for quick toggle + full list selection.</li>
+<li>Ensure theme palette resources (<code>DaisyBase100Brush</code>, etc.) are present for accurate previews.</li>
+<li>Set explicit width if you have long theme names; the popup inherits min width from the template (200px).</li>
+<li>For industry-specific themes (SaaS, Fintech, Healthcare, etc.), use <a href="DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a> which provides 96 additional product palettes.</li>
+</ul>
+<h2>Related Controls</h2>
+
+<ul><li><a href="DaisyProductThemeDropdown.html">DaisyProductThemeDropdown</a> - Dropdown for 96 industry-specific product themes</li>
+<li><a href="DaisyThemeController.html">DaisyThemeController</a> - Toggle-based theme switching</li>
+<li><a href="DaisyThemeRadio.html">DaisyThemeRadio</a> - Radio button theme selection</li>
+<li><a href="DaisyThemeSwap.html">DaisyThemeSwap</a> - Icon swap theme toggle</li>
+<li><a href="DaisyThemeManager.html">DaisyThemeManager</a> - Central theme management</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyThemeController.html">← ThemeController</a></div>
+    <div class="nav-right"><a href="DaisyThemeManager.html">ThemeManager →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

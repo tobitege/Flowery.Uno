@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyColorWheel</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyColorWheel</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyColorWheel.png" alt="DaisyColorWheel" class="doc-image">
+
+<p>DaisyColorWheel is a circular color wheel control for selecting hue and saturation values in the HSL color space. It renders a full-spectrum color wheel with a draggable selection marker, allowing intuitive color picking through mouse interaction. The wheel displays colors at a configurable lightness level.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>Color</code></td>
+<td><code>Color</code></td>
+<td><code>Red</code></td>
+<td>The selected RGB color</td>
+</tr>
+<tr>
+<td><code>HslColor</code></td>
+<td><code>HslColor</code></td>
+<td><code>H:0, S:1, L:0.5</code></td>
+<td>The HSL representation of the color</td>
+</tr>
+<tr>
+<td><code>Lightness</code></td>
+<td><code>double</code></td>
+<td><code>0.5</code></td>
+<td>Lightness value (0-1) for the wheel display</td>
+</tr>
+<tr>
+<td><code>SelectionSize</code></td>
+<td><code>double</code></td>
+<td><code>10</code></td>
+<td>Size of the selection marker circle</td>
+</tr>
+<tr>
+<td><code>SelectionOutlineColor</code></td>
+<td><code>Color</code></td>
+<td><code>White</code></td>
+<td>Color of the selection marker outline</td>
+</tr>
+<tr>
+<td><code>ShowCenterLines</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether to show center crosshairs</td>
+</tr>
+<tr>
+<td><code>ColorStep</code></td>
+<td><code>int</code></td>
+<td><code>4</code></td>
+<td>Rendering quality (lower = smoother, higher = faster)</td>
+</tr>
+<tr>
+<td><code>OnColorChanged</code></td>
+<td><code>Action<Color>?</code></td>
+<td><code>null</code></td>
+<td>Optional callback invoked when color changes</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>How It Works</h2>
+
+<p>The color wheel maps:</p>
+
+<ul><li><strong>Angle</strong> (0-360°) → <strong>Hue</strong> (color around the wheel)</li>
+<li><strong>Distance from center</strong> (0 to radius) → <strong>Saturation</strong> (center = gray, edge = vivid)</li>
+<li><strong>Lightness</strong> is controlled separately via the <code>Lightness</code> property</li>
+</ul>
+<p>Clicking or dragging on the wheel updates both the <code>Color</code> and <code>HslColor</code> properties.</p>
+
+<h2>Events and Callbacks</h2>
+
+<h3>Event-Based</h3>
+
+<pre><code class="language-csharp">colorWheel.ColorChanged += (sender, e) =&gt; 
+{
+    // e.Color contains the new color
+    UpdatePreview(e.Color);
+};</code></pre>
+
+<h3>Callback-Based</h3>
+
+<pre><code class="language-xml">&lt;colorpicker:DaisyColorWheel 
+    OnColorChanged="{Binding HandleWheelColorChanged}" /&gt;</code></pre>
+
+<pre><code class="language-csharp">// Direct assignment
+var wheel = new DaisyColorWheel
+{
+    OnColorChanged = color =&gt; SelectedColor = color
+};</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic color wheel --&gt;
+&lt;colorpicker:DaisyColorWheel 
+    Width="200" 
+    Height="200" 
+    Color="{Binding SelectedColor, Mode=TwoWay}" /&gt;
+
+&lt;!-- With lightness control --&gt;
+&lt;StackPanel Spacing="8"&gt;
+    &lt;colorpicker:DaisyColorWheel 
+        x:Name="wheel"
+        Width="200" 
+        Height="200"
+        Lightness="{Binding #lightnessSlider.Value}" /&gt;
+
+    &lt;Slider 
+        x:Name="lightnessSlider" 
+        Minimum="0" 
+        Maximum="1" 
+        Value="0.5" /&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- High quality rendering --&gt;
+&lt;colorpicker:DaisyColorWheel 
+    ColorStep="1"
+    Width="300" 
+    Height="300" /&gt;
+
+&lt;!-- With center crosshairs --&gt;
+&lt;colorpicker:DaisyColorWheel 
+    ShowCenterLines="True"
+    SelectionSize="12"
+    SelectionOutlineColor="Black" /&gt;
+
+&lt;!-- With callback --&gt;
+&lt;colorpicker:DaisyColorWheel 
+    OnColorChanged="{Binding OnWheelColorSelected}" /&gt;</code></pre>
+
+<h2>HslColor Struct</h2>
+
+<p>The <code>HslColor</code> struct represents colors in HSL space:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Range</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>H</code></td>
+<td><code>double</code></td>
+<td>0-359</td>
+<td>Hue angle in degrees</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td><code>double</code></td>
+<td>0-1</td>
+<td>Saturation (0 = gray, 1 = vivid)</td>
+</tr>
+<tr>
+<td><code>L</code></td>
+<td><code>double</code></td>
+<td>0-1</td>
+<td>Lightness (0 = black, 0.5 = pure, 1 = white)</td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td><code>int</code></td>
+<td>0-255</td>
+<td>Alpha/transparency</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-csharp">// Create from HSL values
+var hsl = new HslColor(180, 0.8, 0.5); // Cyan-ish
+
+// Create from RGB Color
+var hsl = new HslColor(Colors.Red);
+
+// Convert to RGB
+Color rgb = hsl.ToRgbColor();
+
+// Implicit conversions
+Color color = hsl;           // HSL to Color
+HslColor hsl2 = Colors.Blue; // Color to HSL</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Pair with a <strong>lightness slider</strong> (<code>DaisyColorSlider</code> with <code>Channel="Lightness"</code>) for complete HSL control.</li>
+<li>Use <code>ColorStep="1"</code> for smooth gradients on larger wheels; use higher values for better performance.</li>
+<li>The wheel automatically maintains the current <code>Lightness</code> when selecting colors.</li>
+<li>Use <code>ShowCenterLines="True"</code> to help users find the exact center (gray/neutral colors).</li>
+<li>For dark themes, consider setting <code>SelectionOutlineColor</code> to a lighter color for visibility.</li>
+</ul>
+<h2>Acknowledgments</h2>
+
+<p>This control is part of the Flowery.Uno color picker suite, inspired by the <a href="https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker" target="_blank" rel="noopener">Cyotek ColorPicker</a> library (MIT License).</p>
+<div class="doc-nav">
+    <div class="nav-left"><a href="DaisyColorSlider.html">← ColorSlider</a></div>
+    <div class="nav-right"><a href="DaisyContributionGraph.html">ContributionGraph →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyAccordion</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyAccordion</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyAccordion.png" alt="DaisyAccordion" class="doc-image">
+
+<p>DaisyAccordion is an ItemsControl for stacked, single-open sections built from <code>DaisyAccordionItem</code>. It offers <strong>two indicator variants</strong> (arrow or plus) and enforces <strong>one expanded item at a time</strong> through the <code>ExpandedIndex</code> property. Use it to organize FAQ-style content or any list of collapsible panels where only one section should stay open.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Arrow (default)</strong></td>
+<td>Chevron on the right that flips 180° when expanded. Matches DaisyCollapse arrow styling for familiar disclosure cues.</td>
+</tr>
+<tr>
+<td><strong>Plus</strong></td>
+<td>Plus icon that rotates into an “×” when expanded, giving a bold open/close affordance.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Expansion Behavior</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ExpandedIndex</code> (int)</td>
+<td>Index of the currently open item (<code>0</code>-based). Set to <code>-1</code> to start with everything collapsed. Updated automatically when a user opens an item; opening one item closes the others.</td>
+</tr>
+<tr>
+<td><code>DaisyAccordionItem.IsExpanded</code></td>
+<td>Bound to the header toggle. Setting an item to <code>True</code> (in XAML or code) will update <code>ExpandedIndex</code> and collapse siblings.</td>
+</tr>
+<tr>
+<td><code>Variant</code></td>
+<td>Set on the accordion to cascade the indicator style to all items; you can override per item if needed.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Content Structure</h2>
+
+<p>DaisyAccordion expects <code>DaisyAccordionItem</code> children with a header and body content:</p>
+
+<ul><li>Header comes from <code>Header</code> and is rendered as a clickable toggle.</li>
+<li>Body shows only when <code>IsExpanded=True</code> and inherits the item padding.</li>
+</ul>
+<pre><code class="language-xml">&lt;controls:DaisyAccordion&gt;
+    &lt;controls:DaisyAccordionItem Header="Section title"&gt;
+        &lt;!-- Body content here --&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+&lt;/controls:DaisyAccordion&gt;</code></pre>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic accordion, first item open --&gt;
+&lt;controls:DaisyAccordion ExpandedIndex="0"&gt;
+    &lt;controls:DaisyAccordionItem Header="Overview"&gt;
+        &lt;TextBlock Text="High-level summary of the feature." TextWrapping="Wrap" /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+    &lt;controls:DaisyAccordionItem Header="Details"&gt;
+        &lt;TextBlock Text="Deeper explanation with supporting info." TextWrapping="Wrap" /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+&lt;/controls:DaisyAccordion&gt;
+
+&lt;!-- Plus variant with FAQ-style content --&gt;
+&lt;controls:DaisyAccordion Variant="Plus" ExpandedIndex="0"&gt;
+    &lt;controls:DaisyAccordionItem Header="How do I reset my password?"&gt;
+        &lt;TextBlock Text="Use the Forgot Password link and follow the email instructions." TextWrapping="Wrap" /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+    &lt;controls:DaisyAccordionItem Header="Can I change my plan later?"&gt;
+        &lt;TextBlock Text="Yes, upgrades are immediate; downgrades apply on the next cycle." TextWrapping="Wrap" /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+&lt;/controls:DaisyAccordion&gt;
+
+&lt;!-- Start fully collapsed --&gt;
+&lt;controls:DaisyAccordion ExpandedIndex="-1"&gt;
+    &lt;controls:DaisyAccordionItem Header="Shipping"&gt;
+        &lt;TextBlock Text="Ships within 3–5 business days." /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+    &lt;controls:DaisyAccordionItem Header="Returns"&gt;
+        &lt;TextBlock Text="30-day returns with prepaid label." /&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+&lt;/controls:DaisyAccordion&gt;
+
+&lt;!-- Rich body content --&gt;
+&lt;controls:DaisyAccordion ExpandedIndex="1"&gt;
+    &lt;controls:DaisyAccordionItem Header="Profile"&gt;
+        &lt;StackPanel Spacing="8"&gt;
+            &lt;TextBlock Text="Update your display name and bio." /&gt;
+            &lt;controls:DaisyButton Content="Edit profile" Variant="Primary" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+    &lt;controls:DaisyAccordionItem Header="Notifications"&gt;
+        &lt;StackPanel Spacing="8"&gt;
+            &lt;TextBlock Text="Choose which alerts you receive." /&gt;
+            &lt;controls:DaisyToggle Content="Email alerts" IsChecked="True" /&gt;
+            &lt;controls:DaisyToggle Content="Push notifications" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/controls:DaisyAccordionItem&gt;
+&lt;/controls:DaisyAccordion&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>ExpandedIndex="-1"</code> when you want the accordion to load collapsed and let users expand what they need.</li>
+<li>Keep headers concise; long text wraps, but short titles make scanning easier.</li>
+<li>Prefer the <strong>Arrow</strong> variant for subtle layouts and <strong>Plus</strong> for strong “open/close” affordance or FAQ sections.</li>
+<li>Each toggle animates over ~0.2s; keep body content light to maintain a responsive feel.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"></div>
+    <div class="nav-right"><a href="DaisyAlert.html">Alert →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

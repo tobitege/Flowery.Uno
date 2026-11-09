@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisySelect</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisySelect</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisySelect.png" alt="DaisySelect" class="doc-image">
+
+<p>DaisySelect is a styled ComboBox with <strong>9 variants</strong> and <strong>4 size presets</strong>. It provides a chevron toggle, placeholder text, and themed dropdown. Use it for single-select dropdowns that need DaisyUI styling.</p>
+
+<h2>Variant Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Variant</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Bordered (default)</td>
+<td>Subtle base-300 border; brightens on focus.</td>
+</tr>
+<tr>
+<td>Ghost</td>
+<td>Borderless, transparent background; adds light fill on hover.</td>
+</tr>
+<tr>
+<td>Primary / Secondary / Accent</td>
+<td>Colored borders.</td>
+</tr>
+<tr>
+<td>Info / Success / Warning / Error</td>
+<td>Semantic border colors.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Size Options</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Size</th>
+<th>Height</th>
+<th>Font Size</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>ExtraSmall</td>
+<td>24</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>32</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Medium (default)</td>
+<td>48</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>64</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+
+<div class="alert alert-note"><div class="alert-title">NOTE</div>DaisySelect uses <strong>fixed heights</strong> for each size to match DaisyUI's design.</div>
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Basic --&gt;
+&lt;controls:DaisySelect PlaceholderText="Pick one"&gt;
+    &lt;ComboBoxItem&gt;Han Solo&lt;/ComboBoxItem&gt;
+    &lt;ComboBoxItem&gt;Greedo&lt;/ComboBoxItem&gt;
+&lt;/controls:DaisySelect&gt;
+
+&lt;!-- Ghost + primary --&gt;
+&lt;controls:DaisySelect Variant="Ghost" PlaceholderText="Ghost"&gt;
+    &lt;ComboBoxItem&gt;Option 1&lt;/ComboBoxItem&gt;
+&lt;/controls:DaisySelect&gt;
+&lt;controls:DaisySelect Variant="Primary" PlaceholderText="Primary"&gt;
+    &lt;ComboBoxItem&gt;Option 1&lt;/ComboBoxItem&gt;
+&lt;/controls:DaisySelect&gt;
+
+&lt;!-- Compact --&gt;
+&lt;controls:DaisySelect Size="Small" PlaceholderText="Small"&gt;
+    &lt;ComboBoxItem&gt;A&lt;/ComboBoxItem&gt;
+    &lt;ComboBoxItem&gt;B&lt;/ComboBoxItem&gt;
+&lt;/controls:DaisySelect&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use Ghost on colored backgrounds; use Bordered/Primary for standard light layouts.</li>
+<li>Keep placeholder concise; it shows when no selection is made.</li>
+<li>Consider width constraints: the dropdown <code>Popup</code> inherits the control width; set explicit widths for narrow layouts.</li>
+<li>For larger option sets, pair with search/filter UI outside the ComboBox for usability.</li>
+</ul>
+<h2>Localization Refresh (DaisySelectItem)</h2>
+
+<code>DaisySelectItem</code> is a <code>DependencyObject</code> and does not live in the visual tree, so bindings that rely on a parent <code>DataContext</code> can fail to refresh when the page resets <code>DataContext</code> (e.g., during runtime language changes). This can result in empty dropdown rows even though the items are still present.
+
+<strong>Recommended pattern:</strong> set a localization source on the select and provide localization keys on each item. <code>DaisySelect</code> will resolve and refresh item text whenever the localization source raises <code>PropertyChanged</code> (or when you call <code>RefreshLocalization()</code>).
+
+<pre><code class="language-xml">&lt;controls:DaisySelect LocalizationSource="{x:Bind Localization, Mode=OneWay}"&gt;
+    &lt;controls:DaisySelectItem LocalizationKey="Gallery_Carousel_Mode_Manual" Tag="Manual" /&gt;
+    &lt;controls:DaisySelectItem LocalizationKey="Gallery_Carousel_Mode_Slideshow" Tag="Slideshow" /&gt;
+&lt;/controls:DaisySelect&gt;</code></pre>
+
+<strong>Notes:</strong>
+
+<ul><li><code>LocalizationSource</code> can be an indexer-based object (e.g., <code>Localization["Key"]</code>), a <code>Func<string, string></code>, or a dictionary (<code>IDictionary<string, string></code>).</li>
+<li>If your localization system does not raise <code>PropertyChanged</code>, call <code>RefreshLocalization()</code> after switching cultures.</li>
+<li>This works with the default <code>DaisySelect</code> template; no custom <code>ItemContainerStyle</code> is required because the text is updated on the <code>DaisySelectItem</code> itself.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyScreenColorPicker.html">← ScreenColorPicker</a></div>
+    <div class="nav-right"><a href="DaisySkeleton.html">Skeleton →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

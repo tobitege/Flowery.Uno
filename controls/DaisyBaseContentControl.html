@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyBaseContentControl</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyBaseContentControl</h1>
+
+<h2>Overview</h2>
+
+<code>DaisyBaseContentControl</code> is the internal base class for Flowery.Uno components. It centralizes lifecycle management, theme integration, sizing systems, and provides hardware-accelerated visual effects like neumorphism.
+
+<p>Most controls in the library inherit from this class to ensure consistent behavior and high performance across all platforms (WinUI, Android, iOS, WASM).</p>
+
+<h2>Core Systems</h2>
+
+<h3>1. Lifecycle Management</h3>
+
+<p>The base class automatically handles <code>Loaded</code> and <code>Unloaded</code> events. It ensures that event subscriptions (like theme changes) are properly cleaned up to prevent memory leaks, which is critical for long-running cross-platform applications.</p>
+
+<h3>2. Theme Integration</h3>
+
+<p>Subscribes to <code>DaisyThemeManager.ThemeChanged</code> automatically. Derived controls can override <code>OnThemeChanged()</code> to update their visual state whenever the application theme (e.g., Light, Dark, Dracula) switches.</p>
+
+<h3>3. Sizing & Scaling</h3>
+
+<p>Integrates with <code>FlowerySizeManager</code> to support global sizing tiers (XS to XL).</p>
+
+<ul><li>Automatically applies the global size if no local <code>Size</code> is set.</li>
+<li>Respects the <code>IgnoreGlobalSize</code> attached property.</li>
+<li>Provides <code>OnGlobalSizeChanged()</code> for derived controls to react to layout changes.</li>
+</ul>
+<h3>4. Visual Effects (Neumorphism)</h3>
+
+<p>Hosts the hardware-accelerated neumorphic effect engine using the <strong>Composition API</strong>. This creates 3D-like "Soft UI" highlights and shadows without adding expensive <code>UIElement</code> layers to the visual tree.</p>
+
+<strong>Deferred Attachment</strong>: Neumorphic effects are attached after the first <code>LayoutUpdated</code> event, not immediately in <code>OnLoaded()</code>. This ensures the visual tree is fully populated before the composition helper tries to inject its layers, preventing issues where dynamically-built controls (like <code>DaisyInput</code>) appear as blank boxes.
+
+<p>See <a href="neumorphic.html">neumorphic.md</a> for detailed technical implementation.</p>
+
+<h3>5. Click/Command Support</h3>
+
+<p>The base class provides button-like interaction support:</p>
+
+<ul><li><code>Click</code> event for simple click handling</li>
+<li><code>Command</code> and <code>CommandParameter</code> properties for MVVM binding</li>
+</ul>
+<h2>Instance Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>NeumorphicEnabled</code></td>
+<td><code>bool?</code></td>
+<td><code>null</code></td>
+<td>Enables/disables 3D effects. Falls back to global setting.</td>
+</tr>
+<tr>
+<td><code>NeumorphicMode</code></td>
+<td><code>DaisyNeumorphicMode?</code></td>
+<td><code>null</code></td>
+<td>Style: <code>Raised</code>, <code>Inset</code>, <code>Flat</code>, or <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>NeumorphicIntensity</code></td>
+<td><code>double?</code></td>
+<td><code>null</code></td>
+<td>Adjusts shadow strength (0.0 to 1.0).</td>
+</tr>
+<tr>
+<td><code>NeumorphicBlurRadius</code></td>
+<td><code>double</code></td>
+<td><code>12.0</code></td>
+<td>Softness of the effect shadows.</td>
+</tr>
+<tr>
+<td><code>NeumorphicOffset</code></td>
+<td><code>double</code></td>
+<td><code>4.0</code></td>
+<td>Distance of the 3D effect from the element.</td>
+</tr>
+<tr>
+<td><code>NeumorphicDarkShadowColor</code></td>
+<td><code>Color?</code></td>
+<td><code>null</code></td>
+<td>Override dark shadow color. Falls back to global.</td>
+</tr>
+<tr>
+<td><code>NeumorphicLightShadowColor</code></td>
+<td><code>Color?</code></td>
+<td><code>null</code></td>
+<td>Override light shadow color. Falls back to global.</td>
+</tr>
+<tr>
+<td><code>NeumorphicRimLightEnabled</code></td>
+<td><code>bool?</code></td>
+<td><code>null</code></td>
+<td>Enable rim light effect. Requires global to also be enabled.</td>
+</tr>
+<tr>
+<td><code>NeumorphicSurfaceGradientEnabled</code></td>
+<td><code>bool?</code></td>
+<td><code>null</code></td>
+<td>Enable surface gradient. Requires global to also be enabled.</td>
+</tr>
+<tr>
+<td><code>Command</code></td>
+<td><code>ICommand?</code></td>
+<td><code>null</code></td>
+<td>Command to invoke on click.</td>
+</tr>
+<tr>
+<td><code>CommandParameter</code></td>
+<td><code>object?</code></td>
+<td><code>null</code></td>
+<td>Parameter passed to Command.</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>Scope Overrides</h2>
+
+<p>Use the <code>NeumorphicScopeEnabled</code> attached property to enable or disable neumorphic effects for a subtree.</p>
+<p>This is useful for apps like the Gallery where only certain sections should opt into the global toggle.</p>
+
+<pre><code class="language-xml">&lt;!-- Disable for the entire shell --&gt;
+&lt;Grid daisy:DaisyBaseContentControl.NeumorphicScopeEnabled="False"&gt;
+    &lt;!-- Re-enable only for the examples area --&gt;
+    &lt;Grid x:Name="MainContentHost"
+          daisy:DaisyBaseContentControl.NeumorphicScopeEnabled="True" /&gt;
+&lt;/Grid&gt;</code></pre>
+
+<h2>Static Configuration (Global)</h2>
+
+<p>Configure library-wide defaults via static properties on <code>DaisyBaseContentControl</code>:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GlobalNeumorphicEnabled</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enables neumorphic effects for all inheriting controls.</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicMode</code></td>
+<td><code>DaisyNeumorphicMode</code></td>
+<td><code>None</code></td>
+<td>Default 3D style for the library.</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicIntensity</code></td>
+<td><code>double</code></td>
+<td><code>0.45</code></td>
+<td>Default shadow strength (0.0 to 1.0).</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicRimLightEnabled</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enables rim light effect globally.</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicSurfaceGradientEnabled</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enables surface gradient effect globally.</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicDarkShadowColor</code></td>
+<td><code>Color</code></td>
+<td><code>#0D2750</code></td>
+<td>Default dark shadow color.</td>
+</tr>
+<tr>
+<td><code>GlobalNeumorphicLightShadowColor</code></td>
+<td><code>Color</code></td>
+<td><code>#FFFFFF</code></td>
+<td>Default light shadow color.</td>
+</tr>
+<tr>
+<td><code>EnableDebugOverlay</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enables debug visual overlays (if supported by control).</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Automatic State Synchronization</h3>
+
+<p>The global neumorphic properties have automatic state synchronization:</p>
+
+<ul><li>Setting <code>GlobalNeumorphicMode</code> to a non-None value (Raised, Inset, Flat) automatically sets <code>GlobalNeumorphicEnabled = true</code></li>
+<li>Setting <code>GlobalNeumorphicMode = None</code> automatically sets <code>GlobalNeumorphicEnabled = false</code></li>
+<li>Setting <code>GlobalNeumorphicEnabled = true</code> when Mode was None <strong>restores the last non-None mode</strong> (defaults to Raised)</li>
+<li>The last non-None mode is remembered, so toggling Enabled on/off preserves the user's mode preference</li>
+</ul>
+<p>This bidirectional synchronization ensures the dropdown selector works intuitively - selecting "Raised" immediately enables the effect.</p>
+
+<h3>Transparent Control Heuristic</h3>
+
+<p>When picking up from the global flag (no local or scope override), transparent controls are automatically excluded from neumorphic effects. This prevents structural containers (shells, mockups, grids) from creating massive opaque surfaces.</p>
+
+<h3>Events</h3>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Event</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GlobalNeumorphicChanged</code></td>
+<td>Fired when any global neumorphic property changes.</td>
+</tr>
+<tr>
+<td><code>Click</code></td>
+<td>Fired when the control is clicked.</td>
+</tr>
+</tbody>
+</table></div>
+
+<pre><code class="language-csharp">// Example: Enable neumorphism globally
+DaisyBaseContentControl.GlobalNeumorphicEnabled = true;
+DaisyBaseContentControl.GlobalNeumorphicMode = DaisyNeumorphicMode.Raised;
+
+// Advanced effects (opt-in)
+DaisyBaseContentControl.GlobalNeumorphicRimLightEnabled = true;
+DaisyBaseContentControl.GlobalNeumorphicSurfaceGradientEnabled = true;</code></pre>
+
+<h2>Implementation Guide (for Contributors)</h2>
+
+<p>When creating a new control that inherits from <code>DaisyBaseContentControl</code>:</p>
+
+<h3>Required Overrides</h3>
+
+<p>To participate in the theme and sizing systems, implement these hooks:</p>
+
+<pre><code class="language-csharp">protected override void OnThemeChanged(string themeName) =&gt; ApplyAll();
+
+protected override void OnGlobalSizeChanged(DaisySize size) =&gt; Size = size;
+
+protected override DaisySize? GetControlSize() =&gt; Size;
+
+protected override void SetControlSize(DaisySize size) =&gt; Size = size;</code></pre>
+
+<h3>Visual Tree Construction</h3>
+
+<p>Use the provided protected helpers to keep code-behind clean:</p>
+
+<ul><li><code>CreateThemedBorder()</code> (static): Creates a standard border with theme-aware colors.</li>
+<li><code>ApplyHoverEffect()</code>: Sets up PointerEntered/Exited background switching.</li>
+<li><code>WrapWithPadding()</code> (static): Quick utility for layout nesting. It creates a <code>Grid</code> containing a <code>Border</code> with the specified <code>Padding</code>, which then hosts the provided <code>UIElement</code>. This is useful for adding spacing around a control's internal parts without modifying the parts themselves.</li>
+</ul>
+<h4>Example: WrapWithPadding Usage</h4>
+
+<pre><code class="language-csharp">// Inside a control's visual tree construction
+var myInnerPart = new TextBlock { Text = "Padded Content" };
+var paddedContainer = WrapWithPadding(myInnerPart, new Thickness(12));
+// paddedContainer is now a Grid -&gt; Border -&gt; TextBlock</code></pre>
+
+<h3>Debugging</h3>
+
+<div class="alert alert-important"><div class="alert-title">IMPORTANT</div>Always call <code>base.OnLoaded()</code> and <code>base.OnUnloaded()</code> if you override these events, as they contain the logic for building and disposing composition visuals.</div><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyBadge.html">← Badge</a></div>
+    <div class="nav-right"><a href="DaisyBreadcrumbBar.html">BreadcrumbBar →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

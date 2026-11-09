@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloweryResponsive</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>FloweryResponsive</h1>
+
+<h2>Overview</h2>
+
+<p>FloweryResponsive provides responsive layout functionality via attached properties. It calculates responsive widths based on available container space and exposes standard breakpoint constants for consistent responsive behavior across your app.</p>
+
+<h2>FloweryBreakpoints</h2>
+
+<p>Standard responsive breakpoints aligned with common CSS frameworks:</p>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>ExtraSmall</code></td>
+<td>480px</td>
+<td>Extra small screens (phones in portrait)</td>
+</tr>
+<tr>
+<td><code>Small</code></td>
+<td>640px</td>
+<td>Small screens (phones landscape, small tablets)</td>
+</tr>
+<tr>
+<td><code>Medium</code></td>
+<td>768px</td>
+<td>Medium screens (tablets)</td>
+</tr>
+<tr>
+<td><code>Large</code></td>
+<td>1024px</td>
+<td>Large screens (small laptops)</td>
+</tr>
+<tr>
+<td><code>ExtraLarge</code></td>
+<td>1280px</td>
+<td>Extra large screens (desktops)</td>
+</tr>
+<tr>
+<td><code>TwoXL</code></td>
+<td>1536px</td>
+<td>2XL screens (large desktops)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3>Helper Methods</h3>
+
+<pre><code class="language-csharp">// Get breakpoint name for a width
+string bp = FloweryBreakpoints.GetBreakpointName(800); // "md"
+
+// Check if at/above a breakpoint
+bool isDesktop = FloweryBreakpoints.IsAtLeast(width, FloweryBreakpoints.Large);
+
+// Check if below a breakpoint
+bool isMobile = FloweryBreakpoints.IsBelow(width, FloweryBreakpoints.Medium);</code></pre>
+
+<h2>FloweryResponsive Attached Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>IsEnabled</code></td>
+<td>bool</td>
+<td>Enable responsive behavior on the container</td>
+</tr>
+<tr>
+<td><code>BaseMaxWidth</code></td>
+<td>double</td>
+<td>Maximum width when space is available (default: 430)</td>
+</tr>
+<tr>
+<td><code>ResponsiveMaxWidth</code></td>
+<td>double</td>
+<td>Calculated responsive width (read-only, bind to this)</td>
+</tr>
+<tr>
+<td><code>CurrentBreakpoint</code></td>
+<td>string</td>
+<td>Current breakpoint name (xs, sm, md, lg, xl, 2xl)</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2>XAML Usage</h2>
+
+<pre><code class="language-xml">&lt;!-- Add namespace --&gt;
+xmlns:services="using:Flowery.Services"
+
+&lt;!-- Enable on a container (e.g., ScrollViewer) --&gt;
+&lt;ScrollViewer x:Name="MainScrollViewer"
+              services:FloweryResponsive.IsEnabled="True"
+              services:FloweryResponsive.BaseMaxWidth="430"&gt;
+
+    &lt;!-- Child elements can bind to the calculated width --&gt;
+    &lt;StackPanel MaxWidth="{Binding (services:FloweryResponsive.ResponsiveMaxWidth), 
+                                   ElementName=MainScrollViewer}"&gt;
+        &lt;!-- Content adapts to available space --&gt;
+    &lt;/StackPanel&gt;
+&lt;/ScrollViewer&gt;</code></pre>
+
+<h2>How It Works</h2>
+
+<p>1. Attach <code>IsEnabled="True"</code> to a container control</p>
+<p>2. The helper listens to the container's <code>Bounds</code> property changes</p>
+<p>3. It calculates <code>ResponsiveMaxWidth = Min(BaseMaxWidth, AvailableWidth - Padding)</code></p>
+<p>4. Child controls bind to <code>ResponsiveMaxWidth</code> for responsive sizing</p>
+<p>5. <code>CurrentBreakpoint</code> updates with the breakpoint name for conditional logic</p>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Use <code>BaseMaxWidth</code> to set the ideal maximum width for your content</li>
+<li>Bind controls like <code>DaisyCarousel</code>, <code>DaisyCard</code>, or <code>DaisyTable</code> to <code>ResponsiveMaxWidth</code></li>
+<li>Use <code>CurrentBreakpoint</code> in converters for conditional visibility or styling</li>
+<li>The minimum width is clamped to 200px to maintain usability</li>
+<li>Default padding of 48px accounts for margins and scrollbars</li>
+</ul>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

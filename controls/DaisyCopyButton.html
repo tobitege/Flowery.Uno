@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyCopyButton</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+</head>
+<body class="content-body">
+    <div class="breadcrumbs"><a href="../home.html">Home</a></div>
+<h1>DaisyCopyButton</h1>
+
+<h2>Overview</h2>
+
+<img src="../images/DaisyCopyButton.png" alt="DaisyCopyButton" class="doc-image">
+
+<p>DaisyCopyButton is a <code>DaisyButton</code> that copies text to the clipboard on click and briefly switches to a success state. It's ideal for “copy invite link”, “copy token”, and similar flows where immediate feedback matters.</p>
+
+<h2>Properties</h2>
+
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Property</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>CopyText</code> (string?)</td>
+<td>Text copied to the clipboard when clicked. When null, copies an empty string.</td>
+</tr>
+<tr>
+<td><code>SuccessDuration</code> (TimeSpan)</td>
+<td>How long the success state is shown (default <code>2s</code>).</td>
+</tr>
+<tr>
+<td><code>SuccessContent</code> (object?)</td>
+<td>Content shown during the success state (default <code>Copied</code>).</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>Because it inherits from <code>DaisyButton</code>, all button properties (e.g. <code>Variant</code>, <code>ButtonStyle</code>, <code>Size</code>, <code>Shape</code>, shadows) can be used.</p>
+
+<h2>Quick Examples</h2>
+
+<pre><code class="language-xml">&lt;!-- Simple copy button --&gt;
+&lt;controls:DaisyCopyButton CopyText="https://example.com/invite" /&gt;
+
+&lt;!-- Styled + custom success content --&gt;
+&lt;controls:DaisyCopyButton Variant="Primary"
+                         ButtonStyle="Soft"
+                         Content="Copy link"
+                         CopyText="{Binding InviteUrl}"
+                         SuccessContent="Copied!" /&gt;
+
+&lt;!-- Icon-only --&gt;
+&lt;controls:DaisyCopyButton Shape="Square" Size="Small" CopyText="{Binding Token}"&gt;
+    &lt;PathIcon Data="{StaticResource DaisyIconCopy}" Width="16" Height="16" /&gt;
+&lt;/controls:DaisyCopyButton&gt;</code></pre>
+
+<h2>Tips & Best Practices</h2>
+
+<ul><li>Keep <code>SuccessContent</code> short so the button doesn't resize noticeably.</li>
+<li>The button temporarily disables itself during the success state to prevent repeat clicks.</li>
+<li>If you need more complex clipboard behavior (multiple formats), use your own click handler and keep DaisyCopyButton for simple text-copy flows.</li>
+</ul><div class="doc-nav">
+    <div class="nav-left"><a href="DaisyContributionGraph.html">← ContributionGraph</a></div>
+    <div class="nav-right"><a href="DaisyCountdown.html">Countdown →</a></div>
+</div>
+    <script>
+// Syntax highlighting
+hljs.highlightAll();
+
+// Theme Sync Logic for Iframe Content
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// 1. Initial Load: Try to get theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);
+
+// 2. Listen for messages from parent (shell)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'setTheme') {
+        applyTheme(event.data.theme);
+    }
+});
+
+// 3. Notify parent when this page loads (for sidebar sync)
+if (window.parent !== window) {
+    window.parent.postMessage({
+        type: 'pageLoaded',
+        path: window.location.pathname,
+        href: window.location.href
+    }, '*');
+}
+
+
+    </script>
+</body>
+</html>

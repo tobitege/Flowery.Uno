@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Uno.WinUI.Graphics2DSK" VersionOverride="7.0.65" />
     <ProjectReference Include="..\Flowery.Uno\Flowery.Uno.csproj" />
     <PackageReference Include="SkiaSharp" />
   </ItemGroup>

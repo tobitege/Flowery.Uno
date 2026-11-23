@@ -1,14 +1,14 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <SkiaSharpVersion>4.153.1</SkiaSharpVersion>
+    <SkiaSharpVersion>4.156.0</SkiaSharpVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
     <PackageVersion Include="Uno.UI" Version="$(UnoVersion)" />
-    <PackageVersion Include="Uno.Toolkit.WinUI" Version="8.4.2" />
-    <PackageVersion Include="Uno.Toolkit.Skia.WinUI" Version="8.4.2" />
+    <PackageVersion Include="Uno.Toolkit.WinUI" Version="11.0.1" />
+    <PackageVersion Include="Uno.Toolkit.Skia.WinUI" Version="11.0.1" />
     <PackageVersion Include="Uno.WinUI.DevServer" Version="$(UnoVersion)" />
 
     <PackageVersion Include="MSTest" Version="4.5.1" />

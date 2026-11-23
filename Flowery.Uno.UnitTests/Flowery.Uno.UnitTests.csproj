@@ -27,6 +27,7 @@
     <PackageReference Include="Combinatorial.MSTest" />
     <PackageReference Include="Microsoft.Testing.Extensions.HangDump" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="Uno.WinUI.Graphics2DSK" VersionOverride="7.0.65" />
   </ItemGroup>
 
   <ItemGroup>
